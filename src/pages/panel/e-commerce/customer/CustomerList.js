@@ -223,7 +223,7 @@ const CustomerList = () => {
 
   return (
     <React.Fragment>
-      <Head title="User List - Default"></Head>
+      <Head title="Lista de Clientes"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>

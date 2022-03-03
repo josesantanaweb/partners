@@ -5,7 +5,7 @@ const HeaderSearch = () => {
   return (
     <React.Fragment>
       <Icon name="search"></Icon>
-      <input className="form-control border-transparent form-focus-none" type="text" placeholder="Search anything" />
+      <input className="form-control border-transparent form-focus-none" type="text" placeholder="Buscar" />
     </React.Fragment>
   );
 };
