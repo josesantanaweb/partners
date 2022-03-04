@@ -27,11 +27,11 @@ import {
   TooltipComponent,
   RSelect,
   PreviewAltCard,
-} from "../../../components/Component";
-import Content from "../../../layout/content/Content";
-import Head from "../../../layout/head/Head";
+} from "../../components/Component";
+import Content from "../../layout/content/Content";
+import Head from "../../layout/head/Head";
 import { filterStatus, userData } from "./UserData";
-import { findUpper } from "../../../utils/Utils";
+import { findUpper } from "../../utils/Utils";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { UserContext } from "./UserContext";
@@ -229,10 +229,10 @@ const UserListDefaultPage = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Users Lists
+                Lista de Usuarios
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>You have total 2,595 users.</p>
+                <p>Total 2,595 usuarios</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -278,22 +278,16 @@ const UserListDefaultPage = () => {
                 </div>
               </DataTableRow>
               <DataTableRow>
-                <span className="sub-text">User</span>
-              </DataTableRow>
-              <DataTableRow size="mb">
-                <span className="sub-text">Ordered</span>
+                <span className="sub-text">Usuario</span>
               </DataTableRow>
               <DataTableRow size="md">
-                <span className="sub-text">Phone</span>
-              </DataTableRow>
-              <DataTableRow size="lg">
-                <span className="sub-text">Country</span>
-              </DataTableRow>
-              <DataTableRow size="lg">
-                <span className="sub-text">Last Order</span>
+                <span className="sub-text">Telefono</span>
               </DataTableRow>
               <DataTableRow size="md">
-                <span className="sub-text">Status</span>
+                <span className="sub-text">Rol</span>
+              </DataTableRow>
+              <DataTableRow size="md">
+                <span className="sub-text">Estado</span>
               </DataTableRow>
               <DataTableRow className="nk-tb-col-tools text-right">
                 <UncontrolledDropdown>
@@ -363,19 +357,11 @@ const UserListDefaultPage = () => {
                         </div>
                       </Link>
                     </DataTableRow>
-                    <DataTableRow size="mb">
-                      <span className="tb-amount">
-                        {item.balance} <span className="currency">USD</span>
-                      </span>
-                    </DataTableRow>
                     <DataTableRow size="md">
                       <span>{item.phone}</span>
                     </DataTableRow>
-                    <DataTableRow size="lg">
-                      <span>{item.country}</span>
-                    </DataTableRow>
-                    <DataTableRow size="lg">
-                      <span>{item.lastLogin}</span>
+                    <DataTableRow size="md">
+                      {item.role}
                     </DataTableRow>
                     <DataTableRow size="md">
                       <span

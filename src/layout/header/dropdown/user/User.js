@@ -34,10 +34,10 @@ const User = () => {
         <div className="dropdown-inner user-card-wrap bg-lighter d-none d-md-block">
           <div className="user-card sm">
             <div className="user-avatar">
-              <span>AB</span>
+              <span>JD</span>
             </div>
             <div className="user-info">
-              <span className="lead-text">Abu Bin Ishtiyak</span>
+              <span className="lead-text">Jonh Doe</span>
               <span className="sub-text">info@softnio.com</span>
             </div>
           </div>
@@ -45,13 +45,10 @@ const User = () => {
         <div className="dropdown-inner">
           <LinkList>
             <LinkItem link="/user-profile-regular" icon="user-alt" onClick={toggle}>
-              View Profile
+              Ver Perfil
             </LinkItem>
             <LinkItem link="/user-profile-setting" icon="setting-alt" onClick={toggle}>
-              Account Setting
-            </LinkItem>
-            <LinkItem link="/user-profile-activity" icon="activity-alt" onClick={toggle}>
-              Login Activity
+              Configuracion
             </LinkItem>
           </LinkList>
         </div>
@@ -59,7 +56,7 @@ const User = () => {
           <LinkList>
             <a href={`${process.env.PUBLIC_URL}/auth-login`} onClick={handleSignout}>
               <Icon name="signout"></Icon>
-              <span>Sign Out</span>
+              <span>Logout</span>
             </a>
           </LinkList>
         </div>

@@ -1,13 +1,15 @@
 import React, { Suspense, useLayoutEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import { CustomerProvider } from "../pages/panel/e-commerce/customer/CustomerContext";
+import { UserContextProvider } from "../pages/users/UserContext";
 import { RedirectAs404 } from "../utils/Utils";
 
 import Homepage from "../pages/Homepage";
 
 import EcomOrder from "../pages/panel/e-commerce/order/OrderDefault";
-import EcomProducts from "../pages/panel/e-commerce/product/ProductList";
-import EcomCustomer from "../pages/panel/e-commerce/customer/CustomerList";
+// import EcomProducts from "../pages/panel/e-commerce/product/ProductList";
+import Customer from "../pages/panel/e-commerce/customer/CustomerList";
+import Users from "../pages/users/UserListDefault";
 import EcomCustomerDetails from "../pages/panel/e-commerce/customer/CustomerDetails";
 import EcomDashboard from "../pages/panel/e-commerce/index";
 
@@ -22,14 +24,14 @@ const Pages = () => {
         {/*Panel */}
         <Route exact path={`${process.env.PUBLIC_URL}/index`} component={EcomDashboard}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/orders`} component={EcomOrder}></Route>
-        <Route exact path={`${process.env.PUBLIC_URL}/products`} component={EcomProducts}></Route>
+        {/* <Route exact path={`${process.env.PUBLIC_URL}/products`} component={EcomProducts}></Route> */}
         <Route
           exact
           path={`${process.env.PUBLIC_URL}/users`}
           render={() => (
-            <CustomerProvider>
-              <EcomCustomer />
-            </CustomerProvider>
+            <UserContextProvider>
+              <Users />
+            </UserContextProvider>
           )}
         ></Route>
         <Route
@@ -37,7 +39,7 @@ const Pages = () => {
           path={`${process.env.PUBLIC_URL}/adviser`}
           render={() => (
             <CustomerProvider>
-              <EcomCustomer />
+              <Customer />
             </CustomerProvider>
           )}
         ></Route>
@@ -46,7 +48,7 @@ const Pages = () => {
           path={`${process.env.PUBLIC_URL}/customer`}
           render={() => (
             <CustomerProvider>
-              <EcomCustomer />
+              <Customer />
             </CustomerProvider>
           )}
         ></Route>

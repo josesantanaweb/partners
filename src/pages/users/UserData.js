@@ -1,7 +1,7 @@
-import User from "../../../images/avatar/b-sm.jpg";
-import User2 from "../../../images/avatar/c-sm.jpg";
-import User3 from "../../../images/avatar/a-sm.jpg";
-import User4 from "../../../images/avatar/d-sm.jpg";
+import User from "../../images/avatar/b-sm.jpg";
+import User2 from "../../images/avatar/c-sm.jpg";
+import User3 from "../../images/avatar/a-sm.jpg";
+import User4 from "../../images/avatar/d-sm.jpg";
 
 export const userData = [
   {
@@ -10,7 +10,7 @@ export const userData = [
     name: "Abu Bin Ishtiyak",
     displayName: "Ishtiak",
     dob: "10 Aug, 1980",
-    role: "Customer",
+    role: "Admin",
     checked: false,
     email: "info@softnio.com",
     balance: "35,040.34",
@@ -33,7 +33,7 @@ export const userData = [
     image: User3,
     name: "Ashley Lawson",
     dob: "10 Sept, 1990",
-    role: "Investor",
+    role: "User",
     email: "ashley@softnio.com",
     balance: "580.00",
     checked: false,
@@ -53,7 +53,7 @@ export const userData = [
     avatarBg: "info",
     name: "Joe Larson",
     dob: "19 Jan, 1985",
-    role: "Customer",
+    role: "Admin",
     email: "larson@example.com",
     balance: "32,000.34",
     checked: false,
@@ -73,7 +73,7 @@ export const userData = [
     avatarBg: "danger",
     name: "Jane Montgomery",
     dob: "24 April, 1985",
-    role: "Subscriber",
+    role: "Admin",
     email: "jane84@example.com",
     balance: "0.00",
     checked: false,
@@ -93,7 +93,7 @@ export const userData = [
     avatarBg: "purple",
     name: "Frances Burns",
     dob: "30 May, 2000",
-    role: "Manager",
+    role: "User",
     image: User,
     email: "frances@example.com",
     balance: "42.50",
@@ -114,7 +114,7 @@ export const userData = [
     avatarBg: "primary",
     name: "Alan Butler",
     dob: "10 Feb, 1997",
-    role: "Investor",
+    role: "User",
     image: User2,
     email: "butler@example.com",
     balance: "440.34",
@@ -135,7 +135,7 @@ export const userData = [
     avatarBg: "warning",
     name: "Victoria Lynch",
     dob: "02 May, 1993",
-    role: "Investor",
+    role: "User",
     email: "victoria@example.com",
     balance: "59,400.68",
     checked: false,
@@ -155,7 +155,7 @@ export const userData = [
     avatarBg: "success",
     name: "Patrick Newman",
     dob: "15 Feb, 1997",
-    role: "Customer",
+    role: "Admin",
     email: "patrick@example.com",
     balance: "30.00",
     checked: false,
@@ -175,7 +175,7 @@ export const userData = [
     avatarBg: "purple",
     name: "Jane Harris",
     dob: "28 Feb, 1985",
-    role: "Customer",
+    role: "Admin",
     image: User4,
     email: "harris@example.com",
     balance: "5,530.23",
@@ -196,7 +196,7 @@ export const userData = [
     avatarBg: "purple",
     name: "Emma Walker",
     dob: "30 Dec, 1998",
-    role: "Investor",
+    role: "User",
     email: "walker@example.com",
     balance: "55.00",
     checked: false,
@@ -216,7 +216,7 @@ export const userData = [
     avatarBg: "pink",
     name: "Lilja Peltola",
     dob: "30 Dec, 1998",
-    role: "Investor",
+    role: "User",
     email: "lilja@example.com",
     balance: "105.00",
     checked: false,
@@ -236,7 +236,7 @@ export const userData = [
     avatarBg: "secondary",
     name: "Annette Hunter",
     dob: "30 Dec, 1998",
-    role: "Investor",
+    role: "User",
     email: "hunter@example.com",
     balance: "55.00",
     checked: false,
@@ -256,7 +256,7 @@ export const userData = [
     avatarBg: "pink",
     name: "Sara Koivisto",
     dob: "30 Dec, 1998",
-    role: "Customer",
+    role: "Admin",
     email: "sara@example.com",
     balance: "165.00",
     checked: false,
@@ -296,7 +296,7 @@ export const userData = [
     avatarBg: "pink",
     name: "Raymond Atkins",
     dob: "30 Dec, 1998",
-    role: "Customer",
+    role: "Admin",
     image: User4,
     email: "sara@example.com",
     balance: "165.00",
@@ -378,7 +378,7 @@ export const userData = [
     avatarBg: "secondary",
     name: "Asiya Wolff",
     dob: "30 Dec, 1998",
-    role: "Customer",
+    role: "Admin",
     email: "asia@example.com",
     balance: "55.00",
     checked: false,
@@ -439,7 +439,7 @@ export const filterStatus = [
 ];
 
 export const filterRole = [
-  { value: "investor", label: "Investor" },
+  { value: "User", label: "User" },
   { value: "seller", label: "Seller" },
   { value: "buyer", label: "Buyer" },
 ];

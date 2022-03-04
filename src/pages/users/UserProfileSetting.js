@@ -1,5 +1,5 @@
 import React from "react";
-import Head from "../../../layout/head/Head";
+import Head from "../../layout/head/Head";
 import { Card } from "reactstrap";
 import {
   Block,
@@ -11,7 +11,7 @@ import {
   Icon,
   InputSwitch,
   Button,
-} from "../../../components/Component";
+} from "../../components/Component";
 
 const UserProfileSettingPage = ({ sm, updateSm }) => {
   return (
