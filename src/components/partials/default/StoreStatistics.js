@@ -21,7 +21,7 @@ const StoreStatistics = () => {
           </li>
           <li className="item">
             <div className="info">
-              <div className="title">Customers</div>
+              <div className="title">Clientes</div>
               <div className="count">2,327</div>
             </div>
             <Icon name="users" className="bg-info-dim"></Icon>

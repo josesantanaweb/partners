@@ -11,7 +11,7 @@ const AverageOrder = () => {
         <div className="card-inner">
           <div className="card-title-group mt-n1">
             <div className="card-title">
-              <h6 className="title">Averarge order</h6>
+              <h6 className="title">Averarge de Asesores</h6>
             </div>
             <div className="card-tools mr-n1">
               <UncontrolledDropdown>
@@ -78,7 +78,7 @@ const AverageOrder = () => {
               </div>
             </div>
           </div>
-          <h6 className="sub-title">Orders over time</h6>
+          <h6 className="sub-title">Asesores por tiempo</h6>
         </div>
         <div className="nk-ecwg2-ck">
           <AverageOrderChart state={data} />
