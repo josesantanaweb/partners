@@ -62,9 +62,9 @@ const Login = () => {
           <PreviewCard className="card-bordered" bodyClass="card-inner-lg">
             <BlockHead>
               <BlockContent>
-                <BlockTitle tag="h4">Sign-In</BlockTitle>
+                <BlockTitle tag="h4">Inicio de sesión</BlockTitle>
                 <BlockDes>
-                  <p>Access Dashlite using your email and passcode.</p>
+                  <p>Bienvenido a Partners & Advisers</p>
                 </BlockDes>
               </BlockContent>
             </BlockHead>
@@ -80,7 +80,7 @@ const Login = () => {
               <FormGroup>
                 <div className="form-label-group">
                   <label className="form-label" htmlFor="default-01">
-                    Email or Username
+                    Correo Electronico
                   </label>
                 </div>
                 <div className="form-control-wrap">
@@ -99,10 +99,10 @@ const Login = () => {
               <FormGroup>
                 <div className="form-label-group">
                   <label className="form-label" htmlFor="password">
-                    Passcode
+                    Contraseña
                   </label>
                   <Link className="link link-primary link-sm" to={`${process.env.PUBLIC_URL}/auth-reset`}>
-                    Forgot Code?
+                    Olvido su Contraseña?
                   </Link>
                 </div>
                 <div className="form-control-wrap">
@@ -132,17 +132,17 @@ const Login = () => {
               </FormGroup>
               <FormGroup>
                 <Button size="lg" className="btn-block" type="submit" color="primary">
-                  {loading ? <Spinner size="sm" color="light" /> : "Sign in"}
+                  {loading ? <Spinner size="sm" color="light" /> : "Iniciar sesión"}
                 </Button>
               </FormGroup>
             </Form>
             <div className="form-note-s2 text-center pt-4">
               {" "}
-              New on our platform? <Link to={`${process.env.PUBLIC_URL}/auth-register`}>Create an account</Link>
+              No tienes una cuenta? <Link to={`${process.env.PUBLIC_URL}/auth-register`}>Registrate</Link>
             </div>
             <div className="text-center pt-4 pb-3">
               <h6 className="overline-title overline-title-sap">
-                <span>OR</span>
+                <span>O</span>
               </h6>
             </div>
             <ul className="nav justify-center gx-4">

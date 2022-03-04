@@ -13,11 +13,15 @@ import Error504Classic from "./pages/error/504-classic";
 import Faq from "./pages/others/Faq";
 import Terms from "./pages/others/Terms";
 
+import Login from "./pages/auth/Login";
 import InvoicePrint from "./pages/pre-built/invoice/InvoicePrint";
 
 const App = (props) => {
   return (
     <Switch>
+      {/* Auth Pages */}
+      <Route exact path={`${process.env.PUBLIC_URL}/login`} component={Login}></Route>
+
       {/* Print Pages */}
       <Route exact path={`${process.env.PUBLIC_URL}/invoice-print/:id`} component={InvoicePrint}></Route>
 
