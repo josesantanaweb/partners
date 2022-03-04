@@ -4,11 +4,11 @@ const menu = [
     text: "Dashboard",
     link: "/index",
   },
-  {
-    icon: "package-fill",
-    text: "Products",
-    link: "/products",
-  },
+  // {
+  //   icon: "package-fill",
+  //   text: "Products",
+  //   link: "/products",
+  // },
   {
     icon: "users-fill",
     text: "Clientes",

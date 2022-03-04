@@ -1,6 +1,6 @@
 import React, { Suspense, useLayoutEffect } from "react";
 import { Switch, Route } from "react-router-dom";
-import { CustomerProvider } from "../pages/panel/e-commerce/customer/CustomerContext";
+import { CustomerProvider } from "../pages/customer/CustomerContext";
 import { UserContextProvider } from "../pages/users/UserContext";
 import { AdviserContextProvider } from "../pages/adviser/AdviserContext";
 import { RedirectAs404 } from "../utils/Utils";
@@ -9,10 +9,10 @@ import Homepage from "../pages/Homepage";
 
 import EcomOrder from "../pages/panel/e-commerce/order/OrderDefault";
 // import EcomProducts from "../pages/panel/e-commerce/product/ProductList";
-import Customer from "../pages/panel/e-commerce/customer/CustomerList";
+import Customer from "../pages/customer/CustomerList";
 import Users from "../pages/users/UserListDefault";
 import Adviser from "../pages/adviser/AdviserListDefault";
-import EcomCustomerDetails from "../pages/panel/e-commerce/customer/CustomerDetails";
+import EcomCustomerDetails from "../pages/customer/CustomerDetails";
 import EcomDashboard from "../pages/panel/e-commerce/index";
 
 const Pages = () => {

@@ -14,11 +14,11 @@ import {
   OverlineTitle,
   Sidebar,
   UserAvatar,
-} from "../../../../components/Component";
+} from "../../components/Component";
 import { useHistory } from "react-router";
-import Content from "../../../../layout/content/Content";
-import Head from "../../../../layout/head/Head";
-import { currentTime, findUpper, monthNames, todaysDate } from "../../../../utils/Utils";
+import Content from "../../layout/content/Content";
+import Head from "../../layout/head/Head";
+import { currentTime, findUpper, monthNames, todaysDate } from "../../utils/Utils";
 import { CustomerContext } from "./CustomerContext";
 import { notes } from "./CustomerData";
 

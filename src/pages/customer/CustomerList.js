@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import Content from "../../../../layout/content/Content";
-import Head from "../../../../layout/head/Head";
+import Content from "../../layout/content/Content";
+import Head from "../../layout/head/Head";
 import {
   DropdownMenu,
   DropdownToggle,
@@ -29,9 +29,9 @@ import {
   TooltipComponent,
   RSelect,
   PreviewAltCard,
-} from "../../../../components/Component";
+} from "../../components/Component";
 import { filterStatus, CustomerData } from "./CustomerData";
-import { findUpper } from "../../../../utils/Utils";
+import { findUpper } from "../../utils/Utils";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { CustomerContext } from "./CustomerContext";
@@ -229,10 +229,10 @@ const CustomerList = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Users Lists
+                Lista de Clientes
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>You have total 2,595 users.</p>
+                <p>Total 2,595 usuarios</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -278,22 +278,25 @@ const CustomerList = () => {
                 </div>
               </DataTableRow>
               <DataTableRow>
-                <span className="sub-text">User</span>
+                <span className="sub-text">Cliente</span>
+              </DataTableRow>
+              <DataTableRow>
+                <span className="sub-text">Tipo de Cliente</span>
               </DataTableRow>
               <DataTableRow size="mb">
-                <span className="sub-text">Ordered</span>
+                <span className="sub-text">Rut</span>
+              </DataTableRow>
+              <DataTableRow size="mb">
+                <span className="sub-text">N. de Documento</span>
               </DataTableRow>
               <DataTableRow size="md">
-                <span className="sub-text">Phone</span>
+                <span className="sub-text">Telefono</span>
               </DataTableRow>
               <DataTableRow size="lg">
-                <span className="sub-text">Country</span>
-              </DataTableRow>
-              <DataTableRow size="lg">
-                <span className="sub-text">Last Order</span>
+                <span className="sub-text">Pais</span>
               </DataTableRow>
               <DataTableRow size="md">
-                <span className="sub-text">Status</span>
+                <span className="sub-text">Clasificacion</span>
               </DataTableRow>
               <DataTableRow className="nk-tb-col-tools text-right">
                 <UncontrolledDropdown>
@@ -363,19 +366,26 @@ const CustomerList = () => {
                         </div>
                       </Link>
                     </DataTableRow>
-                    <DataTableRow size="mb">
-                      <span className="tb-amount">
-                        {item.balance} <span className="currency">USD</span>
+                    <DataTableRow size="md">
+                      <span
+                        className={`tb-status text-${
+                          item.status === "Active" ? "success" : item.status === "Pending" ? "warning" : "danger"
+                        }`}
+                      >
+                        {item.status}
                       </span>
+                    </DataTableRow>
+                    <DataTableRow size="md">
+                      <span>{item.phone}</span>
+                    </DataTableRow>
+                    <DataTableRow size="md">
+                      <span>{item.phone}</span>
                     </DataTableRow>
                     <DataTableRow size="md">
                       <span>{item.phone}</span>
                     </DataTableRow>
                     <DataTableRow size="lg">
                       <span>{item.country}</span>
-                    </DataTableRow>
-                    <DataTableRow size="lg">
-                      <span>{item.lastLogin}</span>
                     </DataTableRow>
                     <DataTableRow size="md">
                       <span
