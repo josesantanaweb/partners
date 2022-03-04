@@ -4,11 +4,6 @@ const menu = [
     text: "Dashboard",
     link: "/index",
   },
-  // {
-  //   icon: "package-fill",
-  //   text: "Products",
-  //   link: "/products",
-  // },
   {
     icon: "users-fill",
     text: "Clientes",
@@ -23,6 +18,26 @@ const menu = [
     icon: "user-list-fill",
     text: "Asesores",
     link: "/adviser",
-  }
+  },
+  {
+    icon: "swap-alt-fill",
+    text: "Operaciones",
+    link: "/operations",
+  },
+  {
+    icon: "building-fill",
+    text: "Empresas",
+    link: "/business",
+  },
+  {
+    icon: "coin-alt-fill",
+    text: "Comisiones",
+    link: "/commissions",
+  },
+  {
+    icon: "setting-fill",
+    text: "Roles",
+    link: "/rols",
+  },
 ];
 export default menu;

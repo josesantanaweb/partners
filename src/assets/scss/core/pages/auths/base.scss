@@ -39,3 +39,11 @@
         }
     }
 }
+
+.login {
+    padding: 0 !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: red;
+}
