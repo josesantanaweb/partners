@@ -54,7 +54,7 @@ const User = () => {
         </div>
         <div className="dropdown-inner">
           <LinkList>
-            <a href={`${process.env.PUBLIC_URL}/auth-login`} onClick={handleSignout}>
+            <a href={`${process.env.PUBLIC_URL}/login`} onClick={handleSignout}>
               <Icon name="signout"></Icon>
               <span>Logout</span>
             </a>
