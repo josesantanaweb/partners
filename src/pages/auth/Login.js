@@ -32,7 +32,7 @@ const Login = () => {
       setTimeout(() => {
         window.history.pushState(
           `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`,
-          "auth-login",
+          "login",
           `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`
         );
         window.location.reload();

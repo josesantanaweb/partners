@@ -50,7 +50,7 @@ const ForgotPassword = () => {
               </FormGroup>
             </form>
             <div className="form-note-s2 text-center pt-4">
-              <Link to={`${process.env.PUBLIC_URL}/auth-login`}>
+              <Link to={`${process.env.PUBLIC_URL}/login`}>
                 <strong>Return to login</strong>
               </Link>
             </div>
