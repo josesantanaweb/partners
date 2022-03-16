@@ -497,18 +497,18 @@ const CustomerList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Add User</h5>
+              <h5 className="title">Agregar Cliente</h5>
               <div className="mt-4">
                 <Form className="row gy-4" noValidate onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Name</label>
+                      <label className="form-label">Nombre</label>
                       <input
                         className="form-control"
                         type="text"
                         name="name"
                         defaultValue={formData.name}
-                        placeholder="Enter name"
+                        placeholder="Ingresa nombre"
                         ref={register({ required: "This field is required" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
@@ -516,13 +516,13 @@ const CustomerList = () => {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Email </label>
+                      <label className="form-label">Correo Electronico</label>
                       <input
                         className="form-control"
                         type="text"
                         name="email"
                         defaultValue={formData.email}
-                        placeholder="Enter email"
+                        placeholder="Ingresa Correo Electronico"
                         ref={register({
                           required: "This field is required",
                           pattern: {
@@ -536,13 +536,13 @@ const CustomerList = () => {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Ordered</label>
+                      <label className="form-label">Numero de Documento</label>
                       <input
                         className="form-control"
                         type="number"
                         name="balance"
                         defaultValue={formData.balance}
-                        placeholder="Ordered"
+                        placeholder="Ingresa numero de documento"
                         ref={register({ required: "This field is required" })}
                       />
                       {errors.balance && <span className="invalid">{errors.balance.message}</span>}
@@ -550,20 +550,7 @@ const CustomerList = () => {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Phone</label>
-                      <input
-                        className="form-control"
-                        type="number"
-                        name="phone"
-                        defaultValue={formData.phone}
-                        ref={register({ required: "This field is required" })}
-                      />
-                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
-                    </FormGroup>
-                  </Col>
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Status</label>
+                      <label className="form-label">Tipo de cliente</label>
                       <div className="form-control-wrap">
                         <RSelect
                           options={filterStatus}
@@ -573,11 +560,81 @@ const CustomerList = () => {
                       </div>
                     </FormGroup>
                   </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Telefono</label>
+                      <input
+                        className="form-control"
+                        type="number"
+                        name="phone"
+                        placeholder="Ingresa telefono"
+                        defaultValue={formData.phone}
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Pais</label>
+                      <input
+                        className="form-control"
+                        type="number"
+                        name="phone"
+                        placeholder="Ingresa pais"
+                        defaultValue={formData.phone}
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Region</label>
+                      <input
+                        className="form-control"
+                        type="number"
+                        name="phone"
+                        placeholder="Ingresa region"
+                        defaultValue={formData.phone}
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Comuna</label>
+                      <input
+                        className="form-control"
+                        type="number"
+                        name="phone"
+                        placeholder="Ingresa comuna"
+                        defaultValue={formData.phone}
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Numero de domicilio</label>
+                      <input
+                        className="form-control"
+                        type="number"
+                        name="phone"
+                        placeholder="Ingresa numero de domicilio"
+                        defaultValue={formData.phone}
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                    </FormGroup>
+                  </Col>
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Add User
+                          Agresar Clientes
                         </Button>
                       </li>
                       <li>
@@ -589,7 +646,7 @@ const CustomerList = () => {
                           }}
                           className="link link-light"
                         >
-                          Cancel
+                          Cancelar
                         </a>
                       </li>
                     </ul>
