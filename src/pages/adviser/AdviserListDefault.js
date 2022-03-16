@@ -481,18 +481,18 @@ const AdviserListDefaultPage = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Add User</h5>
+              <h5 className="title">Agregar Asesor</h5>
               <div className="mt-4">
                 <Form className="row gy-4" noValidate onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Name</label>
+                      <label className="form-label">Nombre</label>
                       <input
                         className="form-control"
                         type="text"
                         name="name"
                         defaultValue={formData.name}
-                        placeholder="Enter name"
+                        placeholder="Ingresa Nombre"
                         ref={register({ required: "This field is required" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
@@ -500,13 +500,27 @@ const AdviserListDefaultPage = () => {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Email </label>
+                      <label className="form-label">Apellido</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="name"
+                        defaultValue={formData.name}
+                        placeholder="Ingresa Apellido"
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.name && <span className="invalid">{errors.name.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Correo Electronico</label>
                       <input
                         className="form-control"
                         type="text"
                         name="email"
                         defaultValue={formData.email}
-                        placeholder="Enter email"
+                        placeholder="Ingresar correo electronico"
                         ref={register({
                           required: "This field is required",
                           pattern: {
@@ -520,32 +534,89 @@ const AdviserListDefaultPage = () => {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Ordered</label>
-                      <input
-                        className="form-control"
-                        type="number"
-                        name="balance"
-                        defaultValue={formData.balance}
-                        placeholder="Ordered"
-                        ref={register({ required: "This field is required" })}
-                      />
-                      {errors.balance && <span className="invalid">{errors.balance.message}</span>}
-                    </FormGroup>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Phone</label>
+                      <label className="form-label">Telefono</label>
                       <input
                         className="form-control"
                         type="number"
                         name="phone"
+                        placeholder="Ingresar telefono"
                         defaultValue={formData.phone}
                         ref={register({ required: "This field is required" })}
                       />
                       {errors.phone && <span className="invalid">{errors.phone.message}</span>}
                     </FormGroup>
                   </Col>
-                  <Col md="12">
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Pais</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="country"
+                        placeholder="Ingresar pais"
+                        defaultValue={formData.phone}
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Region</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="region"
+                        placeholder="Ingresar region"
+                        defaultValue={formData.phone}
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Comuna</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="commune"
+                        placeholder="Ingresar comuna"
+                        defaultValue={formData.phone}
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Calle</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="commune"
+                        placeholder="Ingresar calle"
+                        defaultValue={formData.phone}
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">N de domicilio</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="commune"
+                        placeholder="Ingresar N de domicilio"
+                        defaultValue={formData.phone}
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  {/* <Col md="12">
                     <FormGroup>
                       <label className="form-label">Status</label>
                       <div className="form-control-wrap">
@@ -556,12 +627,12 @@ const AdviserListDefaultPage = () => {
                         />
                       </div>
                     </FormGroup>
-                  </Col>
+                  </Col> */}
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Add User
+                          Agregar Asesor
                         </Button>
                       </li>
                       <li>
@@ -573,7 +644,7 @@ const AdviserListDefaultPage = () => {
                           }}
                           className="link link-light"
                         >
-                          Cancel
+                          Cancelar
                         </a>
                       </li>
                     </ul>
