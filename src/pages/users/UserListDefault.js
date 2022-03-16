@@ -473,7 +473,7 @@ const UserListDefaultPage = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Add User</h5>
+              <h5 className="title">Agregar Usuario</h5>
               <div className="mt-4">
                 <Form className="row gy-4" noValidate onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="6">
@@ -484,7 +484,7 @@ const UserListDefaultPage = () => {
                         type="text"
                         name="name"
                         defaultValue={formData.name}
-                        placeholder="Enter name"
+                        placeholder="Ingresa nombre"
                         ref={register({ required: "This field is required" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
@@ -492,13 +492,27 @@ const UserListDefaultPage = () => {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Email </label>
+                      <label className="form-label">Apellido</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="name"
+                        defaultValue={formData.name}
+                        placeholder="Ingresa apellido"
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.name && <span className="invalid">{errors.name.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Correo Electronico</label>
                       <input
                         className="form-control"
                         type="text"
                         name="email"
                         defaultValue={formData.email}
-                        placeholder="Enter email"
+                        placeholder="Ingresa correo electronico"
                         ref={register({
                           required: "This field is required",
                           pattern: {
@@ -512,13 +526,13 @@ const UserListDefaultPage = () => {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Ordered</label>
+                      <label className="form-label">Password</label>
                       <input
                         className="form-control"
-                        type="number"
-                        name="balance"
+                        type="text"
+                        name="password"
                         defaultValue={formData.balance}
-                        placeholder="Ordered"
+                        placeholder="Ingresa password"
                         ref={register({ required: "This field is required" })}
                       />
                       {errors.balance && <span className="invalid">{errors.balance.message}</span>}
@@ -526,24 +540,25 @@ const UserListDefaultPage = () => {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Phone</label>
+                      <label className="form-label">Telefono</label>
                       <input
                         className="form-control"
                         type="number"
                         name="phone"
+                        placeholder="Ingresa telefono"
                         defaultValue={formData.phone}
                         ref={register({ required: "This field is required" })}
                       />
                       {errors.phone && <span className="invalid">{errors.phone.message}</span>}
                     </FormGroup>
                   </Col>
-                  <Col md="12">
+                  <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Status</label>
+                      <label className="form-label">Rol</label>
                       <div className="form-control-wrap">
                         <RSelect
                           options={filterStatus}
-                          defaultValue={{ value: "Active", label: "Active" }}
+                          defaultValue={{ value: "Admin", label: "Admin" }}
                           onChange={(e) => setFormData({ ...formData, status: e.value })}
                         />
                       </div>
@@ -553,7 +568,7 @@ const UserListDefaultPage = () => {
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Add User
+                          Agregar Usuario
                         </Button>
                       </li>
                       <li>
@@ -565,7 +580,7 @@ const UserListDefaultPage = () => {
                           }}
                           className="link link-light"
                         >
-                          Cancel
+                          Cancelar
                         </a>
                       </li>
                     </ul>
@@ -594,7 +609,7 @@ const UserListDefaultPage = () => {
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Name</label>
+                      <label className="form-label">Nombre</label>
                       <input
                         className="form-control"
                         type="text"
@@ -604,6 +619,20 @@ const UserListDefaultPage = () => {
                         ref={register({ required: "This field is required" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Apellido</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="lastName"
+                        defaultValue={formData.lastName}
+                        placeholder="Enter name"
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.lastName && <span className="invalid">{errors.lastName.message}</span>}
                     </FormGroup>
                   </Col>
                   <Col md="6">
