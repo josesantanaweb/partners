@@ -7,7 +7,7 @@ import { RedirectAs404 } from "../utils/Utils";
 
 import Homepage from "../pages/Homepage";
 
-import EcomOrder from "../pages/panel/e-commerce/order/OrderDefault";
+import Operation from "../pages/operation/OperationDefault";
 // import EcomProducts from "../pages/panel/e-commerce/product/ProductList";
 import Customer from "../pages/customer/CustomerList";
 import Users from "../pages/users/UserListDefault";
@@ -25,7 +25,7 @@ const Pages = () => {
       <Switch>
         {/*Panel */}
         <Route exact path={`${process.env.PUBLIC_URL}/index`} component={EcomDashboard}></Route>
-        <Route exact path={`${process.env.PUBLIC_URL}/orders`} component={EcomOrder}></Route>
+        <Route exact path={`${process.env.PUBLIC_URL}/operation`} component={Operation}></Route>
         {/* <Route exact path={`${process.env.PUBLIC_URL}/products`} component={EcomProducts}></Route> */}
         <Route
           exact

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Head from "../../../../layout/head/Head";
-import Content from "../../../../layout/content/Content";
+import Head from "../../layout/head/Head";
+import Content from "../../layout/content/Content";
 import DatePicker from "react-datepicker";
-import { orderData } from "./OrderData";
+import { orderData } from "./OperationData";
 import {
   Block,
   BlockHeadContent,
@@ -19,12 +19,12 @@ import {
   Row,
   Col,
   RSelect,
-} from "../../../../components/Component";
-import { getDateStructured } from "../../../../utils/Utils";
+} from "../../components/Component";
+import { getDateStructured } from "../../utils/Utils";
 import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem, Button, Modal, ModalBody } from "reactstrap";
 import { useForm } from "react-hook-form";
 
-const OrderDefault = () => {
+const OperationDefault = () => {
   const [data, setData] = useState(orderData);
   const [smOption, setSmOption] = useState(false);
   const [formData, setFormData] = useState({
@@ -185,7 +185,7 @@ const OrderDefault = () => {
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
-              <BlockTitle>Orders</BlockTitle>
+              <BlockTitle>Operaciones</BlockTitle>
             </BlockHeadContent>
             <BlockHeadContent>
               <div className="toggle-wrap nk-block-tools-toggle">
@@ -210,7 +210,7 @@ const OrderDefault = () => {
                           type="text"
                           className="form-control"
                           id="default-04"
-                          placeholder="Search by orderId"
+                          placeholder="Buscar por numero"
                           onChange={(e) => onFilterChange(e)}
                         />
                       </div>
@@ -221,18 +221,18 @@ const OrderDefault = () => {
                           color="transparent"
                           className="dropdown-toggle dropdown-indicator btn btn-outline-light btn-white"
                         >
-                          Status
+                          Estado
                         </DropdownToggle>
                         <DropdownMenu right>
                           <ul className="link-list-opt no-bdr">
                             <li>
                               <DropdownItem tag="a" href="#dropdownitem" onClick={(ev) => ev.preventDefault()}>
-                                <span>New Items</span>
+                                <span>Abierta</span>
                               </DropdownItem>
                             </li>
                             <li>
                               <DropdownItem tag="a" href="#dropdownitem" onClick={(ev) => ev.preventDefault()}>
-                                <span>Featured</span>
+                                <span>Cerrada</span>
                               </DropdownItem>
                             </li>
                             <li>
@@ -245,24 +245,8 @@ const OrderDefault = () => {
                       </UncontrolledDropdown>
                     </li>
                     <li className="nk-block-tools-opt">
-                      <Button
-                        className="toggle btn-icon d-md-none"
-                        color="primary"
-                        onClick={() => {
-                          toggle("add");
-                        }}
-                      >
+                      <Button color="primary" className="btn-icon" onClick={() => setView({ add: true })}>
                         <Icon name="plus"></Icon>
-                      </Button>
-                      <Button
-                        className="toggle d-none d-md-inline-flex"
-                        color="primary"
-                        onClick={() => {
-                          toggle("add");
-                        }}
-                      >
-                        <Icon name="plus"></Icon>
-                        <span>Add Order</span>
                       </Button>
                     </li>
                   </ul>
@@ -287,19 +271,22 @@ const OrderDefault = () => {
                 </div>
               </DataTableRow>
               <DataTableRow>
-                <span className="sub-text">Order</span>
+                <span className="sub-text">N. de Operacion</span>
               </DataTableRow>
               <DataTableRow size="md">
-                <span className="sub-text">Date</span>
-              </DataTableRow>
-              <DataTableRow>
-                <span className="sub-text">Status</span>
+                <span className="sub-text">Fecha</span>
               </DataTableRow>
               <DataTableRow size="sm">
-                <span className="sub-text">Customer</span>
+                <span className="sub-text">Asesor</span>
               </DataTableRow>
-              <DataTableRow size="md">
-                <span className="sub-text">Purchased</span>
+              <DataTableRow size="sm">
+                <span className="sub-text">Cliente</span>
+              </DataTableRow>
+              <DataTableRow size="sm">
+                <span className="sub-text">Tipo de negocio</span>
+              </DataTableRow>
+              <DataTableRow>
+                <span className="sub-text">Estado</span>
               </DataTableRow>
               <DataTableRow>
                 <span className="sub-text">Total</span>
@@ -323,8 +310,8 @@ const OrderDefault = () => {
                                 selectorMarkAsDelivered();
                               }}
                             >
-                              <Icon name="truck"></Icon>
-                              <span>Mark As Delivered</span>
+                              <Icon name="edit"></Icon>
+                              <span>Editar</span>
                             </DropdownItem>
                           </li>
                           <li>
@@ -372,23 +359,26 @@ const OrderDefault = () => {
                     <DataTableRow size="md">
                       <span>{item.date}</span>
                     </DataTableRow>
+                    <DataTableRow size="md">
+                      <span>{item.customer}</span>
+                    </DataTableRow>
+                    <DataTableRow size="md">
+                      <span>{item.customer}</span>
+                    </DataTableRow>
+                    <DataTableRow size="sm">
+                      <span className="tb-sub">{item.purchased}</span>
+                    </DataTableRow>
                     <DataTableRow>
                       <span
                         className={`dot bg-${item.status === "Delivered" ? "success" : "warning"} d-mb-none`}
                       ></span>
                       <span
                         className={`badge badge-sm badge-dot has-bg badge-${
-                          item.status === "Delivered" ? "success" : "warning"
+                          item.status === "Abierta" ? "success" : "warning"
                         } d-none d-mb-inline-flex`}
                       >
                         {item.status}
                       </span>
-                    </DataTableRow>
-                    <DataTableRow size="sm">
-                      <span className="tb-sub">{item.customer}</span>
-                    </DataTableRow>
-                    <DataTableRow size="md">
-                      <span className="tb-sub text-primary">{item.purchased}</span>
                     </DataTableRow>
                     <DataTableRow>
                       <span className="tb-lead">$ {item.total}</span>
@@ -401,9 +391,9 @@ const OrderDefault = () => {
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"delivery" + item.id}
-                              icon="truck"
+                              icon="edit-alt-fill"
                               direction="top"
-                              text="Mark as Delivered"
+                              text="Editar"
                             />
                           </li>
                         )}
@@ -511,34 +501,14 @@ const OrderDefault = () => {
               ></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Add Order</h5>
+              <h5 className="title">Agregar Operacion</h5>
               <div className="mt-4">
                 <form onSubmit={handleSubmit(onFormSubmit)}>
                   <Row className="g-3">
-                    <Col md="12">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="customer">
-                          Customer Name
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="text"
-                            className="form-control"
-                            name="customer"
-                            onChange={(e) => onInputChange(e)}
-                            ref={register({
-                              required: "This field is required",
-                            })}
-                            defaultValue={formData.customer}
-                          />
-                          {errors.customer && <span className="invalid">{errors.customer.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
                     <Col md="6">
                       <div className="form-group">
                         <label className="form-label" htmlFor="date">
-                          Date of order
+                          Fecha
                         </label>
                         <div className="form-control-wrap">
                           <DatePicker
@@ -552,21 +522,77 @@ const OrderDefault = () => {
                     </Col>
                     <Col md="6">
                       <div className="form-group">
-                        <label className="form-label" htmlFor="purchased">
-                          Purchased Product
+                        <label className="form-label" htmlFor="status">
+                          Asesor
                         </label>
                         <div className="form-control-wrap">
-                          <input
-                            type="text"
-                            className="form-control"
-                            name="purchased"
-                            ref={register({ required: "This is required" })}
-                            defaultValue={formData.purchased}
+                          <RSelect
+                            name="status"
+                            options={[
+                              { value: "Jonh Doe", label: "On Hold" },
+                              { value: "Julio Perez", label: "Delivered" },
+                            ]}
+                            onChange={(e) => setFormData({ ...formData, status: e.value })}
+                            defaultValue={formData.status}
                           />
-                          {errors.purchased && <span className="invalid">{errors.purchased.message}</span>}
                         </div>
                       </div>
                     </Col>
+                    <Col md="6">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="status">
+                          Cliente
+                        </label>
+                        <div className="form-control-wrap">
+                          <RSelect
+                            name="status"
+                            options={[
+                              { value: "Jonh Doe", label: "On Hold" },
+                              { value: "Julio Perez", label: "Delivered" },
+                            ]}
+                            onChange={(e) => setFormData({ ...formData, status: e.value })}
+                            defaultValue={formData.status}
+                          />
+                        </div>
+                      </div>
+                    </Col>
+                    <Col md="6">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="status">
+                          Tipo de Negocio
+                        </label>
+                        <div className="form-control-wrap">
+                          <RSelect
+                            name="status"
+                            options={[
+                              { value: "Jonh Doe", label: "On Hold" },
+                              { value: "Julio Perez", label: "Delivered" },
+                            ]}
+                            onChange={(e) => setFormData({ ...formData, status: e.value })}
+                            defaultValue={formData.status}
+                          />
+                        </div>
+                      </div>
+                    </Col>
+                    <Col md="6">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="status">
+                          Estado
+                        </label>
+                        <div className="form-control-wrap">
+                          <RSelect
+                            name="status"
+                            options={[
+                              { value: "Abierta", label: "On Hold" },
+                              { value: "Cerrada", label: "Delivered" },
+                            ]}
+                            onChange={(e) => setFormData({ ...formData, status: e.value })}
+                            defaultValue={formData.status}
+                          />
+                        </div>
+                      </div>
+                    </Col>
+                    
                     <Col md="6">
                       <div className="form-group">
                         <label className="form-label" htmlFor="total">
@@ -584,29 +610,11 @@ const OrderDefault = () => {
                         </div>
                       </div>
                     </Col>
-                    <Col md="6">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="status">
-                          Status
-                        </label>
-                        <div className="form-control-wrap">
-                          <RSelect
-                            name="status"
-                            options={[
-                              { value: "On Hold", label: "On Hold" },
-                              { value: "Delivered", label: "Delivered" },
-                            ]}
-                            onChange={(e) => setFormData({ ...formData, status: e.value })}
-                            defaultValue={formData.status}
-                          />
-                        </div>
-                      </div>
-                    </Col>
 
                     <Col size="12">
                       <Button color="primary" type="submit">
                         <Icon className="plus"></Icon>
-                        <span>Add Order</span>
+                        <span>Agregar Operacion</span>
                       </Button>
                     </Col>
                   </Row>
@@ -630,32 +638,31 @@ const OrderDefault = () => {
             </a>
             <div className="nk-tnx-details mt-sm-3">
               <div className="nk-modal-head mb-3">
-                <h5 className="title">Order Details</h5>
+                <h5 className="title">Detalle de Operacion</h5>
               </div>
               <Row className="gy-3">
                 <Col lg={6}>
-                  <span className="sub-text">Order Id</span>
+                  <span className="sub-text">Operacion</span>
                   <span className="caption-text">{formData.orderId}</span>
                 </Col>
                 <Col lg={6}>
-                  <span className="sub-text">Status</span>
+                  <span className="sub-text">Estatus</span>
                   <span
-                    className={`dot bg-${formData.status === "Delivered" ? "success" : "warning"} d-mb-none`}
+                    className={`dot bg-${formData.status === "Abierta" ? "success" : "warning"} d-mb-none`}
                   ></span>
                   <span
-                    className={`badge badge-sm badge-dot has-bg badge-${
-                      formData.status === "Delivered" ? "success" : "warning"
+                    className={`badge badge-sm badge-dot has-bg badge-Delivered ? "success" : "warning"
                     } d-none d-mb-inline-flex`}
                   >
                     {formData.status}
                   </span>
                 </Col>
                 <Col lg={6}>
-                  <span className="sub-text">Customer</span>
+                  <span className="sub-text">Cliente</span>
                   <span className="caption-text">{formData.customer}</span>
                 </Col>
                 <Col lg={6}>
-                  <span className="sub-text">Purchased Product</span>
+                  <span className="sub-text">Tipo de Negocio</span>
                   <span className="caption-text">{formData.purchased}</span>
                 </Col>
                 <Col lg={6}>
@@ -671,4 +678,4 @@ const OrderDefault = () => {
   );
 };
 
-export default OrderDefault;
+export default OperationDefault;

@@ -22,7 +22,7 @@ const menu = [
   {
     icon: "swap-alt-fill",
     text: "Operaciones",
-    link: "/operations",
+    link: "/operation",
   },
   {
     icon: "building-fill",
