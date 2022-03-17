@@ -1,6 +1,7 @@
 import React, { Suspense, useLayoutEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import { CustomerProvider } from "../pages/customer/CustomerContext";
+import { CompanyProvider } from "../pages/company/CompanyContext";
 import { UserContextProvider } from "../pages/users/UserContext";
 import { AdviserContextProvider } from "../pages/adviser/AdviserContext";
 import { RedirectAs404 } from "../utils/Utils";
@@ -10,6 +11,7 @@ import Homepage from "../pages/Homepage";
 import Operation from "../pages/operation/OperationDefault";
 // import EcomProducts from "../pages/panel/e-commerce/product/ProductList";
 import Customer from "../pages/customer/CustomerList";
+import Company from "../pages/company/CompanyList";
 import Users from "../pages/users/UserListDefault";
 import Adviser from "../pages/adviser/AdviserListDefault";
 import EcomCustomerDetails from "../pages/customer/CustomerDetails";
@@ -52,6 +54,15 @@ const Pages = () => {
             <CustomerProvider>
               <Customer />
             </CustomerProvider>
+          )}
+        ></Route>
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/company`}
+          render={() => (
+            <CompanyProvider>
+              <Company />
+            </CompanyProvider>
           )}
         ></Route>
         <Route

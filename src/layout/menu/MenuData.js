@@ -27,7 +27,7 @@ const menu = [
   {
     icon: "building-fill",
     text: "Empresas",
-    link: "/business",
+    link: "/company",
   },
   {
     icon: "coin-alt-fill",
