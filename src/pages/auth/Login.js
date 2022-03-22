@@ -37,9 +37,8 @@ const Login = () => {
       localStorage.setItem("access_token", response.access_token);
       dispatch(setAuthenticated(true));
       setLoading(false);
-     
     } catch (error) {
-      setError("Cannot login with credentials");
+      setError("Credensiales invalidas");
       setLoading(false);
     }
   };
