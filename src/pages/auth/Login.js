@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Block,
   BlockContent,
@@ -16,36 +17,44 @@ import PageContainer from "../../layout/page-container/PageContainer";
 import Head from "../../layout/head/Head";
 import AuthFooter from "./AuthFooter";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+import AuthServices from '../../services/AuthServices';
+import {setAuthenticated} from '../../store/features/AuthSlice'
+import { isAuthenticatedSelector } from '../../store/selectors';
 
 const Login = () => {
+  const isAuthenticated = useSelector(isAuthenticatedSelector);
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [passState, setPassState] = useState(false);
   const [errorVal, setError] = useState("");
 
-  const onFormSubmit = (formData) => {
+  const onFormSubmit = async (formData) => {
     setLoading(true);
-    const loginName = "info@softnio.com";
-    const pass = "123456";
-    if (formData.name === loginName && formData.passcode === pass) {
-      localStorage.setItem("accessToken", "token");
-      setTimeout(() => {
-        window.history.pushState(
-          `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`,
-          "login",
-          `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`
-        );
-        window.location.reload();
-      }, 2000);
-    } else {
-      setTimeout(() => {
-        setError("Cannot login with credentials");
-        setLoading(false);
-      }, 2000);
+    try {
+      console.log(formData)
+      const response = await AuthServices.login(formData)
+      localStorage.setItem("access_token", response.access_token);
+      dispatch(setAuthenticated(true));
+      setLoading(false);
+     
+    } catch (error) {
+      setError("Cannot login with credentials");
+      setLoading(false);
     }
   };
 
+  
   const { errors, register, handleSubmit } = useForm();
+
+  if (isAuthenticated) {
+    window.history.pushState(
+      `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`,
+      "login",
+      `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`
+    );
+    window.location.reload();
+  }
 
   return (
     <React.Fragment>
@@ -69,11 +78,11 @@ const Login = () => {
                   </BlockDes>
                 </BlockContent>
               </BlockHead>
-              {errorVal && (
+              {errorVal !== "" && (
                 <div className="mb-3">
                   <Alert color="danger" className="alert-icon">
                     {" "}
-                    <Icon name="alert-circle" /> Unable to login with credentials{" "}
+                    <Icon name="alert-circle" /> Credenciales invalidas{" "}
                   </Alert>
                 </div>
               )}
@@ -86,15 +95,15 @@ const Login = () => {
                   </div>
                   <div className="form-control-wrap">
                     <input
-                      type="text"
+                      type="email"
                       id="default-01"
-                      name="name"
-                      ref={register({ required: "This field is required" })}
-                      defaultValue="info@softnio.com"
+                      name="email"
+                      defaultValue={"admin@mail.com"}
+                      ref={register({ required: "Este campo es requerido" })}
                       placeholder="Enter your email address or username"
                       className="form-control-lg form-control"
                     />
-                    {errors.name && <span className="invalid">{errors.name.message}</span>}
+                    {errors.email && <span className="invalid">{errors.email.message}</span>}
                   </div>
                 </FormGroup>
                 <FormGroup>
@@ -122,13 +131,13 @@ const Login = () => {
                     <input
                       type={passState ? "text" : "password"}
                       id="password"
-                      name="passcode"
-                      defaultValue="123456"
-                      ref={register({ required: "This field is required" })}
+                      name="password"
+                      defaultValue={"12345678"}
+                      ref={register({ required: "Este campo es requerido" })}
                       placeholder="Enter your passcode"
                       className={`form-control-lg form-control ${passState ? "is-hidden" : "is-shown"}`}
                     />
-                    {errors.passcode && <span className="invalid">{errors.passcode.message}</span>}
+                    {errors.password && <span className="invalid">{errors.password.message}</span>}
                   </div>
                 </FormGroup>
                 <FormGroup>
@@ -141,35 +150,6 @@ const Login = () => {
                 {" "}
                 No tienes una cuenta? <Link to={`${process.env.PUBLIC_URL}/auth-register`}>Registrate</Link>
               </div>
-              <div className="text-center pt-4 pb-3">
-                <h6 className="overline-title overline-title-sap">
-                  <span>O</span>
-                </h6>
-              </div>
-              <ul className="nav justify-center gx-4">
-                <li className="nav-item">
-                  <a
-                    className="nav-link"
-                    href="#socials"
-                    onClick={(ev) => {
-                      ev.preventDefault();
-                    }}
-                  >
-                    Facebook
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a
-                    className="nav-link"
-                    href="#socials"
-                    onClick={(ev) => {
-                      ev.preventDefault();
-                    }}
-                  >
-                    Google
-                  </a>
-                </li>
-              </ul>
             </PreviewCard>
           </Block>
           <AuthFooter />
