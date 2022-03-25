@@ -21,7 +21,7 @@ const UsersServices = {
 		});
 		return response.data;
 	},
-	editUser: async ({ userId, ...data }) => {
+	editUser: async (userId, data) => {
 		const response = await api.patch(`/users/${userId}`, data, {
 			headers: {Authorization:  `Bearer ${token}`}
 		});

@@ -42,6 +42,7 @@ const UserListDefaultPage = () => {
   const { contextData } = useContext(UserContext);
   const [data, setData] = contextData;
   const [errorMessage, setErrorMessage] = useState("");
+  const [editData, setEditData] = useState();
 
   const [modal, setModal] = useState({
     edit: false,
@@ -103,6 +104,28 @@ const UserListDefaultPage = () => {
       }
     }
   };
+
+    // submit function to update a new item
+    const onEditSubmit = async (submitData) => {
+      const { name, lastName, email } = submitData;
+      let submittedData = {
+        name: name,
+        lastName: lastName,
+        email: email,
+      };
+      try {
+        await UsersServices.editUser(editData.id, submittedData)
+        resetForm();
+        getUser()
+        setModal({ edit: false }, { add: false });
+      } catch (error) {}
+    };
+
+    // function that loads the want to editted data
+    const onEditClick = (id, data) => {
+      setModal({ edit: true }, { add: false });
+      setEditData(data)
+    };
 
   // Function to change to delete property for an item
   const deleteUser = async (id) => {
@@ -203,7 +226,7 @@ const UserListDefaultPage = () => {
                   </DataTableRow>
                   <DataTableRow className="nk-tb-col-tools">
                     <ul className="nk-tb-actions gx-1">
-                      <li className="nk-tb-action-hidden">
+                      <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
                         <TooltipComponent
                           tag="a"
                           containerClassName="btn btn-trigger btn-icon"
@@ -363,7 +386,79 @@ const UserListDefaultPage = () => {
             </div>
           </ModalBody>
         </Modal>
+        
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+          <ModalBody>
+            <a
+              href="#cancel"
+              onClick={(ev) => {
+                ev.preventDefault();
+                onFormCancel();
+              }}
+              className="close"
+            >
+              <Icon name="cross-sm"></Icon>
+            </a>
+            <div className="p-2">
+              <h5 className="title">Update User</h5>
+              <div className="mt-4">
+                <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
+                <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Nombre</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="name"
+                        defaultValue={editData?.name}
+                        placeholder="Ingresa nombre"
+                        ref={register({ required: "Este campo es requerido" })}
+                      />
+                      {errors.name && <span className="invalid">{errors.name.message}</span>}
+                    </FormGroup>
+                  </Col>
 
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Apellido</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="lastName"
+                        defaultValue={editData?.lastName}
+                        placeholder="Ingresa apellido"
+                        ref={register({ required: "Este campo es requerido" })}
+                      />
+                      {errors.lastName && <span className="invalid">{errors.lastName.message}</span>}
+                    </FormGroup>
+                  </Col>
+
+                  <Col size="12">
+                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                      <li>
+                        <Button color="primary" size="md" type="submit">
+                          Actualizar Usuario
+                        </Button>
+                      </li>
+                      <li>
+                        <a
+                          href="#cancel"
+                          onClick={(ev) => {
+                            ev.preventDefault();
+                            onFormCancel();
+                          }}
+                          className="link link-light"
+                        >
+                          Cancelar
+                        </a>
+                      </li>
+                    </ul>
+                  </Col>
+                </Form>
+              </div>
+            </div>
+          </ModalBody>
+        </Modal>
       </Content>
     </React.Fragment>
   );
