@@ -20,23 +20,31 @@ import {
   Col,
   RSelect,
 } from "../../components/Component";
+
 import { getDateStructured } from "../../utils/Utils";
-import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem, Button, Modal, ModalBody } from "reactstrap";
 import { useForm } from "react-hook-form";
+
+import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem, Button, Modal, ModalBody } from "reactstrap";
 
 const OperationDefault = () => {
   const [data, setData] = useState(orderData);
   const [smOption, setSmOption] = useState(false);
   const [formData, setFormData] = useState({
     id: null,
-    orderId: "",
-    date: new Date(),
-    status: "",
+    operationNumber: "0000001",
+    planNumber: "0000001",
+    currencyType: "",
+    operationType: "",
     customer: "",
-    purchased: "",
-    total: "",
-    check: false,
+    adviser: "",
+    company: "",
+    productType: "",
+    product: "",
+    investmentAmount: "",
+    period: "",
+    commission: "",
   });
+
   const [view, setView] = useState({
     add: false,
     details: false,
@@ -87,28 +95,53 @@ const OperationDefault = () => {
   const resetForm = () => {
     setFormData({
       id: null,
-      orderId: "",
-      date: new Date(),
-      status: "",
+      operationNumber: "",
+      currencyType: "",
+      planNumber: "",
+      operationType: "",
       customer: "",
-      purchased: "",
-      total: "",
-      check: false,
+      adviser: "",
+      company: "",
+      productType: "",
+      product: "",
+      investmentAmount: "",
+      period: "",
+      commission: "",
     });
   };
 
   const onFormSubmit = (form) => {
-    const { customer, purchased, total } = form;
+    const {
+      operationNumber,
+      currencyType,
+      planNumber,
+      customer,
+      adviser,
+      company,
+      productType,
+      product,
+      period,
+      investmentAmount,
+      comisión,
+    } = form;
+
     let submittedData = {
       id: data.length + 1,
-      orderId: "95981",
-      date: getDateStructured(formData.date),
-      status: formData.status,
+      operationNumber: "000001",
+      currencyType: currencyType,
+      planNumber: "0000001",
       customer: customer,
-      purchased: purchased,
-      total: total,
-      check: false,
+      adviser: adviser,
+      company: company,
+      productType: productType,
+      product: product,
+      investmentAmount: investmentAmount,
+      period: period,
+      comisión: comisión,
     };
+
+    console.log(data);
+
     setData([submittedData, ...data]);
     setView({ add: false, details: false });
     resetForm();
@@ -177,6 +210,27 @@ const OperationDefault = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const { errors, register, handleSubmit } = useForm();
+
+  // Get select input data
+  const [option, setOption] = useState();
+
+  function handleChange(event) {
+    setOption(event.target.value);
+  }
+
+  // Format USD currency type
+  // const formatterToUSDCurrency = new Intl.NumberFormat("en-US", {
+  //   style: "currency",
+  //   currency: "USD",
+  //   minimumFractionDigits: 2,
+  // });
+
+  // // Format EUR currency type
+  // const formatterToEUCurrency = new Intl.NumberFormat("de-DE", {
+  //   style: "currency",
+  //   currency: "EUR",
+  //   minimumFractionDigits: 2,
+  // });
 
   return (
     <React.Fragment>
@@ -247,6 +301,7 @@ const OperationDefault = () => {
                     <li className="nk-block-tools-opt">
                       <Button color="primary" className="btn-icon" onClick={() => setView({ add: true })}>
                         <Icon name="plus"></Icon>
+                        <span className="pr-2">Crear Operación</span>
                       </Button>
                     </li>
                   </ul>
@@ -270,26 +325,42 @@ const OperationDefault = () => {
                   <label className="custom-control-label" htmlFor="pid-all"></label>
                 </div>
               </DataTableRow>
+
               <DataTableRow>
-                <span className="sub-text">N. de Operacion</span>
-              </DataTableRow>
-              <DataTableRow size="md">
-                <span className="sub-text">Fecha</span>
-              </DataTableRow>
-              <DataTableRow size="sm">
-                <span className="sub-text">Asesor</span>
-              </DataTableRow>
-              <DataTableRow size="sm">
-                <span className="sub-text">Cliente</span>
-              </DataTableRow>
-              <DataTableRow size="sm">
-                <span className="sub-text">Tipo de negocio</span>
+                <span className="sub-text text-center">N. de Operacion</span>
               </DataTableRow>
               <DataTableRow>
-                <span className="sub-text">Estado</span>
+                <span className="sub-text text-center">N. de Plan</span>
+              </DataTableRow>
+              {/* <DataTableRow>
+                <span className="sub-text text-center">Tipo</span>
+              </DataTableRow> */}
+              <DataTableRow>
+                <span className="sub-text text-center">Cliente</span>
               </DataTableRow>
               <DataTableRow>
-                <span className="sub-text">Total</span>
+                <span className="sub-text text-center">Asesor</span>
+              </DataTableRow>
+              <DataTableRow>
+                <span className="sub-text text-center">Empresa</span>
+              </DataTableRow>
+              <DataTableRow>
+                <span className="sub-text text-center">Tipo de Producto</span>
+              </DataTableRow>
+              <DataTableRow>
+                <span className="sub-text text-center">Producto</span>
+              </DataTableRow>
+              <DataTableRow>
+                <span className="sub-text text-center">Monto de Inversión</span>
+              </DataTableRow>
+              <DataTableRow>
+                <span className="sub-text text-center">Plazo</span>
+              </DataTableRow>
+              <DataTableRow>
+                <span className="sub-text text-center">Comisión</span>
+              </DataTableRow>
+              <DataTableRow>
+                <span className="sub-text text-center">Acción</span>
               </DataTableRow>
 
               <DataTableRow className="nk-tb-col-tools">
@@ -338,7 +409,7 @@ const OperationDefault = () => {
             {currentItems.length > 0
               ? currentItems.map((item) => (
                   <DataTableItem key={item.id}>
-                    <DataTableRow className="nk-tb-col-check">
+                    <DataTableRow className="nk-tb-col-check text-center">
                       <div className="custom-control custom-control-sm custom-checkbox notext">
                         <input
                           type="checkbox"
@@ -351,24 +422,49 @@ const OperationDefault = () => {
                         <label className="custom-control-label" htmlFor={item.id + "oId-all"}></label>
                       </div>
                     </DataTableRow>
-                    <DataTableRow>
+                    <DataTableRow className="text-center">
                       <a href="#id" onClick={(ev) => ev.preventDefault()}>
-                        #{item.orderId}
+                        #{item.operationNumber}
                       </a>
                     </DataTableRow>
-                    <DataTableRow size="md">
-                      <span>{item.date}</span>
+                    <DataTableRow className="text-center">
+                      <span>{item.planNumber}</span>
                     </DataTableRow>
-                    <DataTableRow size="md">
+                    {/* <DataTableRow className="text-center">
+                      <span>{item.currencyType}</span>
+                    </DataTableRow> */}
+                    <DataTableRow className="text-center">
                       <span>{item.customer}</span>
                     </DataTableRow>
-                    <DataTableRow size="md">
-                      <span>{item.customer}</span>
+                    <DataTableRow className="text-center">
+                      <span>{item.adviser}</span>
                     </DataTableRow>
-                    <DataTableRow size="sm">
+                    <DataTableRow className="text-center">
+                      <span>{item.company}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.productType}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.product}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.investmentAmount}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.period}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.commission}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.currencyType}</span>
+                    </DataTableRow>
+
+                    <DataTableRow className="text-center">
                       <span className="tb-sub">{item.purchased}</span>
                     </DataTableRow>
-                    <DataTableRow>
+                    <DataTableRow className="text-center">
                       <span
                         className={`dot bg-${item.status === "Delivered" ? "success" : "warning"} d-mb-none`}
                       ></span>
@@ -380,10 +476,10 @@ const OperationDefault = () => {
                         {item.status}
                       </span>
                     </DataTableRow>
-                    <DataTableRow>
+                    <DataTableRow className="text-center">
                       <span className="tb-lead">$ {item.total}</span>
                     </DataTableRow>
-                    <DataTableRow className="nk-tb-col-tools">
+                    <DataTableRow className="nk-tb-col-tools text-center">
                       <ul className="nk-tb-actions gx-1">
                         {item.status !== "Delivered" && (
                           <li className="nk-tb-action-hidden" onClick={() => markAsDelivered(item.id)}>
@@ -488,10 +584,10 @@ const OperationDefault = () => {
           </PreviewAltCard>
         </Block>
 
+        {/* Operations Modal Form */}
         <Modal isOpen={view.add} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a href="#cancel" className="close">
-              {" "}
               <Icon
                 name="cross-sm"
                 onClick={(ev) => {
@@ -507,96 +603,227 @@ const OperationDefault = () => {
                   <Row className="g-3">
                     <Col md="6">
                       <div className="form-group">
-                        <label className="form-label" htmlFor="date">
-                          Fecha
+                        <label className="form-label" htmlFor="">
+                          Rut del Cliente
                         </label>
                         <div className="form-control-wrap">
-                          <DatePicker
-                            selected={formData.date}
+                          <input
+                            type="text"
                             className="form-control"
-                            onChange={(date) => setFormData({ ...formData, date: date })}
+                            ref={register({ required: "This is required" })}
                           />
-                          {errors.date && <span className="invalid">{errors.date.message}</span>}
+                          {errors.total && <span className="invalid">{errors.total.message}</span>}
                         </div>
                       </div>
                     </Col>
-                    <Col md="6">
+                    {/* <React.Fragment>
+                      <SearchBarRut />
+                    </React.Fragment> */}
+
+                    {/* Success */}
+                    <Col md="3">
                       <div className="form-group">
-                        <label className="form-label" htmlFor="status">
-                          Asesor
+                        <label className="form-label" htmlFor="">
+                          Número de Operación
+                        </label>
+                        <div className="form-control-wrap">
+                          <input
+                            placeholder="Listo"
+                            type="number"
+                            className="form-control"
+                            name="operationNumber"
+                            ref={register({ required: "This is required" })}
+                            defaultValue={formData.operationNumber}
+                            disabled
+                          />
+                          {errors.total && <span className="invalid">{errors.total.message}</span>}
+                        </div>
+                      </div>
+                    </Col>
+                    {/* Success */}
+
+                    {/* Success */}
+                    <Col md="3">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="plan-number">
+                          Número de Plan
+                        </label>
+                        <div className="form-control-wrap">
+                          <input
+                            placeholder="Listo"
+                            type="number"
+                            className="form-control"
+                            name="planNumber"
+                            ref={register({ required: "This is required" })}
+                            defaultValue={formData.planNumber}
+                            disabled
+                          />
+                          {errors.total && <span className="invalid">{errors.total.message}</span>}
+                        </div>
+                      </div>
+                    </Col>
+                    {/* Success */}
+
+                    {/* Success */}
+
+                    <Col md="4">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="currency-type">
+                          Tipo de Moneda
+                        </label>
+                        <div className="form-control-wrap">
+                          <select
+                            className="form-control"
+                            name="currencyType"
+                            ref={register({ required: "This is required" })}
+                            defaultValue={formData.currencyType}
+                          >
+                            <option value="">Seleccionar...</option>
+                            <option value="CLP - Pesos chilenos">CLP - Pesos chilenos</option>
+                            <option value="USD - Dolar Estados Unidos">USD - Dolar Estados Unidos</option>
+                            <option value="EUR - Euros">EUR - Euros</option>
+                          </select>
+                          {errors.total && <span className="invalid">{errors.total.message}</span>}
+                        </div>
+                      </div>
+                    </Col>
+                    {/* Success */}
+
+                    <Col md="8">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="investment-amount">
+                          Monto de Inversion
+                        </label>
+                        <div className="form-control-wrap">
+                          <input
+                            type="number"
+                            className="form-control"
+                            name="investmentAmount"
+                            ref={register({ required: "This is required" })}
+                            defaultValue={formData.investmentAmount}
+                          />
+                          {errors.total && <span className="invalid">{errors.total.message}</span>}
+                        </div>
+                      </div>
+                    </Col>
+
+                    <Col md="12">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="adviser">
+                          Plan del Cliente
                         </label>
                         <div className="form-control-wrap">
                           <RSelect
-                            name="status"
+                            placeholder="disabled"
+                            className="disabled"
+                            name="adviser"
                             options={[
                               { value: "Jonh Doe", label: "On Hold" },
                               { value: "Julio Perez", label: "Delivered" },
                             ]}
+                            defaultValue={formData.adviser}
                             onChange={(e) => setFormData({ ...formData, status: e.value })}
-                            defaultValue={formData.status}
                           />
                         </div>
                       </div>
                     </Col>
-                    <Col md="6">
+
+                    {/* Success */}
+                    <Col md="4">
                       <div className="form-group">
-                        <label className="form-label" htmlFor="status">
-                          Cliente
+                        <label className="form-label" htmlFor="company">
+                          Empresa
                         </label>
                         <div className="form-control-wrap">
-                          <RSelect
-                            name="status"
-                            options={[
-                              { value: "Jonh Doe", label: "On Hold" },
-                              { value: "Julio Perez", label: "Delivered" },
-                            ]}
-                            onChange={(e) => setFormData({ ...formData, status: e.value })}
-                            defaultValue={formData.status}
-                          />
+                          <select
+                            className="form-control"
+                            name="company"
+                            ref={register({ required: "This is required" })}
+                            defaultValue={formData.company}
+                          >
+                            <option value="">Seleccionar...</option>
+                            <option value="Empresa-1">Empresa-1</option>
+                            <option value="Empresa-2">Empresa-2</option>
+                            <option value="Empresa-3">Empresa-3</option>
+                          </select>
+                          {errors.total && <span className="invalid">{errors.total.message}</span>}
                         </div>
                       </div>
                     </Col>
-                    <Col md="6">
+                    {/* Success */}
+
+                    {/* Success */}
+                    <Col md="4">
                       <div className="form-group">
-                        <label className="form-label" htmlFor="status">
-                          Tipo de Negocio
+                        <label className="form-label" htmlFor="product-type">
+                          Tipo de Producto
                         </label>
                         <div className="form-control-wrap">
-                          <RSelect
-                            name="status"
-                            options={[
-                              { value: "Jonh Doe", label: "On Hold" },
-                              { value: "Julio Perez", label: "Delivered" },
-                            ]}
-                            onChange={(e) => setFormData({ ...formData, status: e.value })}
-                            defaultValue={formData.status}
-                          />
+                          <select
+                            className="form-control"
+                            name="productType"
+                            ref={register({ required: "This is required" })}
+                            defaultValue={formData.productType}
+                          >
+                            <option value="">Seleccionar...</option>
+                            <option value="Tipo Producto 1">Tipo Producto 1</option>
+                            <option value="Tipo Producto 2">Tipo Producto 2</option>
+                            <option value="Tipo Producto 3">Tipo Producto 3</option>
+                          </select>
+                          {errors.total && <span className="invalid">{errors.total.message}</span>}
                         </div>
                       </div>
                     </Col>
-                    <Col md="6">
+                    {/* Success */}
+
+                    {/* Success */}
+                    <Col md="4">
                       <div className="form-group">
-                        <label className="form-label" htmlFor="status">
-                          Estado
+                        <label className="form-label" htmlFor="product">
+                          Producto
                         </label>
                         <div className="form-control-wrap">
-                          <RSelect
-                            name="status"
-                            options={[
-                              { value: "Abierta", label: "On Hold" },
-                              { value: "Cerrada", label: "Delivered" },
-                            ]}
-                            onChange={(e) => setFormData({ ...formData, status: e.value })}
-                            defaultValue={formData.status}
-                          />
+                          <select
+                            className="form-control"
+                            name="product"
+                            ref={register({ required: "This is required" })}
+                            defaultValue={formData.product}
+                          >
+                            <option value="">Seleccionar...</option>
+                            <option value="Producto 1">Producto 1</option>
+                            <option value="Producto 2">Producto 2</option>
+                            <option value="Producto 3">Producto 3</option>
+                          </select>
+                          {errors.total && <span className="invalid">{errors.total.message}</span>}
                         </div>
                       </div>
                     </Col>
-                    
+                    {/* Success */}
+
+                    {/* Correct */}
+                    <Col md="6">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="period">
+                          Periodo de Duración
+                        </label>
+                        <div className="form-control-wrap">
+                          <input
+                            type="number"
+                            name="period"
+                            ref={register({ required: "This is required" })}
+                            defaultValue={formData.period}
+                          />
+                          {errors.total && <span className="invalid">{errors.total.message}</span>}
+                        </div>
+                      </div>
+                    </Col>
+                    {/* Correct */}
+
+                    {/* Hasta aca los registros */}
                     <Col md="6">
                       <div className="form-group">
                         <label className="form-label" htmlFor="total">
-                          Total Price
+                          Pago Anual
                         </label>
                         <div className="form-control-wrap">
                           <input
@@ -611,6 +838,133 @@ const OperationDefault = () => {
                       </div>
                     </Col>
 
+                    <Col md="4">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="status">
+                          Forma de Pago
+                        </label>
+                        <div className="form-control-wrap">
+                          <RSelect
+                            name="status"
+                            options={[
+                              { value: "Jonh Doe", label: "Mensual" },
+                              { value: "Julio Perez", label: "Anual" },
+                            ]}
+                            onChange={(e) => setFormData({ ...formData, status: e.value })}
+                            defaultValue={formData.status}
+                          />
+                        </div>
+                      </div>
+                    </Col>
+                    <Col md="4">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="status">
+                          Medio de Pago
+                        </label>
+                        <div className="form-control-wrap">
+                          <RSelect
+                            name="status"
+                            options={[
+                              { value: "Jonh Doe", label: "Tarjeta" },
+                              { value: "Julio Perez", label: "Cuenta corriente" },
+                            ]}
+                            onChange={(e) => setFormData({ ...formData, status: e.value })}
+                            defaultValue={formData.status}
+                          />
+                        </div>
+                      </div>
+                    </Col>
+                    <Col md="4">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="total">
+                          Abono
+                        </label>
+                        <div className="form-control-wrap">
+                          <input
+                            type="number"
+                            className="form-control"
+                            name="total"
+                            ref={register({ required: "This is required" })}
+                            defaultValue={formData.total}
+                          />
+                          {errors.total && <span className="invalid">{errors.total.message}</span>}
+                        </div>
+                      </div>
+                    </Col>
+                    {/* Comision inputs */}
+
+                    <Col md="5">
+                      <h6 className="my-2">Comisiones de servicio</h6>
+                      Comisiones Servicio Discresional
+                      {["radio"].map((type) => (
+                        <div key={`inline-${type}`} className="mb-3 flex flex-col">
+                          <label className="form-label" htmlFor="total">
+                            Si
+                          </label>
+                          <input inline label="2" name="group1" type={type} id={`inline-${type}-2`} className="mr-5" />
+
+                          <label className="form-label" htmlFor="total">
+                            No
+                          </label>
+                          <input inline label="2" name="group1" type={type} id={`inline-${type}-2`} className="mr-5" />
+                        </div>
+                      ))}
+                    </Col>
+
+                    <Col md="7">
+                      <div className="form-group">
+                        <label className="form-label my-3" htmlFor="total">
+                          Porcentaje de Comisión
+                        </label>
+                        <div className="form-control-wrap">
+                          <input
+                            type="number"
+                            className="form-control"
+                            name="total"
+                            ref={register({ required: "This is required" })}
+                            defaultValue={formData.total}
+                          />
+                          {errors.total && <span className="invalid">{errors.total.message}</span>}
+                        </div>
+                      </div>
+                    </Col>
+
+                    <Col md="5">
+                      TRAILER Free
+                      {["radio"].map((type) => (
+                        <div key={`inline-${type}`} className="mb-3 flex flex-col">
+                          <label className="form-label" htmlFor="total">
+                            Si
+                          </label>
+                          <input inline label="2" name="group1" type={type} id={`inline-${type}-2`} className="mr-5" />
+
+                          <label className="form-label" htmlFor="total">
+                            No
+                          </label>
+                          <input inline label="2" name="group1" type={type} id={`inline-${type}-2`} className="mr-5" />
+                        </div>
+                      ))}
+                    </Col>
+
+                    <Col md="7">
+                      <div className="form-group">
+                        <label className="form-label my-2" htmlFor="total">
+                          Porcentaje de Comisión
+                        </label>
+                        <div className="form-control-wrap">
+                          <input
+                            type="number"
+                            className="form-control"
+                            name="total"
+                            ref={register({ required: "This is required" })}
+                            defaultValue={formData.total}
+                          />
+                          {errors.total && <span className="invalid">{errors.total.message}</span>}
+                        </div>
+                      </div>
+                    </Col>
+
+                    {/* Comision inputs */}
                     <Col size="12">
                       <Button color="primary" type="submit">
                         <Icon className="plus"></Icon>
@@ -647,9 +1001,7 @@ const OperationDefault = () => {
                 </Col>
                 <Col lg={6}>
                   <span className="sub-text">Estatus</span>
-                  <span
-                    className={`dot bg-${formData.status === "Abierta" ? "success" : "warning"} d-mb-none`}
-                  ></span>
+                  <span className={`dot bg-${formData.status === "Abierta" ? "success" : "warning"} d-mb-none`}></span>
                   <span
                     className={`badge badge-sm badge-dot has-bg badge-Delivered ? "success" : "warning"
                     } d-none d-mb-inline-flex`}
