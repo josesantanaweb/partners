@@ -48,6 +48,15 @@ const UserListDefaultPage = () => {
     add: false,
   });
 
+  const getUser = async () => {
+    try {
+      const users = await UsersServices.getUsers();
+      setData(users.data)
+    } catch (error) {
+      
+    }
+  }
+
   const [formData, setFormData] = useState({
     name: "",
   });
@@ -58,7 +67,7 @@ const UserListDefaultPage = () => {
   
   const { errors, register, handleSubmit } = useForm();
 
-  // function to reset the form
+  // Function to reset the form
   const resetForm = () => {
     setFormData({
       name: "",
@@ -68,13 +77,13 @@ const UserListDefaultPage = () => {
     });
   };
 
-  // function to close the form modal
+  // Function to close the form modal
   const onFormCancel = () => {
     setModal({ edit: false, add: false });
     resetForm();
   };
 
-  // submit function to add a new item
+  // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
     const { name, lastName, email, password } = submitData;
     let submittedData = {
@@ -86,7 +95,7 @@ const UserListDefaultPage = () => {
     try {
       await UsersServices.addUser(submittedData)
       resetForm();
-      window.location.reload();
+      getUser()
       setModal({ edit: false }, { add: false });
     } catch (error) {
       if(error.response.data.message === "This user already exists") {
@@ -95,11 +104,10 @@ const UserListDefaultPage = () => {
     }
   };
 
-  // function to change to delete property for an item
+  // Function to change to delete property for an item
   const deleteUser = async (id) => {
     try {
       await UsersServices.deleteUser(id)
-      window.location.reload();
       setModal({ edit: false }, { add: false });
     } catch (error) {}
   };
