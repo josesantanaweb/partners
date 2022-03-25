@@ -8,6 +8,7 @@ import {
   ModalBody,
   DropdownItem,
   Form,
+  Alert
 } from "reactstrap";
 import {
   Block,
@@ -40,6 +41,7 @@ import UsersServices from "../../services/UsersServices";
 const UserListDefaultPage = () => {
   const { contextData } = useContext(UserContext);
   const [data, setData] = contextData;
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [modal, setModal] = useState({
     edit: false,
@@ -83,13 +85,23 @@ const UserListDefaultPage = () => {
     };
     try {
       await UsersServices.addUser(submittedData)
-      // setData([submittedData, ...data]);
-      console.log(submittedData)
       resetForm();
+      window.location.reload();
       setModal({ edit: false }, { add: false });
     } catch (error) {
-      console.log(error.response)
+      if(error.response.data.message === "This user already exists") {
+        setErrorMessage("Usuario ya existe")
+      }
     }
+  };
+
+  // function to change to delete property for an item
+  const deleteUser = async (id) => {
+    try {
+      await UsersServices.deleteUser(id)
+      window.location.reload();
+      setModal({ edit: false }, { add: false });
+    } catch (error) {}
   };
 
   // Get current list, pagination
@@ -160,32 +172,30 @@ const UserListDefaultPage = () => {
               ? currentItems.map((item) => (
                 <DataTableItem key={item.id}>
                   <DataTableRow size="md">
-                    <span>1</span>
+                    <span>{item.id}</span>
                   </DataTableRow>
                   <DataTableRow size="md">
                     <div className="user-card">
-                      <UserAvatar theme="purple" text={findUpper("Jonh")}></UserAvatar>
+                      <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
                       <div className="user-info">
                         <span className="tb-lead">
-                          Jonh Doe <span className="dot dot-success d-md-none ml-1"></span>
+                          {item.name} {item.lastName} <span className="dot dot-success d-md-none ml-1"></span>
                         </span>
-                        <span>jonhdoe@gmail.com</span>
+                        <span>{item.email}</span>
                       </div>
                     </div>
                   </DataTableRow>
                   <DataTableRow size="md">
-                    <span>Admin</span>
+                    <span>{item.rol.name}</span>
                   </DataTableRow>
                   <DataTableRow size="md">
-                    <span
-                      className={`tb-status text-success`}
-                    >
-                      Activo
+                    <span className={`tb-status text-success`}>
+                      {item.status.name}
                     </span>
                   </DataTableRow>
                   <DataTableRow className="nk-tb-col-tools">
                     <ul className="nk-tb-actions gx-1">
-                      <li className="nk-tb-action-hidden" onClick={() => {}}>
+                      <li className="nk-tb-action-hidden">
                         <TooltipComponent
                           tag="a"
                           containerClassName="btn btn-trigger btn-icon"
@@ -195,7 +205,7 @@ const UserListDefaultPage = () => {
                           text="Edit"
                         />
                       </li>
-                      <li className="nk-tb-action-hidden" onClick={() => {}}>
+                      <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
                         <TooltipComponent
                           tag="a"
                           containerClassName="btn btn-trigger btn-icon"
@@ -243,8 +253,15 @@ const UserListDefaultPage = () => {
             </a>
             <div className="p-2">
               <h5 className="title">Agregar Usuario</h5>
+              {errorMessage !== "" && (
+                <div className="my-3">
+                  <Alert color="danger" className="alert-icon">
+                    <Icon name="alert-circle" />Usuario ya existe
+                  </Alert>
+                </div>
+              )}
               <div className="mt-4">
-                <Form className="row gy-4" noValidate onSubmit={handleSubmit(onFormSubmit)}>
+                <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Nombre</label>
@@ -254,7 +271,7 @@ const UserListDefaultPage = () => {
                         name="name"
                         defaultValue={formData.name}
                         placeholder="Ingresa nombre"
-                        ref={register({ required: "This field is required" })}
+                        ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
                     </FormGroup>
@@ -269,7 +286,7 @@ const UserListDefaultPage = () => {
                         name="lastName"
                         defaultValue={formData.lastName}
                         placeholder="Ingresa apellido"
-                        ref={register({ required: "This field is required" })}
+                        ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.lastName && <span className="invalid">{errors.lastName.message}</span>}
                     </FormGroup>
@@ -285,7 +302,7 @@ const UserListDefaultPage = () => {
                         defaultValue={formData.email}
                         placeholder="Ingresa apellido"
                         ref={register({
-                          required: "This field is required",
+                          required: "Este campo es requerido",
                           pattern: {
                             value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                             message: "invalid email address",
@@ -305,7 +322,7 @@ const UserListDefaultPage = () => {
                         name="password"
                         defaultValue={formData.email}
                         placeholder="Ingresa contrasena"
-                        ref={register({ required: "This field is required" })}
+                        ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.password && <span className="invalid">{errors.password.message}</span>}
                     </FormGroup>
@@ -324,6 +341,7 @@ const UserListDefaultPage = () => {
                           onClick={(ev) => {
                             ev.preventDefault();
                             onFormCancel();
+                            setErrorMessage("")
                           }}
                           className="link link-light"
                         >
