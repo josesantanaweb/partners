@@ -185,16 +185,16 @@ const UserListDefaultPage = () => {
               <DataTableRow>
                 <span className="sub-text">#</span>
               </DataTableRow>
-              <DataTableRow>
+              <DataTableRow size="xs">
                 <span className="sub-text">Usuario</span>
               </DataTableRow>
-              <DataTableRow size="md">
+              <DataTableRow>
                 <span className="sub-text">Rol</span>
               </DataTableRow>
-              <DataTableRow size="md">
+              <DataTableRow>
                 <span className="sub-text">Estado</span>
               </DataTableRow>
-              <DataTableRow size="md">
+              <DataTableRow>
                 <span className="sub-text"></span>
               </DataTableRow>
             </DataTableHead>
@@ -202,10 +202,10 @@ const UserListDefaultPage = () => {
             {currentItems.length > 0
               ? currentItems.map((item) => (
                 <DataTableItem key={item.id}>
-                  <DataTableRow size="md">
+                  <DataTableRow>
                     <span>{item.id}</span>
                   </DataTableRow>
-                  <DataTableRow size="md">
+                  <DataTableRow size="xs">
                     <div className="user-card">
                       <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
                       <div className="user-info">
@@ -216,10 +216,10 @@ const UserListDefaultPage = () => {
                       </div>
                     </div>
                   </DataTableRow>
-                  <DataTableRow size="md">
+                  <DataTableRow>
                     <span>{item.rol.name}</span>
                   </DataTableRow>
-                  <DataTableRow size="md">
+                  <DataTableRow>
                     <span className={`tb-status text-success`}>
                       {item.status.name}
                     </span>
