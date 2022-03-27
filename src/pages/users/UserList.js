@@ -1,12 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
-  DropdownMenu,
-  DropdownToggle,
   FormGroup,
-  UncontrolledDropdown,
   Modal,
   ModalBody,
-  DropdownItem,
   Form,
   Alert
 } from "reactstrap";
@@ -26,14 +22,11 @@ import {
   DataTableRow,
   DataTableItem,
   TooltipComponent,
-  RSelect,
   PreviewAltCard,
 } from "../../components/Component";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
-import { filterStatus, userData } from "./UserData";
 import { findUpper } from "../../utils/Utils";
-import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { UserContext } from "./UserContext";
 import UsersServices from "../../services/UsersServices";
@@ -107,11 +100,10 @@ const UserListDefaultPage = () => {
 
     // submit function to update a new item
     const onEditSubmit = async (submitData) => {
-      const { name, lastName, email } = submitData;
+      const { name, lastName } = submitData;
       let submittedData = {
         name: name,
         lastName: lastName,
-        email: email,
       };
       try {
         await UsersServices.editUser(editData.id, submittedData)
@@ -131,7 +123,7 @@ const UserListDefaultPage = () => {
   const deleteUser = async (id) => {
     try {
       await UsersServices.deleteUser(id)
-      setModal({ edit: false }, { add: false });
+      getUser()
     } catch (error) {}
   };
 

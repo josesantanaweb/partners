@@ -3,32 +3,32 @@ import api from '../config/api';
 const token = localStorage.getItem("access_token");
 
 const AdvisersServices = {
-	getUsers: async () => {
-		const response = await api.get(`users`, {
+	getAdvisers: async () => {
+		const response = await api.get(`advisors`, {
 			headers: {Authorization:  `Bearer ${token}`}
 		});
 		return response.data;
 	},
-	getUser: async () => {
-		const response = await api.get('users', {
+	getAdviser: async () => {
+		const response = await api.get('advisors', {
 			headers: {Authorization:  `Bearer ${token}`}
 		});
 		return response.data;
 	},
-	addUser: async (data) => {
-		const response = await api.post('/users', data, {
+	addAdviser: async (data) => {
+		const response = await api.post('/advisors', data, {
 			headers: {Authorization:  `Bearer ${token}`}
 		});
 		return response.data;
 	},
-	editUser: async (userId, data) => {
-		const response = await api.patch(`/users/${userId}`, data, {
+	editAdviser: async (userId, data) => {
+		const response = await api.patch(`/advisors/${userId}`, data, {
 			headers: {Authorization:  `Bearer ${token}`}
 		});
 		return response.data;
 	},
-	deleteUser: async (id) => {
-		const response = await api.delete(`/users/${id}`, {
+	deleteAdviser: async (id) => {
+		const response = await api.delete(`/advisors/${id}`, {
 			headers: {Authorization:  `Bearer ${token}`}
 		});
 		return response.data;

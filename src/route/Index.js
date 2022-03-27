@@ -13,7 +13,7 @@ import Operation from "../pages/operation/OperationDefault";
 import Customer from "../pages/customer/CustomerList";
 import Company from "../pages/company/CompanyList";
 import Users from "../pages/users/UserList";
-import Adviser from "../pages/adviser/AdviserListDefault";
+import Adviser from "../pages/adviser/AdviserList";
 import EcomCustomerDetails from "../pages/customer/CustomerDetails";
 import EcomDashboard from "../pages/panel/e-commerce/index";
 
