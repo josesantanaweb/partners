@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Content from "../../../layout/content/Content";
 import Head from "../../../layout/head/Head";
 import { Block, BlockBetween, BlockHead, BlockHeadContent, BlockTitle, Col, Row } from "../../../components/Component";
@@ -26,6 +27,45 @@ const Dashboard = () => {
         </BlockHead>
 
         <Block>
+          {/* Dashboard Menu-quick access */}
+          <Row className="card flex flex-row mx-auto bg-white p-2 mb-4">
+            <Col className="nk-menu-item text-center btn btn-outline-light m-1" xxl="2" lg="3">
+              <Link to="/customer" className="nk-menu-link text-dark-50 w-100 bg-transparent">
+                <span>
+                  <em className="icon ni ni-users-fill"></em>
+                </span>
+                <span className="nk-menu-text pl-1">Clientes</span>
+              </Link>
+            </Col>
+
+            <Col className="nk-menu-item text-center btn btn-outline-light m-1" xxl="2" lg="3">
+              <Link to="/operation" className="nk-menu-link text-dark-50 w-100 bg-transparent">
+                <span>
+                  <em className="icon ni ni-swap-alt-fill"></em>
+                </span>
+                <span className="nk-menu-text pl-1">Operaciones</span>
+              </Link>
+            </Col>
+
+            <Col className="nk-menu-item text-center btn btn-outline-light m-1" xxl="2" lg="3">
+              <Link to="/customer-library" className="nk-menu-link text-dark-50 w-100 bg-transparent">
+                <span>
+                  <em className="icon ni ni-users-fill"></em>
+                </span>
+                <span className="nk-menu-text pl-1">Lib. de Clientes</span>
+              </Link>
+            </Col>
+
+            <Col className="nk-menu-item text-center btn btn-outline-light m-1" xxl="2" lg="3">
+              <Link to="/customer" className="nk-menu-link text-dark-50 w-100 bg-transparent">
+                <span>
+                  <em className="icon ni ni-users-fill"></em>
+                </span>
+                <span className="nk-menu-text pl-1">Otro</span>
+              </Link>
+            </Col>
+          </Row>
+
           <Row className="g-gs">
             <Col xxl="4" md="6">
               <TotalSales />
