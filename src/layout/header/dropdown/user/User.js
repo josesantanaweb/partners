@@ -1,12 +1,17 @@
 import React, { useState } from "react";
+import { useSelector } from 'react-redux';
 import { DropdownToggle, DropdownMenu, Dropdown } from "reactstrap";
 import { Icon } from "../../../../components/Component";
 import { LinkList, LinkItem } from "../../../../components/links/Links";
 import UserAvatar from "../../../../components/user/UserAvatar";
+import { profileSelector } from '../../../../store/selectors';
 
 const User = () => {
+  const profile = useSelector(profileSelector);
   const [open, setOpen] = useState(false);
   const toggle = () => setOpen((prevState) => !prevState);
+
+  const data = JSON.parse(profile);
 
   const handleSignout = () => {
     localStorage.removeItem("access_token");
@@ -25,8 +30,8 @@ const User = () => {
         <div className="user-toggle">
           <UserAvatar icon="user-alt" className="sm" />
           <div className="user-info d-none d-md-block">
-            <div className="user-status">Administrator</div>
-            <div className="user-name dropdown-indicator">Jonh Doe</div>
+            <div className="user-status">{data.rol.name}</div>
+            <div className="user-name dropdown-indicator">{data.name} {data.lastName}</div>
           </div>
         </div>
       </DropdownToggle>
@@ -37,8 +42,8 @@ const User = () => {
               <span>JD</span>
             </div>
             <div className="user-info">
-              <span className="lead-text">Jonh Doe</span>
-              <span className="sub-text">info@softnio.com</span>
+              <span className="lead-text">{data.name} {data.lastName}</span>
+              <span className="sub-text">{data.email}</span>
             </div>
           </div>
         </div>
