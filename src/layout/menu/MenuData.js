@@ -37,7 +37,7 @@ const menu = [
   {
     icon: "setting-fill",
     text: "Roles",
-    link: "/rols",
+    link: "/roles",
   },
 ];
 export default menu;

@@ -4,6 +4,7 @@ import { CustomerProvider } from "../pages/customer/CustomerContext";
 import { CompanyProvider } from "../pages/company/CompanyContext";
 import { UserContextProvider } from "../pages/users/UserContext";
 import { AdviserContextProvider } from "../pages/adviser/AdviserContext";
+import { RolesContextProvider } from "../pages/roles/RolesContext";
 import { RedirectAs404 } from "../utils/Utils";
 
 import Homepage from "../pages/Homepage";
@@ -14,6 +15,7 @@ import Customer from "../pages/customer/CustomerList";
 import Company from "../pages/company/CompanyList";
 import Users from "../pages/users/UserList";
 import Adviser from "../pages/adviser/AdviserList";
+import Roles from "../pages/roles/RolesList";
 import EcomCustomerDetails from "../pages/customer/CustomerDetails";
 import EcomDashboard from "../pages/panel/e-commerce/index";
 
@@ -63,6 +65,15 @@ const Pages = () => {
             <CompanyProvider>
               <Company />
             </CompanyProvider>
+          )}
+        ></Route>
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/roles`}
+          render={() => (
+            <RolesContextProvider>
+              <Roles />
+            </RolesContextProvider>
           )}
         ></Route>
         <Route
