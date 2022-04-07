@@ -1,8 +1,8 @@
 import React, { Suspense, useLayoutEffect } from "react";
 import { Switch, Route } from "react-router-dom";
-import { CustomerProvider } from "../pages/customer/CustomerContext";
 import { CompanyProvider } from "../pages/company/CompanyContext";
 import { UserContextProvider } from "../pages/users/UserContext";
+import { CustomerContextProvider } from "../pages/customers/CustomersContext";
 import { AdviserContextProvider } from "../pages/adviser/AdviserContext";
 import { RolesContextProvider } from "../pages/roles/RolesContext";
 import { RedirectAs404 } from "../utils/Utils";
@@ -11,12 +11,11 @@ import Homepage from "../pages/Homepage";
 
 import Operation from "../pages/operation/OperationDefault";
 // import EcomProducts from "../pages/panel/e-commerce/product/ProductList";
-import Customer from "../pages/customer/CustomerList";
+import Customer from "../pages/customers/CustomersList";
 import Company from "../pages/company/CompanyList";
 import Users from "../pages/users/UserList";
 import Adviser from "../pages/adviser/AdviserList";
 import Roles from "../pages/roles/RolesList";
-import EcomCustomerDetails from "../pages/customer/CustomerDetails";
 import EcomDashboard from "../pages/panel/e-commerce/index";
 
 const Pages = () => {
@@ -53,9 +52,9 @@ const Pages = () => {
           exact
           path={`${process.env.PUBLIC_URL}/customer`}
           render={() => (
-            <CustomerProvider>
+            <CustomerContextProvider>
               <Customer />
-            </CustomerProvider>
+            </CustomerContextProvider>
           )}
         ></Route>
         <Route
@@ -76,16 +75,6 @@ const Pages = () => {
             </RolesContextProvider>
           )}
         ></Route>
-        <Route
-          exact
-          path={`${process.env.PUBLIC_URL}/customer-details/:id`}
-          render={(props) => (
-            <CustomerProvider>
-              <EcomCustomerDetails {...props} />
-            </CustomerProvider>
-          )}
-        ></Route>
-
         <Route exact path={`${process.env.PUBLIC_URL}/`} component={Homepage}></Route>
         <Route component={RedirectAs404}></Route>
       </Switch>
