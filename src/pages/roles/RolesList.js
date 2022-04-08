@@ -125,7 +125,7 @@ const RolesList = () => {
 
   return (
     <React.Fragment>
-      <Head title="User List - Default"></Head>
+      <Head title="Roles"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>

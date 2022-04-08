@@ -1,11 +1,5 @@
 import React, { useContext, useState } from "react";
-import {
-  FormGroup,
-  Modal,
-  ModalBody,
-  Form,
-  Alert
-} from "reactstrap";
+import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import {
   Block,
   BlockBetween,
@@ -45,11 +39,9 @@ const AdviserList = () => {
   const getAdvisers = async () => {
     try {
       const advisers = await AdvisersServices.getAdvisers();
-      setData(advisers.data)
-    } catch (error) {
-      
-    }
-  }
+      setData(advisers.data);
+    } catch (error) {}
+  };
 
   const [formData, setFormData] = useState({
     name: "",
@@ -62,7 +54,7 @@ const AdviserList = () => {
   const [itemPerPage] = useState(10);
 
   const [sm, updateSm] = useState(false);
-  
+
   const { errors, register, handleSubmit } = useForm();
 
   // Function to reset the form
@@ -93,45 +85,45 @@ const AdviserList = () => {
       mobilePhone: mobilePhone,
     };
     try {
-      await AdvisersServices.addAdviser(submittedData)
+      await AdvisersServices.addAdviser(submittedData);
       resetForm();
-      getAdvisers()
+      getAdvisers();
       setModal({ edit: false }, { add: false });
     } catch (error) {
-      if(error.response.data.message === "This user already exists") {
-        setErrorMessage("Usuario ya existe")
+      if (error.response.data.message === "This user already exists") {
+        setErrorMessage("Usuario ya existe");
       }
     }
   };
 
-    // submit function to update a new item
-    const onEditSubmit = async (submitData) => {
-      const { name, paternalLastName, mobilePhone } = submitData;
-      let submittedData = {
-        name: name,
-        paternalLastName: paternalLastName,
-        mobilePhone: mobilePhone,
-      };
-
-      try {
-        await AdvisersServices.editAdviser(editData.id, submittedData)
-        resetForm();
-        getAdvisers()
-        setModal({ edit: false }, { add: false });
-      } catch (error) {}
+  // submit function to update a new item
+  const onEditSubmit = async (submitData) => {
+    const { name, paternalLastName, mobilePhone } = submitData;
+    let submittedData = {
+      name: name,
+      paternalLastName: paternalLastName,
+      mobilePhone: mobilePhone,
     };
 
-    // function that loads the want to editted data
-    const onEditClick = (id, data) => {
-      setModal({ edit: true }, { add: false });
-      setEditData(data)
-    };
+    try {
+      await AdvisersServices.editAdviser(editData.id, submittedData);
+      resetForm();
+      getAdvisers();
+      setModal({ edit: false }, { add: false });
+    } catch (error) {}
+  };
+
+  // function that loads the want to editted data
+  const onEditClick = (id, data) => {
+    setModal({ edit: true }, { add: false });
+    setEditData(data);
+  };
 
   // Function to change to delete property for an item
   const deleteUser = async (id) => {
     try {
-      await AdvisersServices.deleteAdviser(id)
-      getAdvisers()
+      await AdvisersServices.deleteAdviser(id);
+      getAdvisers();
     } catch (error) {}
   };
 
@@ -145,7 +137,7 @@ const AdviserList = () => {
 
   return (
     <React.Fragment>
-      <Head title="User List - Default"></Head>
+      <Head title="Asesores"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
@@ -204,60 +196,57 @@ const AdviserList = () => {
             {/*Head*/}
             {currentItems.length > 0
               ? currentItems.map((item) => (
-                <DataTableItem key={item.id}>
-                  <DataTableRow>
-                    <span>{item.id}</span>
-                  </DataTableRow>
-                  <DataTableRow size="xs">
-                    <div className="user-card">
-                      <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
-                      <div className="user-info">
-                        <span className="tb-lead">
-                          {item.name} {item.paternalLastName} <span className="dot dot-success d-md-none ml-1"></span>
-                        </span>
-                        <span>{item.email}</span>
+                  <DataTableItem key={item.id}>
+                    <DataTableRow>
+                      <span>{item.id}</span>
+                    </DataTableRow>
+                    <DataTableRow size="xs">
+                      <div className="user-card">
+                        <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
+                        <div className="user-info">
+                          <span className="tb-lead">
+                            {item.name} {item.paternalLastName} <span className="dot dot-success d-md-none ml-1"></span>
+                          </span>
+                          <span>{item.email}</span>
+                        </div>
                       </div>
-                    </div>
-                  </DataTableRow>
-                  <DataTableRow>
-                    <span>{item.rol.name}</span>
-                  </DataTableRow>
-                  <DataTableRow>
-                    <span>{item.mobilePhone}</span>
-                  </DataTableRow>
-                  <DataTableRow>
-                    <span className={`tb-status text-success`}>
-                      {item.status.name}
-                    </span>
-                  </DataTableRow>
-                  <DataTableRow className="nk-tb-col-tools">
-                    <ul className="nk-tb-actions gx-1">
-                      <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
-                        <TooltipComponent
-                          tag="a"
-                          containerClassName="btn btn-trigger btn-icon"
-                          id={"edit" + 1}
-                          icon="edit-alt-fill"
-                          direction="top"
-                          text="Edit"
-                        />
-                      </li>
-                      <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
-                        <TooltipComponent
-                          tag="a"
-                          containerClassName="btn btn-trigger btn-icon"
-                          id={"delete" + 1}
-                          icon="trash-fill"
-                          direction="top"
-                          text="Delete"
-                        />
-                      </li>
-                    </ul>
-                  </DataTableRow>
-                </DataTableItem>
+                    </DataTableRow>
+                    <DataTableRow>
+                      <span>{item.rol.name}</span>
+                    </DataTableRow>
+                    <DataTableRow>
+                      <span>{item.mobilePhone}</span>
+                    </DataTableRow>
+                    <DataTableRow>
+                      <span className={`tb-status text-success`}>{item.status.name}</span>
+                    </DataTableRow>
+                    <DataTableRow className="nk-tb-col-tools">
+                      <ul className="nk-tb-actions gx-1">
+                        <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                          <TooltipComponent
+                            tag="a"
+                            containerClassName="btn btn-trigger btn-icon"
+                            id={"edit" + 1}
+                            icon="edit-alt-fill"
+                            direction="top"
+                            text="Edit"
+                          />
+                        </li>
+                        <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
+                          <TooltipComponent
+                            tag="a"
+                            containerClassName="btn btn-trigger btn-icon"
+                            id={"delete" + 1}
+                            icon="trash-fill"
+                            direction="top"
+                            text="Delete"
+                          />
+                        </li>
+                      </ul>
+                    </DataTableRow>
+                  </DataTableItem>
                 ))
-              : null
-            }
+              : null}
           </div>
 
           <PreviewAltCard>
@@ -293,7 +282,8 @@ const AdviserList = () => {
               {errorMessage !== "" && (
                 <div className="my-3">
                   <Alert color="danger" className="alert-icon">
-                    <Icon name="alert-circle" />Asesor ya existe
+                    <Icon name="alert-circle" />
+                    Asesor ya existe
                   </Alert>
                 </div>
               )}
@@ -392,7 +382,7 @@ const AdviserList = () => {
                           onClick={(ev) => {
                             ev.preventDefault();
                             onFormCancel();
-                            setErrorMessage("")
+                            setErrorMessage("");
                           }}
                           className="link link-light"
                         >
@@ -406,7 +396,7 @@ const AdviserList = () => {
             </div>
           </ModalBody>
         </Modal>
-        
+
         <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
@@ -423,7 +413,7 @@ const AdviserList = () => {
               <h5 className="title">Actualizar Asesor</h5>
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
-                <Col md="6">
+                  <Col md="6">
                     <FormGroup>
                       <label className="form-label">Nombre</label>
                       <input
@@ -499,4 +489,3 @@ const AdviserList = () => {
 };
 
 export default AdviserList;
-  

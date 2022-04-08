@@ -1,11 +1,5 @@
 import React, { useContext, useState } from "react";
-import {
-  FormGroup,
-  Modal,
-  ModalBody,
-  Form,
-  Alert
-} from "reactstrap";
+import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import {
   Block,
   BlockBetween,
@@ -45,11 +39,9 @@ const UserListDefaultPage = () => {
   const getUser = async () => {
     try {
       const users = await UsersServices.getUsers();
-      setData(users.data)
-    } catch (error) {
-      
-    }
-  }
+      setData(users.data);
+    } catch (error) {}
+  };
 
   const [formData, setFormData] = useState({
     name: "",
@@ -58,7 +50,7 @@ const UserListDefaultPage = () => {
   const [itemPerPage] = useState(10);
 
   const [sm, updateSm] = useState(false);
-  
+
   const { errors, register, handleSubmit } = useForm();
 
   // Function to reset the form
@@ -87,43 +79,43 @@ const UserListDefaultPage = () => {
       password: password,
     };
     try {
-      await UsersServices.addUser(submittedData)
+      await UsersServices.addUser(submittedData);
       resetForm();
-      getUser()
+      getUser();
       setModal({ edit: false }, { add: false });
     } catch (error) {
-      if(error.response.data.message === "This user already exists") {
-        setErrorMessage("Usuario ya existe")
+      if (error.response.data.message === "This user already exists") {
+        setErrorMessage("Usuario ya existe");
       }
     }
   };
 
-    // submit function to update a new item
-    const onEditSubmit = async (submitData) => {
-      const { name, lastName } = submitData;
-      let submittedData = {
-        name: name,
-        lastName: lastName,
-      };
-      try {
-        await UsersServices.editUser(editData.id, submittedData)
-        resetForm();
-        getUser()
-        setModal({ edit: false }, { add: false });
-      } catch (error) {}
+  // submit function to update a new item
+  const onEditSubmit = async (submitData) => {
+    const { name, lastName } = submitData;
+    let submittedData = {
+      name: name,
+      lastName: lastName,
     };
+    try {
+      await UsersServices.editUser(editData.id, submittedData);
+      resetForm();
+      getUser();
+      setModal({ edit: false }, { add: false });
+    } catch (error) {}
+  };
 
-    // function that loads the want to editted data
-    const onEditClick = (id, data) => {
-      setModal({ edit: true }, { add: false });
-      setEditData(data)
-    };
+  // function that loads the want to editted data
+  const onEditClick = (id, data) => {
+    setModal({ edit: true }, { add: false });
+    setEditData(data);
+  };
 
   // Function to change to delete property for an item
   const deleteUser = async (id) => {
     try {
-      await UsersServices.deleteUser(id)
-      getUser()
+      await UsersServices.deleteUser(id);
+      getUser();
     } catch (error) {}
   };
 
@@ -137,7 +129,7 @@ const UserListDefaultPage = () => {
 
   return (
     <React.Fragment>
-      <Head title="User List - Default"></Head>
+      <Head title="Usuarios"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
@@ -193,57 +185,54 @@ const UserListDefaultPage = () => {
             {/*Head*/}
             {currentItems.length > 0
               ? currentItems.map((item) => (
-                <DataTableItem key={item.id}>
-                  <DataTableRow>
-                    <span>{item.id}</span>
-                  </DataTableRow>
-                  <DataTableRow size="xs">
-                    <div className="user-card">
-                      <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
-                      <div className="user-info">
-                        <span className="tb-lead">
-                          {item.name} {item.lastName} <span className="dot dot-success d-md-none ml-1"></span>
-                        </span>
-                        <span>{item.email}</span>
+                  <DataTableItem key={item.id}>
+                    <DataTableRow>
+                      <span>{item.id}</span>
+                    </DataTableRow>
+                    <DataTableRow size="xs">
+                      <div className="user-card">
+                        <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
+                        <div className="user-info">
+                          <span className="tb-lead">
+                            {item.name} {item.lastName} <span className="dot dot-success d-md-none ml-1"></span>
+                          </span>
+                          <span>{item.email}</span>
+                        </div>
                       </div>
-                    </div>
-                  </DataTableRow>
-                  <DataTableRow>
-                    <span>{item.rol.name}</span>
-                  </DataTableRow>
-                  <DataTableRow>
-                    <span className={`tb-status text-success`}>
-                      {item.status.name}
-                    </span>
-                  </DataTableRow>
-                  <DataTableRow className="nk-tb-col-tools">
-                    <ul className="nk-tb-actions gx-1">
-                      <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
-                        <TooltipComponent
-                          tag="a"
-                          containerClassName="btn btn-trigger btn-icon"
-                          id={"edit" + 1}
-                          icon="edit-alt-fill"
-                          direction="top"
-                          text="Edit"
-                        />
-                      </li>
-                      <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
-                        <TooltipComponent
-                          tag="a"
-                          containerClassName="btn btn-trigger btn-icon"
-                          id={"delete" + 1}
-                          icon="trash-fill"
-                          direction="top"
-                          text="Delete"
-                        />
-                      </li>
-                    </ul>
-                  </DataTableRow>
-                </DataTableItem>
+                    </DataTableRow>
+                    <DataTableRow>
+                      <span>{item.rol.name}</span>
+                    </DataTableRow>
+                    <DataTableRow>
+                      <span className={`tb-status text-success`}>{item.status.name}</span>
+                    </DataTableRow>
+                    <DataTableRow className="nk-tb-col-tools">
+                      <ul className="nk-tb-actions gx-1">
+                        <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                          <TooltipComponent
+                            tag="a"
+                            containerClassName="btn btn-trigger btn-icon"
+                            id={"edit" + 1}
+                            icon="edit-alt-fill"
+                            direction="top"
+                            text="Edit"
+                          />
+                        </li>
+                        <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
+                          <TooltipComponent
+                            tag="a"
+                            containerClassName="btn btn-trigger btn-icon"
+                            id={"delete" + 1}
+                            icon="trash-fill"
+                            direction="top"
+                            text="Delete"
+                          />
+                        </li>
+                      </ul>
+                    </DataTableRow>
+                  </DataTableItem>
                 ))
-              : null
-            }
+              : null}
           </div>
 
           <PreviewAltCard>
@@ -279,7 +268,8 @@ const UserListDefaultPage = () => {
               {errorMessage !== "" && (
                 <div className="my-3">
                   <Alert color="danger" className="alert-icon">
-                    <Icon name="alert-circle" />Usuario ya existe
+                    <Icon name="alert-circle" />
+                    Usuario ya existe
                   </Alert>
                 </div>
               )}
@@ -364,7 +354,7 @@ const UserListDefaultPage = () => {
                           onClick={(ev) => {
                             ev.preventDefault();
                             onFormCancel();
-                            setErrorMessage("")
+                            setErrorMessage("");
                           }}
                           className="link link-light"
                         >
@@ -378,7 +368,7 @@ const UserListDefaultPage = () => {
             </div>
           </ModalBody>
         </Modal>
-        
+
         <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
@@ -395,7 +385,7 @@ const UserListDefaultPage = () => {
               <h5 className="title">Update User</h5>
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
-                <Col md="6">
+                  <Col md="6">
                     <FormGroup>
                       <label className="form-label">Nombre</label>
                       <input
@@ -457,4 +447,3 @@ const UserListDefaultPage = () => {
 };
 
 export default UserListDefaultPage;
-  
