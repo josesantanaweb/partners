@@ -181,9 +181,6 @@ const AdviserList = () => {
                 <span className="sub-text">Asesor</span>
               </DataTableRow>
               <DataTableRow>
-                <span className="sub-text">Rol</span>
-              </DataTableRow>
-              <DataTableRow>
                 <span className="sub-text">Telefono</span>
               </DataTableRow>
               <DataTableRow>
@@ -210,9 +207,6 @@ const AdviserList = () => {
                           <span>{item.email}</span>
                         </div>
                       </div>
-                    </DataTableRow>
-                    <DataTableRow>
-                      <span>{item.rol.name}</span>
                     </DataTableRow>
                     <DataTableRow>
                       <span>{item.mobilePhone}</span>
