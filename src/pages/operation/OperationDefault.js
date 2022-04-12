@@ -30,6 +30,8 @@ import { useForm } from "react-hook-form";
 import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem, Button, Modal, ModalBody } from "reactstrap";
 
 const OperationDefault = () => {
+  const { rut, updateRut, isValid } = useRut();
+
   const [data, setData] = useState(orderData);
   const [smOption, setSmOption] = useState(false);
 
