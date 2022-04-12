@@ -32,7 +32,7 @@ const User = () => {
           <div className="user-info d-none d-md-block">
             <div className="user-status">Admin</div>
             <div className="user-name dropdown-indicator">
-              {data.name} {data.lastName}
+              {data?.name} {data?.lastName}
             </div>
           </div>
         </div>
@@ -45,9 +45,9 @@ const User = () => {
             </div>
             <div className="user-info">
               <span className="lead-text">
-                {data.name} {data.lastName}
+                {data?.name} {data?.lastName}
               </span>
-              <span className="sub-text">{data.email}</span>
+              <span className="sub-text">{data?.email}</span>
             </div>
           </div>
         </div>

@@ -98,7 +98,7 @@ const Login = () => {
                       type="email"
                       id="default-01"
                       name="email"
-                      defaultValue={"admin@mail.com"}
+                      defaultValue={"josesantana.web@gmail.com"}
                       ref={register({ required: "Este campo es requerido" })}
                       placeholder="Enter your email address or username"
                       className="form-control-lg form-control"
@@ -132,7 +132,7 @@ const Login = () => {
                       type={passState ? "text" : "password"}
                       id="password"
                       name="password"
-                      defaultValue={"12345678"}
+                      defaultValue={"123456"}
                       ref={register({ required: "Este campo es requerido" })}
                       placeholder="Enter your passcode"
                       className={`form-control-lg form-control ${passState ? "is-hidden" : "is-shown"}`}
