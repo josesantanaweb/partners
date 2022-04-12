@@ -112,7 +112,7 @@ const Login = () => {
                       Contraseña
                     </label>
                     <Link className="link link-primary link-sm" to={`${process.env.PUBLIC_URL}/auth-reset`}>
-                      Olvido su Contraseña?
+                      Olvido Contraseña
                     </Link>
                   </div>
                   <div className="form-control-wrap">
