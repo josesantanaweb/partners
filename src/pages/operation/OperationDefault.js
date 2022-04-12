@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import OperationsServices from "../../services/OperationsServices";
-
 import { Link } from "react-router-dom";
 import { useRut } from "react-rut-formatter";
 import Head from "../../layout/head/Head";
@@ -31,8 +30,6 @@ import { useForm } from "react-hook-form";
 import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem, Button, Modal, ModalBody } from "reactstrap";
 
 const OperationDefault = () => {
-  const { rut, updateRut, isValid } = useRut();
-
   const [data, setData] = useState(orderData);
   const [smOption, setSmOption] = useState(false);
 
@@ -409,7 +406,7 @@ const OperationDefault = () => {
                   <span className="sub-text text-center">Cliente</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text text-center">Rut</span>
+                  <span className="sub-text text-center">Cliente</span>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text text-center">Asesor</span>
