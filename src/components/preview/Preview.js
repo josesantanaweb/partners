@@ -15,7 +15,7 @@ export const PreviewCard = ({ className, bodyClass, ...props }) => {
 
 export const PreviewAltCard = ({ className, bodyClass, ...props }) => {
   return (
-    <Card className={`${className ? className : ""}`}>
+    <Card className={`${className ? className : ""} bg-transparent`}>
       <div className={`card-inner ${bodyClass ? bodyClass : ""}`}>{props.children}</div>
     </Card>
   );
@@ -40,7 +40,7 @@ export const CodeBlock = ({ language, ...props }) => {
       <OverlineTitle className="title">{props.title ? props.title : "Code Example"}</OverlineTitle>
       <CopyToClipboard text={copyText} onCopy={onCopyClick}>
         <Button color="blank" size="sm" className="clipboard-init">
-        {copyState ? "Copied" : "Copy"}
+          {copyState ? "Copied" : "Copy"}
         </Button>
       </CopyToClipboard>
       <SyntaxHighlighter language="javascript" className="bg-lighter h-max-150px m-0" style={a11yLight}>
