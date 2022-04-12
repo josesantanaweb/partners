@@ -7,7 +7,17 @@ const menu = [
   {
     icon: "users-fill",
     text: "Clientes",
-    link: "/customer",
+    active: false,
+    subMenu: [
+      {
+        text: "Cliente Juridico",
+        link: "/customer-juridico",
+      },
+      {
+        text: "Cliente Final",
+        link: "/customer",
+      },
+    ],
   },
   {
     icon: "user-fill",

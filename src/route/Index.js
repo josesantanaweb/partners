@@ -12,6 +12,7 @@ import Homepage from "../pages/Homepage";
 import Operation from "../pages/operation/OperationDefault";
 // import EcomProducts from "../pages/panel/e-commerce/product/ProductList";
 import Customer from "../pages/customers/CustomersList";
+import CustomerJuridico from "../pages/customers/CustomersListJuridico";
 import Company from "../pages/company/CompanyList";
 import Users from "../pages/users/UserList";
 import Adviser from "../pages/adviser/AdviserList";
@@ -54,6 +55,15 @@ const Pages = () => {
           render={() => (
             <CustomerContextProvider>
               <Customer />
+            </CustomerContextProvider>
+          )}
+        ></Route>
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/customer-juridico`}
+          render={() => (
+            <CustomerContextProvider>
+              <CustomerJuridico />
             </CustomerContextProvider>
           )}
         ></Route>

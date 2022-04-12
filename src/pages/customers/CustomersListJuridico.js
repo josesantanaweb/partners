@@ -49,7 +49,7 @@ const sexTypes = [
   },
 ];
 
-const CustomersList = () => {
+const CustomersListJuridico = () => {
   const { contextData } = useContext(CustomersContext);
   const [data, setData] = contextData;
   const [errorMessage, setErrorMessage] = useState("");
@@ -58,10 +58,10 @@ const CustomersList = () => {
   const [cities, setCities] = useState();
   const [countryId, setCountryId] = useState();
   const [cityId, setCityId] = useState();
-  const [typeId, setTypeId] = useState(1);
   const [countriesOptions, setCountriesOptions] = useState([]);
   const [citiesOptions, setCitiesOptions] = useState([]);
   const [beneficiaries, setBeneficiaries] = useState(1);
+  const [partnersAntecedents, setPartnersAntecedents] = useState(1);
 
   const [modal, setModal] = useState({
     edit: false,
@@ -116,22 +116,43 @@ const CustomersList = () => {
   };
 
   const [formData, setFormData] = useState({
-    names: "",
-    paternalLastName: "",
-    typeId: 1,
+    typeId: 2,
+    companyName: "",
+    giro: "",
     email: "",
-    sex: "",
-    profession: "",
     phone: "",
-    isapre: "",
-    AFP: "",
-    nationality: "",
-    rut: "",
+    singleTaxRole: "",
+    observations: "",
     address: {
       countryId: 1,
       stateId: 1,
       communne: "",
     },
+    antecedentsLegalRepresentative: {
+      names: "",
+      paternalLastName: "",
+      isapre: "",
+      afp: "",
+      nationality: "",
+      zipCode: "",
+      email: "",
+      rut: "",
+      phone: "",
+    },
+    partnersAntecedents: [
+      {
+        names: "",
+        paternalLastName: "",
+        email: "",
+        isapre: "",
+        afp: "",
+        nationality: "",
+        zipCode: "",
+        percentageOfParticipation: "",
+        rut: "",
+        phone: "",
+      },
+    ],
     jointDebtor: {
       names: "",
       paternalLastName: "",
@@ -140,17 +161,6 @@ const CustomersList = () => {
       numberOfChildren: 1,
       typeOfDocument: "",
       employmentSituation: "",
-    },
-    employmentHistory: {
-      companyName: "",
-      industry: "",
-      businessPhone: "",
-      laborSeniority: "",
-      charge: "",
-      email: "",
-      rut: "",
-      zipCode: "",
-      annualIncome: "",
     },
     currentAccountData: {
       bankName: "",
@@ -174,46 +184,96 @@ const CustomersList = () => {
   const [sm, updateSm] = useState(false);
 
   const { errors, register, control, handleSubmit } = useForm();
-  const { fields, append, remove } = useFieldArray({ name: "beneficiaries", control });
+  const {
+    fields: beneficiariesFields,
+    append: appendBeneficiaries,
+    remove: removeBeneficiaries,
+  } = useFieldArray({ name: "beneficiaries", control });
+
+  const {
+    fields: partnersAntecedentsFields,
+    append: appendPartnersAntecedents,
+    remove: removePartnersAntecedents,
+  } = useFieldArray({ name: "partnersAntecedents", control });
 
   useEffect(() => {
     // update field array when ticket number changed
-    const newVal = parseInt(beneficiaries || 1);
-    const oldVal = fields.length;
-    if (newVal > oldVal) {
+    const newBeneficiaries = parseInt(beneficiaries || 1);
+    const oldBeneficiaries = beneficiariesFields.length;
+    if (newBeneficiaries > oldBeneficiaries) {
       // append tickets to field array
-      for (let i = oldVal; i < newVal; i++) {
-        append({
+      for (let i = oldBeneficiaries; i < newBeneficiaries; i++) {
+        appendBeneficiaries({
           names: "",
         });
       }
     } else {
       // remove tickets from field array
-      for (let i = oldVal; i > newVal; i--) {
-        remove(i - 1);
+      for (let i = oldBeneficiaries; i > newBeneficiaries; i--) {
+        removeBeneficiaries(i - 1);
       }
     }
   }, [beneficiaries]);
 
+  useEffect(() => {
+    // update field array when ticket number changed
+    const newPartnersAntecedents = parseInt(partnersAntecedents || 1);
+    const oldPartnersAntecedents = partnersAntecedentsFields.length;
+    if (newPartnersAntecedents > oldPartnersAntecedents) {
+      // append tickets to field array
+      for (let i = oldPartnersAntecedents; i < newPartnersAntecedents; i++) {
+        appendPartnersAntecedents({
+          names: "",
+        });
+      }
+    } else {
+      // remove tickets from field array
+      for (let i = oldPartnersAntecedents; i > newPartnersAntecedents; i--) {
+        removePartnersAntecedents(i - 1);
+      }
+    }
+  }, [partnersAntecedents]);
+
   // Function to reset the form
   const resetForm = () => {
     setFormData({
-      names: "",
-      paternalLastName: "",
-      typeId: 1,
+      companyName: "",
+      giro: "",
+      typeId: 2,
       email: "",
-      sex: "M",
-      profession: "",
       phone: "",
-      isapre: "",
-      AFP: "",
-      nationality: "",
-      rut: "",
+      singleTaxRole: "",
+      observations: "",
       address: {
         countryId: 1,
         stateId: 1,
         communne: "",
       },
+      antecedentsLegalRepresentative: {
+        names: "",
+        paternalLastName: "",
+        isapre: "",
+        afp: "",
+        nationality: "",
+        zipCode: "",
+        email: "",
+        rut: "",
+        phone: "",
+      },
+      partnersAntecedents: [
+        {
+          names: "",
+          paternalLastName: "",
+          email: "",
+          isapre: "",
+          afp: "",
+          nationality: "",
+          zipCode: "",
+          percentageOfParticipation: "",
+          rut: "",
+          phone: "",
+        },
+      ],
       jointDebtor: {
         names: "",
         paternalLastName: "",
@@ -222,17 +282,6 @@ const CustomersList = () => {
         numberOfChildren: 1,
         typeOfDocument: "",
         employmentSituation: "",
-      },
-      employmentHistory: {
-        companyName: "",
-        industry: "",
-        businessPhone: "",
-        laborSeniority: "",
-        charge: "",
-        email: "",
-        rut: "",
-        zipCode: "",
-        annualIncome: "",
       },
       currentAccountData: {
         bankName: "",
@@ -257,7 +306,6 @@ const CustomersList = () => {
   //   setTypeId(value.value);
   // };
 
-  const onSexChange = (value) => setFormData({ ...formData, sex: value.value });
   const onCountriesChange = (value) => {
     setCountryId(value.value);
     getCities();
@@ -269,35 +317,39 @@ const CustomersList = () => {
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
     const {
-      names,
-      paternalLastName,
+      companyName,
+      giro,
       email,
-      birthDate,
-      profession,
       phone,
-      isapre,
-      AFP,
-      nationality,
-      rut,
+      singleTaxRole,
+      observations,
       address,
+      antecedentsLegalRepresentative,
+      partnersAntecedents,
       jointDebtor,
-      employmentHistory,
       currentAccountData,
       beneficiaries,
     } = submitData;
     let submittedData = {
-      typeId: 1,
-      names,
-      paternalLastName,
+      typeId: 2,
+      companyName,
+      giro,
       email,
-      birthDate,
-      sex: formData.sex,
-      profession,
       phone,
-      isapre,
-      AFP,
-      nationality,
-      rut,
+      singleTaxRole,
+      observations,
+      antecedentsLegalRepresentative: {
+        names: antecedentsLegalRepresentative.names,
+        paternalLastName: antecedentsLegalRepresentative.paternalLastName,
+        isapre: antecedentsLegalRepresentative.isapre,
+        afp: antecedentsLegalRepresentative.afp,
+        nationality: antecedentsLegalRepresentative.nationality,
+        zipCode: antecedentsLegalRepresentative.zipCode,
+        email: antecedentsLegalRepresentative.email,
+        rut: antecedentsLegalRepresentative.rut,
+        phone: antecedentsLegalRepresentative.phone,
+      },
+      partnersAntecedents,
       address: {
         countryId: countryId,
         stateId: cityId,
@@ -312,17 +364,6 @@ const CustomersList = () => {
         typeOfDocument: jointDebtor.typeOfDocument,
         employmentSituation: jointDebtor.employmentSituation,
         email: jointDebtor.email,
-      },
-      employmentHistory: {
-        companyName: employmentHistory.companyName,
-        industry: employmentHistory.industry,
-        businessPhone: employmentHistory.businessPhone,
-        laborSeniority: employmentHistory.laborSeniority,
-        charge: employmentHistory.charge,
-        email: employmentHistory.email,
-        rut: employmentHistory.rut,
-        zipCode: employmentHistory.zipCode,
-        annualIncome: employmentHistory.annualIncome,
       },
       currentAccountData: {
         bankName: currentAccountData.bankName,
@@ -388,6 +429,10 @@ const CustomersList = () => {
     setBeneficiaries(beneficiaries + 1);
   };
 
+  const handleAddPartnersAntecedents = () => {
+    setPartnersAntecedents(partnersAntecedents + 1);
+  };
+
   return (
     <React.Fragment>
       <Head title="Clientes"></Head>
@@ -396,7 +441,7 @@ const CustomersList = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Clientes Finales
+                Lista de Clientes Juridicos
               </BlockTitle>
               <BlockDes className="text-soft">{/* <p>Total {data.length} clientes</p> */}</BlockDes>
             </BlockHeadContent>
@@ -435,7 +480,7 @@ const CustomersList = () => {
                 <span className="sub-text">Tipo</span>
               </DataTableRow>
               <DataTableRow>
-                <span className="sub-text">Rut</span>
+                <span className="sub-text">Giro</span>
               </DataTableRow>
               <DataTableRow>
                 <span className="sub-text">Profesion</span>
@@ -549,31 +594,31 @@ const CustomersList = () => {
                 <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Nombre</label>
+                      <label className="form-label">Nombre de empresa</label>
                       <input
                         className="form-control"
                         type="text"
                         name="names"
-                        defaultValue={formData.names}
-                        placeholder="Ingresa nombre"
+                        defaultValue={formData.companyName}
+                        placeholder="Ingresa Nombre de empresa"
                         ref={register({ required: "Este campo es requerido" })}
                       />
-                      {errors.names && <span className="invalid">{errors.names.message}</span>}
+                      {errors.companyName && <span className="invalid">{errors.companyName.message}</span>}
                     </FormGroup>
                   </Col>
 
                   <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Apellido</label>
+                      <label className="form-label">Giro</label>
                       <input
                         className="form-control"
                         type="text"
-                        name="paternalLastName"
-                        defaultValue={formData.paternalLastName}
-                        placeholder="Ingresa apellido"
+                        name="giro"
+                        defaultValue={formData.giro}
+                        placeholder="Ingresa giro"
                         ref={register({ required: "Este campo es requerido" })}
                       />
-                      {errors.paternalLastName && <span className="invalid">{errors.paternalLastName.message}</span>}
+                      {errors.giro && <span className="invalid">{errors.giro.message}</span>}
                     </FormGroup>
                   </Col>
 
@@ -594,47 +639,6 @@ const CustomersList = () => {
 
                   <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Fecha de Nacimiento</label>
-                      <input
-                        className="form-control"
-                        type="date"
-                        name="birthDate"
-                        defaultValue={formData.birthDate}
-                        placeholder="Ingresa apellido"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Sexo</label>
-                      <RSelect
-                        isSearchable={false}
-                        options={sexTypes}
-                        defaultValue={formData.sex}
-                        onChange={onSexChange}
-                      />
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Profesion</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="profession"
-                        defaultValue={formData.profession}
-                        placeholder="Ingresa Profesion"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.profession && <span className="invalid">{errors.profession.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
                       <label className="form-label">Telefono</label>
                       <input
                         className="form-control"
@@ -650,60 +654,31 @@ const CustomersList = () => {
 
                   <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Isapre</label>
+                      <label className="form-label">Tax Role</label>
                       <input
                         className="form-control"
                         type="text"
-                        name="isapre"
-                        defaultValue={formData.isapre}
-                        placeholder="Ingresa Isapre"
+                        name="singleTaxRole"
+                        defaultValue={formData.singleTaxRole}
+                        placeholder="Ingresa Tax Role"
                         ref={register({ required: "Este campo es requerido" })}
                       />
-                      {errors.isapre && <span className="invalid">{errors.isapre.message}</span>}
-                    </FormGroup>
-                  </Col>
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">AFP</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="AFP"
-                        defaultValue={formData.AFP}
-                        placeholder="Ingresa AFP"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.AFP && <span className="invalid">{errors.AFP.message}</span>}
+                      {errors.singleTaxRole && <span className="invalid">{errors.singleTaxRole.message}</span>}
                     </FormGroup>
                   </Col>
 
                   <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Nacionalidad</label>
+                      <label className="form-label">Obseraviones</label>
                       <input
                         className="form-control"
                         type="text"
-                        name="nationality"
-                        defaultValue={formData.nationality}
-                        placeholder="Ingresa nationality"
+                        name="observations"
+                        defaultValue={formData.observations}
+                        placeholder="Ingresa Obseraviones"
                         ref={register({ required: "Este campo es requerido" })}
                       />
-                      {errors.nationality && <span className="invalid">{errors.nationality.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">RUT</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="rut"
-                        defaultValue={formData.rut}
-                        placeholder="Ingresa RUT"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.rut && <span className="invalid">{errors.rut.message}</span>}
+                      {errors.observations && <span className="invalid">{errors.observations.message}</span>}
                     </FormGroup>
                   </Col>
 
@@ -744,6 +719,134 @@ const CustomersList = () => {
                       />
                     </FormGroup>
                   </Col>
+
+                  <>
+                    <Col size="12">
+                      <b>Antecedentes representante legal</b>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Nombre</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.names"
+                          defaultValue={formData.antecedentsLegalRepresentative.names}
+                          placeholder="Ingresa Nombre"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Apellido</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.paternalLastName"
+                          defaultValue={formData.antecedentsLegalRepresentative.paternalLastName}
+                          placeholder="Ingresa Apellido"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Isapre</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.isapre"
+                          defaultValue={formData.antecedentsLegalRepresentative.isapre}
+                          placeholder="Ingresa Isapre"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Afp</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.afp"
+                          defaultValue={formData.antecedentsLegalRepresentative.afp}
+                          placeholder="Ingresa Afp"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Nacionalidad</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.nationality"
+                          defaultValue={formData.antecedentsLegalRepresentative.nationality}
+                          placeholder="Ingresa Nacionalidad"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Codigo Postal</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.zipCode"
+                          defaultValue={formData.antecedentsLegalRepresentative.zipCode}
+                          placeholder="Ingresa Codigo Postal"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Correo electronico</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.email"
+                          defaultValue={formData.antecedentsLegalRepresentative.email}
+                          placeholder="Ingresa Correo electronico"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">RUT</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.rut"
+                          defaultValue={formData.antecedentsLegalRepresentative.rut}
+                          placeholder="Ingresa RUT"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Telefono</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.phone"
+                          defaultValue={formData.antecedentsLegalRepresentative.phone}
+                          placeholder="Ingresa Telefono"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </>
 
                   <>
                     <Col size="12">
@@ -865,138 +968,6 @@ const CustomersList = () => {
 
                   <>
                     <Col size="12">
-                      <b>Historial</b>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Nombre de empresa</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.companyName"
-                          defaultValue={formData.employmentHistory.companyName}
-                          placeholder="Ingresa Nombre de empresa"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Industria</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.industry"
-                          defaultValue={formData.employmentHistory.industry}
-                          placeholder="Ingresa Industria"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Telefono</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.businessPhone"
-                          defaultValue={formData.employmentHistory.businessPhone}
-                          placeholder="Ingresa Telefono"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Antiguedad Laboral</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.laborSeniority"
-                          defaultValue={formData.employmentHistory.laborSeniority}
-                          placeholder="Ingresa Antiguedad Laboral"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Cargo</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.charge"
-                          defaultValue={formData.employmentHistory.charge}
-                          placeholder="Ingresa Cargo"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Correo</label>
-                        <input
-                          className="form-control"
-                          type="email"
-                          name="employmentHistory.email"
-                          defaultValue={formData.employmentHistory.email}
-                          placeholder="Ingresa Correo"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Rut</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.rut"
-                          defaultValue={formData.employmentHistory.rut}
-                          placeholder="Ingresa Rut"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Codigo postal</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.zipCode"
-                          defaultValue={formData.employmentHistory.zipCode}
-                          placeholder="Ingresa Codigo postal"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Ingreso Anual</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.annualIncome"
-                          defaultValue={formData.employmentHistory.annualIncome}
-                          placeholder="Ingresa Ingreso Anual"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </>
-
-                  <>
-                    <Col size="12">
                       <b>Datos de cuenta</b>
                     </Col>
 
@@ -1073,12 +1044,138 @@ const CustomersList = () => {
 
                   <>
                     <Col md="12">
+                      <b>Socios</b>
+                      <Button
+                        type="button"
+                        color="primary"
+                        className="btn-icon ml-2"
+                        onClick={handleAddPartnersAntecedents}
+                      >
+                        <Icon name="plus"></Icon>
+                      </Button>
+                    </Col>
+                    {partnersAntecedentsFields?.map((item, i) => (
+                      <span key={i} className="form-grid">
+                        <div>
+                          <FormGroup>
+                            <label className="form-label">Nombre</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name={`partnersAntecedents[${i}].names`}
+                              placeholder="Ingresa Nombre"
+                              ref={register()}
+                            />
+                          </FormGroup>
+                        </div>
+                        <div>
+                          <FormGroup>
+                            <label className="form-label">Apellido</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name={`partnersAntecedents[${i}].paternalLastName`}
+                              placeholder="Ingresa Apellido"
+                              ref={register()}
+                            />
+                          </FormGroup>
+                        </div>
+                        <div>
+                          <FormGroup>
+                            <label className="form-label">Correo</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name={`partnersAntecedents[${i}].email`}
+                              placeholder="Ingresa Correo"
+                              ref={register()}
+                            />
+                          </FormGroup>
+                        </div>
+                        <div>
+                          <FormGroup>
+                            <label className="form-label">RUT</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name={`partnersAntecedents[${i}].rut`}
+                              placeholder="Ingresa RUT"
+                              ref={register()}
+                            />
+                          </FormGroup>
+                        </div>
+                        <div>
+                          <FormGroup>
+                            <label className="form-label">Isapre</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name={`partnersAntecedents[${i}].isapre`}
+                              placeholder="Ingresa Isapre"
+                              ref={register()}
+                            />
+                          </FormGroup>
+                        </div>
+                        <div>
+                          <FormGroup>
+                            <label className="form-label">Afp</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name={`partnersAntecedents[${i}].afp`}
+                              placeholder="Ingresa Afp"
+                              ref={register()}
+                            />
+                          </FormGroup>
+                        </div>
+                        <div>
+                          <FormGroup>
+                            <label className="form-label">Nationalidad</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name={`partnersAntecedents[${i}].nationality`}
+                              placeholder="Ingresa Nationalidad"
+                              ref={register()}
+                            />
+                          </FormGroup>
+                        </div>
+                        <div>
+                          <FormGroup>
+                            <label className="form-label">Codigo Postal</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name={`partnersAntecedents[${i}].zipCode`}
+                              placeholder="Ingresa Codigo Postal"
+                              ref={register()}
+                            />
+                          </FormGroup>
+                        </div>
+                        <div>
+                          <FormGroup>
+                            <label className="form-label">Telefono</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name={`partnersAntecedents[${i}].phone`}
+                              placeholder="Ingresa Telefono"
+                              ref={register()}
+                            />
+                          </FormGroup>
+                        </div>
+                      </span>
+                    ))}
+                  </>
+
+                  <>
+                    <Col md="12">
                       <b>Beneficiarios</b>
                       <Button type="button" color="primary" className="btn-icon ml-2" onClick={handleAddBeneficiarios}>
                         <Icon name="plus"></Icon>
                       </Button>
                     </Col>
-                    {fields?.map((item, i) => (
+                    {beneficiariesFields?.map((item, i) => (
                       <span key={i} className="form-grid">
                         <div>
                           <FormGroup>
@@ -1237,4 +1334,4 @@ const CustomersList = () => {
   );
 };
 
-export default CustomersList;
+export default CustomersListJuridico;
