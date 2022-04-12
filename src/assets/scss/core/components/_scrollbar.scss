@@ -1,0 +1,33 @@
+$scrollBg: #ccc;
+$isScrollActive: #a8a8a8;
+$scrollHover: #b3b3b3;
+$scrollHoverTrack: #d4d4d4;
+$scrollTrack: #e1e1e1;
+
+.scrollbar-fluid {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $scrollBg;
+    border-radius: 4px;
+    &:hover {
+      background: $scrollHover;
+      box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+    }
+    &:active {
+      background-color: $isScrollActive;
+    }
+  }
+  &::-webkit-scrollbar-track {
+    background: $scrollTrack;
+    border-radius: 4px;
+    &:hover {
+      background: $scrollHoverTrack;
+    }
+    &:active {
+      background: $scrollHoverTrack;
+    }
+  }
+}
