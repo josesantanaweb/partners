@@ -30,11 +30,11 @@ import CountriesServices from "../../services/CountriesServices";
 const customersTypes = [
   {
     label: "Cliente Juridico",
-    value: 1,
+    value: 2,
   },
   {
     label: "Cliente Final",
-    value: 2,
+    value: 1,
   },
 ];
 
@@ -58,6 +58,7 @@ const CustomersList = () => {
   const [cities, setCities] = useState();
   const [countryId, setCountryId] = useState();
   const [cityId, setCityId] = useState();
+  const [typeId, setTypeId] = useState(1);
   const [countriesOptions, setCountriesOptions] = useState([]);
   const [citiesOptions, setCitiesOptions] = useState([]);
   const [beneficiaries, setBeneficiaries] = useState(1);
@@ -251,7 +252,10 @@ const CustomersList = () => {
   };
 
   // customer type change
-  const onCustomerTypeChange = (value) => setFormData({ ...formData, typeId: value.value });
+  const onCustomerTypeChange = (value) => {
+    setFormData({ ...formData, typeId: value.value });
+    setTypeId(value.value);
+  };
   const onSexChange = (value) => setFormData({ ...formData, sex: value.value });
   const onCountriesChange = (value) => {
     setCountryId(value.value);
@@ -260,6 +264,8 @@ const CustomersList = () => {
   const onCitiesChange = (value) => {
     setCityId(value.value);
   };
+
+  console.log(typeId);
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
@@ -433,6 +439,12 @@ const CustomersList = () => {
                 <span className="sub-text">Rut</span>
               </DataTableRow>
               <DataTableRow>
+                <span className="sub-text">Profesion</span>
+              </DataTableRow>
+              <DataTableRow>
+                <span className="sub-text">AFP</span>
+              </DataTableRow>
+              <DataTableRow>
                 <span className="sub-text"></span>
               </DataTableRow>
             </DataTableHead>
@@ -460,6 +472,12 @@ const CustomersList = () => {
                     </DataTableRow>
                     <DataTableRow>
                       <span>{item.rut}</span>
+                    </DataTableRow>
+                    <DataTableRow>
+                      <span>{item.profession}</span>
+                    </DataTableRow>
+                    <DataTableRow>
+                      <span>{item.AFP}</span>
                     </DataTableRow>
                     <DataTableRow className="nk-tb-col-tools">
                       <ul className="nk-tb-actions gx-1">
@@ -542,36 +560,39 @@ const CustomersList = () => {
                       {errors.typeId && <span className="invalid">{errors.typeId.message}</span>}
                     </FormGroup>
                   </Col>
+                  {typeId === 1 && (
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Nombre</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="names"
+                          defaultValue={formData.names}
+                          placeholder="Ingresa nombre"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.names && <span className="invalid">{errors.names.message}</span>}
+                      </FormGroup>
+                    </Col>
+                  )}
 
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Nombre</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="names"
-                        defaultValue={formData.names}
-                        placeholder="Ingresa nombre"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.names && <span className="invalid">{errors.names.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Apellido</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="paternalLastName"
-                        defaultValue={formData.paternalLastName}
-                        placeholder="Ingresa apellido"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.paternalLastName && <span className="invalid">{errors.paternalLastName.message}</span>}
-                    </FormGroup>
-                  </Col>
+                  {typeId === 1 && (
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Apellido</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="paternalLastName"
+                          defaultValue={formData.paternalLastName}
+                          placeholder="Ingresa apellido"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.paternalLastName && <span className="invalid">{errors.paternalLastName.message}</span>}
+                      </FormGroup>
+                    </Col>
+                  )}
 
                   <Col md="3">
                     <FormGroup>
@@ -588,46 +609,52 @@ const CustomersList = () => {
                     </FormGroup>
                   </Col>
 
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Fecha de Nacimiento</label>
-                      <input
-                        className="form-control"
-                        type="date"
-                        name="birthDate"
-                        defaultValue={formData.birthDate}
-                        placeholder="Ingresa apellido"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
+                  {typeId === 1 && (
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Fecha de Nacimiento</label>
+                        <input
+                          className="form-control"
+                          type="date"
+                          name="birthDate"
+                          defaultValue={formData.birthDate}
+                          placeholder="Ingresa apellido"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+                  )}
 
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Sexo</label>
-                      <RSelect
-                        isSearchable={false}
-                        options={sexTypes}
-                        defaultValue={formData.sex}
-                        onChange={onSexChange}
-                      />
-                    </FormGroup>
-                  </Col>
+                  {typeId === 1 && (
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Sexo</label>
+                        <RSelect
+                          isSearchable={false}
+                          options={sexTypes}
+                          defaultValue={formData.sex}
+                          onChange={onSexChange}
+                        />
+                      </FormGroup>
+                    </Col>
+                  )}
 
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Profesion</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="profession"
-                        defaultValue={formData.profession}
-                        placeholder="Ingresa Profesion"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.profession && <span className="invalid">{errors.profession.message}</span>}
-                    </FormGroup>
-                  </Col>
+                  {typeId === 1 && (
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Profesion</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="profession"
+                          defaultValue={formData.profession}
+                          placeholder="Ingresa Profesion"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.profession && <span className="invalid">{errors.profession.message}</span>}
+                      </FormGroup>
+                    </Col>
+                  )}
 
                   <Col md="3">
                     <FormGroup>
@@ -644,65 +671,73 @@ const CustomersList = () => {
                     </FormGroup>
                   </Col>
 
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Isapre</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="isapre"
-                        defaultValue={formData.isapre}
-                        placeholder="Ingresa Isapre"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.isapre && <span className="invalid">{errors.isapre.message}</span>}
-                    </FormGroup>
-                  </Col>
+                  {typeId === 1 && (
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Isapre</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="isapre"
+                          defaultValue={formData.isapre}
+                          placeholder="Ingresa Isapre"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.isapre && <span className="invalid">{errors.isapre.message}</span>}
+                      </FormGroup>
+                    </Col>
+                  )}
 
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">AFP</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="AFP"
-                        defaultValue={formData.AFP}
-                        placeholder="Ingresa AFP"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.AFP && <span className="invalid">{errors.AFP.message}</span>}
-                    </FormGroup>
-                  </Col>
+                  {typeId === 1 && (
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">AFP</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="AFP"
+                          defaultValue={formData.AFP}
+                          placeholder="Ingresa AFP"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.AFP && <span className="invalid">{errors.AFP.message}</span>}
+                      </FormGroup>
+                    </Col>
+                  )}
 
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Nacionalidad</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="nationality"
-                        defaultValue={formData.nationality}
-                        placeholder="Ingresa nationality"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.nationality && <span className="invalid">{errors.nationality.message}</span>}
-                    </FormGroup>
-                  </Col>
+                  {typeId === 1 && (
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Nacionalidad</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="nationality"
+                          defaultValue={formData.nationality}
+                          placeholder="Ingresa nationality"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.nationality && <span className="invalid">{errors.nationality.message}</span>}
+                      </FormGroup>
+                    </Col>
+                  )}
 
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">RUT</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="rut"
-                        defaultValue={formData.rut}
-                        placeholder="Ingresa RUT"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.rut && <span className="invalid">{errors.rut.message}</span>}
-                    </FormGroup>
-                  </Col>
+                  {typeId === 1 && (
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">RUT</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="rut"
+                          defaultValue={formData.rut}
+                          placeholder="Ingresa RUT"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.rut && <span className="invalid">{errors.rut.message}</span>}
+                      </FormGroup>
+                    </Col>
+                  )}
 
                   <Col md="3">
                     <FormGroup>
@@ -860,137 +895,139 @@ const CustomersList = () => {
                     </Col>
                   </>
 
-                  <>
-                    <Col size="12">
-                      <b>Historial</b>
-                    </Col>
+                  {typeId === 1 && (
+                    <>
+                      <Col size="12">
+                        <b>Historial</b>
+                      </Col>
 
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Nombre de empresa</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.companyName"
-                          defaultValue={formData.employmentHistory.companyName}
-                          placeholder="Ingresa Nombre de empresa"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
+                      <Col md="3">
+                        <FormGroup>
+                          <label className="form-label">Nombre de empresa</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="employmentHistory.companyName"
+                            defaultValue={formData.employmentHistory.companyName}
+                            placeholder="Ingresa Nombre de empresa"
+                            ref={register()}
+                          />
+                        </FormGroup>
+                      </Col>
 
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Industria</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.industry"
-                          defaultValue={formData.employmentHistory.industry}
-                          placeholder="Ingresa Industria"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
+                      <Col md="3">
+                        <FormGroup>
+                          <label className="form-label">Industria</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="employmentHistory.industry"
+                            defaultValue={formData.employmentHistory.industry}
+                            placeholder="Ingresa Industria"
+                            ref={register()}
+                          />
+                        </FormGroup>
+                      </Col>
 
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Telefono</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.businessPhone"
-                          defaultValue={formData.employmentHistory.businessPhone}
-                          placeholder="Ingresa Telefono"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
+                      <Col md="3">
+                        <FormGroup>
+                          <label className="form-label">Telefono</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="employmentHistory.businessPhone"
+                            defaultValue={formData.employmentHistory.businessPhone}
+                            placeholder="Ingresa Telefono"
+                            ref={register()}
+                          />
+                        </FormGroup>
+                      </Col>
 
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Antiguedad Laboral</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.laborSeniority"
-                          defaultValue={formData.employmentHistory.laborSeniority}
-                          placeholder="Ingresa Antiguedad Laboral"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
+                      <Col md="3">
+                        <FormGroup>
+                          <label className="form-label">Antiguedad Laboral</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="employmentHistory.laborSeniority"
+                            defaultValue={formData.employmentHistory.laborSeniority}
+                            placeholder="Ingresa Antiguedad Laboral"
+                            ref={register()}
+                          />
+                        </FormGroup>
+                      </Col>
 
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Cargo</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.charge"
-                          defaultValue={formData.employmentHistory.charge}
-                          placeholder="Ingresa Cargo"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
+                      <Col md="3">
+                        <FormGroup>
+                          <label className="form-label">Cargo</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="employmentHistory.charge"
+                            defaultValue={formData.employmentHistory.charge}
+                            placeholder="Ingresa Cargo"
+                            ref={register()}
+                          />
+                        </FormGroup>
+                      </Col>
 
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Correo</label>
-                        <input
-                          className="form-control"
-                          type="email"
-                          name="employmentHistory.email"
-                          defaultValue={formData.employmentHistory.email}
-                          placeholder="Ingresa Correo"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
+                      <Col md="3">
+                        <FormGroup>
+                          <label className="form-label">Correo</label>
+                          <input
+                            className="form-control"
+                            type="email"
+                            name="employmentHistory.email"
+                            defaultValue={formData.employmentHistory.email}
+                            placeholder="Ingresa Correo"
+                            ref={register()}
+                          />
+                        </FormGroup>
+                      </Col>
 
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Rut</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.rut"
-                          defaultValue={formData.employmentHistory.rut}
-                          placeholder="Ingresa Rut"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
+                      <Col md="3">
+                        <FormGroup>
+                          <label className="form-label">Rut</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="employmentHistory.rut"
+                            defaultValue={formData.employmentHistory.rut}
+                            placeholder="Ingresa Rut"
+                            ref={register()}
+                          />
+                        </FormGroup>
+                      </Col>
 
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Codigo postal</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.zipCode"
-                          defaultValue={formData.employmentHistory.zipCode}
-                          placeholder="Ingresa Codigo postal"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
+                      <Col md="3">
+                        <FormGroup>
+                          <label className="form-label">Codigo postal</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="employmentHistory.zipCode"
+                            defaultValue={formData.employmentHistory.zipCode}
+                            placeholder="Ingresa Codigo postal"
+                            ref={register()}
+                          />
+                        </FormGroup>
+                      </Col>
 
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Ingreso Anual</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.annualIncome"
-                          defaultValue={formData.employmentHistory.annualIncome}
-                          placeholder="Ingresa Ingreso Anual"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </>
+                      <Col md="3">
+                        <FormGroup>
+                          <label className="form-label">Ingreso Anual</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="employmentHistory.annualIncome"
+                            defaultValue={formData.employmentHistory.annualIncome}
+                            placeholder="Ingresa Ingreso Anual"
+                            ref={register()}
+                          />
+                        </FormGroup>
+                      </Col>
+                    </>
+                  )}
 
                   <>
                     <Col size="12">
