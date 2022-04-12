@@ -16,7 +16,7 @@ import StoreVisitors from "../../../components/partials/e-commerce/store-visitor
 const Dashboard = () => {
   return (
     <React.Fragment>
-      <Head title="Dashboard"></Head>
+      <Head title="Dashboard Asesor/a"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
@@ -26,10 +26,10 @@ const Dashboard = () => {
           </BlockBetween>
         </BlockHead>
 
-        <Block>
+        <Block className="container-fluid">
           {/* Dashboard Menu-quick access */}
           <Row className="card flex flex-row mx-auto bg-white p-2 mb-4">
-            <Col className="nk-menu-item text-center btn btn-outline-light m-1" xxl="2" lg="3">
+            <Col className="nk-menu-item text-center btn btn-outline-light" md="3" lg="3">
               <Link to="/customer" className="nk-menu-link text-dark-50 w-100 bg-transparent">
                 <span>
                   <em className="icon ni ni-users-fill"></em>
@@ -38,7 +38,7 @@ const Dashboard = () => {
               </Link>
             </Col>
 
-            <Col className="nk-menu-item text-center btn btn-outline-light m-1" xxl="2" lg="3">
+            <Col className="nk-menu-item text-center btn btn-outline-light" md="3" lg="3">
               <Link to="/operation" className="nk-menu-link text-dark-50 w-100 bg-transparent">
                 <span>
                   <em className="icon ni ni-swap-alt-fill"></em>
@@ -47,7 +47,7 @@ const Dashboard = () => {
               </Link>
             </Col>
 
-            <Col className="nk-menu-item text-center btn btn-outline-light m-1" xxl="2" lg="3">
+            <Col className="nk-menu-item text-center btn btn-outline-light" md="3" lg="3">
               <Link to="/customer-library" className="nk-menu-link text-dark-50 w-100 bg-transparent">
                 <span>
                   <em className="icon ni ni-users-fill"></em>
@@ -56,7 +56,7 @@ const Dashboard = () => {
               </Link>
             </Col>
 
-            <Col className="nk-menu-item text-center btn btn-outline-light m-1" xxl="2" lg="3">
+            <Col className="nk-menu-item text-center btn btn-outline-light" md="3" lg="3">
               <Link to="/customer" className="nk-menu-link text-dark-50 w-100 bg-transparent">
                 <span>
                   <em className="icon ni ni-users-fill"></em>

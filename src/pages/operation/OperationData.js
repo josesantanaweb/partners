@@ -1,62 +1,88 @@
 export const orderData = [
-  {
-    id: 1,
-    operationNumber: "1000",
-    planNumber: "0",
-    operationType: "Endoso",
-    customer: "Nelson Rodriguez",
-    adviser: "Julian Castro",
-    company: "Empresa X",
-    productType: "Tipo Prodcuto X",
-    product: "Evo",
-    investmentAmount: "20000",
-    period: "1 mes",
-    commission: "1000",
-  },
-
-  {
-    id: 2,
-    operationNumber: "1000",
-    planNumber: "0",
-    operationType: "Endoso",
-    customer: "Nelson Rodriguez",
-    adviser: "Julian Castro",
-    company: "Empresa X",
-    productType: "Tipo Prodcuto X",
-    product: "Evo",
-    investmentAmount: "20000",
-    period: "1 mes",
-    commission: "1000",
-  },
-
-  {
-    id: 3,
-    operationNumber: "1000",
-    planNumber: "0",
-    operationType: "Endoso",
-    customer: "Nelson Rodriguez",
-    adviser: "Julian Castro",
-    company: "Empresa X",
-    productType: "Tipo Prodcuto X",
-    product: "Evo",
-    investmentAmount: "20000",
-    period: "1 mes",
-    commission: "1000",
-  },
-  {
-    id: 4,
-    operationNumber: "1000",
-    planNumber: "0",
-    operationType: "Endoso",
-    customer: "Nelson Rodriguez",
-    adviser: "Julian Castro",
-    company: "Empresa X",
-    productType: "Tipo Prodcuto X",
-    product: "Evo",
-    investmentAmount: "20000",
-    period: "1 mes",
-    commission: "1000",
-  },
+  // {
+  //   id: 1,
+  //   operationNumber: "1000",
+  //   planNumber: "0",
+  //   customerPlan: "",
+  //   operationType: "Endoso",
+  //   customer: "Nelson Rodriguez",
+  //   adviser: "Julian Castro",
+  //   company: "Empresa X",
+  //   productType: "Tipo Prodcuto X",
+  //   product: "Evo",
+  //   investmentAmount: 2000,
+  //   period: "1 mes",
+  //   commission: "1000",
+  //   anualPayment: 0,
+  //   formOfPayment: "",
+  //   paymentMethod: "",
+  //   amountOfMoney: 0,
+  //   discretionaryCommission: "",
+  //   trailerFreeComission: 0,
+  // },
+  // {
+  //   id: 2,
+  //   operationNumber: "1000",
+  //   planNumber: "0",
+  //   customerPlan: "",
+  //   operationType: "Endoso",
+  //   customer: "Nelson Rodriguez",
+  //   adviser: "Julian Castro",
+  //   company: "Empresa X",
+  //   productType: "Tipo Prodcuto X",
+  //   product: "Evo",
+  //   investmentAmount: 2000,
+  //   period: "1 mes",
+  //   commission: "1000",
+  //   anualPayment: 0,
+  //   formOfPayment: "",
+  //   paymentMethod: "",
+  //   amountOfMoney: 0,
+  //   discretionaryCommission: "",
+  //   trailerFreeComission: 0,
+  // },
+  // {
+  //   id: 3,
+  //   operationNumber: "1000",
+  //   planNumber: "0",
+  //   customerPlan: "",
+  //   operationType: "Endoso",
+  //   customer: "Nelson Rodriguez",
+  //   adviser: "Julian Castro",
+  //   company: "Empresa X",
+  //   productType: "Tipo Prodcuto X",
+  //   product: "Evo",
+  //   investmentAmount: 2000,
+  //   period: "1 mes",
+  //   commission: "1000",
+  //   anualPayment: 0,
+  //   formOfPayment: "",
+  //   paymentMethod: "",
+  //   amountOfMoney: 0,
+  //   discretionaryCommission: "",
+  //   trailerFreeComission: 0,
+  // },
+  // {
+  //   id: 4,
+  //   operationNumber: "1000",
+  //   planNumber: "0",
+  //   customerPlan: "",
+  //   operationType: "Endoso",
+  //   customer: "Nelson Rodriguez",
+  //   adviser: "Julian Castro",
+  //   company: "Empresa X",
+  //   productType: "Tipo Prodcuto X",
+  //   product: "Evo",
+  //   investmentAmount: 2000,
+  //   period: "1 mes",
+  //   commission: "1000",
+  //   anualPayment: 0,
+  //   formOfPayment: "",
+  //   paymentMethod: "",
+  //   amountOfMoney: 0,
+  //   discretionaryCommission: "",
+  //   trailerFreeComission: 0,
+  // },
   // {
   //   id: 1,
   //   orderId: "95954",
@@ -67,7 +93,6 @@ export const orderData = [
   //   total: "249.75",
   //   check: false,
   // },
-
   //   {
   //     id: 1,
   //     orderId: "95954",
@@ -269,7 +294,6 @@ export const orderData = [
   //     check: false,
   //   },
   // ];
-
   // export const saleOrders = [
   //   {
   //     id: 1,
@@ -453,34 +477,34 @@ export const orderData = [
   //   },
 ];
 
-export const statusOptions = [
-  { value: "Paid", label: "Paid" },
-  { value: "Due", label: "Due" },
-  { value: "Canceled", label: "Cancelled" },
-];
+// export const statusOptions = [
+//   { value: "Paid", label: "Paid" },
+//   { value: "Due", label: "Due" },
+//   { value: "Canceled", label: "Cancelled" },
+// ];
 
-export const filterStatus = [
-  { value: "approved", label: "Approved" },
-  { value: "pending", label: "Pending" },
-  { value: "deleted", label: "Deleted" },
-  { value: "rejected", label: "Rejected" },
-];
+// export const filterStatus = [
+//   { value: "approved", label: "Approved" },
+//   { value: "pending", label: "Pending" },
+//   { value: "deleted", label: "Deleted" },
+//   { value: "rejected", label: "Rejected" },
+// ];
 
-export const filterType = [
-  { value: "Deposit", label: "Deposit" },
-  { value: "Buy", label: "Buy Coin" },
-  { value: "Sell", label: "Sell Coin" },
-  { value: "Transfer", label: "Transfer" },
-  { value: "Withdraw", label: "Withdraw" },
-];
+// export const filterType = [
+//   { value: "Deposit", label: "Deposit" },
+//   { value: "Buy", label: "Buy Coin" },
+//   { value: "Sell", label: "Sell Coin" },
+//   { value: "Transfer", label: "Transfer" },
+//   { value: "Withdraw", label: "Withdraw" },
+// ];
 
-export const filterCoin = [
-  { value: "Bitcoin", label: "Bitcoin" },
-  { value: "Etherium", label: "Etherium" },
-  { value: "Litecoin", label: "Litecoin" },
-];
+// export const filterCoin = [
+//   { value: "Bitcoin", label: "Bitcoin" },
+//   { value: "Etherium", label: "Etherium" },
+//   { value: "Litecoin", label: "Litecoin" },
+// ];
 
-export const filterPaymentmethod = [
-  { value: "Paypal", label: "Paypal" },
-  { value: "Bank", label: "Bank" },
-];
+// export const filterPaymentmethod = [
+//   { value: "Paypal", label: "Paypal" },
+//   { value: "Bank", label: "Bank" },
+// ];
