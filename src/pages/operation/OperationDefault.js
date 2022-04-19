@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import OperationsServices from "../../services/OperationsServices";
 import { Link } from "react-router-dom";
-import { useRut } from "react-rut-formatter";
 import Head from "../../layout/head/Head";
 import Content from "../../layout/content/Content";
 import DatePicker from "react-datepicker";
@@ -23,15 +21,11 @@ import {
   Row,
   Col,
 } from "../../components/Component";
-
 import { getDateStructured } from "../../utils/Utils";
 import { useForm } from "react-hook-form";
-
 import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem, Button, Modal, ModalBody } from "reactstrap";
 
 const OperationDefault = () => {
-  const { rut, updateRut, isValid } = useRut();
-
   const [data, setData] = useState(orderData);
   const [smOption, setSmOption] = useState(false);
 
@@ -47,17 +41,16 @@ const OperationDefault = () => {
     company: "",
     productType: "",
     product: "",
-    investmentAmount: parseInt(0),
+    investmentAmount: "",
     rut: "",
-    customer: "",
     period: "",
     commission: "",
-    annualPayment: 0,
+    annualPayment: "",
     formOfPayment: "",
     paymentMethod: "",
-    amountOfMoney: 0,
+    amountOfMoney: "",
     discretionaryCommission: "",
-    trailerFreeComission: 0,
+    trailerFreeComission: "",
   });
 
   const [view, setView] = useState({
@@ -109,6 +102,11 @@ const OperationDefault = () => {
     setData([...newData]);
   };
 
+  const [customers, setCustomers] = useState([]);
+  const [tableCustomers, setTableCustomers] = useState([]);
+  const [search, setSearch] = useState("");
+  const [searchRut, setSearchRut] = useState("");
+
   // resets forms
   const resetForm = () => {
     setFormData({
@@ -122,21 +120,21 @@ const OperationDefault = () => {
       company: "",
       productType: "",
       product: "",
-      investmentAmount: parseInt(0),
+      investmentAmount: "",
       rut: "",
       customer: "",
       period: "",
       commission: "",
-      annualPayment: 0,
+      annualPayment: "",
       formOfPayment: "",
       paymentMethod: "",
-      amountOfMoney: 0,
+      amountOfMoney: "",
       discretionaryCommission: "",
-      trailerFreeComission: 0,
+      trailerFreeComission: "",
     });
   };
 
-  const onFormSubmit = (form) => {
+  const onFormSubmit = async (form) => {
     const {
       operationNumber,
       currencyType,
@@ -162,30 +160,154 @@ const OperationDefault = () => {
     let submittedData = {
       id: data.length + 1,
       operationNumber: "000001",
-      currencyType: currencyType,
+      currencyType: parseInt(currencyType),
       planNumber: "0000001",
-      customerPlan: customerPlan,
+      customerPlan: parseInt(customerPlan),
       adviser: adviser,
-      company: company,
-      productType: productType,
-      product: product,
-      investmentAmount: investmentAmount,
+      company: parseInt(company),
+      productType: parseInt(productType),
+      product: parseInt(product),
+      investmentAmount: parseInt(investmentAmount),
       rut: rut,
       customer: customer,
       period: period,
       comisión: comission,
-      annualPayment: annualPayment,
-      formOfPayment: formOfPayment,
-      paymentMethod: paymentMethod,
-      amountOfMoney: amountOfMoney,
+      annualPayment: parseInt(annualPayment),
+      formOfPayment: parseInt(formOfPayment),
+      paymentMethod: parseInt(paymentMethod),
+      amountOfMoney: parseInt(amountOfMoney),
       discretionaryCommission: discretionaryCommission,
       trailerFreeComission: trailerFreeComission,
     };
 
     setData([submittedData, ...data]);
+    console.log(submittedData);
     setView({ add: false, details: false, viewChecklist: false });
     resetForm();
   };
+
+  // Plan customer option select values
+  const customerPlanOptionValues = {
+    plan1: {
+      id: 1,
+      text: "Plan-1",
+    },
+    plan2: {
+      id: 2,
+      text: "Plan-2",
+    },
+    plan3: {
+      id: 3,
+      text: "Plan-3",
+    },
+  };
+  const { plan1, plan2, plan3 } = customerPlanOptionValues;
+
+  // Company option select values
+  const companyOptionValues = {
+    company1: {
+      id: 1,
+      text: "Empresa-1",
+    },
+    company2: {
+      id: 2,
+      text: "Empresa-2",
+    },
+    company3: {
+      id: 3,
+      text: "Empresa-3",
+    },
+  };
+
+  // Product type option select values
+  const productTypeOptionValues = {
+    productType1: {
+      id: 1,
+      text: "ADVANCE",
+    },
+    productType2: {
+      id: 2,
+      text: "SENIOR",
+    },
+  };
+
+  // Current Type opetion select values
+  const currencyTypeOptionValues = {
+    currency1: {
+      id: 1,
+      text: "CLP",
+    },
+    currency2: {
+      id: 2,
+      text: "USD",
+    },
+    currency3: {
+      id: 3,
+      text: "EUR",
+    },
+  };
+
+  // Product option select values
+  const productOptionValues = {
+    product1: {
+      id: 1,
+      text: "PLAT",
+    },
+    product2: {
+      id: 2,
+      text: "ACC",
+    },
+    product3: {
+      id: 3,
+      text: "EVO",
+    },
+    product4: {
+      id: 4,
+      text: "STONEX",
+    },
+    product5: {
+      id: 5,
+      text: "EXCESO",
+    },
+  };
+
+  // Form of Payment option select values
+  const formOfPaymentOptionValues = {
+    formOfPayment1: {
+      id: 1,
+      text: "MENSUAL",
+    },
+    formOfPayment2: {
+      id: 2,
+      text: "TRIMESTRAL",
+    },
+    formOfPayment3: {
+      id: 3,
+      text: "ANUAL",
+    },
+  };
+
+  const paymentMethodOptionValues = {
+    paymentMethod1: {
+      id: 1,
+      text: "CHEQUE",
+    },
+    paymentMethod2: {
+      id: 2,
+      text: "TRANSFERENCIA",
+    },
+    paymentMethod3: {
+      id: 3,
+      text: "EFECTIVO",
+    },
+  };
+
+  const { company1, company2, company3 } = companyOptionValues;
+  const { productType1, productType2 } = productTypeOptionValues;
+  const { product1, product2, product3, product4, product5 } = productOptionValues;
+  const { formOfPayment1, formOfPayment2, formOfPayment3 } = formOfPaymentOptionValues;
+  const { currency1, currency2, currency3 } = currencyTypeOptionValues;
+  const { paymentMethod1, paymentMethod2, paymentMethod3 } = paymentMethodOptionValues;
 
   // function to load detail data
   const loadDetail = (id) => {
@@ -259,25 +381,12 @@ const OperationDefault = () => {
   }
 
   // ************************************************
-  // Get input search data Public API
-  const [customers, setCustomers] = useState([]);
-  const [tableCustomers, setTableCustomers] = useState([]);
-  const [search, setSearch] = useState("");
-
-  // Get customers from API
+  // Function to get customers from API
   const getCustomer = async (customerName) => {
     try {
       const customers = await OperationsServices.getCustomer(customerName);
       const customersData = customers.data.map((customerData) => customerData);
-
-      const customerFiltredData = customers.data.map((customerData) => {
-        if (customerData.names === customerName) {
-          return customerData;
-        }
-      });
-
-      console.log(`Customer:`, customerFiltredData); //-> checked
-      console.log(`Name:`, customerName); //-> checked
+      customers.data.map((customerData) => customerData.names === customerName && customerData);
 
       setCustomers(customersData);
       setTableCustomers(customersData);
@@ -286,22 +395,65 @@ const OperationDefault = () => {
     }
   };
 
-  // Get customer names from input search
+  // Function to get customer names and rut from input search
   const handleInputSearchChange = (ev) => {
     setSearch(ev.target.value);
+    setSearchRut(ev.target.value);
   };
 
-  const handleClickedRegister = (customerName) => {
-    const customerRutSelected = customers.filter((customer) => {
-      if (customer.names === customerName) {
-        setSearch(customer.names);
-      }
-    });
+  // Function to reset Rut and Names fields
+  const handleClearSearch = () => {
+    setSearch("");
+    setSearchRut("");
+    resetForm();
+  };
+
+  // Function to get customer names from input search
+  const handleClickedRegisterNames = (customerName) => {
+    customers.filter((customer) => customer.names === customerName && setSearch(customerName));
   };
 
   useEffect(() => {
     getCustomer(search);
   }, [search]);
+
+  // Function to set input rut value in input field
+  const handleClickedRegisterRut = (customerRut) =>
+    customers.filter((customer) => customer.rut === customerRut && setSearchRut(customerRut));
+
+  // Post deal form to API
+  // Error 403 Forbidden es un código de estado HTTP que indica que el servidor deniega la acción solicitada, página web o servicio. En otras palabras, el servidor ha podido ser contactado, y ha recibido una petición válida, pero ha denegado el acceso a la acción que se solicita
+  const postCustomerDeal = async (deal) => {
+    try {
+      const response = await OperationsServices.addDeal(deal);
+      console.log(`Response:`, response);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    postCustomerDeal(search);
+  }, [search]);
+
+  // *Eliminar una operacion del sistema
+  // const deleteDeal = async (dealId) => {
+  //   try {
+  //     const response = await OperationsServices.deleteDeal(dealId);
+  //     console.log(`Response:`, response);
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // };
+  // *Eliminar una operacion del sistema
+
+  // Function to get only 5 customers from API
+  const getPrincipalCustomersRegisters = (customersData) => {
+    let newCustomersData = customersData.slice(0, 3);
+    return newCustomersData;
+  };
+
+  // change to current value amountOfMoney in real time
 
   return (
     <React.Fragment>
@@ -312,7 +464,6 @@ const OperationDefault = () => {
             <BlockHeadContent>
               <BlockTitle>Operaciones</BlockTitle>
             </BlockHeadContent>
-
             <BlockHeadContent>
               <div className="toggle-wrap nk-block-tools-toggle">
                 <a
@@ -373,7 +524,6 @@ const OperationDefault = () => {
                     <li className="nk-block-tools-opt">
                       <Button color="primary" className="btn-icon" onClick={() => setView({ add: true })}>
                         <Icon name="plus"></Icon>
-                        <span className="pr-2">Crear Operación</span>
                       </Button>
                     </li>
                   </ul>
@@ -408,7 +558,7 @@ const OperationDefault = () => {
                   <span className="sub-text text-center">Cliente</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text text-center">Cliente</span>
+                  <span className="sub-text text-center">Rut</span>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text text-center">Asesor</span>
@@ -532,19 +682,53 @@ const OperationDefault = () => {
                         <span>{item.adviser}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.company}</span>
+                        <span>
+                          {item.company === 1
+                            ? company1.text
+                            : null || item.company === 2
+                            ? company2.text
+                            : null || item.company === 3
+                            ? company3.text
+                            : null}
+                        </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.productType}</span>
+                        <span>
+                          {item.productType === 1
+                            ? productType1.text
+                            : null || item.productType === 2
+                            ? productType2.text
+                            : null}
+                        </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.product}</span>
+                        <span>
+                          {item.product === 1
+                            ? product1.text
+                            : null || item.product === 2
+                            ? product2.text
+                            : null || item.product === 3
+                            ? product3.text
+                            : null || item.product === 4
+                            ? product4.text
+                            : null || item.product === 5
+                            ? product5.text
+                            : null}
+                        </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{parseInt(item.investmentAmount) + 3}</span>
+                        <span>{item.investmentAmount}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.currencyType}</span>
+                        <span>
+                          {item.currencyType === 1
+                            ? currency1.text
+                            : null || item.currencyType === 2
+                            ? currency2.text
+                            : null || item.currencyType === 3
+                            ? currency3.text
+                            : null}
+                        </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item.period}</span>
@@ -553,10 +737,26 @@ const OperationDefault = () => {
                         <span>{item.annualPayment}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.formOfPayment}</span>
+                        <span>
+                          {item.formOfPayment === 1
+                            ? formOfPayment1.text
+                            : null || item.formOfPayment === 2
+                            ? formOfPayment2.text
+                            : null || item.formOfPayment === 3
+                            ? formOfPayment3.text
+                            : null}
+                        </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.paymentMethod}</span>
+                        <span>
+                          {item.paymentMethod === 1
+                            ? paymentMethod1.text
+                            : null || item.paymentMethod === 2
+                            ? paymentMethod2.text
+                            : null || item.paymentMethod === 3
+                            ? paymentMethod3.text
+                            : null}
+                        </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item.amountOfMoney}</span>
@@ -590,7 +790,6 @@ const OperationDefault = () => {
                           </li>
                         </ul>
                       </DataTableRow>
-
                       <DataTableRow className="text-center">
                         <ul className="nk-tb-actions gx-1">
                           <li>
@@ -614,6 +813,30 @@ const OperationDefault = () => {
                           </li>
                         </ul>
                       </DataTableRow>
+                      <DataTableRow className="nk-tb-col-tools">
+                        <ul className="nk-tb-actions gx-1">
+                          {/* <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                            <TooltipComponent
+                              tag="a"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"edit" + 1}
+                              icon="edit-alt-fill"
+                              direction="top"
+                              text="Edit"
+                            />
+                          </li> */}
+                          <li className="nk-tb-action-hidden">
+                            <TooltipComponent
+                              tag="a"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"delete" + 1}
+                              icon="trash-fill"
+                              direction="top"
+                              text="Delete"
+                            />
+                          </li>
+                        </ul>
+                      </DataTableRow>
                     </DataTableItem>
                   ))
                 : null}
@@ -634,7 +857,6 @@ const OperationDefault = () => {
             </div>
           )}
         </PreviewAltCard>
-        {/* Operations Modal Form */}
         <Modal isOpen={view.add} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a href="#cancel" className="close">
@@ -655,10 +877,31 @@ const OperationDefault = () => {
                       <h6 className="border-bottom pb-1">Información del Cliente</h6>
                     </Col>
 
-                    <Col md="12">
+                    <Col md="7">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="customer">
+                          Buscar Cliente
+                        </label>
+                        <div className="search flex flex-row justify-content-between align-items-center">
+                          <input
+                            type="text"
+                            name="customer"
+                            value={search}
+                            onChange={handleInputSearchChange}
+                            className="form-control"
+                            placeholder="Nombre del Cliente"
+                            ref={register({ required: "Este campo es obligatorio *" })}
+                          />
+                          <Button className="bg-primary border border-primary ml-1" onClick={handleClearSearch}>
+                            <em className="icon ni ni-repeat"></em>
+                          </Button>
+                        </div>
+                      </div>
+                    </Col>
+                    <Col md="5">
                       <div className="form-group">
                         <label className="form-label" htmlFor="rut">
-                          Buscar Cliente
+                          Rut del Cliente
                         </label>
                         <div className="search flex flex-column">
                           <div className="form-icon form-icon-right">
@@ -667,26 +910,27 @@ const OperationDefault = () => {
                           <input
                             type="text"
                             name="rut"
-                            defaultValue={formData.rut}
-                            value={search}
+                            value={searchRut}
                             onChange={handleInputSearchChange}
-                            className="form-control"
-                            placeholder="Nombre de Cliente"
+                            className="form-control pointer-event: none bg-light"
+                            placeholder="Rut del Cliente"
                             ref={register({ required: "Este campo es obligatorio *" })}
                           />
                         </div>
                       </div>
+                    </Col>
 
-                      <div className="overflow-auto rounded scrollbar-fluid container-fluid">
-                        {customers.length === 0 ? (
-                          <span className="text-danger">
-                            <em className="icon ni ni-info"></em>
-                            <i>Cliente no válido</i>
-                          </span>
-                        ) : (
-                          customers &&
-                          customers.map((customer) => (
-                            <DataTableItem key={customer.id}>
+                    <div className="overflow-auto rounded scrollbar-fluid container-fluid w-100">
+                      {customers.length === 0 ? (
+                        <span className="text-danger">
+                          <em className="icon ni ni-info"></em>
+                          <i className="pl-1">Cliente no encontrado</i>
+                        </span>
+                      ) : (
+                        customers &&
+                        getPrincipalCustomersRegisters(customers).map((customer) => (
+                          <div key={customer.id} className="w-100 overflow-auto scrollbar-fluid">
+                            <div className="w-100 d-flex justify-content-between align-items-center border rounded bg-light mb-1 scrollbar-fluid">
                               <DataTableRow className="text-center">
                                 <span>{customer.id}</span>
                               </DataTableRow>
@@ -704,17 +948,20 @@ const OperationDefault = () => {
                               </DataTableRow>
                               <DataTableRow>
                                 <Button
-                                  onClick={() => handleClickedRegister(customer.names)}
-                                  className="bg-dark border-0 text-white"
+                                  onClick={() => {
+                                    handleClickedRegisterNames(customer.names);
+                                    handleClickedRegisterRut(customer.rut);
+                                  }}
+                                  className="bg-primary border-0 text-white"
                                 >
                                   <em className="icon ni ni-check"></em>
                                 </Button>
                               </DataTableRow>
-                            </DataTableItem>
-                          ))
-                        )}
-                      </div>
-                    </Col>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
 
                     <Col md="12">
                       <h6 className="border-bottom pb-1 mt-2">Plan</h6>
@@ -731,10 +978,10 @@ const OperationDefault = () => {
                             ref={register({ required: "Este campo es obligatorio *" })}
                             defaultValue={formData.customerPlan}
                           >
-                            <option value="">Seleccionar...</option>
-                            <option value="plan-1">Plan 1</option>
-                            <option value="plan-2">Plan 2</option>
-                            <option value="plan-3">Plan 3</option>
+                            <option>Seleccionar...</option>
+                            <option value={plan1.id}>{plan1.text}</option>
+                            <option value={plan2.id}>{plan2.text}</option>
+                            <option value={plan3.id}>{plan3.text}</option>
                           </select>
                           {errors.customerPlan && <span className="invalid">{errors.customerPlan.message}</span>}
                         </div>
@@ -755,10 +1002,10 @@ const OperationDefault = () => {
                             ref={register({ required: "Este campo es obligatorio *" })}
                             defaultValue={formData.company}
                           >
-                            <option value="">Seleccionar...</option>
-                            <option value="Empresa-1">Empresa 1</option>
-                            <option value="Empresa-2">Empresa 2</option>
-                            <option value="Empresa-3">Empresa 3</option>
+                            <option>Seleccionar...</option>
+                            <option value={company1.id}>{company1.text}</option>
+                            <option value={company2.id}>{company2.text}</option>
+                            <option value={company3.id}>{company3.text}</option>
                           </select>
                           {errors.company && <span className="invalid">{errors.company.message}</span>}
                         </div>
@@ -776,9 +1023,9 @@ const OperationDefault = () => {
                             ref={register({ required: "Este campo es obligatorio *" })}
                             defaultValue={formData.productType}
                           >
-                            <option value="">Seleccionar...</option>
-                            <option value="ADVANCE">ADVANCE</option>
-                            <option value="SENIOR">SENIOR</option>
+                            <option>Seleccionar...</option>
+                            <option value={productType1.id}>{productType1.text}</option>
+                            <option value={productType2.id}>{productType2.text}</option>
                           </select>
                           {errors.productType && <span className="invalid">{errors.productType.message}</span>}
                         </div>
@@ -796,12 +1043,12 @@ const OperationDefault = () => {
                             ref={register({ required: "Este campo es obligatorio *" })}
                             defaultValue={formData.product}
                           >
-                            <option value="">Seleccionar...</option>
-                            <option value="PLAT">PLAT</option>
-                            <option value="ACC">ACC</option>
-                            <option value="EVO">EVO</option>
-                            <option value="STONEX">STONEX</option>
-                            <option value="EXCESO">EXCESO</option>
+                            <option>Seleccionar...</option>
+                            <option value={product1.id}>{product1.text}</option>
+                            <option value={product2.id}>{product2.text}</option>
+                            <option value={product3.id}>{product3.text}</option>
+                            <option value={product4.id}>{product4.text}</option>
+                            <option value={product5.id}>{product5.text}</option>
                           </select>
                           {errors.product && <span className="invalid">{errors.product.message}</span>}
                         </div>
@@ -823,9 +1070,9 @@ const OperationDefault = () => {
                             defaultValue={formData.currencyType}
                           >
                             <option value="">Seleccionar...</option>
-                            <option value="CLP">CLP - Pesos chilenos</option>
-                            <option value="USD">USD - Dolar Estados Unidos</option>
-                            <option value="EUR">EUR - Euros</option>
+                            <option value={currency1.id}>{currency1.text}</option>
+                            <option value={currency2.id}>{currency2.text}</option>
+                            <option value={currency3.id}>{currency3.text}</option>
                           </select>
                           {errors.currencyType && <span className="invalid">{errors.currencyType.message}</span>}
                         </div>
@@ -916,10 +1163,10 @@ const OperationDefault = () => {
                             ref={register({ required: "Este campo es obligatorio *" })}
                             defaultValue={formData.formOfPayment}
                           >
-                            <option value="">Seleccionar...</option>
-                            <option value="MENSUAL">MENSUAL</option>
-                            <option value="TRIMESTRAL">TRIMESTRAL</option>
-                            <option value="ANUAL">ANUAL</option>
+                            <option>Seleccionar...</option>
+                            <option value={formOfPayment1.id}>{formOfPayment1.text}</option>
+                            <option value={formOfPayment2.id}>{formOfPayment2.text}</option>
+                            <option value={formOfPayment3.id}>{formOfPayment3.text}</option>
                           </select>
                           {errors.formOfPayment && <span className="invalid">{errors.formOfPayment.message}</span>}
                         </div>
@@ -937,19 +1184,19 @@ const OperationDefault = () => {
                             ref={register({ required: "Este campo es obligatorio *" })}
                             defaultValue={formData.formOfPayment}
                           >
-                            <option value="">Seleccionar...</option>
-                            <option value="AL CONTADO">AL CONTADO</option>
-                            <option value="TARJETA">TARJETA</option>
-                            <option value="CHEQUE">CHEQUE</option>
+                            <option>Seleccionar...</option>
+                            <option value={paymentMethod1.id}>{paymentMethod1.text}</option>
+                            <option value={paymentMethod2.id}>{paymentMethod2.text}</option>
+                            <option value={paymentMethod3.id}>{paymentMethod3.text}</option>
                           </select>
                           {errors.paymentMethod && <span className="invalid">{errors.paymentMethod.message}</span>}
                         </div>
                       </div>
                     </Col>
-                    <Col md="12" className="border-bottom mt-2">
+                    {/* <Col md="12" className="border-bottom mt-2">
                       <h6>Comisiones de servicio</h6>
-                    </Col>
-                    <Col md="4">
+                    </Col> */}
+                    {/* <Col md="4">
                       <label className="form-label mt-1">Servicio Discresional</label>
                       <div className="form-group">
                         <div className="form-control-wrap flex row ml-0 mt-1">
@@ -977,8 +1224,8 @@ const OperationDefault = () => {
                           </div>
                         </div>
                       </div>
-                    </Col>
-                    <Col md="8">
+                    </Col> */}
+                    {/* <Col md="8">
                       <div className="form-group">
                         <label htmlFor="annual-payment" className="form-label mt-1">
                           Porcentaje de comisión
@@ -989,15 +1236,15 @@ const OperationDefault = () => {
                             name="comissionPercentage"
                             placeholder="Ejemplo: 1, 1.0"
                             className="form-control"
-                            // name="annualPayment"
+                            name="annualPayment"
                             ref={register({ required: "Este campo es obligatorio *" })}
-                            // defaultValue={formData.annualPayment}
+                            defaultValue={formData.annualPayment}
                           />
-                          {/* {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>} */}
+                          {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>}
                         </div>
                       </div>
-                    </Col>
-                    <Col md="4">
+                    </Col> */}
+                    {/* <Col md="4">
                       <label className="form-label mt-1">Trailer Free</label>
                       <div className="form-group">
                         <div className="form-control-wrap flex row ml-0 mt-1">
@@ -1025,8 +1272,8 @@ const OperationDefault = () => {
                           </div>
                         </div>
                       </div>
-                    </Col>
-                    <Col md="8">
+                    </Col> */}
+                    {/* <Col md="8">
                       <div className="form-group">
                         <label htmlFor="annual-payment" className="form-label mt-1">
                           Porcentaje de comisión
@@ -1036,14 +1283,14 @@ const OperationDefault = () => {
                             type="number"
                             placeholder="Ejemplo: 1, 1.0"
                             className="form-control"
-                            // name="annualPayment"
+                            name="annualPayment"
                             ref={register({ required: "Este campo es obligatorio *" })}
-                            // defaultValue={formData.annualPayment}
+                            defaultValue={formData.annualPayment}
                           />
-                          {/* {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>} */}
+                          {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>}
                         </div>
                       </div>
-                    </Col>
+                    </Col> */}
                     <Col size="12">
                       <div className="text-right pt-4">
                         <Button color="primary" type="submit">

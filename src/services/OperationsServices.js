@@ -15,6 +15,24 @@ const OperationsServices = {
     });
     return response.data;
   },
+  addDeal: async (deal) => {
+    const response = await api.post("/deals/", deal, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+  deleteDeal: async (id) => {
+    const response = await api.delete(`/deals/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+  editDeal: async (userId, data) => {
+    const response = await api.patch(`/deal/${userId}`, data, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
 };
 
 export default OperationsServices;
