@@ -33,6 +33,14 @@ const OperationsServices = {
     });
     return response.data;
   },
+
+  // Deal Form Selects
+  getDealSelects: async () => {
+    const response = await api.get(`/deals/selects`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
 };
 
 export default OperationsServices;
