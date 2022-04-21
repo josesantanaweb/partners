@@ -24,6 +24,7 @@ import {
 import { getDateStructured } from "../../utils/Utils";
 import { useForm } from "react-hook-form";
 import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem, Button, Modal, ModalBody } from "reactstrap";
+import axios from "axios";
 
 const OperationDefault = () => {
   const [data, setData] = useState(orderData);
@@ -51,9 +52,8 @@ const OperationDefault = () => {
     // amountOfMoney: "",
     // discretionaryCommission: "",
     // trailerFreeComission: "",
-    // * Nuevo Modelo
+    // * Nuevo Modelo orden JSON
     planId: null,
-    customerId: null,
     companyId: "",
     productTypeId: "",
     productId: "",
@@ -68,6 +68,7 @@ const OperationDefault = () => {
     discresionalServiceCommission: "",
     trailerFree: false,
     trailerFreeCommission: "",
+    customerId: null,
     // * Nuevo Modelo
   });
 
@@ -139,8 +140,8 @@ const OperationDefault = () => {
       // productType: "",
       // product: "",
       // investmentAmount: "",
-      rut: "",
-      customer: "",
+      // rut: "",
+      // customer: "",
       // period: "",
       // commission: "",
       // annualPayment: "",
@@ -149,8 +150,23 @@ const OperationDefault = () => {
       // amountOfMoney: "",
       // discretionaryCommission: "",
       // trailerFreeComission: "",
+      // planId: null,
+      // customerId: null,
+      // companyId: "",
+      // productTypeId: "",
+      // productId: "",
+      // currencyId: "",
+      // amount: "",
+      // amountPaid: "",
+      // period: "",
+      // annualPayment: "",
+      // paymentMethodId: "",
+      // paymentMediumId: "",
+      // discresionalService: "",
+      // discresionalServiceCommission: "",
+      // trailerFree: false,
+      // trailerFreeCommission: false,
       planId: null,
-      customerId: null,
       companyId: "",
       productTypeId: "",
       productId: "",
@@ -161,10 +177,11 @@ const OperationDefault = () => {
       annualPayment: "",
       paymentMethodId: "",
       paymentMediumId: "",
-      discresionalService: "",
+      discresionalService: false,
       discresionalServiceCommission: "",
       trailerFree: false,
-      trailerFreeCommission: false,
+      trailerFreeCommission: "",
+      customerId: null,
     });
   };
 
@@ -197,8 +214,8 @@ const OperationDefault = () => {
       // product,
       // period,
       // investmentAmount,
-      rut,
-      customer,
+      // rut,
+      // customer,
       // comission,
       // annualPayment,
       // formOfPayment,
@@ -207,8 +224,23 @@ const OperationDefault = () => {
       // discretionaryCommission,
       // trailerFreeComission,
       // * Nuevo Modelo
+      // planId,
+      // customerId,
+      // companyId,
+      // productTypeId,
+      // productId,
+      // currencyId,
+      // amount,
+      // amountPaid,
+      // period,
+      // annualPayment,
+      // paymentMethodId,
+      // paymentMediumId,
+      // discresionalService,
+      // discresionalServiceCommission,
+      // trailerFree,
+      // trailerFreeCommission,
       planId,
-      customerId,
       companyId,
       productTypeId,
       productId,
@@ -223,6 +255,7 @@ const OperationDefault = () => {
       discresionalServiceCommission,
       trailerFree,
       trailerFreeCommission,
+      customerId,
       // * Nuevo Modelo
     } = form;
 
@@ -248,6 +281,23 @@ const OperationDefault = () => {
       // discretionaryCommission: discretionaryCommission,
       // trailerFreeComission: trailerFreeComission,
       // * Nuevo Modelo
+      // planId: data.length + 1,
+      // companyId: parseInt(companyId),
+      // productTypeId: parseInt(productTypeId),
+      // productId: parseInt(productId),
+      // currencyId: parseInt(currencyId),
+      // amount: parseInt(amount),
+      // amountPaid: parseInt(amountPaid),
+      // period: period,
+      // annualPayment: parseInt(annualPayment),
+      // paymentMethodId: parseInt(paymentMethodId),
+      // paymentMediumId: parseInt(paymentMediumId),
+      // discresionalService: asignamentToBoolean(discresionalService), //Booleano
+      // discresionalServiceCommission: "5%", //5%
+      // trailerFree: asignamentToBoolean(trailerFree), //Booleano
+      // trailerFreeCommission: "15%", // 15%
+      // // customerId: getCustomerId(),
+      // * Nuevo Modelo
       planId: data.length + 1,
       companyId: parseInt(companyId),
       productTypeId: parseInt(productTypeId),
@@ -259,20 +309,25 @@ const OperationDefault = () => {
       annualPayment: parseInt(annualPayment),
       paymentMethodId: parseInt(paymentMethodId),
       paymentMediumId: parseInt(paymentMediumId),
-      discresionalService: asignamentToBoolean(discresionalService), //Booleano
-      discresionalServiceCommission: "5%", //5%
-      trailerFree: asignamentToBoolean(trailerFree), //Booleano
-      trailerFreeCommission: "15%", // 15%
+      discresionalService: asignamentToBoolean(discresionalService),
+      discresionalServiceCommission: "5%",
+      trailerFree: asignamentToBoolean(trailerFree),
+      trailerFreeCommission: "15%",
       customerId: getCustomerId(),
-      // * Nuevo Modelo
     };
 
-    setData([submittedData, ...data]);
     console.log(submittedData);
-    setView({ add: false, details: false, viewChecklist: false });
-    setSearch("");
-    setSearchRut("");
-    resetForm();
+    // function to post deal form data
+    try {
+      await OperationsServices.addDeal(submittedData);
+      setData([submittedData, ...data]);
+      setView({ add: false, details: false, viewChecklist: false });
+      setSearch("");
+      setSearchRut("");
+      resetForm();
+    } catch (error) {
+      throw error;
+    }
   };
 
   // function to get Deals selects
@@ -438,7 +493,7 @@ const OperationDefault = () => {
 
   // Function to get only 5 customers from API
   const getPrincipalCustomersRegisters = (customersData) => {
-    let newCustomersData = customersData.slice(0, 5);
+    let newCustomersData = customersData.slice(0, 7);
     return newCustomersData;
   };
 
@@ -448,64 +503,6 @@ const OperationDefault = () => {
 
   const [radioStateTrailerFree, setRadioStateTrailerFree] = useState(true);
   const [radioStateTrailerFreeFalse, setRadioStateTrailerFreeFalse] = useState(false);
-
-  // function to post deal to API
-  const postCustomerDeal = async (data) => {
-    try {
-      const newDeal = {
-        ...data,
-        customer: {
-          id: customers.find((customer) => customer.names === data.customer).id,
-        },
-        plan: {
-          id: selectedPlan.find((plan) => plan.name === data.plan).id,
-        },
-        company: {
-          id: selectedCompany.find((company) => company.name === data.company).id,
-        },
-        productType: {
-          id: selectedProductType.find((productType) => productType.name === data.productType).id,
-        },
-        product: {
-          id: selectedProduct.find((product) => product.name === data.product).id,
-        },
-        currencyType: {
-          id: selectedCurrencyType.find((currencyType) => currencyType.name === data.currencyType).id,
-        },
-        paymentMethod: {
-          id: selectedPaymentMethod.find((paymentMethod) => paymentMethod.name === data.paymentMethod).id,
-        },
-        paymentMedium: {
-          id: selectedPaymentMedium.find((paymentMedium) => paymentMedium.name === data.paymentMedium).id,
-        },
-      };
-
-      const response = await OperationsServices.postDeal(newDeal);
-      if (response.status === 201) {
-        setView({ add: false, details: false, viewChecklist: false });
-        resetForm();
-        setData([...data, response.data]);
-      }
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  // const postCustomerDeal = async (deal) => {
-  //   try {
-  //     const dataDeal = await OperationsServices.addDeal(deal);
-  //     console.log(dataDeal);
-
-  //     // setCustomers(customersData);
-  //     // setTableCustomers(customersData);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
-
-  useEffect(() => {
-    postCustomerDeal(formData);
-  }, []);
 
   return (
     <React.Fragment>

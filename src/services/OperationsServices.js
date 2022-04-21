@@ -16,7 +16,7 @@ const OperationsServices = {
     return response.data;
   },
   addDeal: async (deal) => {
-    const response = await api.post("/deals/", deal, {
+    const response = await api.post("/deals", deal, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
