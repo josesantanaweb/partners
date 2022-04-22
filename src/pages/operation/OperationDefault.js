@@ -411,7 +411,7 @@ const OperationDefault = () => {
   };
 
   // function to delete a Order
-  const deleteOrder = (id) => {
+  const deleteCustomerDeal = (id) => {
     let defaultData = data;
     defaultData = defaultData.filter((item) => item.id !== id);
     setData([...defaultData]);
@@ -422,6 +422,16 @@ const OperationDefault = () => {
     let newData;
     newData = data.filter((item) => item.check !== true);
     setData([...newData]);
+  };
+
+  // function to delete deal to API
+  const deleteDeal = async (id) => {
+    try {
+      await OperationsServices.deleteDeal(id);
+      deleteCustomerDeal(id);
+    } catch (error) {
+      throw error;
+    }
   };
 
   // function to change the complete property of an item
@@ -493,16 +503,31 @@ const OperationDefault = () => {
 
   // Function to get only 5 customers from API
   const getPrincipalCustomersRegisters = (customersData) => {
-    let newCustomersData = customersData.slice(0, 7);
+    let newCustomersData = customersData.slice(0, 5);
     return newCustomersData;
   };
 
   // Radio states
   const [radioStateDiscComission, setRadioStateDiscComission] = useState(true);
   const [radioStateDiscComissionFalse, setRadioStateDiscComissionFalse] = useState(false);
-
   const [radioStateTrailerFree, setRadioStateTrailerFree] = useState(true);
   const [radioStateTrailerFreeFalse, setRadioStateTrailerFreeFalse] = useState(false);
+
+  // function to get customer deals
+  const [customerDeals, setCustomerDeals] = useState([]);
+
+  const getCustomerDeals = async () => {
+    try {
+      const deals = await OperationsServices.getDeals();
+      const dealsData = deals.data.map((dealData) => dealData);
+      setCustomerDeals(dealsData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  useEffect(() => {
+    getCustomerDeals();
+  }, [customerDeals]);
 
   return (
     <React.Fragment>
@@ -586,17 +611,6 @@ const OperationDefault = () => {
           <div className="container-fluid overflow-auto scrollbar-fluid">
             <div className="nk-tb-list is-separate is-medium mb-3 ">
               <DataTableHead className="nk-tb-item">
-                <DataTableRow className="nk-tb-col-check">
-                  <div className="custom-control custom-control-sm custom-checkbox notext">
-                    <input
-                      type="checkbox"
-                      className="custom-control-input form-control"
-                      id="pid-all"
-                      onChange={(e) => selectorCheck(e)}
-                    />
-                    <label className="custom-control-label" htmlFor="pid-all"></label>
-                  </div>
-                </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text text-center">N. de Operacion</span>
                 </DataTableRow>
@@ -688,7 +702,7 @@ const OperationDefault = () => {
                                   selectorDeleteOrder();
                                 }}
                               >
-                                <Icon name="trash" onClick={deleteOrder}></Icon>
+                                <Icon name="trash"></Icon>
                                 <span>Remove Orders</span>
                               </DropdownItem>
                             </li>
@@ -700,83 +714,64 @@ const OperationDefault = () => {
                 </DataTableRow>
               </DataTableHead>
 
-              {currentItems.length > 0
-                ? currentItems.map((item) => (
-                    <DataTableItem key={item.id}>
-                      <DataTableRow className="nk-tb-col-check text-center">
-                        <div className="custom-control custom-control-sm custom-checkbox notext">
-                          <input
-                            type="checkbox"
-                            className="custom-control-input form-control"
-                            defaultChecked={item.check}
-                            id={item.id + "oId-all"}
-                            key={Math.random()}
-                            onChange={(e) => onSelectChange(e, item.id)}
-                          />
-                          <label className="custom-control-label" htmlFor={item.id + "oId-all"}></label>
-                        </div>
-                      </DataTableRow>
+              {customerDeals.length > 0
+                ? customerDeals.map((deal) => (
+                    <DataTableItem key={deal.id}>
                       <DataTableRow className="text-center">
                         <a href="#id" onClick={(ev) => ev.preventDefault()}>
-                          {/* #{item.operationNumber} */}
+                          #{deal.id}
                         </a>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.planNumber}</span>
+                        <span>{deal.planNumber}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.customer}</span>
+                        <span>{deal.customer}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.rut}</span>
+                        <span>{deal.rut}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.adviser}</span>
+                        <span>{deal.createdByAdvisor.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        {/* <span>{item.planId + selectedPlan.map((plan) => plan.name)}</span> */}
-                        <span>{selectedPlan.map((plan) => plan.name)}</span>
+                        <span>{deal.plan.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{selectedCompany.map((company) => company.name)}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        {/* <span>{item.productTypeId}</span> */}
-                        <span>{selectedProductType.map((productType) => productType.name)}</span>
+                        <span>{deal.productType.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        {/* <span>{item.productId}</span> */}
-                        <span>{selectedProduct.map((product) => product.name)}</span>
+                        <span>{deal.product.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.amount}</span>
+                        <span>{deal.amount}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        {/* <span>{item.currencyId}</span> */}
-                        <span>{selectedCurrencyType.map((currency) => currency.name)}</span>
+                        <span>{deal.currency.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.period}</span>
+                        <span>{deal.period}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.annualPayment}</span>
+                        <span>{deal.annualPayment}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        {/* <span>{item.paymentMediumId}</span> */}
-                        <span>{selectedPaymentMedium.map((paymentMedium) => paymentMedium.name)}</span>
+                        <span>{deal.paymentMedium.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        {/* <span>{item.paymentMethodId}</span> */}
-                        <span>{selectedPaymentMethod.map((paymentMethod) => paymentMethod.name)}</span>
+                        <span>{deal.paymentMethod.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.amountPaid}</span>
+                        <span>{deal.amountPaid}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.discresionalService ? "Si" : "No"}</span>
+                        <span>{deal.discresionalService ? "Si" : "No"}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span className="tb-sub">{item.trailerFree ? "Si" : "No"}</span>
+                        <span className="tb-sub">{deal.trailerFree ? "Si" : "No"}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <ul className="nk-tb-actions gx-1">
@@ -788,7 +783,7 @@ const OperationDefault = () => {
                                   href="#dropdown"
                                   onClick={(ev) => {
                                     ev.preventDefault();
-                                    loadDetail(item.id);
+                                    loadDetail(deal.id);
                                     toggle("details");
                                   }}
                                 >
@@ -811,7 +806,7 @@ const OperationDefault = () => {
                                   href="#dropdown"
                                   onClick={(ev) => {
                                     ev.preventDefault();
-                                    loadDetail(item.id);
+                                    loadDetail(deal.id);
                                     toggle("viewChecklist");
                                   }}
                                 >
@@ -826,25 +821,44 @@ const OperationDefault = () => {
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
-                          {/* <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
-                            <TooltipComponent
-                              tag="a"
-                              containerClassName="btn btn-trigger btn-icon"
-                              id={"edit" + 1}
-                              icon="edit-alt-fill"
-                              direction="top"
-                              text="Edit"
-                            />
-                          </li> */}
-                          <li className="nk-tb-action-hidden">
-                            <TooltipComponent
-                              tag="a"
-                              containerClassName="btn btn-trigger btn-icon"
-                              id={"delete" + 1}
-                              icon="trash-fill"
-                              direction="top"
-                              text="Delete"
-                            />
+                          <li>
+                            <UncontrolledDropdown>
+                              <DropdownToggle tag="a" className="btn btn-icon dropdown-toggle btn-trigger">
+                                <Icon name="more-h"></Icon>
+                              </DropdownToggle>
+                              <DropdownMenu right>
+                                <ul className="link-list-opt no-bdr">
+                                  {deal.status !== "Delivered" && (
+                                    <li>
+                                      <DropdownItem
+                                        tag="a"
+                                        href="#markasdone"
+                                        onClick={(ev) => {
+                                          ev.preventDefault();
+                                          selectorMarkAsDelivered();
+                                        }}
+                                      >
+                                        <Icon name="edit"></Icon>
+                                        <span>Editar</span>
+                                      </DropdownItem>
+                                    </li>
+                                  )}
+                                  <li>
+                                    <DropdownItem
+                                      tag="a"
+                                      href="#dropdown"
+                                      onClick={(ev) => {
+                                        ev.preventDefault();
+                                        deleteDeal(deal.id);
+                                      }}
+                                    >
+                                      <Icon name="trash"></Icon>
+                                      <span>Eliminar</span>
+                                    </DropdownItem>
+                                  </li>
+                                </ul>
+                              </DropdownMenu>
+                            </UncontrolledDropdown>
                           </li>
                         </ul>
                       </DataTableRow>
@@ -863,9 +877,7 @@ const OperationDefault = () => {
               currentPage={currentPage}
             />
           ) : (
-            <div className="text-center">
-              <span className="text-silent">No se encontaron operaciones</span>
-            </div>
+            <div className="text-center">{/* <span className="text-silent">No se encontaron operaciones</span> */}</div>
           )}
         </PreviewAltCard>
         <Modal isOpen={view.add} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
