@@ -6,6 +6,7 @@ import { CustomerContextProvider } from "../pages/customers/CustomersContext";
 import { AdviserContextProvider } from "../pages/adviser/AdviserContext";
 import { RolesContextProvider } from "../pages/roles/RolesContext";
 import { ProductsContextProvider } from "../pages/products/ProductsContext";
+import { CompanyContextProvider } from "../pages/company/CompanyContext";
 import { RedirectAs404 } from "../utils/Utils";
 
 import Homepage from "../pages/Homepage";
@@ -14,11 +15,11 @@ import Operation from "../pages/operation/OperationDefault";
 // import EcomProducts from "../pages/panel/e-commerce/product/ProductList";
 import Customer from "../pages/customers/CustomersList";
 import CustomerJuridico from "../pages/customers/CustomersListJuridico";
-import Company from "../pages/company/CompanyList";
 import Users from "../pages/users/UserList";
 import Adviser from "../pages/adviser/AdviserList";
 import Roles from "../pages/roles/RolesList";
 import Products from "../pages/products/ProductsList";
+import Company from "../pages/company/CompanyList";
 import EcomDashboard from "../pages/panel/e-commerce/index";
 
 const Pages = () => {
@@ -73,9 +74,9 @@ const Pages = () => {
           exact
           path={`${process.env.PUBLIC_URL}/company`}
           render={() => (
-            <CompanyProvider>
+            <CompanyContextProvider>
               <Company />
-            </CompanyProvider>
+            </CompanyContextProvider>
           )}
         ></Route>
         <Route
@@ -94,6 +95,15 @@ const Pages = () => {
             <ProductsContextProvider>
               <Products />
             </ProductsContextProvider>
+          )}
+        ></Route>
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/company`}
+          render={() => (
+            <CompanyContextProvider>
+              <Company />
+            </CompanyContextProvider>
           )}
         ></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/`} component={Homepage}></Route>

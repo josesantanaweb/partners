@@ -1,16 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import Content from "../../layout/content/Content";
-import Head from "../../layout/head/Head";
-import {
-  DropdownMenu,
-  DropdownToggle,
-  FormGroup,
-  UncontrolledDropdown,
-  Modal,
-  ModalBody,
-  DropdownItem,
-  Form,
-} from "reactstrap";
+import React, { useContext, useState, useEffect } from "react";
+import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import {
   Block,
   BlockBetween,
@@ -20,195 +9,203 @@ import {
   BlockTitle,
   Icon,
   Col,
-  UserAvatar,
   PaginationComponent,
   Button,
   DataTableHead,
   DataTableRow,
   DataTableItem,
   TooltipComponent,
-  RSelect,
   PreviewAltCard,
+  RSelect,
 } from "../../components/Component";
-import { filterStatus, CompanyData } from "./CompanyData";
-import { findUpper } from "../../utils/Utils";
-import { Link } from "react-router-dom";
+import Content from "../../layout/content/Content";
+import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
 import { CompanyContext } from "./CompanyContext";
+import CompanyServices from "../../services/CompanyServices";
+import CountriesServices from "../../services/CountriesServices";
 
 const CompanyList = () => {
   const { contextData } = useContext(CompanyContext);
   const [data, setData] = contextData;
+  const [errorMessage, setErrorMessage] = useState("");
+  const [editData, setEditData] = useState();
+  const [countries, setCountries] = useState();
+  const [editCountry, setEditCountry] = useState();
+  const [cities, setCities] = useState();
+  const [countriesOptions, setCountriesOptions] = useState([]);
+  const [citiesOptions, setCitiesOptions] = useState([]);
+  const [countryId, setCountryId] = useState();
+  const [cityId, setCityId] = useState();
 
-  const [sm, updateSm] = useState(false);
-  const [onSearchText] = useState("");
   const [modal, setModal] = useState({
     edit: false,
     add: false,
   });
-  const [editId, setEditedId] = useState();
+
+  useEffect(() => {
+    getCountries();
+  }, []);
+
+  useEffect(() => {
+    if (countries !== undefined) {
+      countriesOptionsData();
+    }
+  }, [countries]);
+
+  useEffect(() => {
+    if (cities !== undefined) {
+      citiesOptionsData();
+    }
+  }, [cities]);
+
+  const getCompany = async () => {
+    try {
+      const company = await CompanyServices.getCompany();
+      setData(company.data);
+    } catch (error) {}
+  };
+
+  const getCountries = async () => {
+    try {
+      const countries = await CountriesServices.getCountries();
+      setCountries(countries.data);
+    } catch (error) {}
+  };
+
+  const getCities = async () => {
+    try {
+      const cities = await CountriesServices.getCities(countryId);
+      setCities(cities.data);
+    } catch (error) {}
+  };
+
+  const countriesOptionsData = () => {
+    const countriesOptionsData = countries?.map((item) => ({ label: item.name, value: item.id }));
+    setCountriesOptions(countriesOptionsData);
+  };
+
+  const citiesOptionsData = () => {
+    const citiesOptionsData = cities?.map((item) => ({ label: item.name, value: item.id }));
+    setCitiesOptions(citiesOptionsData);
+  };
+
+  const onCountriesChange = (value) => {
+    setCountryId(value.value);
+    getCities();
+  };
+
+  const onCitiesChange = (value) => {
+    setCityId(value.value);
+  };
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    balance: "",
-    phone: "",
-    status: "Active",
+    businessPhone: "",
+    address: {
+      countryId: 1,
+      stateId: 1,
+      detailedAddress: {
+        address: "",
+      },
+    },
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
 
-  // unselects the data on mount
-  useEffect(() => {
-    let newData;
-    newData = CompanyData.map((item) => {
-      item.checked = false;
-      return item;
-    });
-    setData([...newData]);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const [sm, updateSm] = useState(false);
 
-  // Changing state value when searching name
-  useEffect(() => {
-    if (onSearchText !== "") {
-      const filteredObject = CompanyData.filter((item) => {
-        return (
-          item.name.toLowerCase().includes(onSearchText.toLowerCase()) ||
-          item.email.toLowerCase().includes(onSearchText.toLowerCase())
-        );
-      });
-      setData([...filteredObject]);
-    } else {
-      setData([...CompanyData]);
-    }
-  }, [onSearchText, setData]);
+  const { errors, register, handleSubmit } = useForm();
 
-  // function to change the selected property of an item
-  const onSelectChange = (e, id) => {
-    let newData = data;
-    let index = newData.findIndex((item) => item.id === id);
-    newData[index].checked = e.currentTarget.checked;
-    setData([...newData]);
-  };
-
-  // function to reset the form
+  // Function to reset the form
   const resetForm = () => {
     setFormData({
       name: "",
       email: "",
-      balance: "",
-      phone: "",
-      status: "Active",
+      businessPhone: "",
+      address: {
+        countryId: 1,
+        stateId: 1,
+        detailedAddress: {
+          address: "",
+        },
+      },
     });
   };
 
-  // function to close the form modal
+  // Function to close the form modal
   const onFormCancel = () => {
     setModal({ edit: false, add: false });
     resetForm();
   };
 
-  // submit function to add a new item
-  const onFormSubmit = (submitData) => {
-    const { name, email, balance, phone } = submitData;
+  // Submit function to add a new item
+  const onFormSubmit = async (submitData) => {
+    const { name, email, address, businessPhone } = submitData;
     let submittedData = {
-      id: data.length + 1,
-      avatarBg: "purple",
       name: name,
-      role: "Company",
       email: email,
-      balance: balance,
-      phone: phone,
-      emailStatus: "success",
-      kycStatus: "alert",
-      lastLogin: "10 Feb 2020",
-      status: formData.status,
-      country: "Bangladesh",
+      businessPhone: businessPhone,
+      address: {
+        countryId: countryId,
+        stateId: cityId,
+        detailedAddress: {
+          address: address.detailedAddress.address,
+        },
+      },
     };
-    setData([submittedData, ...data]);
-    resetForm();
-    setModal({ edit: false }, { add: false });
+
+    try {
+      await CompanyServices.addCompany(submittedData);
+      resetForm();
+      getCompany();
+      setModal({ edit: false }, { add: false });
+    } catch (error) {}
   };
 
   // submit function to update a new item
-  const onEditSubmit = (submitData) => {
-    const { name, email, phone } = submitData;
-    let submittedData;
-    let newitems = data;
-    newitems.forEach((item) => {
-      if (item.id === editId) {
-        submittedData = {
-          id: item.id,
-          avatarBg: item.avatarBg,
-          name: name,
-          image: item.image,
-          role: item.role,
-          email: email,
-          balance: formData.balance,
-          phone: "+" + phone,
-          emailStatus: item.emailStatus,
-          kycStatus: item.kycStatus,
-          lastLogin: item.lastLogin,
-          status: formData.status,
-          country: item.country,
-        };
-      }
-    });
-    let index = newitems.findIndex((item) => item.id === editId);
-    newitems[index] = submittedData;
-    setModal({ edit: false });
-    resetForm();
+  const onEditSubmit = async (submitData) => {
+    const { name, email, address, businessPhone } = submitData;
+    let submittedData = {
+      name: name,
+      email: email,
+      businessPhone: businessPhone,
+      address: {
+        countryId: countryId,
+        stateId: cityId,
+        detailedAddress: {
+          address: address.detailedAddress.address,
+        },
+      },
+    };
+
+    try {
+      await CompanyServices.editCompany(editData.id, submittedData);
+      resetForm();
+      getCompany();
+      setModal({ edit: false }, { add: false });
+    } catch (error) {}
   };
 
   // function that loads the want to editted data
-  const onEditClick = (id) => {
-    data.forEach((item) => {
-      if (item.id === id) {
-        setFormData({
-          name: item.name,
-          email: item.email,
-          status: item.status,
-          phone: item.phone,
-          balance: item.balance,
-        });
-        setModal({ edit: true }, { add: false });
-        setEditedId(id);
-      }
-    });
+  const onEditClick = (id, data) => {
+    setModal({ edit: true }, { add: false });
+    setEditData(data);
+    const filterCountry = countries.filter((value) => value.id === editData?.address.countryId);
+    const editCountry = {
+      label: filterCountry[0].name,
+      value: filterCountry[0].id,
+    };
+    setEditCountry(editCountry);
   };
 
-  // function to change to suspend property for an item
-  const suspendUser = (id) => {
-    let newData = data;
-    let index = newData.findIndex((item) => item.id === id);
-    newData[index].status = "Suspend";
-    setData([...newData]);
-  };
-
-  // function to change the check property of an item
-  const selectorCheck = (e) => {
-    let newData;
-    newData = data.map((item) => {
-      item.checked = e.currentTarget.checked;
-      return item;
-    });
-    setData([...newData]);
-  };
-
-  // function to delete the seletected item
-  const selectorDeleteUser = () => {
-    let newData;
-    newData = data.filter((item) => item.checked !== true);
-    setData([...newData]);
-  };
-
-  // function to change the complete property of an item
-  const selectorSuspendUser = () => {
-    let newData;
-    newData = data.map((item) => {
-      if (item.checked === true) item.status = "Suspend";
-      return item;
-    });
-    setData([...newData]);
+  // Function to change to delete property for an item
+  const deleteUser = async (id) => {
+    try {
+      await CompanyServices.deleteCompany(id);
+      getCompany();
+    } catch (error) {}
   };
 
   // Get current list, pagination
@@ -219,20 +216,18 @@ const CompanyList = () => {
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const { errors, register, handleSubmit } = useForm();
-
   return (
     <React.Fragment>
-      <Head title="Lista de Empresas"></Head>
+      <Head title="Empresa"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-              Lista de Empresas
+                Lista de Empresa
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total 2,595 usuarios</p>
+                <p>Total {data.length} Empresa</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -245,15 +240,10 @@ const CompanyList = () => {
                 </Button>
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
-                    <li>
-                      <Button color="light" outline className="btn-white">
-                        <Icon name="download-cloud"></Icon>
-                        <span>Export</span>
-                      </Button>
-                    </li>
                     <li className="nk-block-tools-opt">
-                      <Button color="primary" className="btn-icon" onClick={() => setModal({ add: true })}>
-                        <Icon name="plus"></Icon>
+                      <Button color="primary" onClick={() => setModal({ add: true })}>
+                        <Icon name="plus" className="mr-1"></Icon>
+                        Agregar Empresa
                       </Button>
                     </li>
                   </ul>
@@ -266,173 +256,59 @@ const CompanyList = () => {
         <Block>
           <div className="nk-tb-list is-separate is-medium mb-3">
             <DataTableHead className="nk-tb-item">
-              <DataTableRow className="nk-tb-col-check">
-                <div className="custom-control custom-control-sm custom-checkbox notext">
-                  <input
-                    type="checkbox"
-                    className="custom-control-input form-control"
-                    onChange={(e) => selectorCheck(e)}
-                    id="uid"
-                  />
-                  <label className="custom-control-label" htmlFor="uid"></label>
-                </div>
-              </DataTableRow>
               <DataTableRow>
+                <span className="sub-text">#</span>
+              </DataTableRow>
+              <DataTableRow size="xs">
                 <span className="sub-text">Nombre</span>
               </DataTableRow>
-              <DataTableRow size="mb">
-                <span className="sub-text">Rut</span>
+              <DataTableRow>
+                <span className="sub-text">Email</span>
               </DataTableRow>
-              <DataTableRow size="mb">
-                <span className="sub-text">Contacto</span>
-              </DataTableRow>
-              <DataTableRow size="md">
+              <DataTableRow>
                 <span className="sub-text">Telefono</span>
               </DataTableRow>
-              <DataTableRow size="lg">
-                <span className="sub-text">Pais</span>
-              </DataTableRow>
-              <DataTableRow size="md">
-                <span className="sub-text">Direccion</span>
-              </DataTableRow>
-              <DataTableRow className="nk-tb-col-tools text-right">
-                <UncontrolledDropdown>
-                  <DropdownToggle color="tranparent" className="dropdown-toggle btn btn-icon btn-trigger mr-n1">
-                    <Icon name="more-h"></Icon>
-                  </DropdownToggle>
-                  <DropdownMenu right>
-                    <ul className="link-list-opt no-bdr">
-                      <li>
-                        <DropdownItem
-                          tag="a"
-                          href="#"
-                          onClick={(ev) => {
-                            ev.preventDefault();
-                            selectorDeleteUser();
-                          }}
-                        >
-                          <Icon name="na"></Icon>
-                          <span>Remove Selected</span>
-                        </DropdownItem>
-                      </li>
-                      <li>
-                        <DropdownItem
-                          tag="a"
-                          href="#"
-                          onClick={(ev) => {
-                            ev.preventDefault();
-                            selectorSuspendUser();
-                          }}
-                        >
-                          <Icon name="trash"></Icon>
-                          <span>Suspend Selected</span>
-                        </DropdownItem>
-                      </li>
-                    </ul>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
+              <DataTableRow>
+                <span className="sub-text"></span>
               </DataTableRow>
             </DataTableHead>
             {/*Head*/}
             {currentItems.length > 0
               ? currentItems.map((item) => (
                   <DataTableItem key={item.id}>
-                    <DataTableRow className="nk-tb-col-check">
-                      <div className="custom-control custom-control-sm custom-checkbox notext">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input form-control"
-                          defaultChecked={item.checked}
-                          id={item.id + "uid1"}
-                          key={Math.random()}
-                          onChange={(e) => onSelectChange(e, item.id)}
-                        />
-                        <label className="custom-control-label" htmlFor={item.id + "uid1"}></label>
-                      </div>
+                    <DataTableRow>
+                      <span>{item.id}</span>
                     </DataTableRow>
-                    <DataTableRow size="md">
+                    <DataTableRow>
                       <span>{item.name}</span>
                     </DataTableRow>
-                    <DataTableRow size="md">
-                      <span>{item.phone}</span>
+                    <DataTableRow>
+                      <span>{item.email}</span>
                     </DataTableRow>
-                    <DataTableRow size="md">
-                      <span>{item.name}</span>
-                    </DataTableRow>
-                    <DataTableRow size="md">
-                      <span>{item.phone}</span>
-                    </DataTableRow>
-                    <DataTableRow size="lg">
-                      <span>{item.country}</span>
-                    </DataTableRow>
-                    <DataTableRow size="lg">
-                      <span>{item.address}</span>
+                    <DataTableRow>
+                      <span>{item.businessPhone}</span>
                     </DataTableRow>
                     <DataTableRow className="nk-tb-col-tools">
                       <ul className="nk-tb-actions gx-1">
-                        <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id)}>
+                        <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
                           <TooltipComponent
                             tag="a"
                             containerClassName="btn btn-trigger btn-icon"
-                            id={"edit" + item.id}
+                            id={"edit" + 1}
                             icon="edit-alt-fill"
                             direction="top"
                             text="Edit"
                           />
                         </li>
-                        {item.status !== "Suspend" && (
-                          <React.Fragment>
-                            <li className="nk-tb-action-hidden" onClick={() => suspendUser(item.id)}>
-                              <TooltipComponent
-                                tag="a"
-                                containerClassName="btn btn-trigger btn-icon"
-                                id={"suspend" + item.id}
-                                icon="user-cross-fill"
-                                direction="top"
-                                text="Suspend"
-                              />
-                            </li>
-                          </React.Fragment>
-                        )}
-                        <li>
-                          <UncontrolledDropdown>
-                            <DropdownToggle tag="a" className="dropdown-toggle btn btn-icon btn-trigger">
-                              <Icon name="more-h"></Icon>
-                            </DropdownToggle>
-                            <DropdownMenu right>
-                              <ul className="link-list-opt no-bdr">
-                                <li onClick={() => onEditClick(item.id)}>
-                                  <DropdownItem
-                                    tag="a"
-                                    href="#edit"
-                                    onClick={(ev) => {
-                                      ev.preventDefault();
-                                    }}
-                                  >
-                                    <Icon name="edit"></Icon>
-                                    <span>Edit</span>
-                                  </DropdownItem>
-                                </li>
-                                {item.status !== "Suspend" && (
-                                  <React.Fragment>
-                                    <li className="divider"></li>
-                                    <li onClick={() => suspendUser(item.id)}>
-                                      <DropdownItem
-                                        tag="a"
-                                        href="#suspend"
-                                        onClick={(ev) => {
-                                          ev.preventDefault();
-                                        }}
-                                      >
-                                        <Icon name="na"></Icon>
-                                        <span>Suspend User</span>
-                                      </DropdownItem>
-                                    </li>
-                                  </React.Fragment>
-                                )}
-                              </ul>
-                            </DropdownMenu>
-                          </UncontrolledDropdown>
+                        <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
+                          <TooltipComponent
+                            tag="a"
+                            containerClassName="btn btn-trigger btn-icon"
+                            id={"delete" + 1}
+                            icon="trash-fill"
+                            direction="top"
+                            text="Delete"
+                          />
                         </li>
                       </ul>
                     </DataTableRow>
@@ -440,6 +316,7 @@ const CompanyList = () => {
                 ))
               : null}
           </div>
+
           <PreviewAltCard>
             {currentItems.length > 0 ? (
               <PaginationComponent
@@ -470,8 +347,16 @@ const CompanyList = () => {
             </a>
             <div className="p-2">
               <h5 className="title">Agregar Empresa</h5>
+              {errorMessage !== "" && (
+                <div className="my-3">
+                  <Alert color="danger" className="alert-icon">
+                    <Icon name="alert-circle" />
+                    Empresa ya existe
+                  </Alert>
+                </div>
+              )}
               <div className="mt-4">
-                <Form className="row gy-4" noValidate onSubmit={handleSubmit(onFormSubmit)}>
+                <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Nombre</label>
@@ -480,107 +365,86 @@ const CompanyList = () => {
                         type="text"
                         name="name"
                         defaultValue={formData.name}
-                        placeholder="Ingresa Nombre"
-                        ref={register({ required: "This field is required" })}
+                        placeholder="Ingresa nombre"
+                        ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
                     </FormGroup>
                   </Col>
+
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Rut</label>
+                      <label className="form-label">Email</label>
                       <input
                         className="form-control"
-                        type="text"
-                        name="name"
-                        defaultValue={formData.name}
-                        placeholder="Ingresa Rut"
-                        ref={register({ required: "This field is required" })}
-                      />
-                      {errors.name && <span className="invalid">{errors.name.message}</span>}
-                    </FormGroup>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Contacto</label>
-                      <input
-                        className="form-control"
-                        type="text"
+                        type="email"
                         name="email"
                         defaultValue={formData.email}
-                        placeholder="Ingresa Contacto"
-                        ref={register({
-                          required: "This field is required",
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "invalid email address",
-                          },
-                        })}
+                        placeholder="Ingresa email"
+                        ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.email && <span className="invalid">{errors.email.message}</span>}
                     </FormGroup>
                   </Col>
+
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Telefono</label>
                       <input
                         className="form-control"
                         type="text"
-                        name="balance"
-                        defaultValue={formData.balance}
-                        placeholder="Ingresa telefono"
-                        ref={register({ required: "This field is required" })}
+                        name="businessPhone"
+                        defaultValue={formData.businessPhone}
+                        placeholder="Ingresa Telefono"
+                        ref={register({ required: "Este campo es requerido" })}
                       />
-                      {errors.balance && <span className="invalid">{errors.balance.message}</span>}
+                      {errors.businessPhone && <span className="invalid">{errors.businessPhone.message}</span>}
                     </FormGroup>
                   </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Telefono</label>
-                      <input
-                        className="form-control"
-                        type="number"
-                        name="phone"
-                        placeholder="Ingresa telefono"
-                        defaultValue={formData.phone}
-                        ref={register({ required: "This field is required" })}
-                      />
-                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
-                    </FormGroup>
-                  </Col>
+
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Pais</label>
-                      <input
-                        className="form-control"
-                        type="number"
-                        name="phone"
-                        placeholder="Ingresa pais"
-                        defaultValue={formData.phone}
-                        ref={register({ required: "This field is required" })}
+                      <RSelect
+                        isSearchable={false}
+                        options={countriesOptions}
+                        defaultValue={formData.address.countryId}
+                        onChange={onCountriesChange}
                       />
-                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
                     </FormGroup>
                   </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Ciudad</label>
+                      <RSelect
+                        isSearchable={false}
+                        options={citiesOptions}
+                        defaultValue={formData.address.stateId}
+                        onChange={onCitiesChange}
+                      />
+                    </FormGroup>
+                  </Col>
+
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Direccion</label>
                       <input
                         className="form-control"
-                        type="number"
-                        name="phone"
-                        placeholder="Ingresa direccion"
-                        defaultValue={formData.phone}
-                        ref={register({ required: "This field is required" })}
+                        type="text"
+                        name="address.detailedAddress.address"
+                        defaultValue={formData.address.detailedAddress.address}
+                        placeholder="Ingresa Direccion"
+                        ref={register()}
                       />
-                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
                     </FormGroup>
                   </Col>
+
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Agresar Clientes
+                          Agregar Empresa
                         </Button>
                       </li>
                       <li>
@@ -589,6 +453,7 @@ const CompanyList = () => {
                           onClick={(ev) => {
                             ev.preventDefault();
                             onFormCancel();
+                            setErrorMessage("");
                           }}
                           className="link link-light"
                         >
@@ -616,23 +481,24 @@ const CompanyList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Update User</h5>
+              <h5 className="title">Actualizar Empresa</h5>
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Name</label>
+                      <label className="form-label">Nombre</label>
                       <input
                         className="form-control"
                         type="text"
                         name="name"
-                        defaultValue={formData.name}
-                        placeholder="Enter name"
-                        ref={register({ required: "This field is required" })}
+                        defaultValue={editData?.name}
+                        placeholder="Ingresa nombre"
+                        ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
                     </FormGroup>
                   </Col>
+
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Email</label>
@@ -640,67 +506,71 @@ const CompanyList = () => {
                         className="form-control"
                         type="text"
                         name="email"
-                        defaultValue={formData.email}
-                        placeholder="Enter email"
-                        ref={register({
-                          required: "This field is required",
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "invalid email address",
-                          },
-                        })}
+                        defaultValue={editData?.email}
+                        placeholder="Ingresa nombre"
+                        ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.email && <span className="invalid">{errors.email.message}</span>}
                     </FormGroup>
                   </Col>
+
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Ordered</label>
+                      <label className="form-label">Telefono</label>
                       <input
                         className="form-control"
-                        type="number"
-                        name="balance"
-                        disabled
-                        defaultValue={parseFloat(formData.balance.replace(/,/g, ""))}
-                        placeholder="Ordered"
-                        ref={register({ required: "This field is required" })}
+                        type="text"
+                        name="businessPhone"
+                        defaultValue={editData?.businessPhone}
+                        placeholder="Ingresa nombre"
+                        ref={register()}
                       />
-                      {errors.balance && <span className="invalid">{errors.balance.message}</span>}
                     </FormGroup>
                   </Col>
+
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Phone</label>
+                      <label className="form-label">Pais</label>
+                      <RSelect
+                        isSearchable={false}
+                        options={countriesOptions}
+                        defaultValue={editCountry}
+                        onChange={onCountriesChange}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Ciudad</label>
+                      <RSelect
+                        isSearchable={false}
+                        options={citiesOptions}
+                        defaultValue={editData?.address.stateId}
+                        onChange={onCitiesChange}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Direccion</label>
                       <input
                         className="form-control"
-                        type="number"
-                        name="phone"
-                        defaultValue={Number(formData.phone)}
-                        ref={register({ required: "This field is required" })}
+                        type="text"
+                        name="address.detailedAddress.address"
+                        defaultValue={editData?.address.detailedAddress.address}
+                        placeholder="Ingresa Direccion"
+                        ref={register()}
                       />
-                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
                     </FormGroup>
                   </Col>
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Status</label>
-                      <div className="form-control-wrap">
-                        <RSelect
-                          options={filterStatus}
-                          defaultValue={{
-                            value: formData.status,
-                            label: formData.status,
-                          }}
-                          onChange={(e) => setFormData({ ...formData, status: e.value })}
-                        />
-                      </div>
-                    </FormGroup>
-                  </Col>
+
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Update User
+                          Actualizar Empresa
                         </Button>
                       </li>
                       <li>
@@ -712,7 +582,7 @@ const CompanyList = () => {
                           }}
                           className="link link-light"
                         >
-                          Cancel
+                          Cancelar
                         </a>
                       </li>
                     </ul>
@@ -726,4 +596,5 @@ const CompanyList = () => {
     </React.Fragment>
   );
 };
+
 export default CompanyList;

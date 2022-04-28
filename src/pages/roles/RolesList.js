@@ -90,7 +90,7 @@ const RolesList = () => {
     const { name, description } = submitData;
     let submittedData = {
       name: name,
-      description: name,
+      description: description,
     };
 
     try {
