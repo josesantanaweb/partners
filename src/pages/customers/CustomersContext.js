@@ -20,7 +20,6 @@ export const CustomerContextProvider = (props) => {
       if (error.response.data.message === "Unauthorized") {
         localStorage.removeItem("access_token");
         dispatch(setAuthenticated(false));
-        window.location.reload();
       }
     }
   };

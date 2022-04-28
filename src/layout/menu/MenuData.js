@@ -14,7 +14,7 @@ const menu = [
         link: "/customer-juridico",
       },
       {
-        text: "Cliente Final",
+        text: "Cliente Natural",
         link: "/customer",
       },
     ],
@@ -48,6 +48,11 @@ const menu = [
     icon: "setting-fill",
     text: "Roles",
     link: "/roles",
+  },
+  {
+    icon: "package-fill",
+    text: "Productos",
+    link: "/products",
   },
 ];
 export default menu;

@@ -9,7 +9,6 @@ import {
   BlockTitle,
   Icon,
   Col,
-  UserAvatar,
   PaginationComponent,
   Button,
   DataTableHead,
@@ -20,13 +19,12 @@ import {
 } from "../../components/Component";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
-import { findUpper } from "../../utils/Utils";
 import { useForm } from "react-hook-form";
-import { AdviserContext } from "./AdviserContext";
-import AdvisersServices from "../../services/AdvisersServices";
+import { ProductsContext } from "./ProductsContext";
+import ProductsServices from "../../services/ProductsServices";
 
-const AdviserList = () => {
-  const { contextData } = useContext(AdviserContext);
+const ProductsList = () => {
+  const { contextData } = useContext(ProductsContext);
   const [data, setData] = contextData;
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
@@ -36,19 +34,16 @@ const AdviserList = () => {
     add: false,
   });
 
-  const getAdvisers = async () => {
+  const getProducts = async () => {
     try {
-      const advisers = await AdvisersServices.getAdvisers();
-      setData(advisers.data);
+      const products = await ProductsServices.getProducts();
+      setData(products.data);
     } catch (error) {}
   };
 
   const [formData, setFormData] = useState({
     name: "",
-    lastName: "",
-    email: "",
-    password: "",
-    mobilePhone: "",
+    description: "",
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
@@ -61,10 +56,7 @@ const AdviserList = () => {
   const resetForm = () => {
     setFormData({
       name: "",
-      lastName: "",
-      email: "",
-      password: "",
-      mobilePhone: "",
+      description: "",
     });
   };
 
@@ -76,39 +68,31 @@ const AdviserList = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { name, paternalLastName, email, password, mobilePhone } = submitData;
+    const { name, description } = submitData;
     let submittedData = {
       name: name,
-      paternalLastName: paternalLastName,
-      email: email,
-      password: password,
-      mobilePhone: mobilePhone,
+      description: description,
     };
     try {
-      await AdvisersServices.addAdviser(submittedData);
+      await ProductsServices.addProduct(submittedData);
       resetForm();
-      getAdvisers();
+      getProducts();
       setModal({ edit: false }, { add: false });
-    } catch (error) {
-      if (error.response.data.message === "This user already exists") {
-        setErrorMessage("Usuario ya existe");
-      }
-    }
+    } catch (error) {}
   };
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { name, paternalLastName, mobilePhone } = submitData;
+    const { name, description } = submitData;
     let submittedData = {
       name: name,
-      paternalLastName: paternalLastName,
-      mobilePhone: mobilePhone,
+      description: name,
     };
 
     try {
-      await AdvisersServices.editAdviser(editData.id, submittedData);
+      await ProductsServices.editProduct(editData.id, submittedData);
       resetForm();
-      getAdvisers();
+      getProducts();
       setModal({ edit: false }, { add: false });
     } catch (error) {}
   };
@@ -122,8 +106,8 @@ const AdviserList = () => {
   // Function to change to delete property for an item
   const deleteUser = async (id) => {
     try {
-      await AdvisersServices.deleteAdviser(id);
-      getAdvisers();
+      await ProductsServices.deleteProduct(id);
+      getProducts();
     } catch (error) {}
   };
 
@@ -137,16 +121,16 @@ const AdviserList = () => {
 
   return (
     <React.Fragment>
-      <Head title="Asesores"></Head>
+      <Head title="Products"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Asesores
+                Lista de Products
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} asesores</p>
+                <p>Total {data.length} products</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -162,7 +146,7 @@ const AdviserList = () => {
                     <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>
                         <Icon name="plus" className="mr-1"></Icon>
-                        Agregar Asesor
+                        Agregar Producto
                       </Button>
                     </li>
                   </ul>
@@ -179,13 +163,10 @@ const AdviserList = () => {
                 <span className="sub-text">#</span>
               </DataTableRow>
               <DataTableRow size="xs">
-                <span className="sub-text">Asesor</span>
+                <span className="sub-text">Nombre</span>
               </DataTableRow>
               <DataTableRow>
-                <span className="sub-text">Telefono</span>
-              </DataTableRow>
-              <DataTableRow>
-                <span className="sub-text">Estado</span>
+                <span className="sub-text">Descripcion</span>
               </DataTableRow>
               <DataTableRow>
                 <span className="sub-text"></span>
@@ -198,22 +179,11 @@ const AdviserList = () => {
                     <DataTableRow>
                       <span>{item.id}</span>
                     </DataTableRow>
-                    <DataTableRow size="xs">
-                      <div className="user-card">
-                        <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
-                        <div className="user-info">
-                          <span className="tb-lead">
-                            {item.name} {item.paternalLastName} <span className="dot dot-success d-md-none ml-1"></span>
-                          </span>
-                          <span>{item.email}</span>
-                        </div>
-                      </div>
+                    <DataTableRow>
+                      <span>{item.name}</span>
                     </DataTableRow>
                     <DataTableRow>
-                      <span>{item.mobilePhone}</span>
-                    </DataTableRow>
-                    <DataTableRow>
-                      <span className={`tb-status text-success`}>{item.status.name}</span>
+                      <span>{item.description}</span>
                     </DataTableRow>
                     <DataTableRow className="nk-tb-col-tools">
                       <ul className="nk-tb-actions gx-1">
@@ -273,12 +243,12 @@ const AdviserList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Agregar Asesor</h5>
+              <h5 className="title">Agregar Producto</h5>
               {errorMessage !== "" && (
                 <div className="my-3">
                   <Alert color="danger" className="alert-icon">
                     <Icon name="alert-circle" />
-                    Asesor ya existe
+                    Producto ya existe
                   </Alert>
                 </div>
               )}
@@ -301,66 +271,16 @@ const AdviserList = () => {
 
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Apellido</label>
+                      <label className="form-label">Descripcion</label>
                       <input
                         className="form-control"
                         type="text"
-                        name="paternalLastName"
-                        defaultValue={formData.paternalLastName}
+                        name="description"
+                        defaultValue={formData.description}
                         placeholder="Ingresa apellido"
                         ref={register({ required: "Este campo es requerido" })}
                       />
-                      {errors.paternalLastName && <span className="invalid">{errors.paternalLastName.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Correo electronico</label>
-                      <input
-                        className="form-control"
-                        type="email"
-                        name="email"
-                        defaultValue={formData.email}
-                        placeholder="Ingresa apellido"
-                        ref={register({
-                          required: "Este campo es requerido",
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "invalid email address",
-                          },
-                        })}
-                      />
-                      {errors.email && <span className="invalid">{errors.email.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Contrasena</label>
-                      <input
-                        className="form-control"
-                        type="password"
-                        name="password"
-                        defaultValue={formData.email}
-                        placeholder="Ingresa contrasena"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.password && <span className="invalid">{errors.password.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Telefono</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="mobilePhone"
-                        defaultValue={formData.mobilePhone}
-                        placeholder="Ingresa telefono"
-                        ref={register()}
-                      />
+                      {errors.description && <span className="invalid">{errors.description.message}</span>}
                     </FormGroup>
                   </Col>
 
@@ -368,7 +288,7 @@ const AdviserList = () => {
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Agregar Usuario
+                          Agregar Producto
                         </Button>
                       </li>
                       <li>
@@ -405,7 +325,7 @@ const AdviserList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Actualizar Asesor</h5>
+              <h5 className="title">Actualizar Producto</h5>
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="6">
@@ -425,30 +345,16 @@ const AdviserList = () => {
 
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Apellido</label>
+                      <label className="form-label">Descripcion</label>
                       <input
                         className="form-control"
                         type="text"
-                        name="paternalLastName"
-                        defaultValue={editData?.paternalLastName}
-                        placeholder="Ingresa apellido"
+                        name="description"
+                        defaultValue={editData?.description}
+                        placeholder="Ingresa nombre"
                         ref={register({ required: "Este campo es requerido" })}
                       />
-                      {errors.paternalLastName && <span className="invalid">{errors.paternalLastName.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Telefono</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="mobilePhone"
-                        defaultValue={editData?.mobilePhone}
-                        placeholder="Ingresa telefono"
-                        ref={register()}
-                      />
+                      {errors.description && <span className="invalid">{errors.description.message}</span>}
                     </FormGroup>
                   </Col>
 
@@ -456,7 +362,7 @@ const AdviserList = () => {
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Actualizar Asesor
+                          Actualizar Producto
                         </Button>
                       </li>
                       <li>
@@ -483,4 +389,4 @@ const AdviserList = () => {
   );
 };
 
-export default AdviserList;
+export default ProductsList;

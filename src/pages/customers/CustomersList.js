@@ -27,17 +27,6 @@ import { CustomersContext } from "./CustomersContext";
 import CustomersServices from "../../services/CustomersServices";
 import CountriesServices from "../../services/CountriesServices";
 
-const customersTypes = [
-  {
-    label: "Cliente Juridico",
-    value: 2,
-  },
-  {
-    label: "Cliente Final",
-    value: 1,
-  },
-];
-
 const sexTypes = [
   {
     label: "Masculino",
@@ -58,7 +47,6 @@ const CustomersList = () => {
   const [cities, setCities] = useState();
   const [countryId, setCountryId] = useState();
   const [cityId, setCityId] = useState();
-  const [typeId, setTypeId] = useState(1);
   const [countriesOptions, setCountriesOptions] = useState([]);
   const [citiesOptions, setCitiesOptions] = useState([]);
   const [beneficiaries, setBeneficiaries] = useState(1);
@@ -380,6 +368,7 @@ const CustomersList = () => {
   const indexOfLastItem = currentPage * itemPerPage;
   const indexOfFirstItem = indexOfLastItem - itemPerPage;
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+  const filterCustomers = currentItems.filter((item) => item.type.id === 1);
 
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -396,9 +385,12 @@ const CustomersList = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Clientes Finales
+                Lista de Clientes Natural
               </BlockTitle>
-              <BlockDes className="text-soft">{/* <p>Total {data.length} clientes</p> */}</BlockDes>
+              <BlockDes className="text-soft">
+                {" "}
+                <p>Total {filterCustomers.length} clientes</p>
+              </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
               <div className="toggle-wrap nk-block-tools-toggle">
@@ -411,8 +403,9 @@ const CustomersList = () => {
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
                     <li className="nk-block-tools-opt">
-                      <Button color="primary" className="btn-icon" onClick={() => setModal({ add: true })}>
-                        <Icon name="plus"></Icon>
+                      <Button color="primary" onClick={() => setModal({ add: true })}>
+                        <Icon name="plus" className="mr-1"></Icon>
+                        Agregar Cliente
                       </Button>
                     </li>
                   </ul>
@@ -448,8 +441,8 @@ const CustomersList = () => {
               </DataTableRow>
             </DataTableHead>
             {/*Head*/}
-            {currentItems.length > 0
-              ? currentItems.map((item) => (
+            {filterCustomers.length > 0
+              ? filterCustomers.map((item) => (
                   <DataTableItem key={item.id}>
                     <DataTableRow>
                       <span>{item.id}</span>
