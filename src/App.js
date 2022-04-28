@@ -14,7 +14,6 @@ import Faq from "./pages/others/Faq";
 import Terms from "./pages/others/Terms";
 
 import Login from "./pages/auth/Login";
-import InvoicePrint from "./pages/pre-built/invoice/InvoicePrint";
 
 const App = (props) => {
   return (
@@ -23,13 +22,10 @@ const App = (props) => {
       <Route exact path={`${process.env.PUBLIC_URL}/login`} component={Login}></Route>
 
       {/* Print Pages */}
-      <Route exact path={`${process.env.PUBLIC_URL}/invoice-print/:id`} component={InvoicePrint}></Route>
 
       {/* Helper pages */}
       <Route exact path={`${process.env.PUBLIC_URL}/auths/terms`} component={Terms}></Route>
       <Route exact path={`${process.env.PUBLIC_URL}/auths/faq`} component={Faq}></Route>
-
-      <Route exact path={`${process.env.PUBLIC_URL}/invoice-print`} component={InvoicePrint}></Route>
 
       {/*Error Pages*/}
       <Route exact path={`${process.env.PUBLIC_URL}/errors/404-classic`} component={Error404Classic}></Route>
