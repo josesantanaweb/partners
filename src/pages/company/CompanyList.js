@@ -229,7 +229,7 @@ const CompanyList = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-              Lista de Empresas
+                Lista de Empresas
               </BlockTitle>
               <BlockDes className="text-soft">
                 <p>Total 2,595 usuarios</p>

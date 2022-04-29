@@ -33,8 +33,8 @@ const OperationsServices = {
     });
     return response.data;
   },
-  editDeal: async (userId, data) => {
-    const response = await api.patch(`/deal/${userId}`, data, {
+  editDeal: async (dealId, data) => {
+    const response = await api.patch(`/deals/${dealId}`, data, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;

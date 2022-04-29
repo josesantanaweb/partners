@@ -1,59 +1,53 @@
 import React, { useEffect, useState } from "react";
-import OperationsServices from "../../services/OperationsServices";
-import { Link } from "react-router-dom";
-import Head from "../../layout/head/Head";
 import Content from "../../layout/content/Content";
-import DatePicker from "react-datepicker";
-import { orderData } from "./OperationData";
+import Head from "../../layout/head/Head";
+import {
+  DropdownMenu,
+  DropdownToggle,
+  FormGroup,
+  UncontrolledDropdown,
+  Modal,
+  ModalBody,
+  DropdownItem,
+  Form,
+} from "reactstrap";
 import {
   Block,
+  BlockBetween,
+  BlockDes,
+  BlockHead,
   BlockHeadContent,
   BlockTitle,
-  BlockBetween,
-  BlockHead,
-  DataTableHead,
-  DataTableItem,
-  DataTableRow,
   Icon,
-  TooltipComponent,
-  PaginationComponent,
-  PreviewAltCard,
-  Row,
   Col,
+  PaginationComponent,
+  Button,
+  DataTableHead,
+  DataTableRow,
+  DataTableItem,
+  TooltipComponent,
+  RSelect,
+  PreviewAltCard,
 } from "../../components/Component";
-import { getDateStructured } from "../../utils/Utils";
+import Select from "react-select";
+import { filterStatus, DealData } from "./DealData";
+import { findUpper } from "../../utils/Utils";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem, Button, Modal, ModalBody } from "reactstrap";
-import axios from "axios";
 
-const OperationDefault = () => {
-  const [data, setData] = useState(orderData);
-  const [smOption, setSmOption] = useState(false);
+import OperationsServices from "../../services/OperationsServices";
 
+const DealList = () => {
+  const [data, setData] = useState(DealData);
+  const [sm, updateSm] = useState(false);
+  const [onSearchText] = useState("");
+  const [modal, setModal] = useState({
+    edit: false,
+    add: false,
+  });
+  const [editId, setEditedId] = useState();
   const [formData, setFormData] = useState({
-    // id: null,
-    // operationNumber: "0000001",
-    // planNumber: "0000001",
-    // customerPlan: "",
-    // currencyType: "",
-    // operationType: "",
-    // customer: "",
-    // adviser: "",
-    // company: "",
-    // productType: "",
-    // product: "",
-    // investmentAmount: "",
-    // rut: "",
-    // period: "",
-    // commission: "",
-    // annualPayment: "",
-    // formOfPayment: "",
-    // paymentMethod: "",
-    // amountOfMoney: "",
-    // discretionaryCommission: "",
-    // trailerFreeComission: "",
-    // * Nuevo Modelo orden JSON
-    planId: null,
+    planId: "",
     companyId: "",
     productTypeId: "",
     productId: "",
@@ -68,105 +62,71 @@ const OperationDefault = () => {
     discresionalServiceCommission: "",
     trailerFree: false,
     trailerFreeCommission: "",
-    customerId: null,
-    // * Nuevo Modelo
+    // add
+    customer: "",
+    rut: "",
   });
-
-  const [view, setView] = useState({
-    add: false,
-    details: false,
-    viewChecklist: false,
-  });
-
-  const [onSearchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(7);
+  const [itemPerPage] = useState(10);
 
-  // Changing state value when searching name
-  useEffect(() => {
-    if (onSearchText !== "") {
-      const filteredObject = orderData.filter((item) => {
-        return item.orderId.includes(onSearchText);
-      });
-      setData([...filteredObject]);
-    } else {
-      setData([...orderData]);
-    }
-  }, [onSearchText]);
-
-  // toggle function to view order details
-  const toggle = (type) => {
-    setView({
-      add: type === "add" ? true : false,
-      details: type === "details" ? true : false,
-      viewChecklist: type === "viewChecklist" ? true : false,
-    });
-  };
-
-  // selects all the order
-  const selectorCheck = (e) => {
-    let newData;
-    newData = data.map((item) => {
-      item.check = e.currentTarget.checked;
-      return item;
-    });
-    setData([...newData]);
-  };
-
-  // selects one order
-  const onSelectChange = (e, id) => {
-    let newData = data;
-    let index = newData.findIndex((item) => item.id === id);
-    newData[index].check = e.currentTarget.checked;
-    setData([...newData]);
-  };
-
+  // Hooks by Jose Contreras
+  const [customerDeals, setCustomerDeals] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [tableCustomers, setTableCustomers] = useState([]);
   const [search, setSearch] = useState("");
   const [searchRut, setSearchRut] = useState("");
 
-  // resets forms
+  // function to get all select deals
+  const [selectedPlan, setSelectedPlan] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState();
+  const [selectedProductType, setSelectedProductType] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState([]);
+  const [selectedCurrencyType, setSelectedCurrencyType] = useState([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState([]);
+  const [selectedPaymentMedium, setSelectedPaymentMedium] = useState([]);
+
+  const [radioStateDiscComission, setRadioStateDiscComission] = useState(true);
+  const [radioStateDiscComissionFalse, setRadioStateDiscComissionFalse] = useState(false);
+  const [radioStateTrailerFree, setRadioStateTrailerFree] = useState(true);
+  const [radioStateTrailerFreeFalse, setRadioStateTrailerFreeFalse] = useState(false);
+
+  // unselects the data on mount
+  useEffect(() => {
+    let newData;
+    newData = DealData.map((item) => {
+      item.checked = false;
+      return item;
+    });
+    setData([...newData]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Changing state value when searching name
+  useEffect(() => {
+    if (onSearchText !== "") {
+      const filteredObject = DealData.filter((item) => {
+        return (
+          item.name.toLowerCase().includes(onSearchText.toLowerCase()) ||
+          item.email.toLowerCase().includes(onSearchText.toLowerCase())
+        );
+      });
+      setData([...filteredObject]);
+    } else {
+      setData([...DealData]);
+    }
+  }, [onSearchText, setData]);
+
+  // function to change the selected property of an item
+  const onSelectChange = (e, id) => {
+    let newData = data;
+    let index = newData.findIndex((item) => item.id === id);
+    newData[index].checked = e.currentTarget.checked;
+    setData([...newData]);
+  };
+
+  // function to reset the form
   const resetForm = () => {
     setFormData({
-      // id: null,
-      // operationNumber: "0000001", //este campo puede ir ""
-      // planNumber: "0000001", //este campo puede ir ""
-      // currencyType: "",
-      // customerPlan: "",
-      // operationType: "",
-      // adviser: "",
-      // company: "",
-      // productType: "",
-      // product: "",
-      // investmentAmount: "",
-      // rut: "",
-      // customer: "",
-      // period: "",
-      // commission: "",
-      // annualPayment: "",
-      // formOfPayment: "",
-      // paymentMethod: "",
-      // amountOfMoney: "",
-      // discretionaryCommission: "",
-      // trailerFreeComission: "",
-      // planId: null,
-      // customerId: null,
-      // companyId: "",
-      // productTypeId: "",
-      // productId: "",
-      // currencyId: "",
-      // amount: "",
-      // amountPaid: "",
-      // period: "",
-      // annualPayment: "",
-      // paymentMethodId: "",
-      // paymentMediumId: "",
-      // discresionalService: "",
-      // discresionalServiceCommission: "",
-      // trailerFree: false,
-      // trailerFreeCommission: false,
-      planId: null,
+      planId: "",
       companyId: "",
       productTypeId: "",
       productId: "",
@@ -181,14 +141,238 @@ const OperationDefault = () => {
       discresionalServiceCommission: "",
       trailerFree: false,
       trailerFreeCommission: "",
-      customerId: null,
+      // add
+      customer: "",
+      rut: "",
     });
   };
 
-  // function to get customerId
-  const getCustomerId = () => {
-    const idCustomer = customers.map((customer) => customer.id);
-    return parseInt(...idCustomer);
+  // function to close the form modal
+  const onFormCancel = () => {
+    setModal({ edit: false, add: false });
+    resetForm();
+  };
+
+  const [submittedDataForm, setSubmittedData] = useState([]);
+
+  // submit function to add a new item
+  const onFormSubmit = async (submitData) => {
+    const {
+      // planId,
+      // companyId,
+      // productTypeId,
+      // productId,
+      // currencyId,
+      amount,
+      amountPaid,
+      period,
+      annualPayment,
+      paymentMethodId,
+      paymentMediumId,
+      discresionalService,
+      discresionalServiceCommission,
+      trailerFree,
+      trailerFreeCommission,
+
+      // add
+      // customer,
+      // rut,
+    } = submitData;
+
+    // get customer id
+    const customerId = tableCustomers.find((item) => item.rut === searchRut);
+
+    let submittedData = {
+      // planId: plansOptions.value, //-> customerDeals.length + 1
+      // customerId: getCustomerId(), //-> getCustomerId()
+      // companyId: companiesOptions.value,
+      // productTypeId: productsOptions.value,
+      // productId: productsOptions.value,
+      // currencyId: currenciesOptions.value,
+      // amount: Number(amount),
+      // amountPaid: Number(amountPaid),
+      // period: period,
+      // annualPayment: Number(annualPayment),
+      // paymentMethodId: "EFECTIVO",
+      // paymentMediumId: "MENSUAL",
+      // discresionalService: false,
+      // discresionalServiceCommission: false, // 5%
+      // trailerFree: false,
+      // trailerFreeCommission: false, // 15%
+      planId: plansOptions.value,
+      companyId: companiesOptions.value,
+      productTypeId: productTypesOptions.value,
+      productId: productsOptions.value,
+      currencyId: currenciesOptions.value,
+      amount: Number(amount),
+      amountPaid: Number(amountPaid),
+      period: period,
+      annualPayment: Number(annualPayment),
+      paymentMethodId: paymentMethodId,
+      paymentMediumId: paymentMediumId,
+      discresionalService: discresionalService,
+      discresionalServiceCommission: discresionalServiceCommission,
+      trailerFree: trailerFree,
+      trailerFreeCommission: trailerFreeCommission,
+      // add
+      customer: search, // customer names
+      rut: searchRut,
+    };
+    // POST item deal
+    console.log(submittedData);
+    console.log(searchRut);
+    console.log(Number(customerId.id));
+    console.log(search);
+
+    try {
+      await OperationsServices.addDeal(submittedData);
+      setData([submittedData, ...data]);
+      setSearch("");
+      setSearchRut("");
+      resetForm();
+      setModal({ edit: false }, { add: false });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // function to edit customer deals selected
+  const onEditDeal = async (id) => {
+    const deal = data.find((item) => item.id === id);
+    setFormData({
+      planId: deal.planId,
+      customerId: deal.customerId,
+      companyId: deal.companyId,
+      productTypeId: deal.productTypeId,
+      productId: deal.productId,
+      currencyId: deal.currencyId,
+      amount: deal.amount,
+      amountPaid: deal.amountPaid,
+      period: deal.period,
+      annualPayment: deal.annualPayment,
+      paymentMethodId: deal.paymentMethodId,
+      paymentMediumId: deal.paymentMediumId,
+      discresionalService: deal.discresionalService,
+      discresionalServiceCommission: deal.discresionalServiceCommission,
+      trailerFree: deal.trailerFree,
+      trailerFreeCommission: deal.trailerFreeCommission,
+    });
+    setModal({ edit: true, add: false });
+  };
+
+  // submit function to update a new item
+  const onEditSubmit = (submitData) => {
+    const { name, email, phone } = submitData;
+    let submittedData;
+    let newitems = submitData;
+    newitems.forEach((item) => {
+      if (item.id === editId) {
+        submittedData = {
+          id: item.id,
+          avatarBg: item.avatarBg,
+          name: name,
+          image: item.image,
+          role: item.role,
+          email: email,
+          balance: formData.balance,
+          phone: "+" + phone,
+          emailStatus: item.emailStatus,
+          kycStatus: item.kycStatus,
+          lastLogin: item.lastLogin,
+          status: formData.status,
+          country: item.country,
+        };
+      }
+    });
+    let index = newitems.findIndex((item) => item.id === editId);
+    newitems[index] = submittedData;
+    setModal({ edit: false });
+    resetForm();
+  };
+
+  // function to delete an item deal and get rest items
+  const deleteCustomerDeal = (id) => {
+    let defaultData = data;
+    defaultData = defaultData.filter((item) => item.id !== id);
+    setData([...defaultData]);
+  };
+
+  // function to delete an item deal
+  const deleteDeal = async (id) => {
+    try {
+      await OperationsServices.deleteDeal(id);
+      deleteCustomerDeal(id);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // function to get all customers to deal form
+  const getCustomer = async (customerName) => {
+    try {
+      const customers = await OperationsServices.getCustomer(customerName);
+      const customersData = customers.data.map((customerData) => customerData);
+      customers.data.map((customerData) => customerData.names === customerName && customerData);
+      setCustomers(customersData);
+      setTableCustomers(customersData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  useEffect(() => {
+    getCustomer(search);
+  }, [search]);
+
+  // function to get only 5 customer items
+  const getPrincipalCustomersRegisters = (customersData) => {
+    let newCustomersData = customersData.slice(0, 16);
+    return newCustomersData;
+  };
+
+  // function filter names and rut by customer names (input search)
+  const handleInputSearchChange = (ev) => {
+    setSearch(ev.target.value);
+    setSearchRut(ev.target.value);
+  };
+
+  // function to set input rut value in input field
+  const handleClickedRegisterRut = (customerRut) =>
+    customers.filter((customer) => customer.rut === customerRut && setSearchRut(customerRut));
+
+  // function to reset names and rut fields
+  const handleClearSearch = () => {
+    setSearch("");
+    setSearchRut("");
+    resetForm();
+  };
+
+  // function to get customer names from input search
+  const handleClickedRegisterNames = (customerName) => {
+    customers.filter((customer) => customer.names === customerName && setSearch(customerName));
+  };
+
+  // * Deals
+  // function to get customer item deals
+  const getCustomerDeals = async () => {
+    try {
+      const deals = await OperationsServices.getDeals();
+      const dealsData = deals.data.map((dealData) => dealData);
+      setCustomerDeals(dealsData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  useEffect(() => {
+    getCustomerDeals();
+  }, []);
+
+  // function to parse datepicker value
+  const parseDate = (date) => {
+    let newDate = new Date(date);
+    let day = newDate.getDate();
+    let month = newDate.getMonth() + 1;
+    let year = newDate.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
   const asignamentToBoolean = (string) => {
@@ -201,244 +385,56 @@ const OperationDefault = () => {
         break;
     }
   };
+  // function to get total deals
+  const getTotalDeals = () => customerDeals.length;
 
-  const onFormSubmit = async (form) => {
-    const {
-      // operationNumber,
-      // currencyType,
-      // planNumber,
-      // customerPlan,
-      // adviser,
-      // company,
-      // productType,
-      // product,
-      // period,
-      // investmentAmount,
-      // rut,
-      // customer,
-      // comission,
-      // annualPayment,
-      // formOfPayment,
-      // paymentMethod,
-      // amountOfMoney,
-      // discretionaryCommission,
-      // trailerFreeComission,
-      // * Nuevo Modelo
-      // planId,
-      // customerId,
-      // companyId,
-      // productTypeId,
-      // productId,
-      // currencyId,
-      // amount,
-      // amountPaid,
-      // period,
-      // annualPayment,
-      // paymentMethodId,
-      // paymentMediumId,
-      // discresionalService,
-      // discresionalServiceCommission,
-      // trailerFree,
-      // trailerFreeCommission,
-      planId,
-      companyId,
-      productTypeId,
-      productId,
-      currencyId,
-      amount,
-      amountPaid,
-      period,
-      annualPayment,
-      paymentMethodId,
-      paymentMediumId,
-      discresionalService,
-      discresionalServiceCommission,
-      trailerFree,
-      trailerFreeCommission,
-      customerId,
-      // * Nuevo Modelo
-    } = form;
-
-    let submittedData = {
-      // id: data.length + 1,
-      // operationNumber: "000001",
-      // currencyType: parseInt(currencyType),
-      // planNumber: "0000001",
-      // customerPlan: parseInt(customerPlan),
-      // adviser: adviser,
-      // company: parseInt(company),
-      // productType: parseInt(productType),
-      // product: parseInt(product),
-      // investmentAmount: parseInt(investmentAmount),
-      // rut: rut,
-      // customer: customer,
-      // period: period,
-      // comisión: comission,
-      // annualPayment: parseInt(annualPayment),
-      // formOfPayment: parseInt(formOfPayment),
-      // paymentMethod: parseInt(paymentMethod),
-      // amountOfMoney: parseInt(amountOfMoney),
-      // discretionaryCommission: discretionaryCommission,
-      // trailerFreeComission: trailerFreeComission,
-      // * Nuevo Modelo
-      // planId: data.length + 1,
-      // companyId: parseInt(companyId),
-      // productTypeId: parseInt(productTypeId),
-      // productId: parseInt(productId),
-      // currencyId: parseInt(currencyId),
-      // amount: parseInt(amount),
-      // amountPaid: parseInt(amountPaid),
-      // period: period,
-      // annualPayment: parseInt(annualPayment),
-      // paymentMethodId: parseInt(paymentMethodId),
-      // paymentMediumId: parseInt(paymentMediumId),
-      // discresionalService: asignamentToBoolean(discresionalService), //Booleano
-      // discresionalServiceCommission: "5%", //5%
-      // trailerFree: asignamentToBoolean(trailerFree), //Booleano
-      // trailerFreeCommission: "15%", // 15%
-      // // customerId: getCustomerId(),
-      // * Nuevo Modelo
-      planId: data.length + 1,
-      companyId: parseInt(companyId),
-      productTypeId: parseInt(productTypeId),
-      productId: parseInt(productId),
-      currencyId: parseInt(currencyId),
-      amount: parseInt(amount),
-      amountPaid: parseInt(amountPaid),
-      period: period,
-      annualPayment: parseInt(annualPayment),
-      paymentMethodId: parseInt(paymentMethodId),
-      paymentMediumId: parseInt(paymentMediumId),
-      discresionalService: asignamentToBoolean(discresionalService),
-      discresionalServiceCommission: "5%",
-      trailerFree: asignamentToBoolean(trailerFree),
-      trailerFreeCommission: "15%",
-      customerId: getCustomerId(),
-    };
-
-    console.log(submittedData);
-    // function to post deal form data
-    try {
-      await OperationsServices.addDeal(submittedData);
-      setData([submittedData, ...data]);
-      setView({ add: false, details: false, viewChecklist: false });
-      setSearch("");
-      setSearchRut("");
-      resetForm();
-    } catch (error) {
-      throw error;
-    }
+  // function that loads the want to editted data
+  const onEditClick = (id) => {
+    customerDeals.forEach((item) => {
+      if (item.id === id) {
+        setFormData({
+          name: item.name,
+          email: item.email,
+          status: item.status,
+          phone: item.phone,
+          balance: item.balance,
+        });
+        setModal({ edit: true }, { add: false });
+        setEditedId(id);
+      }
+    });
   };
 
-  // function to get Deals selects
-  const [selectedPlan, setSelectedPlan] = useState([]);
-  const [selectedCompany, setSelectedCompany] = useState([]);
-  const [selectedProductType, setSelectedProductType] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState([]);
-  const [selectedCurrencyType, setSelectedCurrencyType] = useState([]);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState([]);
-  const [selectedPaymentMedium, setSelectedPaymentMedium] = useState([]);
-
-  const getCustomerDealsSelect = async () => {
-    try {
-      // function to get deal plans form API
-      const customerDealsSelectData = await OperationsServices.getDealSelects();
-
-      // Select "Plans"
-      const selectPlans = customerDealsSelectData.plans;
-
-      // Select "Companies"
-      const selectCompanies = customerDealsSelectData.companies;
-
-      // Select "Product Types"
-      const selectProductTypes = customerDealsSelectData.productTypes;
-
-      // Select "Products"
-      const selectProducts = customerDealsSelectData.products;
-
-      // Select "Currency Types"
-      const selectCurrencyTypes = customerDealsSelectData.currencyTypes;
-
-      // Select "Payment Methods"
-      const selectPaymentMethods = customerDealsSelectData.paymentMethods;
-
-      // Select "Payment Mediums"
-      const selectPaymentMediums = customerDealsSelectData.paymentMediums;
-
-      setSelectedPlan(selectPlans);
-      setSelectedCompany(selectCompanies);
-      setSelectedProductType(selectProductTypes);
-      setSelectedProduct(selectProducts);
-      setSelectedCurrencyType(selectCurrencyTypes);
-      setSelectedPaymentMethod(selectPaymentMethods);
-      setSelectedPaymentMedium(selectPaymentMediums);
-    } catch (error) {
-      throw error;
-    }
-  };
-  useEffect(() => {
-    getCustomerDealsSelect();
-  }, []);
-
-  // function to load detail data
-  const loadDetail = (id) => {
-    let index = data.findIndex((item) => item.id === id);
-    setFormData(data[index]);
-  };
-
-  // OnChange function to get the input data
-  const onInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // onChange function for searching name
-  const onFilterChange = (e) => {
-    setSearchText(e.target.value);
-  };
-
-  // function to close the form modal
-  const onFormCancel = () => {
-    setView({ add: false, details: false, viewChecklist: false });
-    resetForm();
-  };
-
-  // function to change to approve property for an item
-  const markAsDelivered = (id) => {
-    let newData = data;
+  // function to change to suspend property for an item
+  const suspendUser = (id) => {
+    let newData = customerDeals; //->data
     let index = newData.findIndex((item) => item.id === id);
-    newData[index].status = "Delivered";
+    newData[index].status = "Suspend";
     setData([...newData]);
   };
 
-  // function to delete a Order
-  const deleteCustomerDeal = (id) => {
-    let defaultData = data;
-    defaultData = defaultData.filter((item) => item.id !== id);
-    setData([...defaultData]);
+  // function to change the check property of an item
+  const selectorCheck = (e) => {
+    let newData;
+    newData = data.map((item) => {
+      item.checked = e.currentTarget.checked;
+      return item;
+    });
+    setData([...newData]);
   };
 
   // function to delete the seletected item
-  const selectorDeleteOrder = () => {
+  const selectorDeleteUser = () => {
     let newData;
-    newData = data.filter((item) => item.check !== true);
+    newData = data.filter((item) => item.checked !== true);
     setData([...newData]);
   };
 
-  // function to delete deal to API
-  const deleteDeal = async (id) => {
-    try {
-      await OperationsServices.deleteDeal(id);
-      deleteCustomerDeal(id);
-    } catch (error) {
-      throw error;
-    }
-  };
-
   // function to change the complete property of an item
-  const selectorMarkAsDelivered = () => {
+  const selectorSuspendUser = () => {
     let newData;
     newData = data.map((item) => {
-      if (item.check === true) item.status = "Delivered";
+      if (item.checked === true) item.status = "Suspend";
       return item;
     });
     setData([...newData]);
@@ -447,156 +443,152 @@ const OperationDefault = () => {
   // Get current list, pagination
   const indexOfLastItem = currentPage * itemPerPage;
   const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+  const customerDealsPage = data.slice(indexOfFirstItem, indexOfLastItem); //->check this
 
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const { errors, register, handleSubmit } = useForm();
 
-  const { errors, register, handleSubmit, formState } = useForm();
+  const [products, setProducts] = useState([]);
+  const [plans, setPlans] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [productTypes, setProductTypes] = useState([]);
+  const [currencies, setCurrencies] = useState([]);
 
-  // Get select input data
-  const [option, setOption] = useState();
+  const [productsOptions, setProductsOptions] = useState(products);
+  const [plansOptions, setPlansOptions] = useState(plans);
+  const [companiesOptions, setCompaniesOptions] = useState(companies);
+  const [productTypesOptions, setProductTypesOptions] = useState(productTypes);
+  const [currenciesOptions, setCurrenciesOptions] = useState(currencies);
 
-  function handleChange(event) {
-    setOption(event.target.value);
-  }
-
-  // function to get customers from API
-  const getCustomer = async (customerName) => {
+  // function to get product select
+  const getProducts = async () => {
     try {
-      const customers = await OperationsServices.getCustomer(customerName);
-      const customersData = customers.data.map((customerData) => customerData);
-      customers.data.map((customerData) => customerData.names === customerName && customerData);
-
-      setCustomers(customersData);
-      setTableCustomers(customersData);
+      const selectsData = await OperationsServices.getDealSelects();
+      const productsData = await selectsData.products.map((product) => ({ label: product.name, value: product.id }));
+      setProducts(productsData);
     } catch (error) {
       throw error;
     }
   };
-
-  // function to get customer names and rut from input search
-  const handleInputSearchChange = (ev) => {
-    setSearch(ev.target.value);
-    setSearchRut(ev.target.value);
-  };
-
-  // function to reset Rut and Names fields
-  const handleClearSearch = () => {
-    setSearch("");
-    setSearchRut("");
-    resetForm();
-  };
-
-  // function to get customer names from input search
-  const handleClickedRegisterNames = (customerName) => {
-    customers.filter((customer) => customer.names === customerName && setSearch(customerName));
+  const onOptionsProductsChange = (optionValue) => {
+    setProductsOptions(optionValue);
   };
 
   useEffect(() => {
-    getCustomer(search);
-  }, [search]);
+    getProducts();
+  }, []);
 
-  // function to set input rut value in input field
-  const handleClickedRegisterRut = (customerRut) =>
-    customers.filter((customer) => customer.rut === customerRut && setSearchRut(customerRut));
+  // console.log(`state:`, products);
+  // console.log(`product:`, productsOptions.value);
 
-  // Function to get only 5 customers from API
-  const getPrincipalCustomersRegisters = (customersData) => {
-    let newCustomersData = customersData.slice(0, 5);
-    return newCustomersData;
-  };
-
-  // Radio states
-  const [radioStateDiscComission, setRadioStateDiscComission] = useState(true);
-  const [radioStateDiscComissionFalse, setRadioStateDiscComissionFalse] = useState(false);
-  const [radioStateTrailerFree, setRadioStateTrailerFree] = useState(true);
-  const [radioStateTrailerFreeFalse, setRadioStateTrailerFreeFalse] = useState(false);
-
-  // function to get customer deals
-  const [customerDeals, setCustomerDeals] = useState([]);
-
-  const getCustomerDeals = async () => {
+  // function to get plan select
+  const getPlans = async () => {
     try {
-      const deals = await OperationsServices.getDeals();
-      const dealsData = deals.data.map((dealData) => dealData);
-      setCustomerDeals(dealsData);
+      const selectsData = await OperationsServices.getDealSelects();
+      const plansData = await selectsData.plans.map((plan) => ({ label: plan.name, value: plan.id }));
+      setPlans(plansData);
     } catch (error) {
       throw error;
     }
   };
+  const onOptionsPlansChange = (optionValue) => {
+    setPlansOptions(optionValue);
+  };
   useEffect(() => {
-    getCustomerDeals();
-  }, [customerDeals]);
+    getPlans();
+  }, []);
+
+  // function to get company select
+  const getCompanies = async () => {
+    try {
+      const selectsData = await OperationsServices.getDealSelects();
+      const companiesData = await selectsData.companies.map((company) => ({ label: company.name, value: company.id }));
+      setCompanies(companiesData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsCompaniesChange = (optionValue) => {
+    setCompaniesOptions(optionValue);
+  };
+  useEffect(() => {
+    getCompanies();
+  }, []);
+
+  // function to get product type select
+  const getProductTypes = async () => {
+    try {
+      const selectsData = await OperationsServices.getDealSelects();
+      const productTypesData = await selectsData.productTypes.map((productType) => ({
+        label: productType.name,
+        value: productType.id,
+      }));
+      setProductTypes(productTypesData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsProductTypesChange = (optionValue) => {
+    setProductTypesOptions(optionValue);
+  };
+  useEffect(() => {
+    getProductTypes();
+  }, []);
+
+  // function to get product select
+  const getCurrencies = async () => {
+    try {
+      const selectsData = await OperationsServices.getDealSelects();
+      const currenciesData = await selectsData.currencyTypes.map((currencyType) => ({
+        label: currencyType.name,
+        value: currencyType.id,
+      }));
+      setCurrencies(currenciesData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsCurrenciesChange = (optionValue) => {
+    setCurrenciesOptions(optionValue);
+  };
+
+  useEffect(() => {
+    getCurrencies();
+  }, []);
 
   return (
     <React.Fragment>
-      <Head title="Order Default"></Head>
+      <Head title="Lista de Operaciones"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
-              <BlockTitle>Operaciones</BlockTitle>
+              <BlockTitle tag="h3" page>
+                Lista de Operaciones
+              </BlockTitle>
+              <BlockDes className="text-soft">
+                <p>Total {getTotalDeals()} operaciones</p>
+              </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
               <div className="toggle-wrap nk-block-tools-toggle">
-                <a
-                  href="#more"
-                  className="btn btn-icon btn-trigger toggle-expand mr-n1"
-                  onClick={(ev) => {
-                    ev.preventDefault();
-                    setSmOption(!smOption);
-                  }}
+                <Button
+                  className={`btn-icon btn-trigger toggle-expand mr-n1 ${sm ? "active" : ""}`}
+                  onClick={() => updateSm(!sm)}
                 >
-                  <Icon name="more-v"></Icon>
-                </a>
-                <div className="toggle-expand-content" style={{ display: smOption ? "block" : "none" }}>
+                  <Icon name="menu-alt-r"></Icon>
+                </Button>
+                <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
                     <li>
-                      <div className="form-control-wrap">
-                        <div className="form-icon form-icon-right">
-                          <Icon name="search"></Icon>
-                        </div>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="default-04"
-                          placeholder="Buscar por numero"
-                          onChange={(e) => onFilterChange(e)}
-                        />
-                      </div>
-                    </li>
-                    <li>
-                      <UncontrolledDropdown>
-                        <DropdownToggle
-                          color="transparent"
-                          className="dropdown-toggle dropdown-indicator btn btn-outline-light btn-white"
-                        >
-                          Estado
-                        </DropdownToggle>
-                        <DropdownMenu right>
-                          <ul className="link-list-opt no-bdr">
-                            <li>
-                              <DropdownItem tag="a" href="#dropdownitem" onClick={(ev) => ev.preventDefault()}>
-                                <span>Abierta</span>
-                              </DropdownItem>
-                            </li>
-                            <li>
-                              <DropdownItem tag="a" href="#dropdownitem" onClick={(ev) => ev.preventDefault()}>
-                                <span>Cerrada</span>
-                              </DropdownItem>
-                            </li>
-                            <li>
-                              <DropdownItem tag="a" href="#dropdownitem" onClick={(ev) => ev.preventDefault()}>
-                                <span>Out of Stock</span>
-                              </DropdownItem>
-                            </li>
-                          </ul>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
+                      <Button color="light" outline className="btn-white">
+                        <Icon name="download-cloud"></Icon>
+                        <span>Export</span>
+                      </Button>
                     </li>
                     <li className="nk-block-tools-opt">
-                      <Button color="primary" className="btn-icon" onClick={() => setView({ add: true })}>
+                      <Button color="primary" className="btn-icon" onClick={() => setModal({ add: true })}>
                         <Icon name="plus"></Icon>
                       </Button>
                     </li>
@@ -609,108 +601,73 @@ const OperationDefault = () => {
 
         <Block>
           <div className="container-fluid overflow-auto scrollbar-fluid">
-            <div className="nk-tb-list is-separate is-medium mb-3 ">
+            <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow>
-                  <span className="sub-text text-center">N. de Operacion</span>
+                  <span className="sub-text text-center">N. de Operación</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="mb">
                   <span className="sub-text text-center">N. de Plan</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="mb">
                   <span className="sub-text text-center">Cliente</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="md">
                   <span className="sub-text text-center">Rut</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="lg">
                   <span className="sub-text text-center">Asesor</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="md">
                   <span className="sub-text text-center">Plan</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="md">
                   <span className="sub-text text-center">Empresa</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="md">
                   <span className="sub-text text-center">Tipo de Producto</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="md">
                   <span className="sub-text text-center">Producto</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="md">
                   <span className="sub-text text-center">Monto de Inversión</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text text-center">Moneda</span>
-                </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text text-center">Plazo</span>
-                </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text text-center">Pago Anual</span>
-                </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text text-center">Forma de Pago</span>
-                </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text text-center">Medio de Pago</span>
-                </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="md">
                   <span className="sub-text text-center">Abono</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="md">
+                  <span className="sub-text text-center">Moneda</span>
+                </DataTableRow>
+                <DataTableRow size="md">
+                  <span className="sub-text text-center">Plazo</span>
+                </DataTableRow>
+                <DataTableRow size="md">
+                  <span className="sub-text text-center">Pago Anual</span>
+                </DataTableRow>
+                <DataTableRow size="md">
+                  <span className="sub-text text-center">Forma de Pago</span>
+                </DataTableRow>
+                <DataTableRow size="md">
+                  <span className="sub-text text-center">Metodo de Pago</span>
+                </DataTableRow>
+                <DataTableRow size="md">
                   <span className="sub-text text-center">Comisión Discresional</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="md">
                   <span className="sub-text text-center">Comisión Trailer Free</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="md">
                   <span className="sub-text text-center">Subir Docs. Asesor/a</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="md">
+                  <span className="sub-text text-center">Subir Docs. Asesor/a</span>
+                </DataTableRow>
+                <DataTableRow size="md">
                   <span className="sub-text text-center">Validar Docs. P&A</span>
                 </DataTableRow>
-                <DataTableRow className="nk-tb-col-tools">
-                  <ul className="nk-tb-actions gx-1 my-n1">
-                    <li>
-                      <UncontrolledDropdown>
-                        <DropdownToggle tag="a" className="btn btn-trigger dropdown-toggle btn-icon mr-n1">
-                          <Icon name="more-h"></Icon>
-                        </DropdownToggle>
-                        <DropdownMenu right>
-                          <ul className="link-list-opt no-bdr">
-                            <li>
-                              <DropdownItem
-                                tag="a"
-                                href="#markasdone"
-                                onClick={(ev) => {
-                                  ev.preventDefault();
-                                  selectorMarkAsDelivered();
-                                }}
-                              >
-                                <Icon name="edit"></Icon>
-                                <span>Editar</span>
-                              </DropdownItem>
-                            </li>
-                            <li>
-                              <DropdownItem
-                                tag="a"
-                                href="#remove"
-                                onClick={(ev) => {
-                                  ev.preventDefault();
-                                  selectorDeleteOrder();
-                                }}
-                              >
-                                <Icon name="trash"></Icon>
-                                <span>Remove Orders</span>
-                              </DropdownItem>
-                            </li>
-                          </ul>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                    </li>
-                  </ul>
+                <DataTableRow size="md">
+                  <span className="sub-text text-center">Acción</span>
                 </DataTableRow>
               </DataTableHead>
 
@@ -718,28 +675,20 @@ const OperationDefault = () => {
                 ? customerDeals.map((deal) => (
                     <DataTableItem key={deal.id}>
                       <DataTableRow className="text-center">
-                        <a href="#id" onClick={(ev) => ev.preventDefault()}>
-                          #{deal.id}
-                        </a>
+                        <span>{deal.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{deal.planNumber}</span>
+                        <span></span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{deal.customer}</span>
+                        <span>{/* {deal.customer.names} {deal.customer.paternalLastName} */}</span>
                       </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{deal.rut}</span>
-                      </DataTableRow>
+                      <DataTableRow className="text-center">{/* <span>{deal.customer.rut}</span> */}</DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{deal.createdByAdvisor.name}</span>
                       </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{deal.plan.name}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{selectedCompany.map((company) => company.name)}</span>
-                      </DataTableRow>
+                      <DataTableRow className="text-center">{/* <span>{deal.}</span> */}</DataTableRow>
+                      <DataTableRow className="text-center">{/* <span>{deal.company.name}</span> */}</DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{deal.productType.name}</span>
                       </DataTableRow>
@@ -750,112 +699,70 @@ const OperationDefault = () => {
                         <span>{deal.amount}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
+                        <span>{deal.amountPaid}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{deal.currency.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{deal.period}</span>
+                        <span>{parseDate(deal.period)}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{deal.annualPayment}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{deal.paymentMedium.name}</span>
+                        {/* <span>{deal.paymentMedium.name}</span> */}
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{deal.paymentMethod.name}</span>
+                        {/* <span>{deal.paymentMedium.name}</span> */}
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{deal.amountPaid}</span>
+                        {/* <span>{deal.paymentMethod.name}</span> */}
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{deal.discresionalService ? "Si" : "No"}</span>
+                        <span>{deal.discresionalService}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span className="tb-sub">{deal.trailerFree ? "Si" : "No"}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <ul className="nk-tb-actions gx-1">
-                          <li>
-                            <UncontrolledDropdown>
-                              <DropdownToggle tag="" className="dropdown-toggle bg-transparent border-0">
-                                <DropdownItem
-                                  tag="a"
-                                  href="#dropdown"
-                                  onClick={(ev) => {
-                                    ev.preventDefault();
-                                    loadDetail(deal.id);
-                                    toggle("details");
-                                  }}
-                                >
-                                  <div className="icon-status icon-status-na">
-                                    <Icon name="upload" className="text-danger"></Icon>
-                                  </div>
-                                </DropdownItem>
-                              </DropdownToggle>
-                            </UncontrolledDropdown>
-                          </li>
-                        </ul>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <ul className="nk-tb-actions gx-1">
-                          <li>
-                            <UncontrolledDropdown>
-                              <DropdownToggle tag="" className="dropdown-toggle bg-transparent border-0">
-                                <DropdownItem
-                                  tag="a"
-                                  href="#dropdown"
-                                  onClick={(ev) => {
-                                    ev.preventDefault();
-                                    loadDetail(deal.id);
-                                    toggle("viewChecklist");
-                                  }}
-                                >
-                                  <div className="icon-status icon-status-na">
-                                    <Icon name="check" className="text-danger"></Icon>
-                                  </div>
-                                </DropdownItem>
-                              </DropdownToggle>
-                            </UncontrolledDropdown>
-                          </li>
-                        </ul>
+                        <span>{deal.trailerFree}</span>
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
                           <li>
                             <UncontrolledDropdown>
-                              <DropdownToggle tag="a" className="btn btn-icon dropdown-toggle btn-trigger">
+                              <DropdownToggle tag="a" className="dropdown-toggle btn btn-icon btn-trigger">
                                 <Icon name="more-h"></Icon>
                               </DropdownToggle>
                               <DropdownMenu right>
                                 <ul className="link-list-opt no-bdr">
-                                  {deal.status !== "Delivered" && (
-                                    <li>
-                                      <DropdownItem
-                                        tag="a"
-                                        href="#markasdone"
-                                        onClick={(ev) => {
-                                          ev.preventDefault();
-                                          selectorMarkAsDelivered();
-                                        }}
-                                      >
-                                        <Icon name="edit"></Icon>
-                                        <span>Editar</span>
-                                      </DropdownItem>
-                                    </li>
-                                  )}
-                                  <li>
+                                  <li onClick={() => onEditClick(deal.id)}>
                                     <DropdownItem
                                       tag="a"
-                                      href="#dropdown"
+                                      href="#edit"
                                       onClick={(ev) => {
                                         ev.preventDefault();
-                                        deleteDeal(deal.id);
                                       }}
                                     >
-                                      <Icon name="trash"></Icon>
-                                      <span>Eliminar</span>
+                                      <Icon name="edit"></Icon>
+                                      <span>Editar Operación</span>
                                     </DropdownItem>
                                   </li>
+                                  {deal.status !== "Suspend" && (
+                                    <React.Fragment>
+                                      <li className="divider"></li>
+                                      <li onClick={() => deleteDeal(deal.id)}>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#suspend"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
+                                          }}
+                                        >
+                                          <Icon name="trash"></Icon>
+                                          <span>Eliminar Operación</span>
+                                        </DropdownItem>
+                                      </li>
+                                    </React.Fragment>
+                                  )}
                                 </ul>
                               </DropdownMenu>
                             </UncontrolledDropdown>
@@ -866,84 +773,76 @@ const OperationDefault = () => {
                   ))
                 : null}
             </div>
+            <PreviewAltCard>
+              {customerDeals.length > 0 ? (
+                <PaginationComponent
+                  itemPerPage={itemPerPage}
+                  totalItems={data.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                />
+              ) : (
+                <div className="text-center">
+                  <span className="text-silent">No se encontraron operaciones</span>
+                </div>
+              )}
+            </PreviewAltCard>
           </div>
         </Block>
-        <PreviewAltCard>
-          {data.length > 0 ? (
-            <PaginationComponent
-              itemPerPage={itemPerPage}
-              totalItems={data.length}
-              paginate={paginate}
-              currentPage={currentPage}
-            />
-          ) : (
-            <div className="text-center">{/* <span className="text-silent">No se encontaron operaciones</span> */}</div>
-          )}
-        </PreviewAltCard>
-        <Modal isOpen={view.add} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
+
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
           <ModalBody>
-            <a href="#cancel" className="close">
-              <Icon
-                name="cross-sm"
-                onClick={(ev) => {
-                  ev.preventDefault();
-                  onFormCancel();
-                }}
-              ></Icon>
+            <a
+              href="#close"
+              onClick={(ev) => {
+                ev.preventDefault();
+                onFormCancel();
+              }}
+              className="close"
+            >
+              <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
               <h5 className="title">Agregar Operación</h5>
               <div className="mt-4">
-                <form onSubmit={handleSubmit(onFormSubmit)}>
-                  <Row className="g-3">
-                    <Col md="12">
-                      <h6 className="border-bottom pb-1">Información del Cliente</h6>
-                    </Col>
-
-                    <Col md="7">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="customer">
-                          Buscar Cliente
-                        </label>
-                        <div className="search flex flex-row justify-content-between align-items-center">
-                          <input
-                            type="text"
-                            name="customer"
-                            value={search}
-                            onChange={handleInputSearchChange}
-                            className="form-control"
-                            placeholder="Nombre del Cliente"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                          />
-                          <Button className="bg-primary border border-primary ml-1" onClick={handleClearSearch}>
-                            <em className="icon ni ni-repeat"></em>
-                          </Button>
-                        </div>
+                <Form className="row gy-4" noValidate onSubmit={handleSubmit(onFormSubmit)}>
+                  <Col md="12">
+                    <h6 className="border-bottom pb-1">Información del Cliente</h6>
+                  </Col>
+                  <Col md="7">
+                    <FormGroup>
+                      <label className="form-label">Nombre del Cliente</label>
+                      <div className="search flex flex-row justify-content-between align-items-center">
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="customer"
+                          value={search}
+                          onChange={handleInputSearchChange}
+                          placeholder="Ingresa Nombre"
+                        />
+                        <Button className="bg-primary border border-primary ml-1" onClick={handleClearSearch}>
+                          <em className="icon ni ni-repeat text-white"></em>
+                        </Button>
                       </div>
-                    </Col>
-                    <Col md="5">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="rut">
-                          Rut del Cliente
-                        </label>
-                        <div className="search flex flex-column">
-                          <div className="form-icon form-icon-right">
-                            <Icon name="search"></Icon>
-                          </div>
-                          <input
-                            type="text"
-                            name="rut"
-                            value={searchRut}
-                            onChange={handleInputSearchChange}
-                            className="form-control pointer-event: none bg-light"
-                            placeholder="Rut del Cliente"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                          />
-                        </div>
-                      </div>
-                    </Col>
+                    </FormGroup>
+                  </Col>
+                  <Col md="5">
+                    <FormGroup>
+                      <label className="form-label">Rut</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="rut"
+                        value={searchRut}
+                        onChange={handleInputSearchChange}
+                        readOnly="readonly"
+                      />
+                    </FormGroup>
+                  </Col>
 
-                    <div className="overflow-auto rounded scrollbar-fluid container-fluid w-100">
+                  <Col md="12">
+                    <div className="overflow-auto rounded scrollbar-fluid border bg-light">
                       {customers.length === 0 ? (
                         <span className="text-danger">
                           <em className="icon ni ni-info"></em>
@@ -952,648 +851,388 @@ const OperationDefault = () => {
                       ) : (
                         customers &&
                         getPrincipalCustomersRegisters(customers).map((customer) => (
-                          <div key={customer.id} className="w-100 overflow-auto scrollbar-fluid">
-                            <div className="w-100 d-flex justify-content-between align-items-center border rounded bg-light mb-1 scrollbar-fluid">
-                              <DataTableRow className="text-center">
-                                <span>{customer.id}</span>
-                              </DataTableRow>
-                              <DataTableRow className="text-center">
-                                <span>{customer.names}</span>
-                              </DataTableRow>
-                              <DataTableRow className="text-center">
-                                <span>{customer.paternalLastName}</span>
-                              </DataTableRow>
-                              <DataTableRow className="text-center">
-                                <span>{customer.rut}</span>
-                              </DataTableRow>
-                              <DataTableRow className="text-center">
-                                <span>{customer.email}</span>
-                              </DataTableRow>
-                              <DataTableRow>
-                                <Button
-                                  onClick={() => {
-                                    handleClickedRegisterNames(customer.names);
-                                    handleClickedRegisterRut(customer.rut);
-                                  }}
-                                  className="bg-primary border-0 text-white"
-                                >
-                                  <em className="icon ni ni-check"></em>
-                                </Button>
-                              </DataTableRow>
-                            </div>
-                          </div>
+                          <DataTableItem key={customer.id} className="bg-white rounded">
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <span className="mr-2">{customer.id}</span>
+                            </DataTableRow>
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <span className="mr-2">{customer.names}</span>
+                            </DataTableRow>
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <span className="mr-2">{customer.paternalLastName}</span>
+                            </DataTableRow>
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <span className="mr-2">{customer.rut}</span>
+                            </DataTableRow>
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <span className="mr-2">{customer.email}</span>
+                            </DataTableRow>
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <span className="mr-2">{parseDate(customer.createdAt)}</span>
+                            </DataTableRow>
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <Button
+                                onClick={() => {
+                                  handleClickedRegisterNames(customer.names);
+                                  handleClickedRegisterRut(customer.rut);
+                                }}
+                                className="bg-primary border-0 text-white"
+                              >
+                                <em className="icon ni ni-check"></em>
+                              </Button>
+                            </DataTableRow>
+                          </DataTableItem>
                         ))
                       )}
                     </div>
+                  </Col>
+                  <Col md="12">
+                    <h6 className="border-bottom pb-1 mt-3">Plan del Cliente</h6>
+                  </Col>
+                  <Col md="12">
+                    <FormGroup>
+                      <RSelect
+                        value={plansOptions}
+                        options={plans}
+                        onChange={onOptionsPlansChange}
+                        defautlValue={formData.planId}
+                      />
+                    </FormGroup>
+                  </Col>
 
-                    <Col md="12">
-                      <h6 className="border-bottom pb-1 mt-2">Plan</h6>
-                    </Col>
-                    <Col md="12">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="customer-plan">
-                          Plan del Cliente
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="customerPlan"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.customerPlan}
-                          >
-                            <option>Seleccionar...</option>
-                            {selectedPlan &&
-                              selectedPlan.map((plan) => (
-                                <option key={plan.id} value={plan.id}>
-                                  {plan.name}
-                                </option>
-                              ))}
-                          </select>
-                          {errors.customerPlan && <span className="invalid">{errors.customerPlan.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
+                  <Col md="12">
+                    <h6 className="border-bottom pb-1 mt-3">Empresa y Producto</h6>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Empresa</label>
+                      <RSelect
+                        value={companiesOptions}
+                        options={companies}
+                        onChange={onOptionsCompaniesChange}
+                        defautlValue={formData.companyId}
+                      />
+                      {errors.companyId && <span className="invalid">{errors.companyId.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Tipo de Producto</label>
+                      <RSelect
+                        value={productTypesOptions}
+                        options={productTypes}
+                        onChange={onOptionsProductTypesChange}
+                        defautlValue={formData.productTypeId}
+                      />
+                      {errors.productTypeId && <span className="invalid">{errors.productTypeId.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Producto</label>
+                      <RSelect
+                        value={productsOptions}
+                        options={products}
+                        onChange={onOptionsProductsChange}
+                        defautlValue={formData.productId}
+                      />
+                      {errors.productId && <span className="invalid">{errors.productId.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="12">
+                    <h6 className="border-bottom pb-1 mt-3">Inversión y Pago</h6>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Moneda</label>
+                      <RSelect
+                        value={currenciesOptions}
+                        options={currencies}
+                        onChange={onOptionsCurrenciesChange}
+                        defautlValue={formData.currencyId}
+                      />
+                      {errors.currencyId && <span className="invalid">{errors.currencyId.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Inversión</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="amount"
+                        ref={register({ required: "Este campo es obligatorio *" })}
+                        defaultValue={formData.amount}
+                      />
+                      {errors.amount && <span className="invalid">{errors.amount.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Abono inicial</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="amountPaid"
+                        ref={register({ required: "Este campo es obligatorio *" })}
+                        defaultValue={formData.amountPaid}
+                      />
+                      {errors.amountPaid && <span className="invalid">{errors.amountPaid.message}</span>}
+                    </FormGroup>
+                  </Col>
 
-                    <Col md="12">
-                      <h6 className="border-bottom pb-1 mt-2">Empresa y Producto</h6>
-                    </Col>
-                    <Col md="4">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="companyId">
-                          Empresa
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="companyId"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.company}
-                          >
-                            <option>Seleccionar...</option>
-                            {selectedCompany &&
-                              selectedCompany.map((company) => (
-                                <option key={company.id} value={company.id}>
-                                  {company.name}
-                                </option>
-                              ))}
-                          </select>
-                          {errors.company && <span className="invalid">{errors.company.message}</span>}
-                        </div>
+                  <Col md="6">
+                    <div className="fc fc-button-group">
+                      <label className="form-label" htmlFor="period">
+                        Periodo de Duración
+                      </label>
+                      <div className="form-control-wrap">
+                        <input
+                          className="fc-button bg-light w-100"
+                          type="date"
+                          name="period"
+                          ref={register({ required: "Este campo es obligatorio *" })}
+                          defaultValue={formData.period}
+                        />
+                        {errors.period && <span className="invalid">{errors.period.message}</span>}
                       </div>
-                    </Col>
-                    <Col md="4">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="product-type-id">
-                          Tipo de Producto
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="productTypeId"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.productType}
-                          >
-                            <option>Seleccionar...</option>
-                            selectedProductType
-                            {selectedProductType &&
-                              selectedProductType.map((productType) => (
-                                <option key={productType.id} value={productType.id}>
-                                  {productType.name}
-                                </option>
-                              ))}
-                          </select>
-                          {errors.productTypeId && <span className="invalid">{errors.productTypeId.message}</span>}
-                        </div>
+                    </div>
+                  </Col>
+                  <Col md="6">
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="annual-payment">
+                        Pago Anual
+                      </label>
+                      <div className="form-control-wrap">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="annualPayment"
+                          ref={register({ required: "Este campo es obligatorio *" })}
+                          defaultValue={formData.annualPayment}
+                        />
+                        {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>}
                       </div>
-                    </Col>
-                    <Col md="4">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="product-id">
-                          Producto
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="productId"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.productId}
-                          >
-                            <option>Seleccionar...</option>
-                            {selectedProduct &&
-                              selectedProduct.map((product) => (
-                                <option key={product.id} value={product.id}>
-                                  {product.name}
-                                </option>
-                              ))}
-                          </select>
-                          {errors.product && <span className="invalid">{errors.product.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="12">
-                      <h6 className="border-bottom pb-1 mt-2">Inversión</h6>
-                    </Col>
-                    <Col md="4">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="currency-id">
-                          Tipo de Moneda
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="currencyId"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.currencyId}
-                          >
-                            <option value="">Seleccionar...</option>
-                            {selectedCurrencyType &&
-                              selectedCurrencyType.map((currencyType) => (
-                                <option key={currencyType.id} value={currencyType.id}>
-                                  {currencyType.name}
-                                </option>
-                              ))}
-                          </select>
-                          {errors.currencyId && <span className="invalid">{errors.currencyId.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="4">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="amount">
-                          Monto de Inversión
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="number"
-                            className="form-control"
-                            name="amount"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.amount}
-                          />
-                          {errors.amount && <span className="invalid">{errors.amount.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="4">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="amount-paid">
-                          Abono
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="number"
-                            className="form-control"
-                            name="amountPaid"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.amountPaid}
-                          />
-                          {errors.amountPaid && <span className="invalid">{errors.amountPaid.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="6">
-                      <div className="fc fc-button-group">
-                        <label className="form-label" htmlFor="period">
-                          Periodo de Duración
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            className="fc-button bg-light w-100"
-                            type="date"
-                            name="period"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.period}
-                          />
-                          {errors.period && <span className="invalid">{errors.period.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="6">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="annual-payment">
-                          Pago Anual
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="number"
-                            className="form-control"
-                            name="annualPayment"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.annualPayment}
-                          />
-                          {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="12">
-                      <h6 className="border-bottom pb-1 mt-2">Pago</h6>
-                    </Col>
-                    <Col md="6">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="payment-medium">
-                          Forma de Pago
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="paymentMediumId"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.paymentMediumId}
-                          >
-                            <option>Seleccionar...</option>
-                            {selectedPaymentMedium &&
-                              selectedPaymentMedium.map((paymentMedium) => (
-                                <option key={paymentMedium.id} value={paymentMedium.id}>
-                                  {paymentMedium.name}
-                                </option>
-                              ))}
-                          </select>
-                          {errors.paymentMediumId && <span className="invalid">{errors.paymentMediumId.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="6">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="payment-method-id">
-                          Medio de Pago
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="paymentMethodId"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.formOfPayment}
-                          >
-                            <option>Seleccionar...</option>
-                            {selectedPaymentMethod &&
-                              selectedPaymentMethod.map((paymentMethod) => (
-                                <option key={paymentMethod.id} value={paymentMethod.id}>
-                                  {paymentMethod.name}
-                                </option>
-                              ))}
-                          </select>
-                          {errors.paymentMethodId && <span className="invalid">{errors.paymentMethodId.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="12" className="border-bottom mt-2">
-                      <h6>Comisiones de servicio</h6>
-                    </Col>
-                    <Col md="4">
-                      <label className="form-label mt-1">Servicio Discresional</label>
-                      <div className="form-group">
-                        <div className="form-control-wrap flex row ml-0 mt-1">
-                          <div>
-                            Si
-                            <input
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              type="radio"
-                              name="discresionalService"
-                              value={radioStateDiscComission}
-                              defaultValue={formData.discresionalService}
-                              className="ml-1"
-                            />
-                          </div>
-                          <div className="ml-3">
-                            No
-                            <input
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              type="radio"
-                              name="discresionalService"
-                              value={radioStateDiscComissionFalse}
-                              defaultValue={formData.discresionalService}
-                              className="ml-1 "
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </Col>
-                    {/* <Col md="8">
-                      <div className="form-group">
-                        <label htmlFor="annual-payment" className="form-label mt-1">
-                          Porcentaje de comisión
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="number"
-                            name="comissionPercentage"
-                            placeholder="Ejemplo: 1, 1.0"
-                            className="form-control"
-                            name="annualPayment"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.annualPayment}
-                          />
-                          {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>}
-                        </div>
-                      </div>
-                    </Col> */}
-                    <Col md="4">
-                      <label className="form-label mt-1">Trailer Free</label>
-                      <div className="form-group">
-                        <div className="form-control-wrap flex row ml-0 mt-1">
-                          <div>
-                            Si
-                            <input
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              type="radio"
-                              value={radioStateTrailerFree}
-                              name="trailerFree"
-                              defaultValue={formData.trailerFree}
-                              className="ml-1"
-                            />
-                          </div>
-                          <div className="ml-3">
-                            No
-                            <input
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              type="radio"
-                              value={radioStateTrailerFreeFalse}
-                              name="trailerFree"
-                              defaultValue={formData.trailerFree}
-                              className="ml-1"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </Col>
-                    {/* <Col md="8">
-                      <div className="form-group">
-                        <label htmlFor="annual-payment" className="form-label mt-1">
-                          Porcentaje de comisión
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="number"
-                            placeholder="Ejemplo: 1, 1.0"
-                            className="form-control"
-                            name="annualPayment"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.annualPayment}
-                          />
-                          {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>}
-                        </div>
-                      </div>
-                    </Col> */}
-                    <Col size="12">
-                      <div className="text-right pt-4">
-                        <Button color="primary" type="submit">
-                          <span>Agregar Operación</span>
+                    </div>
+                  </Col>
+
+                  <Col size="12">
+                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                      <li>
+                        <Button color="primary" size="md" type="submit">
+                          Agresar Clientes
                         </Button>
+                      </li>
+                      <li>
+                        <a
+                          href="#cancel"
+                          onClick={(ev) => {
+                            ev.preventDefault();
+                            onFormCancel();
+                          }}
+                          className="link link-light"
+                        >
+                          Cancelar
+                        </a>
+                      </li>
+                    </ul>
+                  </Col>
+                </Form>
+              </div>
+            </div>
+          </ModalBody>
+        </Modal>
+
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+          <ModalBody>
+            <a
+              href="#cancel"
+              onClick={(ev) => {
+                ev.preventDefault();
+                onFormCancel();
+              }}
+              className="close"
+            >
+              <Icon name="cross-sm"></Icon>
+            </a>
+            <div className="p-2">
+              <h5 className="title">Actualizar Operación</h5>
+              <div className="mt-4">
+                <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
+                  <Col md="12">
+                    <h6 className="border-bottom pb-1 mt-3">Plan del Cliente</h6>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Empresa</label>
+                      <select
+                        className="form-control"
+                        name="companyId"
+                        defaultValue={formData.companyId}
+                        ref={register({ required: "Este campo es obligatorio *" })}
+                      >
+                        <option value="">Seleccionar...</option>
+                        {selectedCompany &&
+                          selectedCompany.map((company) => (
+                            <option key={company.id} value={company.id}>
+                              {company.name}
+                            </option>
+                          ))}
+                      </select>
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Tipo de Producto</label>
+                      <select
+                        className="form-control"
+                        name="productTypeId"
+                        defaultValue={formData.productTypeId}
+                        ref={register({ required: "Este campo es obligatorio *" })}
+                      >
+                        <option value="">Seleccionar...</option>
+                        {selectedProductType &&
+                          selectedProductType.map((productType) => (
+                            <option key={productType.id} value={productType.id}>
+                              {productType.name}
+                            </option>
+                          ))}
+                      </select>
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    {/* <FormGroup>
+                      <label className="form-label">Producto</label>
+                      <select
+                        className="form-control"
+                        name="productId"
+                        defaultValue={formData.productTypeId}
+                        ref={register({ required: "Este campo es obligatorio *" })}
+                      >
+                        <option value="">Seleccionar...</option>
+                        {selectedProduct &&
+                          selectedProduct.map((product) => (
+                            <option key={product.id} value={product.id}>
+                              {product.name}
+                            </option>
+                          ))}
+                      </select>
+                      {errors.productId && <span className="invalid">{errors.productId.message}</span>}
+                    </FormGroup> */}
+                  </Col>
+
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Producto select</label>
+                      <div className="form-control-wrap">
+                        <RSelect
+                        // isSearchable={false}
+                        // options={companiesOptions}
+                        // defaultValue={formData.companyId}
+                        // onChange={onCountriesChange}
+                        />
                       </div>
-                    </Col>
-                  </Row>
-                </form>
-              </div>
-            </div>
-          </ModalBody>
-        </Modal>
+                    </FormGroup>
+                  </Col>
 
-        {/* Modal Details */}
-        <Modal isOpen={view.details} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
-          <ModalBody>
-            <a href="#cancel" className="close">
-              <Icon
-                name="cross-sm"
-                onClick={(ev) => {
-                  ev.preventDefault();
-                  onFormCancel();
-                }}
-              ></Icon>
-            </a>
-            <div className="nk-tnx-details mt-sm-3">
-              <div className="nk-modal-head mb-3">
-                <h5 className="title">Checklist 1 del Cliente</h5>
-                <h3 className="sub-text">Documentación Necesaria</h3>
-                <Link to="/customer-library" className=" text-dark-50 w-100 bg-transparent">
-                  <span>
-                    <em className="icon ni ni-users-fill"></em>
-                  </span>
-                  <span className="nk-menu-text pl-1">Subir desde Lib. de Clientes</span>
-                </Link>
-              </div>
-              <Row className="gy-3">
-                <Col lg={6}>
-                  <span className="sub-text">N. de Operacion</span>
-                  <span className="caption-text">{formData.id}</span>
-                </Col>
-                <Col lg={6}>
-                  <span className="sub-text">Cliente</span>
-                  <span className="caption-text">{formData.customer}</span>
-                </Col>
+                  {/* <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Email</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="email"
+                        defaultValue={formData.email}
+                        placeholder="Enter email"
+                        ref={register({
+                          required: "This field is required",
+                          pattern: {
+                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                            message: "invalid email address",
+                          },
+                        })}
+                      />
+                      {errors.email && <span className="invalid">{errors.email.message}</span>}
+                    </FormGroup>
+                  </Col> */}
+                  {/* <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Producto</label>
+                      <select
+                        className="form-control"
+                        name="productId"
+                        defaultValue={formData.productTypeId}
+                        ref={register({ required: "Este campo es obligatorio *" })}
+                      >
+                        <option value="">Seleccionar...</option>
+                        {selectedProduct &&
+                          selectedProduct.map((product) => (
+                            <option key={product.id} value={product.id}>
+                              {product.name}
+                            </option>
+                          ))}
+                      </select>
+                      {errors.productId && <span className="invalid">{errors.productId.message}</span>}
+                    </FormGroup>
+                  </Col> */}
+                  {/* <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Phone</label>
+                      <input
+                        className="form-control"
+                        type="number"
+                        name="phone"
+                        defaultValue={Number(formData.phone)}
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                    </FormGroup>
+                  </Col> */}
+                  {/* <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Status</label>
+                      <div className="form-control-wrap">
+                        <RSelect
+                          options={filterStatus}
+                          defaultValue={{
+                            value: formData.status,
+                            label: formData.status,
+                          }}
+                          onChange={(e) => setFormData({ ...formData, status: e.value })}
+                        />
+                      </div>
+                    </FormGroup>
+                  </Col> */}
 
-                <form>
-                  <div className="container-fluid">
-                    <Row className="g-3">
-                      <Col lg="12">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 1
-                          </label>
-                          <div className="form-control-wrap">
-                            <input
-                              type="file"
-                              className="form-control"
-                              name=""
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              // defaultValue={formData.annualPayment}
-                            />
-                            {/* {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>} */}
-                          </div>
-                        </div>
-                      </Col>
-                      <Col lg="12">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 2
-                          </label>
-                          <div className="form-control-wrap">
-                            <input
-                              type="file"
-                              className="form-control"
-                              name=""
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              // defaultValue={formData.annualPayment}
-                            />
-                            {/* {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>} */}
-                          </div>
-                        </div>
-                      </Col>
-                      <Col lg="12">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 3
-                          </label>
-                          <div className="form-control-wrap">
-                            <input
-                              type="file"
-                              className="form-control"
-                              name=""
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              // defaultValue={formData.annualPayment}
-                            />
-                            {/* {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>} */}
-                          </div>
-                        </div>
-                        <Col size="12">
-                          <Button color="primary" type="submit">
-                            <span>Subir Archivos</span>
-                          </Button>
-                        </Col>
-                      </Col>
-                    </Row>
-                  </div>
-                </form>
-              </Row>
-            </div>
-          </ModalBody>
-        </Modal>
-        {/* Modal Details */}
-
-        {/* Modal View Files */}
-        <Modal isOpen={view.viewChecklist} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
-          <ModalBody>
-            <a href="#cancel" className="close">
-              <Icon
-                name="cross-sm"
-                onClick={(ev) => {
-                  ev.preventDefault();
-                  onFormCancel();
-                }}
-              ></Icon>
-            </a>
-            <div className="nk-tnx-details mt-sm-3">
-              <div className="nk-modal-head mb-3">
-                <h5 className="title">Validar Documentos Checklist 1 del Cliente</h5>
-                <h3 className="sub-text">Documentación Necesaria</h3>
-                <Link to="/customer-library" className=" text-dark-50 w-100 bg-transparent">
-                  <span>
-                    <em className="icon ni ni-users-fill"></em>
-                  </span>
-                  <span className="nk-menu-text pl-1">Subir desde Lib. de Clientes</span>
-                </Link>
-              </div>
-              <Row className="gy-3">
-                <Col lg={6}>
-                  <span className="sub-text">N. de Operacion</span>
-                  <span className="caption-text">{formData.id}</span>
-                </Col>
-                <Col lg={6}>
-                  <span className="sub-text">Cliente</span>
-                  <span className="caption-text">{formData.customer}</span>
-                </Col>
-
-                <form>
-                  <div className="container-fluid">
-                    <Row className="g-3">
-                      <Col md="8">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 1
-                          </label>
-                          <div className="form-control-wrap">
-                            <input
-                              type="file"
-                              className="form-control"
-                              name=""
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                            />
-                          </div>
-                        </div>
-                      </Col>
-                      <Col md="4">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 1
-                          </label>
-                          <div className="form-control-wrap">
-                            <Link to="/customer-library/document-1" className=" text-dark-50 w-100 bg-transparent">
-                              <span>
-                                <em className="icon ni ni-eye "></em>
-                              </span>
-                              <span className="nk-menu-text pl-1 pt-1">Visualizar documento</span>
-                            </Link>
-                          </div>
-                        </div>
-                      </Col>
-
-                      <Col md="8">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 2
-                          </label>
-                          <div className="form-control-wrap">
-                            <input
-                              type="file"
-                              className="form-control"
-                              name=""
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                            />
-                          </div>
-                        </div>
-                      </Col>
-                      <Col md="4">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 2
-                          </label>
-                          <div className="form-control-wrap">
-                            <Link to="/customer-library/document-3" className=" text-dark-50 w-100 bg-transparent">
-                              <span>
-                                <em className="icon ni ni-eye "></em>
-                              </span>
-                              <span className="nk-menu-text pl-1 pt-1">Visualizar documento</span>
-                            </Link>
-                          </div>
-                        </div>
-                      </Col>
-
-                      <Col md="8">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 3
-                          </label>
-                          <div className="form-control-wrap">
-                            <input
-                              type="file"
-                              className="form-control"
-                              name=""
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                            />
-                          </div>
-                        </div>
-                      </Col>
-                      <Col md="4">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 3
-                          </label>
-                          <div className="form-control-wrap">
-                            <Link to="/customer-library/document-3" className=" text-dark-50 w-100 bg-transparent">
-                              <span>
-                                <em className="icon ni ni-eye "></em>
-                              </span>
-                              <span className="nk-menu-text pl-1 pt-1">Visualizar documento</span>
-                            </Link>
-                          </div>
-                        </div>
-                      </Col>
-
-                      <Col size="12">
-                        <Button color="primary" type="submit">
-                          <span>Validar Archivos</span>
+                  <Col size="12">
+                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                      <li>
+                        <Button color="primary" size="md" type="submit">
+                          Update User
                         </Button>
-                      </Col>
-                    </Row>
-                  </div>
-                </form>
-              </Row>
+                      </li>
+                      <li>
+                        <a
+                          href="#cancel"
+                          onClick={(ev) => {
+                            ev.preventDefault();
+                            onFormCancel();
+                          }}
+                          className="link link-light"
+                        >
+                          Cancel
+                        </a>
+                      </li>
+                    </ul>
+                  </Col>
+                </Form>
+              </div>
             </div>
           </ModalBody>
         </Modal>
-        {/* Modal View files */}
       </Content>
     </React.Fragment>
   );
 };
-
-export default OperationDefault;
+export default DealList;
