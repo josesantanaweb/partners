@@ -164,91 +164,93 @@ const UserListDefaultPage = () => {
         </BlockHead>
 
         <Block>
-          <div className="nk-tb-list is-separate is-medium mb-3">
-            <DataTableHead className="nk-tb-item">
-              <DataTableRow>
-                <span className="sub-text">#</span>
-              </DataTableRow>
-              <DataTableRow size="xs">
-                <span className="sub-text">Usuario</span>
-              </DataTableRow>
-              <DataTableRow>
-                <span className="sub-text">Rol</span>
-              </DataTableRow>
-              <DataTableRow>
-                <span className="sub-text">Estado</span>
-              </DataTableRow>
-              <DataTableRow>
-                <span className="sub-text"></span>
-              </DataTableRow>
-            </DataTableHead>
-            {/*Head*/}
-            {currentItems.length > 0
-              ? currentItems.map((item) => (
-                  <DataTableItem key={item.id}>
-                    <DataTableRow>
-                      <span>{item.id}</span>
-                    </DataTableRow>
-                    <DataTableRow size="xs">
-                      <div className="user-card">
-                        <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
-                        <div className="user-info">
-                          <span className="tb-lead">
-                            {item.name} {item.lastName} <span className="dot dot-success d-md-none ml-1"></span>
-                          </span>
-                          <span>{item.email}</span>
+          <div className="container-fluid overflow-auto scrollbar-fluid">
+            <div className="nk-tb-list is-separate is-medium mb-3">
+              <DataTableHead className="nk-tb-item">
+                <DataTableRow>
+                  <span className="sub-text">#</span>
+                </DataTableRow>
+                <DataTableRow size="xs">
+                  <span className="sub-text">Usuario</span>
+                </DataTableRow>
+                <DataTableRow>
+                  <span className="sub-text">Rol</span>
+                </DataTableRow>
+                <DataTableRow>
+                  <span className="sub-text">Estado</span>
+                </DataTableRow>
+                <DataTableRow>
+                  <span className="sub-text"></span>
+                </DataTableRow>
+              </DataTableHead>
+              {/*Head*/}
+              {currentItems.length > 0
+                ? currentItems.map((item) => (
+                    <DataTableItem key={item.id}>
+                      <DataTableRow>
+                        <span>{item.id}</span>
+                      </DataTableRow>
+                      <DataTableRow size="xs">
+                        <div className="user-card">
+                          <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
+                          <div className="user-info">
+                            <span className="tb-lead">
+                              {item.name} {item.lastName} <span className="dot dot-success d-md-none ml-1"></span>
+                            </span>
+                            <span>{item.email}</span>
+                          </div>
                         </div>
-                      </div>
-                    </DataTableRow>
-                    <DataTableRow>
-                      <span>{item.rol.name}</span>
-                    </DataTableRow>
-                    <DataTableRow>
-                      <span className={`tb-status text-success`}>{item.status.name}</span>
-                    </DataTableRow>
-                    <DataTableRow className="nk-tb-col-tools">
-                      <ul className="nk-tb-actions gx-1">
-                        <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
-                          <TooltipComponent
-                            tag="a"
-                            containerClassName="btn btn-trigger btn-icon"
-                            id={"edit" + 1}
-                            icon="edit-alt-fill"
-                            direction="top"
-                            text="Edit"
-                          />
-                        </li>
-                        <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
-                          <TooltipComponent
-                            tag="a"
-                            containerClassName="btn btn-trigger btn-icon"
-                            id={"delete" + 1}
-                            icon="trash-fill"
-                            direction="top"
-                            text="Delete"
-                          />
-                        </li>
-                      </ul>
-                    </DataTableRow>
-                  </DataTableItem>
-                ))
-              : null}
-          </div>
+                      </DataTableRow>
+                      <DataTableRow>
+                        <span>{item.rol.name}</span>
+                      </DataTableRow>
+                      <DataTableRow>
+                        <span className={`tb-status text-success`}>{item.status.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="nk-tb-col-tools">
+                        <ul className="nk-tb-actions gx-1">
+                          <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                            <TooltipComponent
+                              tag="a"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"edit" + 1}
+                              icon="edit-alt-fill"
+                              direction="top"
+                              text="Edit"
+                            />
+                          </li>
+                          <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
+                            <TooltipComponent
+                              tag="a"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"delete" + 1}
+                              icon="trash-fill"
+                              direction="top"
+                              text="Delete"
+                            />
+                          </li>
+                        </ul>
+                      </DataTableRow>
+                    </DataTableItem>
+                  ))
+                : null}
+            </div>
 
-          <PreviewAltCard>
-            {currentItems.length > 0 ? (
-              <PaginationComponent
-                itemPerPage={itemPerPage}
-                totalItems={data.length}
-                paginate={paginate}
-                currentPage={currentPage}
-              />
-            ) : (
-              <div className="text-center">
-                <span className="text-silent">No data found</span>
-              </div>
-            )}
-          </PreviewAltCard>
+            <PreviewAltCard>
+              {currentItems.length > 0 ? (
+                <PaginationComponent
+                  itemPerPage={itemPerPage}
+                  totalItems={data.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                />
+              ) : (
+                <div className="text-center">
+                  <span className="text-silent">No data found</span>
+                </div>
+              )}
+            </PreviewAltCard>
+          </div>
         </Block>
 
         <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">

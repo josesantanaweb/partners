@@ -481,117 +481,119 @@ const CustomersListJuridico = () => {
         </BlockHead>
 
         <Block>
-          <div className="nk-tb-list is-separate is-medium mb-3">
-            <DataTableHead className="nk-tb-item">
-              <DataTableRow>
-                <span className="sub-text">#</span>
-              </DataTableRow>
-              <DataTableRow size="xs">
-                <span className="sub-text">Cliente</span>
-              </DataTableRow>
-              <DataTableRow>
-                <span className="sub-text">Tipo</span>
-              </DataTableRow>
-              <DataTableRow>
-                <span className="sub-text">Codeudor</span>
-              </DataTableRow>
-              <DataTableRow>
-                <span className="sub-text">Antecedentes Repr. Legal</span>
-              </DataTableRow>
-              <DataTableRow>
-                <span className="sub-text"></span>
-              </DataTableRow>
-            </DataTableHead>
-            {/*Head*/}
-            {filterCustomers.length > 0
-              ? filterCustomers.map((item) => (
-                  <DataTableItem key={item.id}>
-                    <DataTableRow>
-                      <span>{item.id}</span>
-                    </DataTableRow>
-                    <DataTableRow>
-                      <div className="user-card">
-                        {item.companyName && (
-                          <UserAvatar theme="purple" text={findUpper(item?.companyName)}></UserAvatar>
-                        )}
-                        <div className="user-info">
-                          <span className="tb-lead">
-                            {item.companyName}
-                            <span className="dot dot-success d-md-none ml-1"></span>
-                          </span>
-                          <span>{item.email}</span>
+          <div className="container-fluid overflow-auto scrollbar-fluid">
+            <div className="nk-tb-list is-separate is-medium mb-3">
+              <DataTableHead className="nk-tb-item">
+                <DataTableRow>
+                  <span className="sub-text">#</span>
+                </DataTableRow>
+                <DataTableRow size="xs">
+                  <span className="sub-text">Cliente</span>
+                </DataTableRow>
+                <DataTableRow>
+                  <span className="sub-text">Tipo</span>
+                </DataTableRow>
+                <DataTableRow>
+                  <span className="sub-text">Codeudor</span>
+                </DataTableRow>
+                <DataTableRow>
+                  <span className="sub-text">Antecedentes Repr. Legal</span>
+                </DataTableRow>
+                <DataTableRow>
+                  <span className="sub-text"></span>
+                </DataTableRow>
+              </DataTableHead>
+              {/*Head*/}
+              {filterCustomers.length > 0
+                ? filterCustomers.map((item) => (
+                    <DataTableItem key={item.id}>
+                      <DataTableRow>
+                        <span>{item.id}</span>
+                      </DataTableRow>
+                      <DataTableRow>
+                        <div className="user-card">
+                          {item.companyName && (
+                            <UserAvatar theme="purple" text={findUpper(item?.companyName)}></UserAvatar>
+                          )}
+                          <div className="user-info">
+                            <span className="tb-lead">
+                              {item.companyName}
+                              <span className="dot dot-success d-md-none ml-1"></span>
+                            </span>
+                            <span>{item.email}</span>
+                          </div>
                         </div>
-                      </div>
-                    </DataTableRow>
-                    <DataTableRow>
-                      <span className="text-info">{item.type.name}</span>
-                    </DataTableRow>
-                    <DataTableRow>
-                      <div className="user-card">
-                        <div className="user-info">
-                          <span className="tb-lead">
-                            {item.jointDebtor.names} {item.jointDebtor.paternalLastName}{" "}
-                            <span className="dot dot-success d-md-none ml-1"></span>
-                          </span>
-                          <span>{item.jointDebtor.email}</span>
+                      </DataTableRow>
+                      <DataTableRow>
+                        <span className="text-info">{item.type.name}</span>
+                      </DataTableRow>
+                      <DataTableRow>
+                        <div className="user-card">
+                          <div className="user-info">
+                            <span className="tb-lead">
+                              {item.jointDebtor.names} {item.jointDebtor.paternalLastName}{" "}
+                              <span className="dot dot-success d-md-none ml-1"></span>
+                            </span>
+                            <span>{item.jointDebtor.email}</span>
+                          </div>
                         </div>
-                      </div>
-                    </DataTableRow>
-                    <DataTableRow>
-                      <div className="user-card">
-                        <div className="user-info">
-                          <span className="tb-lead">
-                            {item.antecedentsLegalRepresentative?.names}{" "}
-                            {item.antecedentsLegalRepresentative?.paternalLastName}{" "}
-                            <span className="dot dot-success d-md-none ml-1"></span>
-                          </span>
-                          <span>{item.antecedentsLegalRepresentative?.email}</span>
+                      </DataTableRow>
+                      <DataTableRow>
+                        <div className="user-card">
+                          <div className="user-info">
+                            <span className="tb-lead">
+                              {item.antecedentsLegalRepresentative?.names}{" "}
+                              {item.antecedentsLegalRepresentative?.paternalLastName}{" "}
+                              <span className="dot dot-success d-md-none ml-1"></span>
+                            </span>
+                            <span>{item.antecedentsLegalRepresentative?.email}</span>
+                          </div>
                         </div>
-                      </div>
-                    </DataTableRow>
-                    <DataTableRow className="nk-tb-col-tools">
-                      <ul className="nk-tb-actions gx-1">
-                        <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
-                          <TooltipComponent
-                            tag="a"
-                            containerClassName="btn btn-trigger btn-icon"
-                            id={"edit" + 1}
-                            icon="edit-alt-fill"
-                            direction="top"
-                            text="Edit"
-                          />
-                        </li>
-                        <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
-                          <TooltipComponent
-                            tag="a"
-                            containerClassName="btn btn-trigger btn-icon"
-                            id={"delete" + 1}
-                            icon="trash-fill"
-                            direction="top"
-                            text="Delete"
-                          />
-                        </li>
-                      </ul>
-                    </DataTableRow>
-                  </DataTableItem>
-                ))
-              : null}
-          </div>
+                      </DataTableRow>
+                      <DataTableRow className="nk-tb-col-tools">
+                        <ul className="nk-tb-actions gx-1">
+                          <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                            <TooltipComponent
+                              tag="a"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"edit" + 1}
+                              icon="edit-alt-fill"
+                              direction="top"
+                              text="Edit"
+                            />
+                          </li>
+                          <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
+                            <TooltipComponent
+                              tag="a"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"delete" + 1}
+                              icon="trash-fill"
+                              direction="top"
+                              text="Delete"
+                            />
+                          </li>
+                        </ul>
+                      </DataTableRow>
+                    </DataTableItem>
+                  ))
+                : null}
+            </div>
 
-          <PreviewAltCard>
-            {currentItems.length > 0 ? (
-              <PaginationComponent
-                itemPerPage={itemPerPage}
-                totalItems={data.length}
-                paginate={paginate}
-                currentPage={currentPage}
-              />
-            ) : (
-              <div className="text-center">
-                <span className="text-silent">No data found</span>
-              </div>
-            )}
-          </PreviewAltCard>
+            <PreviewAltCard>
+              {currentItems.length > 0 ? (
+                <PaginationComponent
+                  itemPerPage={itemPerPage}
+                  totalItems={data.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                />
+              ) : (
+                <div className="text-center">
+                  <span className="text-silent">No data found</span>
+                </div>
+              )}
+            </PreviewAltCard>
+          </div>
         </Block>
 
         <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
