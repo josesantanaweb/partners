@@ -39,11 +39,11 @@ const CustomersListJuridico = () => {
   const [countriesOptions, setCountriesOptions] = useState([]);
   const [citiesOptions, setCitiesOptions] = useState([]);
   const [beneficiaries, setBeneficiaries] = useState(0);
-  const [partnersAntecedents, setPartnersAntecedents] = useState(1);
 
   const [modal, setModal] = useState({
     edit: false,
     add: false,
+    document: false,
   });
 
   useEffect(() => {
@@ -117,20 +117,6 @@ const CustomersListJuridico = () => {
       rut: "",
       phone: "",
     },
-    partnersAntecedents: [
-      {
-        names: "",
-        paternalLastName: "",
-        email: "",
-        isapre: "",
-        afp: "",
-        nationality: "",
-        zipCode: "",
-        percentageOfParticipation: "",
-        rut: "",
-        phone: "",
-      },
-    ],
     jointDebtor: {
       names: "",
       paternalLastName: "",
@@ -168,12 +154,6 @@ const CustomersListJuridico = () => {
     remove: removeBeneficiaries,
   } = useFieldArray({ name: "beneficiaries", control });
 
-  const {
-    fields: partnersAntecedentsFields,
-    append: appendPartnersAntecedents,
-    remove: removePartnersAntecedents,
-  } = useFieldArray({ name: "partnersAntecedents", control });
-
   useEffect(() => {
     // update field array when ticket number changed
     const newBeneficiaries = parseInt(beneficiaries || 1);
@@ -192,25 +172,6 @@ const CustomersListJuridico = () => {
       }
     }
   }, [beneficiaries]);
-
-  useEffect(() => {
-    // update field array when ticket number changed
-    const newPartnersAntecedents = parseInt(partnersAntecedents || 1);
-    const oldPartnersAntecedents = partnersAntecedentsFields.length;
-    if (newPartnersAntecedents > oldPartnersAntecedents) {
-      // append tickets to field array
-      for (let i = oldPartnersAntecedents; i < newPartnersAntecedents; i++) {
-        appendPartnersAntecedents({
-          names: "",
-        });
-      }
-    } else {
-      // remove tickets from field array
-      for (let i = oldPartnersAntecedents; i > newPartnersAntecedents; i--) {
-        removePartnersAntecedents(i - 1);
-      }
-    }
-  }, [partnersAntecedents]);
 
   // Function to reset the form
   const resetForm = () => {
@@ -238,20 +199,6 @@ const CustomersListJuridico = () => {
         rut: "",
         phone: "",
       },
-      partnersAntecedents: [
-        {
-          names: "",
-          paternalLastName: "",
-          email: "",
-          isapre: "",
-          afp: "",
-          nationality: "",
-          zipCode: "",
-          percentageOfParticipation: "",
-          rut: "",
-          phone: "",
-        },
-      ],
       jointDebtor: {
         names: "",
         paternalLastName: "",
@@ -274,7 +221,7 @@ const CustomersListJuridico = () => {
 
   // Function to close the form modal
   const onFormCancel = () => {
-    setModal({ edit: false, add: false });
+    setModal({ edit: false, add: false, document: false });
     resetForm();
   };
 
@@ -294,7 +241,6 @@ const CustomersListJuridico = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    console.log(submitData.beneficiaries);
     const {
       companyName,
       giro,
@@ -304,7 +250,6 @@ const CustomersListJuridico = () => {
       observations,
       address,
       antecedentsLegalRepresentative,
-      partnersAntecedents,
       jointDebtor,
       currentAccountData,
       beneficiaries,
@@ -328,7 +273,6 @@ const CustomersListJuridico = () => {
         rut: antecedentsLegalRepresentative.rut,
         phone: antecedentsLegalRepresentative.phone,
       },
-      partnersAntecedents,
       address: {
         countryId: countryId,
         stateId: cityId,
@@ -353,12 +297,11 @@ const CustomersListJuridico = () => {
       },
       beneficiaries,
     };
-    console.log(submittedData);
     try {
       await CustomersServices.addCustomer(submittedData);
       resetForm();
       getCustomers();
-      setModal({ edit: false }, { add: false });
+      setModal({ edit: false }, { add: false }, { document: false });
       setBeneficiaries(0);
     } catch (error) {
       if (error.response.data.message === "This customer already exists") {
@@ -369,18 +312,7 @@ const CustomersListJuridico = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const {
-      companyName,
-      giro,
-      email,
-      phone,
-      singleTaxRole,
-      observations,
-      antecedentsLegalRepresentative,
-      jointDebtor,
-      currentAccountData,
-    } = submitData;
-    const beneficiariesEdited = submitData.beneficiaries;
+    const { companyName, giro, email, phone, singleTaxRole, observations } = submitData;
     let submittedData = {
       companyName: companyName,
       giro: giro,
@@ -388,24 +320,45 @@ const CustomersListJuridico = () => {
       phone: phone,
       singleTaxRole: singleTaxRole,
       observations: observations,
+    };
+
+    try {
+      await CustomersServices.editCustomer(editData.id, submittedData);
+      resetForm();
+      getCustomers();
+      setModal({ edit: false }, { add: false }, { document: false });
+    } catch (error) {}
+  };
+
+  // submit function to update a new item
+  const onDocumentSubmit = async (submitData) => {
+    const { antecedentsLegalRepresentative, jointDebtor, currentAccountData } = submitData;
+    const beneficiariesEdited = submitData.beneficiaries;
+    let submittedData = {
       antecedentsLegalRepresentative: antecedentsLegalRepresentative,
       jointDebtor: jointDebtor,
       currentAccountData: currentAccountData,
       beneficiaries: [...beneficiariesEdited, ...beneficiaries],
     };
 
-    console.log(beneficiaries);
     try {
       await CustomersServices.editCustomer(editData.id, submittedData);
       resetForm();
       getCustomers();
-      setModal({ edit: false }, { add: false });
+      setModal({ edit: false }, { add: false }, { document: false });
     } catch (error) {}
   };
 
   // function that loads the want to editted data
   const onEditClick = (id, data) => {
     setModal({ edit: true }, { add: false });
+    setEditData(data);
+    console.log("data", data);
+  };
+
+  // function that loads the want to editted data
+  const onDocumentClick = (id, data) => {
+    setModal({ document: true }, { add: false }, { edit: false });
     setEditData(data);
     console.log(data);
   };
@@ -429,18 +382,12 @@ const CustomersListJuridico = () => {
 
   const handleAddBeneficiarios = () => {
     setBeneficiaries(beneficiaries + 1);
-    console.log(beneficiaries);
   };
 
   const handleDeleteBeneficiarios = () => {
     if (beneficiaries > 0) {
       setBeneficiaries(beneficiaries - 1);
-      console.log(beneficiaries);
     }
-  };
-
-  const handleAddPartnersAntecedents = () => {
-    setPartnersAntecedents(partnersAntecedents + 1);
   };
 
   return (
@@ -552,6 +499,16 @@ const CustomersListJuridico = () => {
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
+                          <li className="nk-tb-action-hidden" onClick={() => onDocumentClick(item.id, item)}>
+                            <TooltipComponent
+                              tag="a"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"file" + 1}
+                              icon="file-fill"
+                              direction="top"
+                              text="Edit"
+                            />
+                          </li>
                           <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
@@ -748,523 +705,6 @@ const CustomersListJuridico = () => {
                     </FormGroup>
                   </Col>
 
-                  <>
-                    <Col size="12">
-                      <b>Antecedentes representante legal</b>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Nombre</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="antecedentsLegalRepresentative.names"
-                          defaultValue={formData.antecedentsLegalRepresentative.names}
-                          placeholder="Ingresa Nombre"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Apellido</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="antecedentsLegalRepresentative.paternalLastName"
-                          defaultValue={formData.antecedentsLegalRepresentative.paternalLastName}
-                          placeholder="Ingresa Apellido"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Isapre</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="antecedentsLegalRepresentative.isapre"
-                          defaultValue={formData.antecedentsLegalRepresentative.isapre}
-                          placeholder="Ingresa Isapre"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Afp</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="antecedentsLegalRepresentative.afp"
-                          defaultValue={formData.antecedentsLegalRepresentative.afp}
-                          placeholder="Ingresa Afp"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Nacionalidad</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="antecedentsLegalRepresentative.nationality"
-                          defaultValue={formData.antecedentsLegalRepresentative.nationality}
-                          placeholder="Ingresa Nacionalidad"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Codigo Postal</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="antecedentsLegalRepresentative.zipCode"
-                          defaultValue={formData.antecedentsLegalRepresentative.zipCode}
-                          placeholder="Ingresa Codigo Postal"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Correo electronico</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="antecedentsLegalRepresentative.email"
-                          defaultValue={formData.antecedentsLegalRepresentative.email}
-                          placeholder="Ingresa Correo electronico"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">RUT</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="antecedentsLegalRepresentative.rut"
-                          defaultValue={formData.antecedentsLegalRepresentative.rut}
-                          placeholder="Ingresa RUT"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Telefono</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="antecedentsLegalRepresentative.phone"
-                          defaultValue={formData.antecedentsLegalRepresentative.phone}
-                          placeholder="Ingresa Telefono"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </>
-
-                  <>
-                    <Col size="12">
-                      <b>Deudor Solidario</b>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Nombre</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.names"
-                          defaultValue={formData.jointDebtor.names}
-                          placeholder="Ingresa Nombre"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Apellido</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.paternalLastName"
-                          defaultValue={formData.jointDebtor.paternalLastName}
-                          placeholder="Ingresa Apellido"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">RUT</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.rut"
-                          defaultValue={formData.jointDebtor.rut}
-                          placeholder="Ingresa rut"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Nacionalidad</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.nationality"
-                          defaultValue={formData.jointDebtor.nationality}
-                          placeholder="Ingresa Nacionalidad"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">N de Hijos</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.numberOfChildren"
-                          defaultValue={formData.jointDebtor.numberOfChildren}
-                          placeholder="Ingresa N de Hijos"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Tipo de documento</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.typeOfDocument"
-                          defaultValue={formData.jointDebtor.typeOfDocument}
-                          placeholder="Ingresa Tipo de documento"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Situacion</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.employmentSituation"
-                          defaultValue={formData.jointDebtor.employmentSituation}
-                          placeholder="Ingresa Situacion de empreado"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Correo</label>
-                        <input
-                          className="form-control"
-                          type="email"
-                          name="jointDebtor.email"
-                          defaultValue={formData.jointDebtor.email}
-                          placeholder="Ingresa Correo"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </>
-
-                  <>
-                    <Col size="12">
-                      <b>Datos de cuenta</b>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Nombre del banco</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="currentAccountData.bankName"
-                          defaultValue={formData.currentAccountData.bankName}
-                          placeholder="Ingresa Nombre del banco"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Tipo de cuenta</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="currentAccountData.accountType"
-                          defaultValue={formData.currentAccountData.accountType}
-                          placeholder="Ingresa Tipo de cuenta"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Direccion</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="currentAccountData.sucursalAddress"
-                          defaultValue={formData.currentAccountData.sucursalAddress}
-                          placeholder="Ingresa Direccion"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Numero de cuenta</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="currentAccountData.accountNumber"
-                          defaultValue={formData.currentAccountData.accountNumber}
-                          placeholder="Ingresa Numero de cuenta"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Fecha de apertura</label>
-                        <input
-                          className="form-control"
-                          type="date"
-                          name="currentAccountData.accountOpeningDate"
-                          defaultValue={formData.currentAccountData.accountOpeningDate}
-                          placeholder="Ingresa Fecha de apertura"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </>
-
-                  <>
-                    <Col md="12">
-                      <b>Socios</b>
-                      <Button
-                        type="button"
-                        color="primary"
-                        className="btn-icon ml-2"
-                        onClick={handleAddPartnersAntecedents}
-                      >
-                        <Icon name="plus"></Icon>
-                      </Button>
-                    </Col>
-                    {partnersAntecedentsFields?.map((item, i) => (
-                      <span key={i} className="form-grid">
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Nombre</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`partnersAntecedents[${i}].names`}
-                              placeholder="Ingresa Nombre"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Apellido</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`partnersAntecedents[${i}].paternalLastName`}
-                              placeholder="Ingresa Apellido"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Correo</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`partnersAntecedents[${i}].email`}
-                              placeholder="Ingresa Correo"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">RUT</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`partnersAntecedents[${i}].rut`}
-                              placeholder="Ingresa RUT"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Isapre</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`partnersAntecedents[${i}].isapre`}
-                              placeholder="Ingresa Isapre"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Afp</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`partnersAntecedents[${i}].afp`}
-                              placeholder="Ingresa Afp"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Nationalidad</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`partnersAntecedents[${i}].nationality`}
-                              placeholder="Ingresa Nationalidad"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Codigo Postal</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`partnersAntecedents[${i}].zipCode`}
-                              placeholder="Ingresa Codigo Postal"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Telefono</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`partnersAntecedents[${i}].phone`}
-                              placeholder="Ingresa Telefono"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                      </span>
-                    ))}
-                  </>
-
-                  <>
-                    <Col md="12">
-                      <b>Beneficiarios</b>
-                      <Button type="button" color="primary" className="btn-icon ml-2" onClick={handleAddBeneficiarios}>
-                        <Icon name="plus"></Icon>
-                      </Button>
-                      <Button
-                        type="button"
-                        color="danger"
-                        className="btn-icon ml-2"
-                        onClick={handleDeleteBeneficiarios}
-                      >
-                        <Icon name="minus"></Icon>
-                      </Button>
-                    </Col>
-                    {beneficiariesFields?.map((item, i) => (
-                      <span key={i} className="form-grid">
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Nombre</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`beneficiaries[${i}].names`}
-                              placeholder="Ingresa Nombre"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Apellido</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`beneficiaries[${i}].paternalLastName`}
-                              placeholder="Ingresa Apellido"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Correo</label>
-                            <input
-                              className="form-control"
-                              type="email"
-                              name={`beneficiaries[${i}].email`}
-                              placeholder="Ingresa Correo"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Porcentaje</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`beneficiaries[${i}].percentage`}
-                              placeholder="Ingresa Porcentaje"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                      </span>
-                    ))}
-                  </>
-
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
@@ -1310,6 +750,138 @@ const CustomersListJuridico = () => {
               <h5 className="title">Actualizar Cliente</h5>
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Nombrede Empresa</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="companyName"
+                        defaultValue={editData?.companyName}
+                        placeholder="Ingresa nombre de empresa"
+                        ref={register({ required: "Este campo es requerido" })}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Giro</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="description"
+                        defaultValue={editData?.giro}
+                        placeholder="Ingresa Giro"
+                        ref={register({ required: "Este campo es requerido" })}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Correo electronico</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="email"
+                        defaultValue={editData?.email}
+                        placeholder="Ingresa Correo electronico"
+                        ref={register({ required: "Este campo es requerido" })}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Telefono</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="phone"
+                        defaultValue={editData?.phone}
+                        placeholder="Ingresa Telefono"
+                        ref={register({ required: "Este campo es requerido" })}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Rol Unico</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="singleTaxRole"
+                        defaultValue={editData?.singleTaxRole}
+                        placeholder="Ingresa Rol Unico"
+                        ref={register({ required: "Este campo es requerido" })}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Obseraviones</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="observations"
+                        defaultValue={editData?.observations}
+                        placeholder="Ingresa Obseraviones"
+                        ref={register({ required: "Este campo es requerido" })}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col size="12">
+                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                      <li>
+                        <Button color="primary" size="md" type="submit">
+                          Actualizar Cliente
+                        </Button>
+                      </li>
+                      <li>
+                        <a
+                          href="#cancel"
+                          onClick={(ev) => {
+                            ev.preventDefault();
+                            onFormCancel();
+                          }}
+                          className="link link-light"
+                        >
+                          Cancelar
+                        </a>
+                      </li>
+                    </ul>
+                  </Col>
+                </Form>
+              </div>
+            </div>
+          </ModalBody>
+        </Modal>
+
+        <Modal
+          isOpen={modal.document}
+          toggle={() => setModal({ document: false })}
+          className="modal-dialog-centered"
+          size="lg"
+        >
+          <ModalBody>
+            <a
+              href="#cancel"
+              onClick={(ev) => {
+                ev.preventDefault();
+                onFormCancel();
+              }}
+              className="close"
+            >
+              <Icon name="cross-sm"></Icon>
+            </a>
+            <div className="p-2">
+              <h5 className="title">Actualizar Cliente</h5>
+              <div className="mt-4">
+                <Form className="row gy-4" onSubmit={handleSubmit(onDocumentSubmit)}>
                   <Col md="3">
                     <FormGroup>
                       <label className="form-label">Nombrede Empresa</label>
