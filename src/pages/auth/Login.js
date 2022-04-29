@@ -39,6 +39,12 @@ const Login = () => {
       dispatch(setAuthenticated(true));
       dispatch(setProfile(JSON.stringify(response)));
       setLoading(false);
+      window.history.pushState(
+        `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/users"}`,
+        "auth-login",
+        `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/users"}`
+      );
+      window.location.reload();
     } catch (error) {
       setError("Credensiales invalidas");
       setLoading(false);
@@ -46,15 +52,6 @@ const Login = () => {
   };
 
   const { errors, register, handleSubmit } = useForm();
-
-  if (isAuthenticated) {
-    window.history.pushState(
-      `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`,
-      "login",
-      `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`
-    );
-    window.location.reload();
-  }
 
   return (
     <React.Fragment>
