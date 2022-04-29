@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { DropdownToggle, DropdownMenu, Dropdown } from "reactstrap";
 import { Icon } from "../../../../components/Component";
 import { LinkList, LinkItem } from "../../../../components/links/Links";
 import UserAvatar from "../../../../components/user/UserAvatar";
 import { profileSelector } from "../../../../store/selectors";
+import { setAuthenticated } from "../../../../store/features/AuthSlice";
 
 const User = () => {
+  const dispatch = useDispatch();
   const profile = useSelector(profileSelector);
   const [open, setOpen] = useState(false);
   const toggle = () => setOpen((prevState) => !prevState);
@@ -15,6 +17,7 @@ const User = () => {
 
   const handleSignout = () => {
     localStorage.removeItem("access_token");
+    dispatch(setAuthenticated(false));
   };
 
   return (
