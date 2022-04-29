@@ -38,7 +38,6 @@ const CustomersListJuridico = () => {
   const [cityId, setCityId] = useState();
   const [countriesOptions, setCountriesOptions] = useState([]);
   const [citiesOptions, setCitiesOptions] = useState([]);
-  const [beneficiaries, setBeneficiaries] = useState(0);
 
   const [modal, setModal] = useState({
     edit: false,
@@ -152,26 +151,7 @@ const CustomersListJuridico = () => {
     fields: beneficiariesFields,
     append: appendBeneficiaries,
     remove: removeBeneficiaries,
-  } = useFieldArray({ name: "beneficiaries", control });
-
-  useEffect(() => {
-    // update field array when ticket number changed
-    const newBeneficiaries = parseInt(beneficiaries || 1);
-    const oldBeneficiaries = beneficiariesFields.length;
-    if (newBeneficiaries > oldBeneficiaries) {
-      // append tickets to field array
-      for (let i = oldBeneficiaries; i < newBeneficiaries; i++) {
-        appendBeneficiaries({
-          names: "",
-        });
-      }
-    } else {
-      // remove tickets from field array
-      for (let i = oldBeneficiaries; i > newBeneficiaries; i--) {
-        removeBeneficiaries(i - 1);
-      }
-    }
-  }, [beneficiaries]);
+  } = useFieldArray({ control, name: "beneficiaries", defaultValue: { names: "" } });
 
   // Function to reset the form
   const resetForm = () => {
@@ -225,12 +205,6 @@ const CustomersListJuridico = () => {
     resetForm();
   };
 
-  // customer type change
-  // const onCustomerTypeChange = (value) => {
-  //   setFormData({ ...formData, typeId: value.value });
-  //   setTypeId(value.value);
-  // };
-
   const onCountriesChange = (value) => {
     setCountryId(value.value);
     getCities();
@@ -241,19 +215,7 @@ const CustomersListJuridico = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const {
-      companyName,
-      giro,
-      email,
-      phone,
-      singleTaxRole,
-      observations,
-      address,
-      antecedentsLegalRepresentative,
-      jointDebtor,
-      currentAccountData,
-      beneficiaries,
-    } = submitData;
+    const { companyName, giro, email, phone, singleTaxRole, observations, address } = submitData;
     let submittedData = {
       typeId: 2,
       companyName,
@@ -262,47 +224,17 @@ const CustomersListJuridico = () => {
       phone,
       singleTaxRole,
       observations,
-      antecedentsLegalRepresentative: {
-        names: antecedentsLegalRepresentative.names,
-        paternalLastName: antecedentsLegalRepresentative.paternalLastName,
-        isapre: antecedentsLegalRepresentative.isapre,
-        afp: antecedentsLegalRepresentative.afp,
-        nationality: antecedentsLegalRepresentative.nationality,
-        zipCode: antecedentsLegalRepresentative.zipCode,
-        email: antecedentsLegalRepresentative.email,
-        rut: antecedentsLegalRepresentative.rut,
-        phone: antecedentsLegalRepresentative.phone,
-      },
       address: {
         countryId: countryId,
         stateId: cityId,
         communne: address.communne,
       },
-      jointDebtor: {
-        names: jointDebtor.names,
-        paternalLastName: jointDebtor.paternalLastName,
-        rut: jointDebtor.rut,
-        nationality: jointDebtor.nationality,
-        numberOfChildren: Number(jointDebtor.numberOfChildren),
-        typeOfDocument: jointDebtor.typeOfDocument,
-        employmentSituation: jointDebtor.employmentSituation,
-        email: jointDebtor.email,
-      },
-      currentAccountData: {
-        bankName: currentAccountData.bankName,
-        accountType: currentAccountData.accountType,
-        sucursalAddress: currentAccountData.sucursalAddress,
-        accountNumber: currentAccountData.accountNumber,
-        accountOpeningDate: currentAccountData.accountOpeningDate,
-      },
-      beneficiaries,
     };
     try {
       await CustomersServices.addCustomer(submittedData);
       resetForm();
       getCustomers();
       setModal({ edit: false }, { add: false }, { document: false });
-      setBeneficiaries(0);
     } catch (error) {
       if (error.response.data.message === "This customer already exists") {
         setErrorMessage("Usuario ya existe");
@@ -332,28 +264,43 @@ const CustomersListJuridico = () => {
 
   // submit function to update a new item
   const onDocumentSubmit = async (submitData) => {
-    const { antecedentsLegalRepresentative, jointDebtor, currentAccountData } = submitData;
-    const beneficiariesEdited = submitData.beneficiaries;
-    let submittedData = {
-      antecedentsLegalRepresentative: antecedentsLegalRepresentative,
-      jointDebtor: jointDebtor,
-      currentAccountData: currentAccountData,
-      beneficiaries: [...beneficiariesEdited, ...beneficiaries],
-    };
+    const { antecedentsLegalRepresentative, jointDebtor, currentAccountData, beneficiaries, beneficiariesEdited } =
+      submitData;
 
-    try {
-      await CustomersServices.editCustomer(editData.id, submittedData);
-      resetForm();
-      getCustomers();
-      setModal({ edit: false }, { add: false }, { document: false });
-    } catch (error) {}
+    if (beneficiariesEdited) {
+      let submittedDataEdited = {
+        antecedentsLegalRepresentative: antecedentsLegalRepresentative,
+        jointDebtor: jointDebtor,
+        currentAccountData: currentAccountData,
+        beneficiaries: [...beneficiariesEdited],
+      };
+      try {
+        await CustomersServices.editCustomer(editData.id, submittedDataEdited);
+        resetForm();
+        getCustomers();
+        setModal({ edit: false }, { add: false }, { document: false });
+      } catch (error) {}
+    } else {
+      let submittedData = {
+        antecedentsLegalRepresentative: antecedentsLegalRepresentative,
+        jointDebtor: jointDebtor,
+        currentAccountData: currentAccountData,
+        beneficiaries: beneficiaries,
+      };
+      try {
+        await CustomersServices.editCustomer(editData.id, submittedData);
+        resetForm();
+        getCustomers();
+        setModal({ edit: false }, { add: false }, { document: false });
+      } catch (error) {}
+    }
+    console.log("submitData", submitData);
   };
 
   // function that loads the want to editted data
   const onEditClick = (id, data) => {
     setModal({ edit: true }, { add: false });
     setEditData(data);
-    console.log("data", data);
   };
 
   // function that loads the want to editted data
@@ -381,13 +328,12 @@ const CustomersListJuridico = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleAddBeneficiarios = () => {
-    setBeneficiaries(beneficiaries + 1);
-  };
-
-  const handleDeleteBeneficiarios = () => {
-    if (beneficiaries > 0) {
-      setBeneficiaries(beneficiaries - 1);
-    }
+    appendBeneficiaries({
+      names: "",
+      paternalLastName: "",
+      email: "",
+      percentage: "",
+    });
   };
 
   return (
@@ -472,16 +418,16 @@ const CustomersListJuridico = () => {
                         </div>
                       </DataTableRow>
                       <DataTableRow>
-                        <span className="text-info">{item.type.name}</span>
+                        <span className="text-info">{item.type?.name}</span>
                       </DataTableRow>
                       <DataTableRow>
                         <div className="user-card">
                           <div className="user-info">
                             <span className="tb-lead">
-                              {item.jointDebtor.names} {item.jointDebtor.paternalLastName}{" "}
+                              {item.jointDebtor?.names} {item.jointDebtor?.paternalLastName}{" "}
                               <span className="dot dot-success d-md-none ml-1"></span>
                             </span>
-                            <span>{item.jointDebtor.email}</span>
+                            <span>{item.jointDebtor?.email}</span>
                           </div>
                         </div>
                       </DataTableRow>
@@ -719,7 +665,6 @@ const CustomersListJuridico = () => {
                             ev.preventDefault();
                             onFormCancel();
                             setErrorMessage("");
-                            setBeneficiaries(1);
                           }}
                           className="link link-light"
                         >
@@ -882,90 +827,6 @@ const CustomersListJuridico = () => {
               <h5 className="title">Actualizar Cliente</h5>
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onDocumentSubmit)}>
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Nombrede Empresa</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="companyName"
-                        defaultValue={editData?.companyName}
-                        placeholder="Ingresa nombre de empresa"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Giro</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="description"
-                        defaultValue={editData?.giro}
-                        placeholder="Ingresa Giro"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Correo electronico</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="email"
-                        defaultValue={editData?.email}
-                        placeholder="Ingresa Correo electronico"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Telefono</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="phone"
-                        defaultValue={editData?.phone}
-                        placeholder="Ingresa Telefono"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Rol Unico</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="singleTaxRole"
-                        defaultValue={editData?.singleTaxRole}
-                        placeholder="Ingresa Rol Unico"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Obseraviones</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="observations"
-                        defaultValue={editData?.observations}
-                        placeholder="Ingresa Obseraviones"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                    </FormGroup>
-                  </Col>
-
                   <>
                     <Col size="12">
                       <b>Antecedentes representante legal</b>
@@ -978,7 +839,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="antecedentsLegalRepresentative.names"
-                          defaultValue={editData?.antecedentsLegalRepresentative.names}
+                          defaultValue={editData?.antecedentsLegalRepresentative?.names}
                           placeholder="Ingresa Nombre"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -991,7 +852,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="antecedentsLegalRepresentative.paternalLastName"
-                          defaultValue={editData?.antecedentsLegalRepresentative.paternalLastName}
+                          defaultValue={editData?.antecedentsLegalRepresentative?.paternalLastName}
                           placeholder="Ingresa Apellido"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1004,7 +865,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="antecedentsLegalRepresentative.isapre"
-                          defaultValue={editData?.antecedentsLegalRepresentative.isapre}
+                          defaultValue={editData?.antecedentsLegalRepresentative?.isapre}
                           placeholder="Ingresa Isapre"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1017,7 +878,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="antecedentsLegalRepresentative.afp"
-                          defaultValue={editData?.antecedentsLegalRepresentative.afp}
+                          defaultValue={editData?.antecedentsLegalRepresentative?.afp}
                           placeholder="Ingresa Afp"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1030,7 +891,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="antecedentsLegalRepresentative.nationality"
-                          defaultValue={editData?.antecedentsLegalRepresentative.nationality}
+                          defaultValue={editData?.antecedentsLegalRepresentative?.nationality}
                           placeholder="Ingresa Nacionalidad"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1044,7 +905,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="antecedentsLegalRepresentative.zipCode"
-                          defaultValue={editData?.antecedentsLegalRepresentative.zipCode}
+                          defaultValue={editData?.antecedentsLegalRepresentative?.zipCode}
                           placeholder="Ingresa Codigo Postal"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1058,7 +919,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="antecedentsLegalRepresentative.email"
-                          defaultValue={editData?.antecedentsLegalRepresentative.email}
+                          defaultValue={editData?.antecedentsLegalRepresentative?.email}
                           placeholder="Ingresa Correo electronico"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1072,7 +933,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="antecedentsLegalRepresentative.rut"
-                          defaultValue={editData?.antecedentsLegalRepresentative.rut}
+                          defaultValue={editData?.antecedentsLegalRepresentative?.rut}
                           placeholder="Ingresa RUT"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1086,7 +947,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="antecedentsLegalRepresentative.phone"
-                          defaultValue={editData?.antecedentsLegalRepresentative.phone}
+                          defaultValue={editData?.antecedentsLegalRepresentative?.phone}
                           placeholder="Ingresa Telefono"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1106,7 +967,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="jointDebtor.names"
-                          defaultValue={editData?.jointDebtor.names}
+                          defaultValue={editData?.jointDebtor?.names}
                           placeholder="Ingresa Nombre"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1120,7 +981,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="jointDebtor.paternalLastName"
-                          defaultValue={editData?.jointDebtor.paternalLastName}
+                          defaultValue={editData?.jointDebtor?.paternalLastName}
                           placeholder="Ingresa Apellido"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1134,7 +995,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="jointDebtor.rut"
-                          defaultValue={editData?.jointDebtor.rut}
+                          defaultValue={editData?.jointDebtor?.rut}
                           placeholder="Ingresa rut"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1148,7 +1009,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="jointDebtor.nationality"
-                          defaultValue={editData?.jointDebtor.nationality}
+                          defaultValue={editData?.jointDebtor?.nationality}
                           placeholder="Ingresa Nacionalidad"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1162,7 +1023,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="jointDebtor.numberOfChildren"
-                          defaultValue={editData?.jointDebtor.numberOfChildren}
+                          defaultValue={editData?.jointDebtor?.numberOfChildren}
                           placeholder="Ingresa N de Hijos"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1176,7 +1037,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="jointDebtor.typeOfDocument"
-                          defaultValue={editData?.jointDebtor.typeOfDocument}
+                          defaultValue={editData?.jointDebtor?.typeOfDocument}
                           placeholder="Ingresa Tipo de documento"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1190,7 +1051,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="jointDebtor.employmentSituation"
-                          defaultValue={editData?.jointDebtor.employmentSituation}
+                          defaultValue={editData?.jointDebtor?.employmentSituation}
                           placeholder="Ingresa Situacion de empreado"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1204,7 +1065,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="email"
                           name="jointDebtor.email"
-                          defaultValue={editData?.jointDebtor.email}
+                          defaultValue={editData?.jointDebtor?.email}
                           placeholder="Ingresa Correo"
                           ref={register({ required: "Este campo es requerido" })}
                         />
@@ -1224,7 +1085,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="currentAccountData.bankName"
-                          defaultValue={editData?.accountBankInfo.bankName}
+                          defaultValue={editData?.accountBankInfo?.bankName}
                           placeholder="Ingresa Nombre del banco"
                           ref={register()}
                         />
@@ -1238,7 +1099,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="currentAccountData.accountType"
-                          defaultValue={editData?.accountBankInfo.accountType}
+                          defaultValue={editData?.accountBankInfo?.accountType}
                           placeholder="Ingresa Tipo de cuenta"
                           ref={register()}
                         />
@@ -1252,7 +1113,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="currentAccountData.sucursalAddress"
-                          defaultValue={editData?.accountBankInfo.sucursalAddress}
+                          defaultValue={editData?.accountBankInfo?.sucursalAddress}
                           placeholder="Ingresa Direccion"
                           ref={register()}
                         />
@@ -1266,7 +1127,7 @@ const CustomersListJuridico = () => {
                           className="form-control"
                           type="text"
                           name="currentAccountData.accountNumber"
-                          defaultValue={editData?.accountBankInfo.accountNumber}
+                          defaultValue={editData?.accountBankInfo?.accountNumber}
                           placeholder="Ingresa Numero de cuenta"
                           ref={register()}
                         />
@@ -1280,89 +1141,23 @@ const CustomersListJuridico = () => {
                       <Button type="button" color="primary" className="btn-icon ml-2" onClick={handleAddBeneficiarios}>
                         <Icon name="plus"></Icon>
                       </Button>
-                      <Button
-                        type="button"
-                        color="danger"
-                        className="btn-icon ml-2"
-                        onClick={handleDeleteBeneficiarios}
-                      >
-                        <Icon name="minus"></Icon>
-                      </Button>
                     </Col>
-                    {editData &&
-                      editData.beneficiaries?.map((item, i) => (
-                        <span key={i} className="form-grid">
-                          <input
-                            type="hidden"
-                            defaultValue={editData?.beneficiaries[i].id}
-                            ref={register()}
-                            name={`beneficiaries[${i}].id`}
-                          />
-                          <div>
-                            <FormGroup>
-                              <label className="form-label">Nombre</label>
-                              <input
-                                className="form-control"
-                                type="text"
-                                defaultValue={editData?.beneficiaries[i].names}
-                                name={`beneficiaries[${i}].names`}
-                                placeholder="Ingresa Nombre"
-                                ref={register()}
-                              />
-                            </FormGroup>
-                          </div>
-
-                          <div>
-                            <FormGroup>
-                              <label className="form-label">Apellido</label>
-                              <input
-                                className="form-control"
-                                type="text"
-                                defaultValue={editData?.beneficiaries[i].paternalLastName}
-                                name={`beneficiaries[${i}].paternalLastName`}
-                                placeholder="Ingresa Apellido"
-                                ref={register()}
-                              />
-                            </FormGroup>
-                          </div>
-                          <div>
-                            <FormGroup>
-                              <label className="form-label">Correo</label>
-                              <input
-                                className="form-control"
-                                type="email"
-                                name={`beneficiaries[${i}].email`}
-                                defaultValue={editData?.beneficiaries[i].email}
-                                placeholder="Ingresa Correo"
-                                ref={register()}
-                              />
-                            </FormGroup>
-                          </div>
-                          <div>
-                            <FormGroup>
-                              <label className="form-label">Porcentaje</label>
-                              <input
-                                className="form-control"
-                                type="text"
-                                name={`beneficiaries[${i}].percentage`}
-                                defaultValue={editData?.beneficiaries[i].percentage}
-                                placeholder="Ingresa Porcentaje"
-                                ref={register()}
-                              />
-                            </FormGroup>
-                          </div>
-                        </span>
-                      ))}
-
-                    {beneficiariesFields?.map((item, i) => (
-                      <span key={i} className="form-grid">
+                    {editData?.beneficiaries.map((item, i) => (
+                      <span key={i} className="form-grid-beneficiaries">
+                        <input
+                          type="hidden"
+                          defaultValue={editData?.beneficiaries[i].id}
+                          ref={register()}
+                          name={`beneficiariesEdited[${i}].id`}
+                        />
                         <div>
                           <FormGroup>
                             <label className="form-label">Nombre</label>
                             <input
                               className="form-control"
                               type="text"
-                              name={`beneficiaries[${i}].names`}
+                              name={`beneficiariesEdited[${i}].names`}
+                              defaultValue={editData?.beneficiaries[i].names}
                               placeholder="Ingresa Nombre"
                               ref={register()}
                             />
@@ -1374,7 +1169,8 @@ const CustomersListJuridico = () => {
                             <input
                               className="form-control"
                               type="text"
-                              name={`beneficiaries[${i}].paternalLastName`}
+                              name={`beneficiariesEdited[${i}].paternalLastName`}
+                              defaultValue={editData?.beneficiaries[i].paternalLastName}
                               placeholder="Ingresa Apellido"
                               ref={register()}
                             />
@@ -1382,12 +1178,13 @@ const CustomersListJuridico = () => {
                         </div>
                         <div>
                           <FormGroup>
-                            <label className="form-label">Correo</label>
+                            <label className="form-label">Email</label>
                             <input
                               className="form-control"
-                              type="email"
-                              name={`beneficiaries[${i}].email`}
-                              placeholder="Ingresa Correo"
+                              type="text"
+                              name={`beneficiariesEdited[${i}].email`}
+                              placeholder="Ingresa Email"
+                              defaultValue={editData?.beneficiaries[i].email}
                               ref={register()}
                             />
                           </FormGroup>
@@ -1398,14 +1195,84 @@ const CustomersListJuridico = () => {
                             <input
                               className="form-control"
                               type="text"
-                              name={`beneficiaries[${i}].percentage`}
+                              name={`beneficiariesEdited[${i}].percentage`}
+                              defaultValue={editData?.beneficiaries[i].percentage}
                               placeholder="Ingresa Porcentaje"
                               ref={register()}
                             />
                           </FormGroup>
                         </div>
+                        <Button
+                          type="button"
+                          color="danger"
+                          className="btn-icon ml-2 delete-btn"
+                          onClick={() => removeBeneficiaries(i)}
+                        >
+                          <Icon name="minus"></Icon>
+                        </Button>
                       </span>
                     ))}
+                    {beneficiariesFields &&
+                      beneficiariesFields.map((item, i) => (
+                        <span key={i} className="form-grid-beneficiaries">
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Nombre</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`beneficiaries[${i}].names`}
+                                placeholder="Ingresa Nombre"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Apellido</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`beneficiaries[${i}].paternalLastName`}
+                                placeholder="Ingresa Apellido"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Email</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`beneficiaries[${i}].email`}
+                                placeholder="Ingresa Email"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Porcentaje</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`beneficiaries[${i}].percentage`}
+                                placeholder="Ingresa Porcentaje"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <Button
+                            type="button"
+                            color="danger"
+                            className="btn-icon ml-2 delete-btn"
+                            onClick={() => removeBeneficiaries(i)}
+                          >
+                            <Icon name="minus"></Icon>
+                          </Button>
+                        </span>
+                      ))}
                   </>
 
                   <Col size="12">
