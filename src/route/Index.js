@@ -1,6 +1,5 @@
 import React, { Suspense, useLayoutEffect } from "react";
 import { Switch, Route } from "react-router-dom";
-import { CompanyProvider } from "../pages/company/CompanyContext";
 import { UserContextProvider } from "../pages/users/UserContext";
 import { CustomerContextProvider } from "../pages/customers/CustomersContext";
 import { AdviserContextProvider } from "../pages/adviser/AdviserContext";
@@ -20,6 +19,7 @@ import Adviser from "../pages/adviser/AdviserList";
 import Roles from "../pages/roles/RolesList";
 import Products from "../pages/products/ProductsList";
 import Company from "../pages/company/CompanyList";
+import Agenda from "../pages/app/calender/Calender";
 import EcomDashboard from "../pages/panel/e-commerce/index";
 
 const Pages = () => {
@@ -106,6 +106,7 @@ const Pages = () => {
             </CompanyContextProvider>
           )}
         ></Route>
+        <Route exact path={`${process.env.PUBLIC_URL}/calendar`} render={() => <Agenda />}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/`} component={Homepage}></Route>
         <Route component={RedirectAs404}></Route>
       </Switch>

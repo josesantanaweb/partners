@@ -25,6 +25,11 @@ const menu = [
     link: "/users",
   },
   {
+    icon: "calendar-alt-fill",
+    text: "Agenda",
+    link: "/calendar",
+  },
+  {
     icon: "user-list-fill",
     text: "Asesores",
     link: "/adviser",

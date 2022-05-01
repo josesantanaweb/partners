@@ -228,6 +228,7 @@ const CustomersListJuridico = () => {
         countryId: countryId,
         stateId: cityId,
         communne: address.communne,
+        address: address.address,
       },
     };
     try {
@@ -244,7 +245,7 @@ const CustomersListJuridico = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { companyName, giro, email, phone, singleTaxRole, observations } = submitData;
+    const { companyName, giro, email, phone, singleTaxRole, observations, address } = submitData;
     let submittedData = {
       companyName: companyName,
       giro: giro,
@@ -252,6 +253,12 @@ const CustomersListJuridico = () => {
       phone: phone,
       singleTaxRole: singleTaxRole,
       observations: observations,
+      address: {
+        countryId: countryId,
+        stateId: cityId,
+        communne: address.communne,
+        address: address.address,
+      },
     };
 
     try {
@@ -651,6 +658,20 @@ const CustomersListJuridico = () => {
                     </FormGroup>
                   </Col>
 
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Direccion</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="address.address"
+                        defaultValue={formData.address.address}
+                        placeholder="Ingresa address"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
@@ -775,6 +796,58 @@ const CustomersListJuridico = () => {
                         defaultValue={editData?.observations}
                         placeholder="Ingresa Obseraviones"
                         ref={register({ required: "Este campo es requerido" })}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Pais</label>
+                      <RSelect
+                        isSearchable={false}
+                        options={countriesOptions}
+                        defaultValue={editData?.address?.countryId}
+                        onChange={onCountriesChange}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Ciudad</label>
+                      <RSelect
+                        isSearchable={false}
+                        options={citiesOptions}
+                        defaultValue={editData?.address?.stateId}
+                        onChange={onCitiesChange}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Comuna</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="address.communne"
+                        defaultValue={editData?.address?.detailedAddress?.communne}
+                        placeholder="Ingresa Comuna"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Direccion</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="address.address"
+                        defaultValue={editData?.address?.detailedAddress?.address}
+                        placeholder="Ingresa address"
+                        ref={register()}
                       />
                     </FormGroup>
                   </Col>
