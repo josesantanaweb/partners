@@ -99,7 +99,7 @@ const CustomersListJuridico = () => {
     email: "",
     phone: "",
     singleTaxRole: "",
-    observation: "",
+    observations: "",
     address: {
       countryId: 1,
       stateId: 1,
@@ -161,7 +161,7 @@ const CustomersListJuridico = () => {
       typeId: 2,
       email: "",
       phone: "",
-      observation: "",
+      observations: "",
       mobilePhone: "",
       birthDate: "",
       profession: "",
@@ -218,8 +218,18 @@ const CustomersListJuridico = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { companyName, giro, email, phone, mobilePhone, birthDate, profession, singleTaxRole, observation, address } =
-      submitData;
+    const {
+      companyName,
+      giro,
+      email,
+      phone,
+      mobilePhone,
+      birthDate,
+      profession,
+      singleTaxRole,
+      observations,
+      address,
+    } = submitData;
     let submittedData = {
       typeId: 2,
       companyName,
@@ -230,7 +240,7 @@ const CustomersListJuridico = () => {
       birthDate,
       profession,
       singleTaxRole,
-      observation,
+      observations,
       address: {
         countryId: countryId,
         stateId: cityId,
@@ -252,8 +262,18 @@ const CustomersListJuridico = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { companyName, giro, email, phone, mobilePhone, birthDate, profession, observation, singleTaxRole, address } =
-      submitData;
+    const {
+      companyName,
+      giro,
+      email,
+      phone,
+      mobilePhone,
+      birthDate,
+      profession,
+      observations,
+      singleTaxRole,
+      address,
+    } = submitData;
     let submittedData = {
       companyName: companyName,
       giro: giro,
@@ -262,9 +282,9 @@ const CustomersListJuridico = () => {
       mobilePhone: mobilePhone,
       birthDate: birthDate,
       profession: profession,
-      observation: observation,
+      observations: observations,
       singleTaxRole: singleTaxRole,
-      observation: observation,
+      observations: observations,
       address: {
         countryId: countryId,
         stateId: cityId,
@@ -676,8 +696,8 @@ const CustomersListJuridico = () => {
                       <input
                         className="form-control"
                         type="text"
-                        name="observation"
-                        defaultValue={formData.observation}
+                        name="observations"
+                        defaultValue={formData.observations}
                         placeholder="Ingresa Obseraviones"
                         ref={register()}
                       />
@@ -741,11 +761,11 @@ const CustomersListJuridico = () => {
                       <label className="form-label">Observacion</label>
                       <textarea
                         className="form-control"
-                        name="observation"
+                        name="observations"
                         placeholder="Ingresa Observacion"
                         cols="30"
                         rows="10"
-                        defaultValue={formData?.observation}
+                        defaultValue={formData?.observations}
                         ref={register()}
                       />
                     </FormGroup>
@@ -885,8 +905,8 @@ const CustomersListJuridico = () => {
                       <input
                         className="form-control"
                         type="text"
-                        name="observation"
-                        defaultValue={editData?.observation}
+                        name="observations"
+                        defaultValue={editData?.observations}
                         placeholder="Ingresa Obseraviones"
                         ref={register({ required: "Este campo es requerido" })}
                       />
@@ -992,11 +1012,11 @@ const CustomersListJuridico = () => {
                       <label className="form-label">Observacion</label>
                       <textarea
                         className="form-control"
-                        name="observation"
+                        name="observations"
                         placeholder="Ingresa Observacion"
                         cols="30"
                         rows="10"
-                        defaultValue={editData?.observation}
+                        defaultValue={editData?.observations}
                         ref={register()}
                       />
                     </FormGroup>
