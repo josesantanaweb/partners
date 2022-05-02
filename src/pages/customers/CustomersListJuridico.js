@@ -99,7 +99,7 @@ const CustomersListJuridico = () => {
     email: "",
     phone: "",
     singleTaxRole: "",
-    observations: "",
+    observation: "",
     address: {
       countryId: 1,
       stateId: 1,
@@ -161,8 +161,11 @@ const CustomersListJuridico = () => {
       typeId: 2,
       email: "",
       phone: "",
+      observation: "",
+      mobilePhone: "",
+      birthDate: "",
+      profession: "",
       singleTaxRole: "",
-      observations: "",
       address: {
         countryId: 1,
         stateId: 1,
@@ -215,15 +218,19 @@ const CustomersListJuridico = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { companyName, giro, email, phone, singleTaxRole, observations, address } = submitData;
+    const { companyName, giro, email, phone, mobilePhone, birthDate, profession, singleTaxRole, observation, address } =
+      submitData;
     let submittedData = {
       typeId: 2,
       companyName,
       giro,
       email,
       phone,
+      mobilePhone,
+      birthDate,
+      profession,
       singleTaxRole,
-      observations,
+      observation,
       address: {
         countryId: countryId,
         stateId: cityId,
@@ -245,14 +252,19 @@ const CustomersListJuridico = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { companyName, giro, email, phone, singleTaxRole, observations, address } = submitData;
+    const { companyName, giro, email, phone, mobilePhone, birthDate, profession, observation, singleTaxRole, address } =
+      submitData;
     let submittedData = {
       companyName: companyName,
       giro: giro,
       email: email,
       phone: phone,
+      mobilePhone: mobilePhone,
+      birthDate: birthDate,
+      profession: profession,
+      observation: observation,
       singleTaxRole: singleTaxRole,
-      observations: observations,
+      observation: observation,
       address: {
         countryId: countryId,
         stateId: cityId,
@@ -584,9 +596,64 @@ const CustomersListJuridico = () => {
                         name="phone"
                         defaultValue={formData.phone}
                         placeholder="Ingresa Telefono"
-                        ref={register({ required: "Este campo es requerido" })}
+                        ref={register()}
                       />
-                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Otro Telefono</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="mobilePhone"
+                        defaultValue={formData.mobilePhone}
+                        placeholder="Ingresa Otro Telefono"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Otro Telefono</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="mobilePhone"
+                        defaultValue={formData.mobilePhone}
+                        placeholder="Ingresa Otro Telefono"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Fecha de nacimiento</label>
+                      <input
+                        className="form-control"
+                        type="date"
+                        name="birthDate"
+                        defaultValue={formData.birthDate}
+                        placeholder="Ingresa Fecha de nacimiento"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Profesion</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="profession"
+                        defaultValue={formData.profession}
+                        placeholder="Ingresa Otro Telefono"
+                        ref={register()}
+                      />
                     </FormGroup>
                   </Col>
 
@@ -599,9 +666,8 @@ const CustomersListJuridico = () => {
                         name="singleTaxRole"
                         defaultValue={formData.singleTaxRole}
                         placeholder="Ingresa Tax Role"
-                        ref={register({ required: "Este campo es requerido" })}
+                        ref={register()}
                       />
-                      {errors.singleTaxRole && <span className="invalid">{errors.singleTaxRole.message}</span>}
                     </FormGroup>
                   </Col>
 
@@ -611,12 +677,11 @@ const CustomersListJuridico = () => {
                       <input
                         className="form-control"
                         type="text"
-                        name="observations"
-                        defaultValue={formData.observations}
+                        name="observation"
+                        defaultValue={formData.observation}
                         placeholder="Ingresa Obseraviones"
-                        ref={register({ required: "Este campo es requerido" })}
+                        ref={register()}
                       />
-                      {errors.observations && <span className="invalid">{errors.observations.message}</span>}
                     </FormGroup>
                   </Col>
 
@@ -667,6 +732,21 @@ const CustomersListJuridico = () => {
                         name="address.address"
                         defaultValue={formData.address.address}
                         placeholder="Ingresa address"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Observacion</label>
+                      <textarea
+                        className="form-control"
+                        name="observation"
+                        placeholder="Ingresa Observacion"
+                        cols="30"
+                        rows="10"
+                        defaultValue={formData?.observation}
                         ref={register()}
                       />
                     </FormGroup>
@@ -767,7 +847,21 @@ const CustomersListJuridico = () => {
                         name="phone"
                         defaultValue={editData?.phone}
                         placeholder="Ingresa Telefono"
-                        ref={register({ required: "Este campo es requerido" })}
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Otro Telefono</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="mobilePhone"
+                        defaultValue={editData?.mobilePhone}
+                        placeholder="Ingresa Otro Telefono"
+                        ref={register()}
                       />
                     </FormGroup>
                   </Col>
@@ -792,8 +886,8 @@ const CustomersListJuridico = () => {
                       <input
                         className="form-control"
                         type="text"
-                        name="observations"
-                        defaultValue={editData?.observations}
+                        name="observation"
+                        defaultValue={editData?.observation}
                         placeholder="Ingresa Obseraviones"
                         ref={register({ required: "Este campo es requerido" })}
                       />
@@ -847,6 +941,63 @@ const CustomersListJuridico = () => {
                         name="address.address"
                         defaultValue={editData?.address?.detailedAddress?.address}
                         placeholder="Ingresa address"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Fecha de nacimiento</label>
+                      <input
+                        className="form-control"
+                        type="date"
+                        name="birthDate"
+                        defaultValue={editData?.birthDate}
+                        placeholder="Ingresa Fecha de nacimiento"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Profesion</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="profession"
+                        defaultValue={editData?.profession}
+                        placeholder="Ingresa Profesion"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Fecha de nacimiento</label>
+                      <input
+                        className="form-control"
+                        type="date"
+                        name="birthDate"
+                        defaultValue={editData?.birthDate}
+                        placeholder="Ingresa Fecha de nacimiento"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Observacion</label>
+                      <textarea
+                        className="form-control"
+                        name="observation"
+                        placeholder="Ingresa Observacion"
+                        cols="30"
+                        rows="10"
+                        defaultValue={editData?.observation}
                         ref={register()}
                       />
                     </FormGroup>

@@ -103,6 +103,7 @@ const CompanyList = () => {
     name: "",
     email: "",
     businessPhone: "",
+    observation: "",
     address: {
       countryId: 1,
       stateId: 1,
@@ -124,6 +125,7 @@ const CompanyList = () => {
       name: "",
       email: "",
       businessPhone: "",
+      observation: "",
       address: {
         countryId: 1,
         stateId: 1,
@@ -142,11 +144,12 @@ const CompanyList = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { name, email, address, businessPhone } = submitData;
+    const { name, email, address, businessPhone, observation } = submitData;
     let submittedData = {
       name: name,
       email: email,
       businessPhone: businessPhone,
+      observation: observation,
       address: {
         countryId: countryId,
         stateId: cityId,
@@ -160,17 +163,19 @@ const CompanyList = () => {
       await CompanyServices.addCompany(submittedData);
       resetForm();
       getCompany();
+      setErrorMessage("");
       setModal({ edit: false }, { add: false });
     } catch (error) {}
   };
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { name, email, address, businessPhone } = submitData;
+    const { name, email, address, businessPhone, observation } = submitData;
     let submittedData = {
       name: name,
       email: email,
       businessPhone: businessPhone,
+      observation: observation,
       address: {
         countryId: countryId,
         stateId: cityId,
@@ -185,7 +190,11 @@ const CompanyList = () => {
       resetForm();
       getCompany();
       setModal({ edit: false }, { add: false });
-    } catch (error) {}
+    } catch (error) {
+      if (error.response.data.message === "unknown error with create company") {
+        setErrorMessage("No tienes permisos para editar");
+      }
+    }
   };
 
   // function that loads the want to editted data
@@ -442,6 +451,21 @@ const CompanyList = () => {
                     </FormGroup>
                   </Col>
 
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Observacion</label>
+                      <textarea
+                        className="form-control"
+                        name="observation"
+                        placeholder="Ingresa Observacion"
+                        cols="30"
+                        rows="10"
+                        defaultValue={formData?.observation}
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
@@ -484,6 +508,14 @@ const CompanyList = () => {
             </a>
             <div className="p-2">
               <h5 className="title">Actualizar Empresa</h5>
+              {errorMessage !== "" && (
+                <div className="my-3">
+                  <Alert color="danger" className="alert-icon">
+                    <Icon name="alert-circle" />
+                    No tienes permisos para editar
+                  </Alert>
+                </div>
+              )}
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="6">
@@ -568,6 +600,21 @@ const CompanyList = () => {
                     </FormGroup>
                   </Col>
 
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Observacion</label>
+                      <textarea
+                        className="form-control"
+                        name="observation"
+                        placeholder="Ingresa Observacion"
+                        cols="30"
+                        rows="10"
+                        defaultValue={editData?.observation}
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
@@ -581,6 +628,7 @@ const CompanyList = () => {
                           onClick={(ev) => {
                             ev.preventDefault();
                             onFormCancel();
+                            setErrorMessage("");
                           }}
                           className="link link-light"
                         >

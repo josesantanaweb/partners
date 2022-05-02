@@ -21,7 +21,7 @@ const menu = [
   },
   {
     icon: "user-fill",
-    text: "Usuarios",
+    text: "Usuario Administrador",
     link: "/users",
   },
   {
