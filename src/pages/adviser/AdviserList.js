@@ -513,6 +513,7 @@ const AdviserList = () => {
                           onClick={(ev) => {
                             ev.preventDefault();
                             onFormCancel();
+                            setErrorMessage("");
                           }}
                           className="link link-light"
                         >

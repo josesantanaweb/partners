@@ -291,7 +291,7 @@ const CustomersListJuridico = () => {
         antecedentsLegalRepresentative: antecedentsLegalRepresentative,
         jointDebtor: jointDebtor,
         currentAccountData: currentAccountData,
-        beneficiaries: [...beneficiariesEdited],
+        beneficiaries: [...beneficiariesEdited, ...beneficiaries],
       };
       try {
         await CustomersServices.editCustomer(editData.id, submittedDataEdited);
@@ -326,7 +326,6 @@ const CustomersListJuridico = () => {
   const onDocumentClick = (id, data) => {
     setModal({ document: true }, { add: false }, { edit: false });
     setEditData(data);
-    console.log(data);
   };
 
   // Function to change to delete property for an item
@@ -471,7 +470,7 @@ const CustomersListJuridico = () => {
                               id={"file" + 1}
                               icon="file-fill"
                               direction="top"
-                              text="Edit"
+                              text="Editar Ficha"
                             />
                           </li>
                           <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
@@ -481,7 +480,7 @@ const CustomersListJuridico = () => {
                               id={"edit" + 1}
                               icon="edit-alt-fill"
                               direction="top"
-                              text="Edit"
+                              text="Editar"
                             />
                           </li>
                           <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
@@ -491,7 +490,7 @@ const CustomersListJuridico = () => {
                               id={"delete" + 1}
                               icon="trash-fill"
                               direction="top"
-                              text="Delete"
+                              text="Borrar"
                             />
                           </li>
                         </ul>
@@ -1368,12 +1367,6 @@ const CustomersListJuridico = () => {
                     </Col>
                     {editData?.beneficiaries.map((item, i) => (
                       <span key={i} className="form-grid-beneficiaries">
-                        <input
-                          type="hidden"
-                          defaultValue={editData?.beneficiaries[i].id}
-                          ref={register()}
-                          name={`beneficiariesEdited[${i}].id`}
-                        />
                         <div>
                           <FormGroup>
                             <label className="form-label">Nombre</label>
