@@ -39,6 +39,18 @@ const CustomersListJuridico = () => {
   const [countriesOptions, setCountriesOptions] = useState([]);
   const [citiesOptions, setCitiesOptions] = useState([]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
+
+  const [sm, updateSm] = useState(false);
+
+  const { errors, register, control, handleSubmit, reset } = useForm();
+  const {
+    fields: beneficiariesFields,
+    append: appendBeneficiaries,
+    remove: removeBeneficiaries,
+  } = useFieldArray({ control, name: "beneficiaries" });
+
   const [modal, setModal] = useState({
     edit: false,
     add: false,
@@ -98,12 +110,15 @@ const CustomersListJuridico = () => {
     giro: "",
     email: "",
     phone: "",
-    singleTaxRole: "",
+    AFP: "",
     observations: "",
     address: {
       countryId: 1,
       stateId: 1,
       communne: "",
+      detailedAddress: {
+        address: "",
+      },
     },
     antecedentsLegalRepresentative: {
       names: "",
@@ -141,17 +156,6 @@ const CustomersListJuridico = () => {
       },
     ],
   });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
-
-  const [sm, updateSm] = useState(false);
-
-  const { errors, register, control, handleSubmit } = useForm();
-  const {
-    fields: beneficiariesFields,
-    append: appendBeneficiaries,
-    remove: removeBeneficiaries,
-  } = useFieldArray({ control, name: "beneficiaries", defaultValue: { names: "" } });
 
   // Function to reset the form
   const resetForm = () => {
@@ -165,7 +169,7 @@ const CustomersListJuridico = () => {
       mobilePhone: "",
       birthDate: "",
       profession: "",
-      singleTaxRole: "",
+      AFP: "",
       address: {
         countryId: 1,
         stateId: 1,
@@ -218,18 +222,8 @@ const CustomersListJuridico = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const {
-      companyName,
-      giro,
-      email,
-      phone,
-      mobilePhone,
-      birthDate,
-      profession,
-      singleTaxRole,
-      observations,
-      address,
-    } = submitData;
+    const { companyName, giro, email, phone, mobilePhone, birthDate, profession, AFP, observations, address } =
+      submitData;
     let submittedData = {
       typeId: 2,
       companyName,
@@ -239,7 +233,7 @@ const CustomersListJuridico = () => {
       mobilePhone,
       birthDate,
       profession,
-      singleTaxRole,
+      AFP,
       observations,
       address: {
         countryId: countryId,
@@ -262,18 +256,8 @@ const CustomersListJuridico = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const {
-      companyName,
-      giro,
-      email,
-      phone,
-      mobilePhone,
-      birthDate,
-      profession,
-      observations,
-      singleTaxRole,
-      address,
-    } = submitData;
+    const { companyName, giro, email, phone, mobilePhone, birthDate, profession, observations, AFP, address } =
+      submitData;
     let submittedData = {
       companyName: companyName,
       giro: giro,
@@ -282,8 +266,7 @@ const CustomersListJuridico = () => {
       mobilePhone: mobilePhone,
       birthDate: birthDate,
       profession: profession,
-      observations: observations,
-      singleTaxRole: singleTaxRole,
+      AFP: AFP,
       observations: observations,
       address: {
         countryId: countryId,
@@ -301,29 +284,44 @@ const CustomersListJuridico = () => {
     } catch (error) {}
   };
 
-  // submit function to update a new item
   const onDocumentSubmit = async (submitData) => {
     const { antecedentsLegalRepresentative, jointDebtor, currentAccountData, beneficiaries, beneficiariesEdited } =
       submitData;
-
-    if (beneficiariesEdited) {
+    if (beneficiariesEdited && beneficiaries) {
       let submittedDataEdited = {
-        antecedentsLegalRepresentative: antecedentsLegalRepresentative,
-        jointDebtor: jointDebtor,
-        currentAccountData: currentAccountData,
+        antecedentsLegalRepresentative,
+        jointDebtor,
+        currentAccountData,
         beneficiaries: [...beneficiariesEdited, ...beneficiaries],
       };
       try {
         await CustomersServices.editCustomer(editData.id, submittedDataEdited);
         resetForm();
         getCustomers();
+        reset();
         setModal({ edit: false }, { add: false }, { document: false });
+        window.location.reload();
+      } catch (error) {}
+    } else if (beneficiariesEdited) {
+      let submittedDataEdited = {
+        antecedentsLegalRepresentative,
+        jointDebtor,
+        currentAccountData,
+        beneficiaries: [...beneficiariesEdited],
+      };
+      try {
+        await CustomersServices.editCustomer(editData.id, submittedDataEdited);
+        resetForm();
+        getCustomers();
+        reset();
+        setModal({ edit: false }, { add: false }, { document: false });
+        window.location.reload();
       } catch (error) {}
     } else {
       let submittedData = {
-        antecedentsLegalRepresentative: antecedentsLegalRepresentative,
-        jointDebtor: jointDebtor,
-        currentAccountData: currentAccountData,
+        antecedentsLegalRepresentative,
+        jointDebtor,
+        currentAccountData,
         beneficiaries: beneficiaries,
       };
       try {
@@ -331,9 +329,9 @@ const CustomersListJuridico = () => {
         resetForm();
         getCustomers();
         setModal({ edit: false }, { add: false }, { document: false });
+        window.location.reload();
       } catch (error) {}
     }
-    console.log("submitData", submitData);
   };
 
   // function that loads the want to editted data
@@ -530,7 +528,7 @@ const CustomersListJuridico = () => {
                 />
               ) : (
                 <div className="text-center">
-                  <span className="text-silent">No data found</span>
+                  <span className="text-silent">Sin registros</span>
                 </div>
               )}
             </PreviewAltCard>
@@ -682,8 +680,8 @@ const CustomersListJuridico = () => {
                       <input
                         className="form-control"
                         type="text"
-                        name="singleTaxRole"
-                        defaultValue={formData.singleTaxRole}
+                        name="AFP"
+                        defaultValue={formData.AFP}
                         placeholder="Ingresa Tax Role"
                         ref={register()}
                       />
@@ -891,8 +889,8 @@ const CustomersListJuridico = () => {
                       <input
                         className="form-control"
                         type="text"
-                        name="singleTaxRole"
-                        defaultValue={editData?.singleTaxRole}
+                        name="AFP"
+                        defaultValue={editData?.AFP}
                         placeholder="Ingresa Rol Unico"
                         ref={register({ required: "Este campo es requerido" })}
                       />
@@ -1439,14 +1437,6 @@ const CustomersListJuridico = () => {
                             />
                           </FormGroup>
                         </div>
-                        <Button
-                          type="button"
-                          color="danger"
-                          className="btn-icon ml-2 delete-btn"
-                          onClick={() => removeBeneficiaries(i)}
-                        >
-                          <Icon name="minus"></Icon>
-                        </Button>
                       </span>
                     ))}
                     {beneficiariesFields &&

@@ -27,18 +27,7 @@ import { CustomersContext } from "./CustomersContext";
 import CustomersServices from "../../services/CustomersServices";
 import CountriesServices from "../../services/CountriesServices";
 
-const sexTypes = [
-  {
-    label: "Masculino",
-    value: "M",
-  },
-  {
-    label: "Femenino",
-    value: "F",
-  },
-];
-
-const CustomersList = () => {
+const CustomersListJuridico = () => {
   const { contextData } = useContext(CustomersContext);
   const [data, setData] = contextData;
   const [errorMessage, setErrorMessage] = useState("");
@@ -49,11 +38,23 @@ const CustomersList = () => {
   const [cityId, setCityId] = useState();
   const [countriesOptions, setCountriesOptions] = useState([]);
   const [citiesOptions, setCitiesOptions] = useState([]);
-  const [beneficiaries, setBeneficiaries] = useState(1);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
+
+  const [sm, updateSm] = useState(false);
+
+  const { errors, register, control, handleSubmit, reset } = useForm();
+  const {
+    fields: beneficiariesFields,
+    append: appendBeneficiaries,
+    remove: removeBeneficiaries,
+  } = useFieldArray({ control, name: "beneficiaries" });
 
   const [modal, setModal] = useState({
     edit: false,
     add: false,
+    document: false,
   });
 
   useEffect(() => {
@@ -104,21 +105,32 @@ const CustomersList = () => {
   };
 
   const [formData, setFormData] = useState({
+    typeId: 1,
     names: "",
     paternalLastName: "",
-    typeId: 1,
     email: "",
-    sex: "",
-    profession: "",
     phone: "",
-    isapre: "",
     AFP: "",
-    nationality: "",
-    rut: "",
+    civilStatus: "",
+    observations: "",
     address: {
       countryId: 1,
       stateId: 1,
       communne: "",
+      detailedAddress: {
+        address: "",
+      },
+    },
+    antecedentsLegalRepresentative: {
+      names: "",
+      paternalLastName: "",
+      isapre: "",
+      afp: "",
+      nationality: "",
+      zipCode: "",
+      email: "",
+      rut: "",
+      phone: "",
     },
     jointDebtor: {
       names: "",
@@ -128,17 +140,6 @@ const CustomersList = () => {
       numberOfChildren: 1,
       typeOfDocument: "",
       employmentSituation: "",
-    },
-    employmentHistory: {
-      companyName: "",
-      industry: "",
-      businessPhone: "",
-      laborSeniority: "",
-      charge: "",
-      email: "",
-      rut: "",
-      zipCode: "",
-      annualIncome: "",
     },
     currentAccountData: {
       bankName: "",
@@ -156,32 +157,6 @@ const CustomersList = () => {
       },
     ],
   });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
-
-  const [sm, updateSm] = useState(false);
-
-  const { errors, register, control, handleSubmit } = useForm();
-  const { fields, append, remove } = useFieldArray({ name: "beneficiaries", control });
-
-  useEffect(() => {
-    // update field array when ticket number changed
-    const newVal = parseInt(beneficiaries || 1);
-    const oldVal = fields.length;
-    if (newVal > oldVal) {
-      // append tickets to field array
-      for (let i = oldVal; i < newVal; i++) {
-        append({
-          names: "",
-        });
-      }
-    } else {
-      // remove tickets from field array
-      for (let i = oldVal; i > newVal; i--) {
-        remove(i - 1);
-      }
-    }
-  }, [beneficiaries]);
 
   // Function to reset the form
   const resetForm = () => {
@@ -190,17 +165,29 @@ const CustomersList = () => {
       paternalLastName: "",
       typeId: 1,
       email: "",
-      sex: "M",
-      profession: "",
       phone: "",
-      isapre: "",
+      observations: "",
+      mobilePhone: "",
+      birthDate: "",
+      profession: "",
       AFP: "",
-      nationality: "",
       rut: "",
+      civilStatus: "",
       address: {
         countryId: 1,
         stateId: 1,
         communne: "",
+      },
+      antecedentsLegalRepresentative: {
+        names: "",
+        paternalLastName: "",
+        isapre: "",
+        afp: "",
+        nationality: "",
+        zipCode: "",
+        email: "",
+        rut: "",
+        phone: "",
       },
       jointDebtor: {
         names: "",
@@ -210,17 +197,6 @@ const CustomersList = () => {
         numberOfChildren: 1,
         typeOfDocument: "",
         employmentSituation: "",
-      },
-      employmentHistory: {
-        companyName: "",
-        industry: "",
-        businessPhone: "",
-        laborSeniority: "",
-        charge: "",
-        email: "",
-        rut: "",
-        zipCode: "",
-        annualIncome: "",
       },
       currentAccountData: {
         bankName: "",
@@ -235,17 +211,10 @@ const CustomersList = () => {
 
   // Function to close the form modal
   const onFormCancel = () => {
-    setModal({ edit: false, add: false });
+    setModal({ edit: false, add: false, document: false });
     resetForm();
   };
 
-  // customer type change
-  // const onCustomerTypeChange = (value) => {
-  //   setFormData({ ...formData, typeId: value.value });
-  //   setTypeId(value.value);
-  // };
-
-  const onSexChange = (value) => setFormData({ ...formData, sex: value.value });
   const onCountriesChange = (value) => {
     setCountryId(value.value);
     getCities();
@@ -260,73 +229,41 @@ const CustomersList = () => {
       names,
       paternalLastName,
       email,
+      phone,
+      mobilePhone,
       birthDate,
       profession,
-      phone,
-      isapre,
       AFP,
-      nationality,
+      civilStatus,
       rut,
+      observations,
       address,
-      jointDebtor,
-      employmentHistory,
-      currentAccountData,
-      beneficiaries,
     } = submitData;
     let submittedData = {
       typeId: 1,
       names,
       paternalLastName,
       email,
-      birthDate,
-      sex: formData.sex,
-      profession,
       phone,
-      isapre,
+      mobilePhone,
+      birthDate,
+      profession,
       AFP,
-      nationality,
+      civilStatus,
       rut,
+      observations,
       address: {
         countryId: countryId,
         stateId: cityId,
         communne: address.communne,
+        address: address.address,
       },
-      jointDebtor: {
-        names: jointDebtor.names,
-        paternalLastName: jointDebtor.paternalLastName,
-        rut: jointDebtor.rut,
-        nationality: jointDebtor.nationality,
-        numberOfChildren: Number(jointDebtor.numberOfChildren),
-        typeOfDocument: jointDebtor.typeOfDocument,
-        employmentSituation: jointDebtor.employmentSituation,
-        email: jointDebtor.email,
-      },
-      employmentHistory: {
-        companyName: employmentHistory.companyName,
-        industry: employmentHistory.industry,
-        businessPhone: employmentHistory.businessPhone,
-        laborSeniority: employmentHistory.laborSeniority,
-        charge: employmentHistory.charge,
-        email: employmentHistory.email,
-        rut: employmentHistory.rut,
-        zipCode: employmentHistory.zipCode,
-        annualIncome: employmentHistory.annualIncome,
-      },
-      currentAccountData: {
-        bankName: currentAccountData.bankName,
-        accountType: currentAccountData.accountType,
-        sucursalAddress: currentAccountData.sucursalAddress,
-        accountNumber: currentAccountData.accountNumber,
-        accountOpeningDate: currentAccountData.accountOpeningDate,
-      },
-      beneficiaries,
     };
-    console.log(submittedData);
     try {
       await CustomersServices.addCustomer(submittedData);
       resetForm();
       getCustomers();
-      setModal({ edit: false }, { add: false });
+      setModal({ edit: false }, { add: false }, { document: false });
     } catch (error) {
       if (error.response.data.message === "This customer already exists") {
         setErrorMessage("Usuario ya existe");
@@ -336,23 +273,107 @@ const CustomersList = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    // const { names, paternalLastName, email } = submitData;
-    // let submittedData = {
-    //   names: names,
-    //   paternalLastName: paternalLastName,
-    //   email: email,
-    // };
-    // try {
-    //   await CustomersServices.editCustomer(editData.id, submittedData);
-    //   resetForm();
-    //   getCustomers();
-    //   setModal({ edit: false }, { add: false });
-    // } catch (error) {}
+    const {
+      names,
+      paternalLastName,
+      email,
+      phone,
+      mobilePhone,
+      birthDate,
+      profession,
+      observations,
+      AFP,
+      civilStatus,
+      rut,
+      address,
+    } = submitData;
+    let submittedData = {
+      names: names,
+      paternalLastName: paternalLastName,
+      email: email,
+      phone: phone,
+      mobilePhone: mobilePhone,
+      birthDate: birthDate,
+      profession: profession,
+      AFP: AFP,
+      rut: rut,
+      civilStatus: civilStatus,
+      observations: observations,
+      address: {
+        countryId: countryId,
+        stateId: cityId,
+        communne: address.communne,
+        address: address.address,
+      },
+    };
+
+    try {
+      await CustomersServices.editCustomer(editData.id, submittedData);
+      resetForm();
+      getCustomers();
+      setModal({ edit: false }, { add: false }, { document: false });
+    } catch (error) {}
+  };
+
+  const onDocumentSubmit = async (submitData) => {
+    const { antecedentsLegalRepresentative, jointDebtor, currentAccountData, beneficiaries, beneficiariesEdited } =
+      submitData;
+    if (beneficiariesEdited && beneficiaries) {
+      let submittedDataEdited = {
+        antecedentsLegalRepresentative,
+        jointDebtor,
+        currentAccountData,
+        beneficiaries: [...beneficiariesEdited, ...beneficiaries],
+      };
+      try {
+        await CustomersServices.editCustomer(editData.id, submittedDataEdited);
+        resetForm();
+        getCustomers();
+        reset();
+        setModal({ edit: false }, { add: false }, { document: false });
+        window.location.reload();
+      } catch (error) {}
+    } else if (beneficiariesEdited) {
+      let submittedDataEdited = {
+        antecedentsLegalRepresentative,
+        jointDebtor,
+        currentAccountData,
+        beneficiaries: [...beneficiariesEdited],
+      };
+      try {
+        await CustomersServices.editCustomer(editData.id, submittedDataEdited);
+        resetForm();
+        getCustomers();
+        reset();
+        setModal({ edit: false }, { add: false }, { document: false });
+        window.location.reload();
+      } catch (error) {}
+    } else {
+      let submittedData = {
+        antecedentsLegalRepresentative,
+        jointDebtor,
+        currentAccountData,
+        beneficiaries: beneficiaries,
+      };
+      try {
+        await CustomersServices.editCustomer(editData.id, submittedData);
+        resetForm();
+        getCustomers();
+        window.location.reload();
+        setModal({ edit: false }, { add: false }, { document: false });
+      } catch (error) {}
+    }
   };
 
   // function that loads the want to editted data
   const onEditClick = (id, data) => {
     setModal({ edit: true }, { add: false });
+    setEditData(data);
+  };
+
+  // function that loads the want to editted data
+  const onDocumentClick = (id, data) => {
+    setModal({ document: true }, { add: false }, { edit: false });
     setEditData(data);
   };
 
@@ -374,7 +395,12 @@ const CustomersList = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleAddBeneficiarios = () => {
-    setBeneficiaries(beneficiaries + 1);
+    appendBeneficiaries({
+      names: "",
+      paternalLastName: "",
+      email: "",
+      percentage: "",
+    });
   };
 
   return (
@@ -385,10 +411,9 @@ const CustomersList = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Clientes Natural
+                Lista de Clientes Finales
               </BlockTitle>
               <BlockDes className="text-soft">
-                {" "}
                 <p>Total {filterCustomers.length} clientes</p>
               </BlockDes>
             </BlockHeadContent>
@@ -429,13 +454,10 @@ const CustomersList = () => {
                   <span className="sub-text">Tipo</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text">Rut</span>
+                  <span className="sub-text">Codeudor</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text">Profesion</span>
-                </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">AFP</span>
+                  <span className="sub-text">Antecedentes Repr. Legal</span>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text"></span>
@@ -453,7 +475,7 @@ const CustomersList = () => {
                           {item.names && <UserAvatar theme="purple" text={findUpper(item?.names)}></UserAvatar>}
                           <div className="user-info">
                             <span className="tb-lead">
-                              {item.names} {item.paternalLastName}{" "}
+                              {item.names}
                               <span className="dot dot-success d-md-none ml-1"></span>
                             </span>
                             <span>{item.email}</span>
@@ -461,19 +483,43 @@ const CustomersList = () => {
                         </div>
                       </DataTableRow>
                       <DataTableRow>
-                        <span className="text-info">{item.type.name}</span>
+                        <span className="text-info">{item.type?.name}</span>
                       </DataTableRow>
                       <DataTableRow>
-                        <span>{item.rut}</span>
+                        <div className="user-card">
+                          <div className="user-info">
+                            <span className="tb-lead">
+                              {item.jointDebtor?.names} {item.jointDebtor?.paternalLastName}{" "}
+                              <span className="dot dot-success d-md-none ml-1"></span>
+                            </span>
+                            <span>{item.jointDebtor?.email}</span>
+                          </div>
+                        </div>
                       </DataTableRow>
                       <DataTableRow>
-                        <span>{item.profession}</span>
-                      </DataTableRow>
-                      <DataTableRow>
-                        <span>{item.AFP}</span>
+                        <div className="user-card">
+                          <div className="user-info">
+                            <span className="tb-lead">
+                              {item.antecedentsLegalRepresentative?.names}{" "}
+                              {item.antecedentsLegalRepresentative?.paternalLastName}{" "}
+                              <span className="dot dot-success d-md-none ml-1"></span>
+                            </span>
+                            <span>{item.antecedentsLegalRepresentative?.email}</span>
+                          </div>
+                        </div>
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
+                          <li className="nk-tb-action-hidden" onClick={() => onDocumentClick(item.id, item)}>
+                            <TooltipComponent
+                              tag="a"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"file" + 1}
+                              icon="file-fill"
+                              direction="top"
+                              text="Editar Ficha"
+                            />
+                          </li>
                           <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
@@ -481,7 +527,7 @@ const CustomersList = () => {
                               id={"edit" + 1}
                               icon="edit-alt-fill"
                               direction="top"
-                              text="Edit"
+                              text="Editar"
                             />
                           </li>
                           <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
@@ -491,7 +537,7 @@ const CustomersList = () => {
                               id={"delete" + 1}
                               icon="trash-fill"
                               direction="top"
-                              text="Delete"
+                              text="Borrar"
                             />
                           </li>
                         </ul>
@@ -511,7 +557,7 @@ const CustomersList = () => {
                 />
               ) : (
                 <div className="text-center">
-                  <span className="text-silent">No data found</span>
+                  <span className="text-silent">Sin registros</span>
                 </div>
               )}
             </PreviewAltCard>
@@ -544,13 +590,13 @@ const CustomersList = () => {
                 <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Nombre</label>
+                      <label className="form-label">Nombres</label>
                       <input
                         className="form-control"
                         type="text"
                         name="names"
                         defaultValue={formData.names}
-                        placeholder="Ingresa nombre"
+                        placeholder="Ingresa Nombre de empresa"
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.names && <span className="invalid">{errors.names.message}</span>}
@@ -559,16 +605,15 @@ const CustomersList = () => {
 
                   <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Apellido</label>
+                      <label className="form-label">Apellidos</label>
                       <input
                         className="form-control"
                         type="text"
                         name="paternalLastName"
                         defaultValue={formData.paternalLastName}
-                        placeholder="Ingresa apellido"
-                        ref={register({ required: "Este campo es requerido" })}
+                        placeholder="Ingresa paternalLastName"
+                        ref={register()}
                       />
-                      {errors.paternalLastName && <span className="invalid">{errors.paternalLastName.message}</span>}
                     </FormGroup>
                   </Col>
 
@@ -589,13 +634,13 @@ const CustomersList = () => {
 
                   <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Fecha de Nacimiento</label>
+                      <label className="form-label">Telefono</label>
                       <input
                         className="form-control"
-                        type="date"
-                        name="birthDate"
-                        defaultValue={formData.birthDate}
-                        placeholder="Ingresa apellido"
+                        type="text"
+                        name="phone"
+                        defaultValue={formData.phone}
+                        placeholder="Ingresa Telefono"
                         ref={register()}
                       />
                     </FormGroup>
@@ -603,12 +648,42 @@ const CustomersList = () => {
 
                   <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Sexo</label>
-                      <RSelect
-                        isSearchable={false}
-                        options={sexTypes}
-                        defaultValue={formData.sex}
-                        onChange={onSexChange}
+                      <label className="form-label">Otro Telefono</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="mobilePhone"
+                        defaultValue={formData.mobilePhone}
+                        placeholder="Ingresa Otro Telefono"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Otro Telefono</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="mobilePhone"
+                        defaultValue={formData.mobilePhone}
+                        placeholder="Ingresa Otro Telefono"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Fecha de nacimiento</label>
+                      <input
+                        className="form-control"
+                        type="date"
+                        name="birthDate"
+                        defaultValue={formData.birthDate}
+                        placeholder="Ingresa Fecha de nacimiento"
+                        ref={register()}
                       />
                     </FormGroup>
                   </Col>
@@ -621,42 +696,12 @@ const CustomersList = () => {
                         type="text"
                         name="profession"
                         defaultValue={formData.profession}
-                        placeholder="Ingresa Profesion"
-                        ref={register({ required: "Este campo es requerido" })}
+                        placeholder="Ingresa Otro Telefono"
+                        ref={register()}
                       />
-                      {errors.profession && <span className="invalid">{errors.profession.message}</span>}
                     </FormGroup>
                   </Col>
 
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Telefono</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="phone"
-                        defaultValue={formData.phone}
-                        placeholder="Ingresa Telefono"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Isapre</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="isapre"
-                        defaultValue={formData.isapre}
-                        placeholder="Ingresa Isapre"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.isapre && <span className="invalid">{errors.isapre.message}</span>}
-                    </FormGroup>
-                  </Col>
                   <Col md="3">
                     <FormGroup>
                       <label className="form-label">AFP</label>
@@ -666,24 +711,8 @@ const CustomersList = () => {
                         name="AFP"
                         defaultValue={formData.AFP}
                         placeholder="Ingresa AFP"
-                        ref={register({ required: "Este campo es requerido" })}
+                        ref={register()}
                       />
-                      {errors.AFP && <span className="invalid">{errors.AFP.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Nacionalidad</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="nationality"
-                        defaultValue={formData.nationality}
-                        placeholder="Ingresa nationality"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.nationality && <span className="invalid">{errors.nationality.message}</span>}
                     </FormGroup>
                   </Col>
 
@@ -695,10 +724,37 @@ const CustomersList = () => {
                         type="text"
                         name="rut"
                         defaultValue={formData.rut}
-                        placeholder="Ingresa RUT"
-                        ref={register({ required: "Este campo es requerido" })}
+                        placeholder="Ingresa rut"
+                        ref={register()}
                       />
-                      {errors.rut && <span className="invalid">{errors.rut.message}</span>}
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Estado civil</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="civilStatus"
+                        defaultValue={formData.civilStatus}
+                        placeholder="Ingresa Estado civil"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Obseraviones</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="observations"
+                        defaultValue={formData.observations}
+                        placeholder="Ingresa Obseraviones"
+                        ref={register()}
+                      />
                     </FormGroup>
                   </Col>
 
@@ -740,392 +796,34 @@ const CustomersList = () => {
                     </FormGroup>
                   </Col>
 
-                  <>
-                    <Col size="12">
-                      <b>Deudor Solidario</b>
-                    </Col>
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Direccion</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="address.address"
+                        defaultValue={formData.address.address}
+                        placeholder="Ingresa address"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
 
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Nombre</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.names"
-                          defaultValue={formData.jointDebtor.names}
-                          placeholder="Ingresa Nombre"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Apellido</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.paternalLastName"
-                          defaultValue={formData.jointDebtor.paternalLastName}
-                          placeholder="Ingresa Apellido"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">RUT</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.rut"
-                          defaultValue={formData.jointDebtor.rut}
-                          placeholder="Ingresa rut"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Nacionalidad</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.nationality"
-                          defaultValue={formData.jointDebtor.nationality}
-                          placeholder="Ingresa Nacionalidad"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">N de Hijos</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.numberOfChildren"
-                          defaultValue={formData.jointDebtor.numberOfChildren}
-                          placeholder="Ingresa N de Hijos"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Tipo de documento</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.typeOfDocument"
-                          defaultValue={formData.jointDebtor.typeOfDocument}
-                          placeholder="Ingresa Tipo de documento"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Situacion</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="jointDebtor.employmentSituation"
-                          defaultValue={formData.jointDebtor.employmentSituation}
-                          placeholder="Ingresa Situacion de empreado"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Correo</label>
-                        <input
-                          className="form-control"
-                          type="email"
-                          name="jointDebtor.email"
-                          defaultValue={formData.jointDebtor.email}
-                          placeholder="Ingresa Correo"
-                          ref={register({ required: "Este campo es requerido" })}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </>
-
-                  <>
-                    <Col size="12">
-                      <b>Historial</b>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Nombre de empresa</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.companyName"
-                          defaultValue={formData.employmentHistory.companyName}
-                          placeholder="Ingresa Nombre de empresa"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Industria</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.industry"
-                          defaultValue={formData.employmentHistory.industry}
-                          placeholder="Ingresa Industria"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Telefono</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.businessPhone"
-                          defaultValue={formData.employmentHistory.businessPhone}
-                          placeholder="Ingresa Telefono"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Antiguedad Laboral</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.laborSeniority"
-                          defaultValue={formData.employmentHistory.laborSeniority}
-                          placeholder="Ingresa Antiguedad Laboral"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Cargo</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.charge"
-                          defaultValue={formData.employmentHistory.charge}
-                          placeholder="Ingresa Cargo"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Correo</label>
-                        <input
-                          className="form-control"
-                          type="email"
-                          name="employmentHistory.email"
-                          defaultValue={formData.employmentHistory.email}
-                          placeholder="Ingresa Correo"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Rut</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.rut"
-                          defaultValue={formData.employmentHistory.rut}
-                          placeholder="Ingresa Rut"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Codigo postal</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.zipCode"
-                          defaultValue={formData.employmentHistory.zipCode}
-                          placeholder="Ingresa Codigo postal"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Ingreso Anual</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="employmentHistory.annualIncome"
-                          defaultValue={formData.employmentHistory.annualIncome}
-                          placeholder="Ingresa Ingreso Anual"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </>
-
-                  <>
-                    <Col size="12">
-                      <b>Datos de cuenta</b>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Nombre del banco</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="currentAccountData.bankName"
-                          defaultValue={formData.currentAccountData.bankName}
-                          placeholder="Ingresa Nombre del banco"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Tipo de cuenta</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="currentAccountData.accountType"
-                          defaultValue={formData.currentAccountData.accountType}
-                          placeholder="Ingresa Tipo de cuenta"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Direccion</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="currentAccountData.sucursalAddress"
-                          defaultValue={formData.currentAccountData.sucursalAddress}
-                          placeholder="Ingresa Direccion"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Numero de cuenta</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="currentAccountData.accountNumber"
-                          defaultValue={formData.currentAccountData.accountNumber}
-                          placeholder="Ingresa Numero de cuenta"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-
-                    <Col md="3">
-                      <FormGroup>
-                        <label className="form-label">Fecha de apertura</label>
-                        <input
-                          className="form-control"
-                          type="date"
-                          name="currentAccountData.accountOpeningDate"
-                          defaultValue={formData.currentAccountData.accountOpeningDate}
-                          placeholder="Ingresa Fecha de apertura"
-                          ref={register()}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </>
-
-                  <>
-                    <Col md="12">
-                      <b>Beneficiarios</b>
-                      <Button type="button" color="primary" className="btn-icon ml-2" onClick={handleAddBeneficiarios}>
-                        <Icon name="plus"></Icon>
-                      </Button>
-                    </Col>
-                    {fields?.map((item, i) => (
-                      <span key={i} className="form-grid">
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Nombre</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`beneficiaries[${i}].names`}
-                              placeholder="Ingresa Nombre"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Apellido</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`beneficiaries[${i}].paternalLastName`}
-                              placeholder="Ingresa Apellido"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Correo</label>
-                            <input
-                              className="form-control"
-                              type="email"
-                              name={`beneficiaries[${i}].email`}
-                              placeholder="Ingresa Correo"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <label className="form-label">Porcentaje</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              name={`beneficiaries[${i}].percentage`}
-                              placeholder="Ingresa Porcentaje"
-                              ref={register()}
-                            />
-                          </FormGroup>
-                        </div>
-                      </span>
-                    ))}
-                  </>
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Observacion</label>
+                      <textarea
+                        className="form-control"
+                        name="observations"
+                        placeholder="Ingresa Observacion"
+                        cols="30"
+                        rows="10"
+                        defaultValue={formData?.observations}
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
 
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
@@ -1168,36 +866,241 @@ const CustomersList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Actualizar Asesor</h5>
+              <h5 className="title">Actualizar Cliente</h5>
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
-                  <Col md="6">
+                  <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Nombre</label>
+                      <label className="form-label">Nombrede Empresa</label>
                       <input
                         className="form-control"
                         type="text"
-                        name="name"
-                        defaultValue={editData?.name}
-                        placeholder="Ingresa nombre"
+                        name="names"
+                        defaultValue={editData?.names}
+                        placeholder="Ingresa nombre de empresa"
                         ref={register({ required: "Este campo es requerido" })}
                       />
-                      {errors.name && <span className="invalid">{errors.name.message}</span>}
                     </FormGroup>
                   </Col>
 
-                  <Col md="6">
+                  <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Descripcion</label>
+                      <label className="form-label">paternalLastName</label>
                       <input
                         className="form-control"
                         type="text"
                         name="description"
-                        defaultValue={editData?.description}
-                        placeholder="Ingresa nombre"
+                        defaultValue={editData?.paternalLastName}
+                        placeholder="Ingresa paternalLastName"
                         ref={register({ required: "Este campo es requerido" })}
                       />
-                      {errors.description && <span className="invalid">{errors.description.message}</span>}
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Correo electronico</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="email"
+                        defaultValue={editData?.email}
+                        placeholder="Ingresa Correo electronico"
+                        ref={register({ required: "Este campo es requerido" })}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Telefono</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="phone"
+                        defaultValue={editData?.phone}
+                        placeholder="Ingresa Telefono"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Otro Telefono</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="mobilePhone"
+                        defaultValue={editData?.mobilePhone}
+                        placeholder="Ingresa Otro Telefono"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">AFP</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="AFP"
+                        defaultValue={editData?.AFP}
+                        placeholder="Ingresa AFP"
+                        ref={register({ required: "Este campo es requerido" })}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">RUT</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="rut"
+                        defaultValue={editData?.rut}
+                        placeholder="Ingresa RUT"
+                        ref={register({ required: "Este campo es requerido" })}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Estado civil</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="civilStatus"
+                        defaultValue={editData?.civilStatus}
+                        placeholder="Ingresa Estado civil"
+                        ref={register({ required: "Este campo es requerido" })}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Obseraviones</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="observations"
+                        defaultValue={editData?.observations}
+                        placeholder="Ingresa Obseraviones"
+                        ref={register({ required: "Este campo es requerido" })}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Pais</label>
+                      <RSelect
+                        isSearchable={false}
+                        options={countriesOptions}
+                        defaultValue={editData?.address?.countryId}
+                        onChange={onCountriesChange}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Ciudad</label>
+                      <RSelect
+                        isSearchable={false}
+                        options={citiesOptions}
+                        defaultValue={editData?.address?.stateId}
+                        onChange={onCitiesChange}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Comuna</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="address.communne"
+                        defaultValue={editData?.address?.detailedAddress?.communne}
+                        placeholder="Ingresa Comuna"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Direccion</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="address.address"
+                        defaultValue={editData?.address?.detailedAddress?.address}
+                        placeholder="Ingresa address"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Fecha de nacimiento</label>
+                      <input
+                        className="form-control"
+                        type="date"
+                        name="birthDate"
+                        defaultValue={editData?.birthDate}
+                        placeholder="Ingresa Fecha de nacimiento"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Profesion</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="profession"
+                        defaultValue={editData?.profession}
+                        placeholder="Ingresa Profesion"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="3">
+                    <FormGroup>
+                      <label className="form-label">Fecha de nacimiento</label>
+                      <input
+                        className="form-control"
+                        type="date"
+                        name="birthDate"
+                        defaultValue={editData?.birthDate}
+                        placeholder="Ingresa Fecha de nacimiento"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Observacion</label>
+                      <textarea
+                        className="form-control"
+                        name="observations"
+                        placeholder="Ingresa Observacion"
+                        cols="30"
+                        rows="10"
+                        defaultValue={editData?.observations}
+                        ref={register()}
+                      />
                     </FormGroup>
                   </Col>
 
@@ -1205,7 +1108,489 @@ const CustomersList = () => {
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Actualizar Rol
+                          Actualizar Cliente
+                        </Button>
+                      </li>
+                      <li>
+                        <a
+                          href="#cancel"
+                          onClick={(ev) => {
+                            ev.preventDefault();
+                            onFormCancel();
+                          }}
+                          className="link link-light"
+                        >
+                          Cancelar
+                        </a>
+                      </li>
+                    </ul>
+                  </Col>
+                </Form>
+              </div>
+            </div>
+          </ModalBody>
+        </Modal>
+
+        <Modal
+          isOpen={modal.document}
+          toggle={() => setModal({ document: false })}
+          className="modal-dialog-centered"
+          size="lg"
+        >
+          <ModalBody>
+            <a
+              href="#cancel"
+              onClick={(ev) => {
+                ev.preventDefault();
+                onFormCancel();
+              }}
+              className="close"
+            >
+              <Icon name="cross-sm"></Icon>
+            </a>
+            <div className="p-2">
+              <h5 className="title">Actualizar Cliente</h5>
+              <div className="mt-4">
+                <Form className="row gy-4" onSubmit={handleSubmit(onDocumentSubmit)}>
+                  <>
+                    <Col size="12">
+                      <b>Antecedentes representante legal</b>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Nombre</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.names"
+                          defaultValue={editData?.antecedentsLegalRepresentative?.names}
+                          placeholder="Ingresa Nombre"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Apellido</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.paternalLastName"
+                          defaultValue={editData?.antecedentsLegalRepresentative?.paternalLastName}
+                          placeholder="Ingresa Apellido"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Isapre</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.isapre"
+                          defaultValue={editData?.antecedentsLegalRepresentative?.isapre}
+                          placeholder="Ingresa Isapre"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Afp</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.afp"
+                          defaultValue={editData?.antecedentsLegalRepresentative?.afp}
+                          placeholder="Ingresa Afp"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Nacionalidad</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.nationality"
+                          defaultValue={editData?.antecedentsLegalRepresentative?.nationality}
+                          placeholder="Ingresa Nacionalidad"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Codigo Postal</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.zipCode"
+                          defaultValue={editData?.antecedentsLegalRepresentative?.zipCode}
+                          placeholder="Ingresa Codigo Postal"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Correo electronico</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.email"
+                          defaultValue={editData?.antecedentsLegalRepresentative?.email}
+                          placeholder="Ingresa Correo electronico"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">RUT</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.rut"
+                          defaultValue={editData?.antecedentsLegalRepresentative?.rut}
+                          placeholder="Ingresa RUT"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Telefono</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="antecedentsLegalRepresentative.phone"
+                          defaultValue={editData?.antecedentsLegalRepresentative?.phone}
+                          placeholder="Ingresa Telefono"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </>
+
+                  <>
+                    <Col size="12">
+                      <b>Deudor Solidario</b>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Nombre</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="jointDebtor.names"
+                          defaultValue={editData?.jointDebtor?.names}
+                          placeholder="Ingresa Nombre"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Apellido</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="jointDebtor.paternalLastName"
+                          defaultValue={editData?.jointDebtor?.paternalLastName}
+                          placeholder="Ingresa Apellido"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">RUT</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="jointDebtor.rut"
+                          defaultValue={editData?.jointDebtor?.rut}
+                          placeholder="Ingresa rut"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Nacionalidad</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="jointDebtor.nationality"
+                          defaultValue={editData?.jointDebtor?.nationality}
+                          placeholder="Ingresa Nacionalidad"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">N de Hijos</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="jointDebtor.numberOfChildren"
+                          defaultValue={editData?.jointDebtor?.numberOfChildren}
+                          placeholder="Ingresa N de Hijos"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Tipo de documento</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="jointDebtor.typeOfDocument"
+                          defaultValue={editData?.jointDebtor?.typeOfDocument}
+                          placeholder="Ingresa Tipo de documento"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Situacion</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="jointDebtor.employmentSituation"
+                          defaultValue={editData?.jointDebtor?.employmentSituation}
+                          placeholder="Ingresa Situacion de empreado"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Correo</label>
+                        <input
+                          className="form-control"
+                          type="email"
+                          name="jointDebtor.email"
+                          defaultValue={editData?.jointDebtor?.email}
+                          placeholder="Ingresa Correo"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </>
+
+                  <>
+                    <Col size="12">
+                      <b>Datos de cuenta</b>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Nombre del banco</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="currentAccountData.bankName"
+                          defaultValue={editData?.accountBankInfo?.bankName}
+                          placeholder="Ingresa Nombre del banco"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Tipo de cuenta</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="currentAccountData.accountType"
+                          defaultValue={editData?.accountBankInfo?.accountType}
+                          placeholder="Ingresa Tipo de cuenta"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Direccion</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="currentAccountData.sucursalAddress"
+                          defaultValue={editData?.accountBankInfo?.sucursalAddress}
+                          placeholder="Ingresa Direccion"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="3">
+                      <FormGroup>
+                        <label className="form-label">Numero de cuenta</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="currentAccountData.accountNumber"
+                          defaultValue={editData?.accountBankInfo?.accountNumber}
+                          placeholder="Ingresa Numero de cuenta"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </>
+
+                  <>
+                    <Col md="12">
+                      <b>Beneficiarios</b>
+                      <Button type="button" color="primary" className="btn-icon ml-2" onClick={handleAddBeneficiarios}>
+                        <Icon name="plus"></Icon>
+                      </Button>
+                    </Col>
+                    {editData?.beneficiaries.map((item, i) => (
+                      <span key={i} className="form-grid-beneficiaries">
+                        <div>
+                          <FormGroup>
+                            <label className="form-label">Nombre</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name={`beneficiariesEdited[${i}].names`}
+                              defaultValue={editData?.beneficiaries[i].names}
+                              placeholder="Ingresa Nombre"
+                              ref={register()}
+                            />
+                          </FormGroup>
+                        </div>
+                        <div>
+                          <FormGroup>
+                            <label className="form-label">Apellido</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name={`beneficiariesEdited[${i}].paternalLastName`}
+                              defaultValue={editData?.beneficiaries[i].paternalLastName}
+                              placeholder="Ingresa Apellido"
+                              ref={register()}
+                            />
+                          </FormGroup>
+                        </div>
+                        <div>
+                          <FormGroup>
+                            <label className="form-label">Email</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name={`beneficiariesEdited[${i}].email`}
+                              placeholder="Ingresa Email"
+                              defaultValue={editData?.beneficiaries[i].email}
+                              ref={register()}
+                            />
+                          </FormGroup>
+                        </div>
+                        <div>
+                          <FormGroup>
+                            <label className="form-label">Porcentaje</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name={`beneficiariesEdited[${i}].percentage`}
+                              defaultValue={editData?.beneficiaries[i].percentage}
+                              placeholder="Ingresa Porcentaje"
+                              ref={register()}
+                            />
+                          </FormGroup>
+                        </div>
+                      </span>
+                    ))}
+                    {beneficiariesFields &&
+                      beneficiariesFields.map((item, i) => (
+                        <span key={i} className="form-grid-beneficiaries">
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Nombre</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`beneficiaries[${i}].names`}
+                                placeholder="Ingresa Nombre"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Apellido</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`beneficiaries[${i}].paternalLastName`}
+                                placeholder="Ingresa Apellido"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Email</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`beneficiaries[${i}].email`}
+                                placeholder="Ingresa Email"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Porcentaje</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`beneficiaries[${i}].percentage`}
+                                placeholder="Ingresa Porcentaje"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <Button
+                            type="button"
+                            color="danger"
+                            className="btn-icon ml-2 delete-btn"
+                            onClick={() => removeBeneficiaries(i)}
+                          >
+                            <Icon name="minus"></Icon>
+                          </Button>
+                        </span>
+                      ))}
+                  </>
+
+                  <Col size="12">
+                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                      <li>
+                        <Button color="primary" size="md" type="submit">
+                          Actualizar Cliente
                         </Button>
                       </li>
                       <li>
@@ -1232,4 +1617,4 @@ const CustomersList = () => {
   );
 };
 
-export default CustomersList;
+export default CustomersListJuridico;
