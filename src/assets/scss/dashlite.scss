@@ -88,6 +88,15 @@ $rtl: false;
   align-items: center;
 }
 
+.form-grid-partners {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 30px;
+  grid-gap: 1rem;
+  padding: 0 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
 .delete-btn {
   width: 30px;
   height: 30px;

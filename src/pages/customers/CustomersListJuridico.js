@@ -51,6 +51,12 @@ const CustomersListJuridico = () => {
     remove: removeBeneficiaries,
   } = useFieldArray({ control, name: "beneficiaries" });
 
+  const {
+    fields: partnersAntecedentsFields,
+    append: appendPartnersAntecedents,
+    remove: removePartnersAntecedents,
+  } = useFieldArray({ control, name: "partnersAntecedents" });
+
   const [modal, setModal] = useState({
     edit: false,
     add: false,
@@ -155,6 +161,24 @@ const CustomersListJuridico = () => {
         percentage: "",
       },
     ],
+    partnersAntecedents: [
+      {
+        names: "",
+        paternalLastName: "",
+        countryOfBirth: "",
+        isapre: "",
+        afp: "",
+        address: "",
+        commune: "",
+        zipCode: "",
+        percentageOfParticipation: "",
+        email: "",
+        birthDate: "",
+        rut: "",
+        civilStatus: "",
+        phone: "",
+      },
+    ],
   });
 
   // Function to reset the form
@@ -203,6 +227,7 @@ const CustomersListJuridico = () => {
         accountOpeningDate: "",
       },
       beneficiaries: [],
+      partnersAntecedents: [],
     });
   };
 
@@ -369,6 +394,25 @@ const CustomersListJuridico = () => {
       paternalLastName: "",
       email: "",
       percentage: "",
+    });
+  };
+
+  const handleAddPartnersAntecedents = () => {
+    appendPartnersAntecedents({
+      names: "",
+      paternalLastName: "",
+      countryOfBirth: "",
+      isapre: "",
+      afp: "",
+      address: "",
+      commune: "",
+      zipCode: "",
+      percentageOfParticipation: "",
+      email: "",
+      birthDate: "",
+      rut: "",
+      civilStatus: "",
+      phone: "",
     });
   };
 
@@ -648,7 +692,7 @@ const CustomersListJuridico = () => {
 
                   <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Fecha de nacimiento</label>
+                      <label className="form-label">F de nacimiento</label>
                       <input
                         className="form-control"
                         type="date"
@@ -965,7 +1009,7 @@ const CustomersListJuridico = () => {
 
                   <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Fecha de nacimiento</label>
+                      <label className="form-label">F de nacimiento</label>
                       <input
                         className="form-control"
                         type="date"
@@ -993,7 +1037,7 @@ const CustomersListJuridico = () => {
 
                   <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Fecha de nacimiento</label>
+                      <label className="form-label">F de nacimiento</label>
                       <input
                         className="form-control"
                         type="date"

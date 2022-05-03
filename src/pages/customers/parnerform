@@ -1,0 +1,371 @@
+ <>
+                    <Col md="12">
+                      <b>Antecedente de Socios</b>
+                      <Button
+                        type="button"
+                        color="primary"
+                        className="btn-icon ml-2"
+                        onClick={handleAddPartnersAntecedents}
+                      >
+                        <Icon name="plus"></Icon>
+                      </Button>
+                    </Col>
+                    {editData?.partnersAntecedents.map((item, i) => (
+                      <div key={i}>
+                        <span className="form-grid-partners">
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Nombres</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`partnersAntecedentsEdited[${i}].names`}
+                                defaultValue={editData?.partnersAntecedents[i].names}
+                                placeholder="Ingresa Nombre"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Apellidos</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`partnersAntecedentsEdited[${i}].paternalLastName`}
+                                defaultValue={editData?.partnersAntecedents[i].paternalLastName}
+                                placeholder="Ingresa Apellidos"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Isapre</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`partnersAntecedentsEdited[${i}].isapre`}
+                                defaultValue={editData?.partnersAntecedents[i].isapre}
+                                placeholder="Ingresa Isapre"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Afp</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`partnersAntecedentsEdited[${i}].afp`}
+                                defaultValue={editData?.partnersAntecedents[i].afp}
+                                placeholder="Ingresa Afp"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                        </span>
+                        <span className="form-grid-partners">
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Address</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`partnersAntecedentsEdited[${i}].address`}
+                                defaultValue={editData?.partnersAntecedents[i].address}
+                                placeholder="Ingresa Address"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Comuna</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`partnersAntecedentsEdited[${i}].commune`}
+                                defaultValue={editData?.partnersAntecedents[i].commune}
+                                placeholder="Ingresa Comuna"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Codigo postal</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`partnersAntecedentsEdited[${i}].zipCode`}
+                                defaultValue={editData?.partnersAntecedents[i].zipCode}
+                                placeholder="Ingresa Codigo postal"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Porcentaje</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`partnersAntecedentsEdited[${i}].percentageOfParticipation`}
+                                defaultValue={editData?.partnersAntecedents[i].percentageOfParticipation}
+                                placeholder="Ingresa Porcentaje"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                        </span>
+                        <span className="form-grid-partners">
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Email</label>
+                              <input
+                                className="form-control"
+                                type="email"
+                                name={`partnersAntecedentsEdited[${i}].email`}
+                                defaultValue={editData?.partnersAntecedents[i].email}
+                                placeholder="Ingresa email"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">F de nacimiento</label>
+                              <input
+                                className="form-control"
+                                type="date"
+                                name={`partnersAntecedentsEdited[${i}].birthDate`}
+                                defaultValue={editData?.partnersAntecedents[i].birthDate}
+                                placeholder="Ingresa Fecha de nacimiento"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Rut</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`partnersAntecedentsEdited[${i}].rut`}
+                                defaultValue={editData?.partnersAntecedents[i].rut}
+                                placeholder="Ingresa Rut"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Estado civil</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`partnersAntecedentsEdited[${i}].civilStatus`}
+                                defaultValue={editData?.partnersAntecedents[i].civilStatus}
+                                placeholder="Ingresa Estado civil"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                        </span>
+                        <span className="form-grid-partners">
+                          <div>
+                            <FormGroup>
+                              <label className="form-label">Telefono</label>
+                              <input
+                                className="form-control"
+                                type="text"
+                                name={`partnersAntecedentsEdited[${i}].phone`}
+                                defaultValue={editData?.partnersAntecedents[i].civilStatus}
+                                placeholder="Ingresa Telefono"
+                                ref={register()}
+                              />
+                            </FormGroup>
+                          </div>
+                        </span>
+                      </div>
+                    ))}
+                    {partnersAntecedentsFields &&
+                      partnersAntecedentsFields.map((item, i) => (
+                        <div key={i}>
+                          <span key={i} className="form-grid-partners">
+                            <div>
+                              <FormGroup>
+                                <label className="form-label">Nombres</label>
+                                <input
+                                  className="form-control"
+                                  type="text"
+                                  name={`partnersAntecedents[${i}].names`}
+                                  placeholder="Ingresa Nombre"
+                                  ref={register()}
+                                />
+                              </FormGroup>
+                            </div>
+                            <div>
+                              <FormGroup>
+                                <label className="form-label">Apellidos</label>
+                                <input
+                                  className="form-control"
+                                  type="text"
+                                  name={`partnersAntecedents[${i}].paternalLastName`}
+                                  placeholder="Ingresa Apellidos"
+                                  ref={register()}
+                                />
+                              </FormGroup>
+                            </div>
+                            <div>
+                              <FormGroup>
+                                <label className="form-label">Isapre</label>
+                                <input
+                                  className="form-control"
+                                  type="text"
+                                  name={`partnersAntecedents[${i}].isapre`}
+                                  placeholder="Ingresa Isapre"
+                                  ref={register()}
+                                />
+                              </FormGroup>
+                            </div>
+                            <div>
+                              <FormGroup>
+                                <label className="form-label">Afp</label>
+                                <input
+                                  className="form-control"
+                                  type="text"
+                                  name={`partnersAntecedents[${i}].afp`}
+                                  placeholder="Ingresa Afp"
+                                  ref={register()}
+                                />
+                              </FormGroup>
+                            </div>
+                          </span>
+                          <span className="form-grid-partners">
+                            <div>
+                              <FormGroup>
+                                <label className="form-label">Address</label>
+                                <input
+                                  className="form-control"
+                                  type="text"
+                                  name={`partnersAntecedents[${i}].address`}
+                                  placeholder="Ingresa Address"
+                                  ref={register()}
+                                />
+                              </FormGroup>
+                            </div>
+                            <div>
+                              <FormGroup>
+                                <label className="form-label">Comuna</label>
+                                <input
+                                  className="form-control"
+                                  type="text"
+                                  name={`partnersAntecedents[${i}].commune`}
+                                  placeholder="Ingresa Comuna"
+                                  ref={register()}
+                                />
+                              </FormGroup>
+                            </div>
+                            <div>
+                              <FormGroup>
+                                <label className="form-label">Codigo postal</label>
+                                <input
+                                  className="form-control"
+                                  type="text"
+                                  name={`partnersAntecedents[${i}].zipCode`}
+                                  placeholder="Ingresa Codigo postal"
+                                  ref={register()}
+                                />
+                              </FormGroup>
+                            </div>
+                            <div>
+                              <FormGroup>
+                                <label className="form-label">Porcentaje</label>
+                                <input
+                                  className="form-control"
+                                  type="text"
+                                  name={`partnersAntecedents[${i}].percentageOfParticipation`}
+                                  placeholder="Ingresa Porcentaje"
+                                  ref={register()}
+                                />
+                              </FormGroup>
+                            </div>
+                          </span>
+                          <span className="form-grid-partners">
+                            <div>
+                              <FormGroup>
+                                <label className="form-label">Email</label>
+                                <input
+                                  className="form-control"
+                                  type="text"
+                                  name={`partnersAntecedents[${i}].email`}
+                                  placeholder="Ingresa Email"
+                                  ref={register()}
+                                />
+                              </FormGroup>
+                            </div>
+                            <div>
+                              <FormGroup>
+                                <label className="form-label">F de nacimiento</label>
+                                <input
+                                  className="form-control"
+                                  type="date"
+                                  name={`partnersAntecedents[${i}].birthDate`}
+                                  placeholder="Ingresa Fecha de nacimiento"
+                                  ref={register()}
+                                />
+                              </FormGroup>
+                            </div>
+                            <div>
+                              <FormGroup>
+                                <label className="form-label">Rut</label>
+                                <input
+                                  className="form-control"
+                                  type="text"
+                                  name={`partnersAntecedents[${i}].rut`}
+                                  placeholder="Ingresa Rut"
+                                  ref={register()}
+                                />
+                              </FormGroup>
+                            </div>
+                            <div>
+                              <FormGroup>
+                                <label className="form-label">Estado civil</label>
+                                <input
+                                  className="form-control"
+                                  type="text"
+                                  name={`partnersAntecedents[${i}].civilStatus`}
+                                  placeholder="Ingresa Estado civil"
+                                  ref={register()}
+                                />
+                              </FormGroup>
+                            </div>
+                          </span>
+                          <span className="form-grid-partners">
+                            <div>
+                              <FormGroup>
+                                <label className="form-label">Telefono</label>
+                                <input
+                                  className="form-control"
+                                  type="text"
+                                  name={`partnersAntecedents[${i}].phone`}
+                                  placeholder="Ingresa Telefono"
+                                  ref={register()}
+                                />
+                              </FormGroup>
+                            </div>
+                            <Button
+                              type="button"
+                              color="danger"
+                              className="btn-icon ml-2 delete-btn"
+                              onClick={() => removePartnersAntecedents(i)}
+                            >
+                              <Icon name="minus"></Icon>
+                            </Button>
+                          </span>
+                        </div>
+                      ))}
+                  </>
