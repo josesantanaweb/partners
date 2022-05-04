@@ -19,22 +19,21 @@ import {
   BlockHeadContent,
   BlockTitle,
   Icon,
+  Row,
   Col,
   PaginationComponent,
   Button,
   DataTableHead,
   DataTableRow,
   DataTableItem,
-  TooltipComponent,
   RSelect,
   PreviewAltCard,
 } from "../../components/Component";
-import Select from "react-select";
-import { filterStatus, DealData } from "./DealData";
-import { findUpper } from "../../utils/Utils";
+import { Card } from "reactstrap";
 import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
 
+import { DealData } from "./DealData";
+import { useForm } from "react-hook-form";
 import OperationsServices from "../../services/OperationsServices";
 
 const DealList = () => {
@@ -44,27 +43,25 @@ const DealList = () => {
   const [modal, setModal] = useState({
     edit: false,
     add: false,
+    uploadFiles: false,
   });
   const [editId, setEditedId] = useState();
   const [formData, setFormData] = useState({
-    planId: "",
-    companyId: "",
-    productTypeId: "",
-    productId: "",
-    currencyId: "",
-    amount: "",
-    amountPaid: "",
+    planId: Number(""),
+    companyId: Number(""),
+    productTypeId: Number(""),
+    productId: Number(""),
+    currencyId: Number(""),
+    amount: Number(""),
+    amountPaid: Number(""),
     period: "",
-    annualPayment: "",
-    paymentMethodId: "",
-    paymentMediumId: "",
+    annualPayment: Number(""),
+    paymentMethodId: Number(""),
+    paymentMediumId: Number(""),
     discresionalService: false,
-    discresionalServiceCommission: "",
+    discresionalServiceCommission: Number(""), //-> 5%
     trailerFree: false,
-    trailerFreeCommission: "",
-    // add
-    customer: "",
-    rut: "",
+    trailerFreeCommission: Number(""), //-> 15%
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
@@ -75,20 +72,6 @@ const DealList = () => {
   const [tableCustomers, setTableCustomers] = useState([]);
   const [search, setSearch] = useState("");
   const [searchRut, setSearchRut] = useState("");
-
-  // function to get all select deals
-  const [selectedPlan, setSelectedPlan] = useState([]);
-  const [selectedCompany, setSelectedCompany] = useState();
-  const [selectedProductType, setSelectedProductType] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState([]);
-  const [selectedCurrencyType, setSelectedCurrencyType] = useState([]);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState([]);
-  const [selectedPaymentMedium, setSelectedPaymentMedium] = useState([]);
-
-  const [radioStateDiscComission, setRadioStateDiscComission] = useState(true);
-  const [radioStateDiscComissionFalse, setRadioStateDiscComissionFalse] = useState(false);
-  const [radioStateTrailerFree, setRadioStateTrailerFree] = useState(true);
-  const [radioStateTrailerFreeFalse, setRadioStateTrailerFreeFalse] = useState(false);
 
   // unselects the data on mount
   useEffect(() => {
@@ -126,43 +109,38 @@ const DealList = () => {
   // function to reset the form
   const resetForm = () => {
     setFormData({
-      planId: "",
-      companyId: "",
-      productTypeId: "",
-      productId: "",
-      currencyId: "",
-      amount: "",
-      amountPaid: "",
+      planId: Number(""),
+      companyId: Number(""),
+      productTypeId: Number(""),
+      productId: Number(""),
+      currencyId: Number(""),
+      amount: Number(""),
+      amountPaid: Number(""),
       period: "",
-      annualPayment: "",
-      paymentMethodId: "",
-      paymentMediumId: "",
+      annualPayment: Number(""),
+      paymentMethodId: Number(""),
+      paymentMediumId: Number(""),
       discresionalService: false,
-      discresionalServiceCommission: "",
+      discresionalServiceCommission: Number(""), //-> 5%
       trailerFree: false,
-      trailerFreeCommission: "",
-      // add
-      customer: "",
-      rut: "",
+      trailerFreeCommission: Number(""), //-> 15%
     });
   };
 
   // function to close the form modal
   const onFormCancel = () => {
-    setModal({ edit: false, add: false });
+    setModal({ edit: false, add: false, uploadFiles: false });
     resetForm();
   };
-
-  const [submittedDataForm, setSubmittedData] = useState([]);
 
   // submit function to add a new item
   const onFormSubmit = async (submitData) => {
     const {
-      // planId,
-      // companyId,
-      // productTypeId,
-      // productId,
-      // currencyId,
+      planId,
+      companyId,
+      productTypeId,
+      productId,
+      currencyId,
       amount,
       amountPaid,
       period,
@@ -173,32 +151,12 @@ const DealList = () => {
       discresionalServiceCommission,
       trailerFree,
       trailerFreeCommission,
-
-      // add
-      // customer,
-      // rut,
     } = submitData;
 
     // get customer id
     const customerId = tableCustomers.find((item) => item.rut === searchRut);
 
     let submittedData = {
-      // planId: plansOptions.value, //-> customerDeals.length + 1
-      // customerId: getCustomerId(), //-> getCustomerId()
-      // companyId: companiesOptions.value,
-      // productTypeId: productsOptions.value,
-      // productId: productsOptions.value,
-      // currencyId: currenciesOptions.value,
-      // amount: Number(amount),
-      // amountPaid: Number(amountPaid),
-      // period: period,
-      // annualPayment: Number(annualPayment),
-      // paymentMethodId: "EFECTIVO",
-      // paymentMediumId: "MENSUAL",
-      // discresionalService: false,
-      // discresionalServiceCommission: false, // 5%
-      // trailerFree: false,
-      // trailerFreeCommission: false, // 15%
       planId: plansOptions.value,
       companyId: companiesOptions.value,
       productTypeId: productTypesOptions.value,
@@ -208,29 +166,22 @@ const DealList = () => {
       amountPaid: Number(amountPaid),
       period: period,
       annualPayment: Number(annualPayment),
-      paymentMethodId: paymentMethodId,
-      paymentMediumId: paymentMediumId,
-      discresionalService: discresionalService,
-      discresionalServiceCommission: discresionalServiceCommission,
-      trailerFree: trailerFree,
-      trailerFreeCommission: trailerFreeCommission,
-      // add
-      customer: search, // customer names
-      rut: searchRut,
+      paymentMethodId: paymentMediumsOptions.value,
+      paymentMediumId: paymentMethodsOptions.value,
+      discresionalService: discresionalOptions.value,
+      discresionalServiceCommission: discresionalServiceCommission, //-> 5% eror 500 server
+      trailerFree: trailerFreeOptions.value,
+      trailerFreeCommission: trailerFreeCommission, //-> 15% error 500 server
     };
-    // POST item deal
-    console.log(submittedData);
-    console.log(searchRut);
-    console.log(Number(customerId.id));
-    console.log(search);
-
     try {
       await OperationsServices.addDeal(submittedData);
       setData([submittedData, ...data]);
+
+      console.log(submittedData);
       setSearch("");
       setSearchRut("");
       resetForm();
-      setModal({ edit: false }, { add: false });
+      setModal({ edit: false }, { add: false }, { uploadFiles: false });
     } catch (error) {
       throw error;
     }
@@ -257,7 +208,7 @@ const DealList = () => {
       trailerFree: deal.trailerFree,
       trailerFreeCommission: deal.trailerFreeCommission,
     });
-    setModal({ edit: true, add: false });
+    setModal({ edit: true, add: false, uploadFiles: true });
   };
 
   // submit function to update a new item
@@ -323,9 +274,9 @@ const DealList = () => {
     getCustomer(search);
   }, [search]);
 
-  // function to get only 5 customer items
+  // function to get only 100 customer items
   const getPrincipalCustomersRegisters = (customersData) => {
-    let newCustomersData = customersData.slice(0, 16);
+    let newCustomersData = customersData.slice(0, 100);
     return newCustomersData;
   };
 
@@ -375,16 +326,6 @@ const DealList = () => {
     return `${day}/${month}/${year}`;
   };
 
-  const asignamentToBoolean = (string) => {
-    switch (string) {
-      case "true":
-        return true;
-      case "false":
-        return false;
-      default:
-        break;
-    }
-  };
   // function to get total deals
   const getTotalDeals = () => customerDeals.length;
 
@@ -399,11 +340,29 @@ const DealList = () => {
           phone: item.phone,
           balance: item.balance,
         });
-        setModal({ edit: true }, { add: false });
+        setModal({ edit: true }, { uploadFiles: false }, { add: false });
         setEditedId(id);
       }
     });
   };
+
+  // function that loads files
+  const onUploadClick = (id) => {
+    customerDeals.forEach((item) => {
+      if (item.id === id) {
+        setFormData({
+          name: item.name,
+          email: item.email,
+          status: item.status,
+          phone: item.phone,
+          balance: item.balance,
+        });
+        setModal({ uploadFiles: true }, { edit: false }, { add: false });
+        setEditedId(id);
+      }
+    });
+  };
+  // -> editButtons
 
   // function to change to suspend property for an item
   const suspendUser = (id) => {
@@ -454,12 +413,16 @@ const DealList = () => {
   const [companies, setCompanies] = useState([]);
   const [productTypes, setProductTypes] = useState([]);
   const [currencies, setCurrencies] = useState([]);
+  const [paymentsMediums, setPaymentsMediums] = useState([]);
+  const [paymentsMethods, setPaymentsMethods] = useState([]);
 
   const [productsOptions, setProductsOptions] = useState(products);
   const [plansOptions, setPlansOptions] = useState(plans);
   const [companiesOptions, setCompaniesOptions] = useState(companies);
   const [productTypesOptions, setProductTypesOptions] = useState(productTypes);
   const [currenciesOptions, setCurrenciesOptions] = useState(currencies);
+  const [paymentMediumsOptions, setPaymentMediumsOptions] = useState(paymentsMediums);
+  const [paymentMethodsOptions, setPaymentMethodsOptions] = useState(paymentsMethods);
 
   // function to get product select
   const getProducts = async () => {
@@ -557,6 +520,70 @@ const DealList = () => {
     getCurrencies();
   }, []);
 
+  // function to get payment payment mediums
+  const getPaymentMediums = async () => {
+    try {
+      const selectsData = await OperationsServices.getDealSelects();
+      const paymentMediumsData = await selectsData.paymentMediums.map((paymentMedium) => ({
+        label: paymentMedium.name,
+        value: paymentMedium.id,
+      }));
+      setPaymentsMediums(paymentMediumsData);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const onOptionsPaymentsMediumsChange = (optionValue) => {
+    setPaymentMediumsOptions(optionValue);
+  };
+
+  useEffect(() => {
+    getPaymentMediums();
+  }, []);
+
+  // function to get payment methods
+  const getPaymentMethods = async () => {
+    try {
+      const selectsData = await OperationsServices.getDealSelects();
+      const paymentMethodsData = await selectsData.paymentMethods.map((paymentMethod) => ({
+        label: paymentMethod.name,
+        value: paymentMethod.id,
+      }));
+      setPaymentsMethods(paymentMethodsData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsPaymentsMethodsChange = (optionValue) => {
+    setPaymentMethodsOptions(optionValue);
+  };
+  useEffect(() => {
+    getPaymentMethods();
+  }, []);
+
+  // Comision fields
+  const [discresionalOptions, setDiscresionalOptionsOptions] = useState();
+  const [trailerFreeOptions, setTrailerFreeOptions] = useState();
+
+  const discresionalServiceOptions = [
+    { label: "Si", value: true },
+    { label: "No", value: false },
+  ];
+
+  const trilerFreeOptions = [
+    { label: "Si", value: true },
+    { label: "No", value: false },
+  ];
+
+  const onOptionsDiscresionalServiceChange = (optionValue) => {
+    setDiscresionalOptionsOptions(optionValue);
+  };
+
+  const onOptionsTrailerFreeChange = (optionValue) => {
+    setTrailerFreeOptions(optionValue);
+  };
+
   return (
     <React.Fragment>
       <Head title="Lista de Operaciones"></Head>
@@ -581,12 +608,6 @@ const DealList = () => {
                 </Button>
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
-                    <li>
-                      <Button color="light" outline className="btn-white">
-                        <Icon name="download-cloud"></Icon>
-                        <span>Export</span>
-                      </Button>
-                    </li>
                     <li className="nk-block-tools-opt">
                       <Button color="primary" className="btn-icon" onClick={() => setModal({ add: true })}>
                         <Icon name="plus"></Icon>
@@ -606,71 +627,69 @@ const DealList = () => {
                 <DataTableRow>
                   <span className="sub-text text-center">N. de Operación</span>
                 </DataTableRow>
-                <DataTableRow size="mb">
+                <DataTableRow>
                   <span className="sub-text text-center">N. de Plan</span>
                 </DataTableRow>
-                <DataTableRow size="mb">
+                <DataTableRow>
                   <span className="sub-text text-center">Cliente</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Rut</span>
                 </DataTableRow>
-                <DataTableRow size="lg">
+                <DataTableRow>
                   <span className="sub-text text-center">Asesor</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Plan</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Empresa</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Tipo de Producto</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Producto</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Monto de Inversión</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Abono</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Moneda</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Plazo</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Pago Anual</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Forma de Pago</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Metodo de Pago</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Comisión Discresional</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Comisión Trailer Free</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Subir Docs. Asesor/a</span>
                 </DataTableRow>
-                <DataTableRow size="md">
-                  <span className="sub-text text-center">Subir Docs. Asesor/a</span>
-                </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Validar Docs. P&A</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow>
                   <span className="sub-text text-center">Acción</span>
                 </DataTableRow>
               </DataTableHead>
 
+              {/* Conflictos: customer, rut , company, tipo de dato discresionalServiceCommission y trailerFreeCommission */}
               {customerDeals.length > 0
                 ? customerDeals.map((deal) => (
                     <DataTableItem key={deal.id}>
@@ -678,17 +697,27 @@ const DealList = () => {
                         <span>{deal.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span></span>
+                        <span>{deal.plan.id}</span>
+                      </DataTableRow>
+
+                      {/* Cliente y Rut */}
+                      <DataTableRow className="text-center">
+                        <span>(Nombre cliente *)</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{/* {deal.customer.names} {deal.customer.paternalLastName} */}</span>
+                        <span>(Rut del cliente *)</span>
                       </DataTableRow>
-                      <DataTableRow className="text-center">{/* <span>{deal.customer.rut}</span> */}</DataTableRow>
+                      {/* Cliente y Rut */}
+
                       <DataTableRow className="text-center">
                         <span>{deal.createdByAdvisor.name}</span>
                       </DataTableRow>
-                      <DataTableRow className="text-center">{/* <span>{deal.}</span> */}</DataTableRow>
-                      <DataTableRow className="text-center">{/* <span>{deal.company.name}</span> */}</DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{deal.plan.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>(Empresa *)</span>
+                      </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{deal.productType.name}</span>
                       </DataTableRow>
@@ -711,20 +740,81 @@ const DealList = () => {
                         <span>{deal.annualPayment}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        {/* <span>{deal.paymentMedium.name}</span> */}
+                        <span>{deal.paymentMedium.id === null ? "No definido" : deal.paymentMedium.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        {/* <span>{deal.paymentMedium.name}</span> */}
+                        <span>{deal.paymentMethod.id === null ? "No definido" : deal.paymentMethod.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        {/* <span>{deal.paymentMethod.name}</span> */}
+                        <span>
+                          {deal.discresionalService ? "Si" : "No"}
+                          {" - "}
+                          {deal.discresionalServiceCommission}%
+                        </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{deal.discresionalService}</span>
+                        <span>
+                          {deal.trailerFree ? "Si" : "No"}
+                          {" - "}
+                          {deal.trailerFreeCommission}%
+                        </span>
                       </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{deal.trailerFree}</span>
+
+                      <DataTableRow className="nk-tb-col-tools">
+                        <ul className="nk-tb-actions gx-1 text-center d-flex justify-content-center">
+                          <li>
+                            <UncontrolledDropdown>
+                              <DropdownToggle tag="a" className="dropdown-toggle btn btn-icon bg-danger">
+                                <Icon name="icon ni ni-files text-white"></Icon>
+                              </DropdownToggle>
+                              <DropdownMenu right>
+                                <ul className="link-list-opt no-bdr">
+                                  <li onClick={() => onUploadClick(deal.id)}>
+                                    <DropdownItem
+                                      tag="a"
+                                      href="#uploadFiles"
+                                      onClick={(ev) => {
+                                        ev.preventDefault();
+                                      }}
+                                    >
+                                      <Icon name="icon ni ni-files"></Icon>
+                                      <span>Subir Documentos</span>
+                                    </DropdownItem>
+                                  </li>
+                                </ul>
+                              </DropdownMenu>
+                            </UncontrolledDropdown>
+                          </li>
+                        </ul>
                       </DataTableRow>
+                      <DataTableRow className="nk-tb-col-tools">
+                        <ul className="nk-tb-actions gx-1 text-center d-flex justify-content-center">
+                          <li>
+                            <UncontrolledDropdown>
+                              <DropdownToggle tag="a" className="dropdown-toggle btn btn-icon bg-danger">
+                                <Icon name="icon ni ni-files text-white"></Icon>
+                              </DropdownToggle>
+                              <DropdownMenu right>
+                                <ul className="link-list-opt no-bdr">
+                                  <li onClick={() => onEditClick(deal.id)}>
+                                    <DropdownItem
+                                      tag="a"
+                                      href="#uploadFiles"
+                                      onClick={(ev) => {
+                                        ev.preventDefault();
+                                      }}
+                                    >
+                                      <Icon name="icon ni ni-files"></Icon>
+                                      <span>Validar Documentos</span>
+                                    </DropdownItem>
+                                  </li>
+                                </ul>
+                              </DropdownMenu>
+                            </UncontrolledDropdown>
+                          </li>
+                        </ul>
+                      </DataTableRow>
+
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
                           <li>
@@ -853,22 +943,22 @@ const DealList = () => {
                         getPrincipalCustomersRegisters(customers).map((customer) => (
                           <DataTableItem key={customer.id} className="bg-white rounded">
                             <DataTableRow className="text-center ml-3 mr-3">
-                              <span className="mr-2">{customer.id}</span>
+                              <span className="text-center">{customer.id}</span>
                             </DataTableRow>
                             <DataTableRow className="text-center ml-3 mr-3">
-                              <span className="mr-2">{customer.names}</span>
+                              <span className="text-center text-nowrap pl-2 pr-1">{customer.names}</span>
                             </DataTableRow>
                             <DataTableRow className="text-center ml-3 mr-3">
-                              <span className="mr-2">{customer.paternalLastName}</span>
+                              <span className="text-center text-nowrap pl-2 pr-1">{customer.paternalLastName}</span>
                             </DataTableRow>
                             <DataTableRow className="text-center ml-3 mr-3">
-                              <span className="mr-2">{customer.rut}</span>
+                              <span className="text-center text-nowrap pl-2 pr-1">{customer.rut}</span>
                             </DataTableRow>
                             <DataTableRow className="text-center ml-3 mr-3">
-                              <span className="mr-2">{customer.email}</span>
+                              <span className="text-center text-nowrap pl-2 pr-1">{customer.email}</span>
                             </DataTableRow>
                             <DataTableRow className="text-center ml-3 mr-3">
-                              <span className="mr-2">{parseDate(customer.createdAt)}</span>
+                              <span className="text-center text-nowrap pl-2 pr-1">{parseDate(customer.createdAt)}</span>
                             </DataTableRow>
                             <DataTableRow className="text-center ml-3 mr-3">
                               <Button
@@ -1015,6 +1105,92 @@ const DealList = () => {
                       </div>
                     </div>
                   </Col>
+                  <Col md="6">
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="payment-medium">
+                        Forma de Pago
+                      </label>
+                      <RSelect
+                        value={paymentMediumsOptions}
+                        options={paymentsMediums}
+                        onChange={onOptionsPaymentsMediumsChange}
+                        defautlValue={formData.paymentMediumId}
+                      />
+                      {errors.paymentMediumId && <span className="invalid">{errors.paymentMediumId.message}</span>}
+                    </div>
+                  </Col>
+
+                  <Col md="6">
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="payment-method">
+                        Metodo de Pago
+                      </label>
+                      <RSelect
+                        value={paymentMethodsOptions}
+                        options={paymentsMethods}
+                        onChange={onOptionsPaymentsMethodsChange}
+                        defautlValue={formData.paymentMethodId}
+                      />
+                      {errors.paymentMethodId && <span className="invalid">{errors.paymentMethodId.message}</span>}
+                    </div>
+                  </Col>
+
+                  <Col md="12">
+                    <h6 className="border-bottom pb-1 mt-3">Servicios de Comisión</h6>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Comisión Discresional</label>
+                      <RSelect
+                        value={discresionalOptions}
+                        options={discresionalServiceOptions}
+                        onChange={onOptionsDiscresionalServiceChange}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Porcentaje</label>
+                      <div className="form-control-wrap">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="discresionalServiceCommission"
+                          ref={register({ required: "Este campo es obligatorio *" })}
+                          defaultValue={formData.discresionalServiceCommission}
+                          placeholder="Ej: 1 - 5 - 10"
+                        />
+                        {errors.discresionalServiceCommission && (
+                          <span className="invalid">{errors.discresionalServiceCommission.message}</span>
+                        )}
+                      </div>
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Comisión Trailer Free</label>
+                      <RSelect
+                        value={trailerFreeOptions}
+                        options={trilerFreeOptions}
+                        onChange={onOptionsTrailerFreeChange}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Porcentaje</label>
+                      <div className="form-control-wrap">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="trailerFreeCommission"
+                          ref={register({ required: "Este campo es obligatorio *" })}
+                          defaultValue={formData.trailerFreeCommission}
+                          placeholder="Ej: 1 - 5 - 10"
+                        />
+                      </div>
+                    </FormGroup>
+                  </Col>
 
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
@@ -1043,6 +1219,262 @@ const DealList = () => {
           </ModalBody>
         </Modal>
 
+        {/* Modal subir Docs */}
+        <Modal
+          isOpen={modal.uploadFiles}
+          toggle={() => setModal({ uploadFiles: false })}
+          className="modal-dialog-centered"
+          size="lg"
+        >
+          <ModalBody>
+            <a
+              href="#uploadFiles"
+              onClick={(ev) => {
+                ev.preventDefault();
+                onFormCancel();
+              }}
+              className="close"
+            >
+              <Icon name="cross-sm"></Icon>
+            </a>
+
+            <h5 className="title">Documentos de la Operación</h5>
+            <div className="mt-4">
+              <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
+                <Col md="12">
+                  <h6 className="border-bottom pb-1 mt-3">Documentos asociados</h6>
+                </Col>
+                <Col md="6">
+                  <Card>
+                    <ul className="nk-top-products">
+                      <li className="item bg-white rounded border m-1 d-flex align-items-center justify-content-between p-2 flex-column">
+                        <div className="p-1 overflow-auto rounded scrollbar-fluid w-auto">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                          <div className="price">
+                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium...
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+                <Col md="6">
+                  <Card>
+                    <ul className="nk-top-products">
+                      <li className="item bg-white rounded border m-1 d-flex align-items-center justify-content-between p-2 flex-column">
+                        <div className="p-1 overflow-auto rounded scrollbar-fluid w-auto">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                          <div className="price">
+                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium...
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+                <Col md="6">
+                  <Card>
+                    <ul className="nk-top-products">
+                      <li className="item bg-white rounded border m-1 d-flex align-items-center justify-content-between p-2 flex-column">
+                        <div className="p-1 overflow-auto rounded scrollbar-fluid w-auto">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                          <div className="price">
+                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium...
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+                <Col md="6">
+                  <Card>
+                    <ul className="nk-top-products">
+                      <li className="item bg-white rounded border m-1 d-flex align-items-center justify-content-between p-2 flex-column">
+                        <div className="p-1 overflow-auto rounded scrollbar-fluid w-auto">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                          <div className="price">
+                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium...
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+
+                <Col md="12">
+                  <h6 className="border-bottom pb-1 mt-3">Documentos de Operación</h6>
+                </Col>
+
+                {/* Docs desde Biblioteca de Clientes */}
+                <Col sm="8">
+                  <Card>
+                    <ul className=" text-center w-auto">
+                      <li className="item bg-white rounded border d-flex align-items-center justify-content-between p-2 ">
+                        <div className="overflow-auto rounded scrollbar-fluid w-100">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+
+                <Col sm="4" className="d-flex align-items-center justify-content-end">
+                  <ul className="d-flex flex-row align-items-center justify-content-end">
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="pr-2 p-2">
+                        <Icon className="icon ni ni-loader"></Icon>
+                      </Button>
+                    </li>
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="btn btn-primary btn-icon pr-2">
+                        <Icon className="icon ni ni-clip p-0"></Icon>
+                        <span className="p-1">Adjuntar</span>
+                      </Button>
+                    </li>
+                  </ul>
+                </Col>
+
+                <Col sm="8">
+                  <Card>
+                    <ul className=" text-center w-auto">
+                      <li className="item bg-white rounded border d-flex align-items-center justify-content-between p-2 ">
+                        <div className="overflow-auto rounded scrollbar-fluid w-100">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+
+                <Col sm="4" className="d-flex align-items-center justify-content-end">
+                  <ul className="d-flex flex-row align-items-center justify-content-end">
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="pr-2 p-2">
+                        <Icon className="icon ni ni-loader"></Icon>
+                      </Button>
+                    </li>
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="btn btn-primary btn-icon pr-2">
+                        <Icon className="icon ni ni-clip p-0"></Icon>
+                        <span className="p-1">Adjuntar</span>
+                      </Button>
+                    </li>
+                  </ul>
+                </Col>
+
+                <Col sm="8">
+                  <Card>
+                    <ul className=" text-center w-auto">
+                      <li className="item bg-white rounded border d-flex align-items-center justify-content-between p-2 ">
+                        <div className="overflow-auto rounded scrollbar-fluid w-100">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+
+                <Col sm="4" className="d-flex align-items-center justify-content-end">
+                  <ul className="d-flex flex-row align-items-center justify-content-end">
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="pr-2 p-2">
+                        <Icon className="icon ni ni-loader"></Icon>
+                      </Button>
+                    </li>
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="btn btn-primary btn-icon pr-2">
+                        <Icon className="icon ni ni-clip p-0"></Icon>
+                        <span className="p-1">Adjuntar</span>
+                      </Button>
+                    </li>
+                  </ul>
+                </Col>
+
+                <Col sm="8">
+                  <Card>
+                    <ul className=" text-center w-auto">
+                      <li className="item bg-white rounded border d-flex align-items-center justify-content-between p-2 ">
+                        <div className="overflow-auto rounded scrollbar-fluid w-100">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+
+                <Col sm="4" className="d-flex align-items-center justify-content-end">
+                  <ul className="d-flex flex-row align-items-center justify-content-end">
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="pr-2 p-2">
+                        <Icon className="icon ni ni-loader"></Icon>
+                      </Button>
+                    </li>
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="btn btn-primary btn-icon pr-2">
+                        <Icon className="icon ni ni-clip p-0"></Icon>
+                        <span className="p-1">Adjuntar</span>
+                      </Button>
+                    </li>
+                  </ul>
+                </Col>
+
+                <Col sm="8">
+                  <Card>
+                    <ul className=" text-center w-auto">
+                      <li className="item bg-white rounded border d-flex align-items-center justify-content-between p-2 ">
+                        <div className="overflow-auto rounded scrollbar-fluid w-100">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+
+                <Col sm="4" className="d-flex align-items-center justify-content-end">
+                  <ul className="d-flex flex-row align-items-center justify-content-end">
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="pr-2 p-2">
+                        <Icon className="icon ni ni-loader"></Icon>
+                      </Button>
+                    </li>
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="btn btn-primary btn-icon pr-2">
+                        <Icon className="icon ni ni-clip p-0"></Icon>
+                        <span className="p-1">Adjuntar</span>
+                      </Button>
+                    </li>
+                  </ul>
+                </Col>
+
+                {/* Docs desde Biblioteca de Clientes */}
+
+                <Col size="12">
+                  <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                    <li>
+                      <Button color="primary" size="md" type="submit">
+                        Subir
+                      </Button>
+                    </li>
+                    <li>
+                      <a
+                        href="#cancel"
+                        onClick={(ev) => {
+                          ev.preventDefault();
+                          onFormCancel();
+                        }}
+                        className="link link-light"
+                      >
+                        Cancelar
+                      </a>
+                    </li>
+                  </ul>
+                </Col>
+              </Form>
+            </div>
+          </ModalBody>
+        </Modal>
+        {/* Modal subir Docs */}
+
         <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
@@ -1065,40 +1497,12 @@ const DealList = () => {
                   <Col md="4">
                     <FormGroup>
                       <label className="form-label">Empresa</label>
-                      <select
-                        className="form-control"
-                        name="companyId"
-                        defaultValue={formData.companyId}
-                        ref={register({ required: "Este campo es obligatorio *" })}
-                      >
-                        <option value="">Seleccionar...</option>
-                        {selectedCompany &&
-                          selectedCompany.map((company) => (
-                            <option key={company.id} value={company.id}>
-                              {company.name}
-                            </option>
-                          ))}
-                      </select>
                     </FormGroup>
                   </Col>
 
                   <Col md="4">
                     <FormGroup>
                       <label className="form-label">Tipo de Producto</label>
-                      <select
-                        className="form-control"
-                        name="productTypeId"
-                        defaultValue={formData.productTypeId}
-                        ref={register({ required: "Este campo es obligatorio *" })}
-                      >
-                        <option value="">Seleccionar...</option>
-                        {selectedProductType &&
-                          selectedProductType.map((productType) => (
-                            <option key={productType.id} value={productType.id}>
-                              {productType.name}
-                            </option>
-                          ))}
-                      </select>
                     </FormGroup>
                   </Col>
                   <Col md="4">

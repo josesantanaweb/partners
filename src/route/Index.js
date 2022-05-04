@@ -18,6 +18,7 @@ import Users from "../pages/users/UserList";
 import Adviser from "../pages/adviser/AdviserList";
 import Roles from "../pages/roles/RolesList";
 import EcomDashboard from "../pages/panel/e-commerce/index";
+import CustomersLibrary from "../pages/customersLibrary/CustomersLibrary";
 
 const Pages = () => {
   useLayoutEffect(() => {
@@ -82,6 +83,15 @@ const Pages = () => {
           render={() => (
             <RolesContextProvider>
               <Roles />
+            </RolesContextProvider>
+          )}
+        ></Route>
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/customers-library`}
+          render={() => (
+            <RolesContextProvider>
+              <CustomersLibrary />
             </RolesContextProvider>
           )}
         ></Route>

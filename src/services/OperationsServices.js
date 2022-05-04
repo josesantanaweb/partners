@@ -4,13 +4,13 @@ const token = localStorage.getItem("access_token");
 
 const OperationsServices = {
   getCustomers: async () => {
-    const response = await api.get(`https://business-portal-dev.herokuapp.com/customers`, {
+    const response = await api.get(`/customers`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
   },
   getCustomer: async (customerName) => {
-    const response = await api.get(`https://business-portal-dev.herokuapp.com/customers?filter=${customerName}`, {
+    const response = await api.get(`/customers?filter=${customerName}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
