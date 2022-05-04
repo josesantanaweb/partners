@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { DropdownToggle, DropdownMenu, Dropdown } from "reactstrap";
 import { Icon } from "../../../../components/Component";
 import { LinkList, LinkItem } from "../../../../components/links/Links";
 import UserAvatar from "../../../../components/user/UserAvatar";
 import { profileSelector } from "../../../../store/selectors";
+import { setAuthenticated } from "../../../../store/features/AuthSlice";
 
 const User = () => {
+  const dispatch = useDispatch();
   const profile = useSelector(profileSelector);
   const [open, setOpen] = useState(false);
   const toggle = () => setOpen((prevState) => !prevState);
@@ -15,6 +17,7 @@ const User = () => {
 
   const handleSignout = () => {
     localStorage.removeItem("access_token");
+    dispatch(setAuthenticated(false));
   };
 
   return (
@@ -30,8 +33,10 @@ const User = () => {
         <div className="user-toggle">
           <UserAvatar icon="user-alt" className="sm" />
           <div className="user-info d-none d-md-block">
-            <div className="user-status">Admin</div>
-            <div className="user-name dropdown-indicator">{/* {data.name} {data.lastName} */}</div>
+            <div className="user-status">{data.session_type === "USER" ? "Admin" : "Asesor"}</div>
+            <div className="user-name dropdown-indicator">
+              {data.name} {data.paternalLastName}
+            </div>
           </div>
         </div>
       </DropdownToggle>

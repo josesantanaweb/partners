@@ -14,15 +14,20 @@ const menu = [
         link: "/customer-juridico",
       },
       {
-        text: "Cliente Final",
+        text: "Cliente Natural",
         link: "/customer",
       },
     ],
   },
   {
     icon: "user-fill",
-    text: "Usuarios",
+    text: "Usuario Administrador",
     link: "/users",
+  },
+  {
+    icon: "calendar-alt-fill",
+    text: "Agenda",
+    link: "/calendar",
   },
   {
     icon: "user-list-fill",
@@ -53,6 +58,11 @@ const menu = [
     icon: "setting-fill",
     text: "Roles",
     link: "/roles",
+  },
+  {
+    icon: "package-fill",
+    text: "Productos",
+    link: "/products",
   },
 ];
 export default menu;

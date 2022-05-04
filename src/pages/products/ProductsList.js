@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import {
   Block,
@@ -20,37 +20,24 @@ import {
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
-import { RolesContext } from "./RolesContext";
-import RolesServices from "../../services/RolesServices";
-import MenuServices from "../../services/MenuServices";
+import { ProductsContext } from "./ProductsContext";
+import ProductsServices from "../../services/ProductsServices";
 
-const RolesList = () => {
-  const { contextData } = useContext(RolesContext);
+const ProductsList = () => {
+  const { contextData } = useContext(ProductsContext);
   const [data, setData] = contextData;
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
-  const [menuItems, setMenuItems] = useState([]);
 
   const [modal, setModal] = useState({
     edit: false,
     add: false,
   });
 
-  useEffect(() => {
-    getMenuItems();
-  }, []);
-
-  const getRoles = async () => {
+  const getProducts = async () => {
     try {
-      const roles = await RolesServices.getRoles();
-      setData(roles.data);
-    } catch (error) {}
-  };
-
-  const getMenuItems = async () => {
-    try {
-      const menu = await MenuServices.getMenuItems();
-      setMenuItems(menu);
+      const products = await ProductsServices.getProducts();
+      setData(products.data);
     } catch (error) {}
   };
 
@@ -81,17 +68,15 @@ const RolesList = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { name, description, menuItems } = submitData;
-    const numberMenuItems = menuItems.map((i) => Number(i));
+    const { name, description } = submitData;
     let submittedData = {
       name: name,
       description: description,
-      menuItemsId: numberMenuItems,
     };
     try {
-      await RolesServices.addRole(submittedData);
+      await ProductsServices.addProduct(submittedData);
       resetForm();
-      getRoles();
+      getProducts();
       setModal({ edit: false }, { add: false });
     } catch (error) {}
   };
@@ -105,9 +90,9 @@ const RolesList = () => {
     };
 
     try {
-      await RolesServices.editRole(editData.id, submittedData);
+      await ProductsServices.editProduct(editData.id, submittedData);
       resetForm();
-      getRoles();
+      getProducts();
       setModal({ edit: false }, { add: false });
     } catch (error) {}
   };
@@ -121,8 +106,8 @@ const RolesList = () => {
   // Function to change to delete property for an item
   const deleteUser = async (id) => {
     try {
-      await RolesServices.deleteRole(id);
-      getRoles();
+      await ProductsServices.deleteProduct(id);
+      getProducts();
     } catch (error) {}
   };
 
@@ -136,16 +121,16 @@ const RolesList = () => {
 
   return (
     <React.Fragment>
-      <Head title="Roles"></Head>
+      <Head title="Products"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Roles
+                Lista de Products
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} roles</p>
+                <p>Total {data.length} products</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -161,7 +146,7 @@ const RolesList = () => {
                     <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>
                         <Icon name="plus" className="mr-1"></Icon>
-                        Agregar Rol
+                        Agregar Producto
                       </Button>
                     </li>
                   </ul>
@@ -260,12 +245,12 @@ const RolesList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Agregar Rol</h5>
+              <h5 className="title">Agregar Producto</h5>
               {errorMessage !== "" && (
                 <div className="my-3">
                   <Alert color="danger" className="alert-icon">
                     <Icon name="alert-circle" />
-                    Rol ya existe
+                    Producto ya existe
                   </Alert>
                 </div>
               )}
@@ -273,13 +258,13 @@ const RolesList = () => {
                 <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Nombre del rol</label>
+                      <label className="form-label">Nombre</label>
                       <input
                         className="form-control"
                         type="text"
                         name="name"
                         defaultValue={formData.name}
-                        placeholder="Ingresa nombre del rol"
+                        placeholder="Ingresa nombre"
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
@@ -288,43 +273,24 @@ const RolesList = () => {
 
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Descripcion del rol</label>
+                      <label className="form-label">Descripcion</label>
                       <input
                         className="form-control"
                         type="text"
                         name="description"
                         defaultValue={formData.description}
-                        placeholder="Ingresa descripcion del rol"
+                        placeholder="Ingresa apellido"
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.description && <span className="invalid">{errors.description.message}</span>}
                     </FormGroup>
                   </Col>
 
-                  {menuItems &&
-                    menuItems.map((item, i) => (
-                      <Col md="3" key={i}>
-                        <div className="custom-control custom-checkbox">
-                          <input
-                            type="checkbox"
-                            name="menuItems"
-                            value={item.id}
-                            class="custom-control-input form-control"
-                            id={item.text}
-                            ref={register()}
-                          />
-                          <label class="custom-control-label" htmlFor={item.text}>
-                            {item.text}
-                          </label>
-                        </div>
-                      </Col>
-                    ))}
-
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Agregar Rol
+                          Agregar Producto
                         </Button>
                       </li>
                       <li>
@@ -361,18 +327,18 @@ const RolesList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Actualizar Rol</h5>
+              <h5 className="title">Actualizar Producto</h5>
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Nombre del rol</label>
+                      <label className="form-label">Nombre</label>
                       <input
                         className="form-control"
                         type="text"
                         name="name"
                         defaultValue={editData?.name}
-                        placeholder="Ingresa nombre del rol"
+                        placeholder="Ingresa nombre"
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
@@ -381,13 +347,13 @@ const RolesList = () => {
 
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Descripcion del rol</label>
+                      <label className="form-label">Descripcion</label>
                       <input
                         className="form-control"
                         type="text"
                         name="description"
                         defaultValue={editData?.description}
-                        placeholder="Ingresa descripcion del rol"
+                        placeholder="Ingresa nombre"
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.description && <span className="invalid">{errors.description.message}</span>}
@@ -398,7 +364,7 @@ const RolesList = () => {
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Actualizar Rol
+                          Actualizar Producto
                         </Button>
                       </li>
                       <li>
@@ -425,4 +391,4 @@ const RolesList = () => {
   );
 };
 
-export default RolesList;
+export default ProductsList;

@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import menu from "./MenuData";
+import { useDispatch } from "react-redux";
 import { NavLink, Link } from "react-router-dom";
 import Icon from "../../components/icon/Icon";
 import classNames from "classnames";
+import MenuServices from "../../services/MenuServices";
+import { setAuthenticated } from "../../store/features/AuthSlice";
 
 const MenuHeading = ({ heading }) => {
   return (
@@ -140,6 +143,7 @@ const MenuItem = ({ icon, link, text, sub, subPanel, panel, newTab, mobileView, 
     "has-sub": sub,
     "active current-page": currentUrl === process.env.PUBLIC_URL + link,
   });
+
   return (
     <li className={menuItemClass} onClick={(e) => toggleActionSidebar(e)}>
       {newTab ? (
@@ -259,10 +263,10 @@ const MenuSub = ({ icon, link, text, sub, sidebarToggle, mobileView, ...props })
 };
 
 const Menu = ({ sidebarToggle, mobileView }) => {
-  const [data, setMenuData] = useState(menu);
-
+  const dispatch = useDispatch();
+  const [data, setMenuData] = useState([]);
   useEffect(() => {
-    data.forEach((item, index) => {
+    data?.forEach((item, index) => {
       if (item.panel) {
         let found = item.subPanel.find((sPanel) => process.env.PUBLIC_URL + sPanel.link === window.location.pathname);
         if (found) {
@@ -272,9 +276,27 @@ const Menu = ({ sidebarToggle, mobileView }) => {
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    getMenu();
+  }, []);
+
+  const getMenu = async () => {
+    try {
+      const menu = await MenuServices.getMenu();
+      setMenuData(menu);
+      console.log(menu);
+    } catch (error) {
+      if (error.response.data.message === "Unauthorized") {
+        localStorage.removeItem("access_token");
+        dispatch(setAuthenticated(false));
+        window.location.reload();
+      }
+    }
+  };
+
   return (
     <ul className="nk-menu">
-      {data.map((item, index) =>
+      {data?.map((item, index) =>
         item.heading ? (
           <MenuHeading heading={item.heading} key={item.heading} />
         ) : item.panel ? (

@@ -4,7 +4,7 @@ const token = localStorage.getItem("access_token");
 
 const OperationsServices = {
   getCustomers: async () => {
-    const response = await api.get(`/customers`, {
+    const response = await api.get(`${process.env.REACT_APP_API_URL}/customers`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;

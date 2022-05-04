@@ -49,6 +49,7 @@ const AdviserList = () => {
     email: "",
     password: "",
     mobilePhone: "",
+    observation: "",
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
@@ -65,6 +66,7 @@ const AdviserList = () => {
       email: "",
       password: "",
       mobilePhone: "",
+      observation: "",
     });
   };
 
@@ -76,12 +78,13 @@ const AdviserList = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { name, paternalLastName, email, password, mobilePhone } = submitData;
+    const { name, paternalLastName, email, password, mobilePhone, observation } = submitData;
     let submittedData = {
       name: name,
       paternalLastName: paternalLastName,
       email: email,
       password: password,
+      observation: observation,
       mobilePhone: mobilePhone,
     };
     try {
@@ -89,20 +92,22 @@ const AdviserList = () => {
       resetForm();
       getAdvisers();
       setModal({ edit: false }, { add: false });
+      setErrorMessage("");
     } catch (error) {
-      if (error.response.data.message === "This user already exists") {
-        setErrorMessage("Usuario ya existe");
+      if (error.response.data.message === "This advisor already exists") {
+        setErrorMessage("Asesor ya existe");
       }
     }
   };
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { name, paternalLastName, mobilePhone } = submitData;
+    const { name, paternalLastName, mobilePhone, observation } = submitData;
     let submittedData = {
       name: name,
       paternalLastName: paternalLastName,
       mobilePhone: mobilePhone,
+      observation: observation,
     };
 
     try {
@@ -110,7 +115,12 @@ const AdviserList = () => {
       resetForm();
       getAdvisers();
       setModal({ edit: false }, { add: false });
-    } catch (error) {}
+      setErrorMessage("");
+    } catch (error) {
+      if (error.response.data.message === "you do not have the necessary permits") {
+        setErrorMessage("No tienes permisos para editar");
+      }
+    }
   };
 
   // function that loads the want to editted data
@@ -160,8 +170,9 @@ const AdviserList = () => {
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
                     <li className="nk-block-tools-opt">
-                      <Button color="primary" className="btn-icon" onClick={() => setModal({ add: true })}>
-                        <Icon name="plus"></Icon>
+                      <Button color="primary" onClick={() => setModal({ add: true })}>
+                        <Icon name="plus" className="mr-1"></Icon>
+                        Agregar Asesor
                       </Button>
                     </li>
                   </ul>
@@ -253,7 +264,7 @@ const AdviserList = () => {
               />
             ) : (
               <div className="text-center">
-                <span className="text-silent">No data found</span>
+                <span className="text-silent">Sin Registros</span>
               </div>
             )}
           </PreviewAltCard>
@@ -363,6 +374,21 @@ const AdviserList = () => {
                     </FormGroup>
                   </Col>
 
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Observacion</label>
+                      <textarea
+                        className="form-control"
+                        name="observation"
+                        placeholder="Ingresa Observacion"
+                        cols="30"
+                        rows="10"
+                        defaultValue={formData?.observation}
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
@@ -405,6 +431,14 @@ const AdviserList = () => {
             </a>
             <div className="p-2">
               <h5 className="title">Actualizar Asesor</h5>
+              {errorMessage !== "" && (
+                <div className="my-3">
+                  <Alert color="danger" className="alert-icon">
+                    <Icon name="alert-circle" />
+                    No tienes permisos para editar
+                  </Alert>
+                </div>
+              )}
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="6">
@@ -451,6 +485,21 @@ const AdviserList = () => {
                     </FormGroup>
                   </Col>
 
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Observacion</label>
+                      <textarea
+                        className="form-control"
+                        name="observation"
+                        placeholder="Ingresa Observacion"
+                        cols="30"
+                        rows="10"
+                        defaultValue={editData?.observation}
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
@@ -464,6 +513,7 @@ const AdviserList = () => {
                           onClick={(ev) => {
                             ev.preventDefault();
                             onFormCancel();
+                            setErrorMessage("");
                           }}
                           className="link link-light"
                         >

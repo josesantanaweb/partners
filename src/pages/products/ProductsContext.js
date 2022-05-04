@@ -1,21 +1,21 @@
 import React, { useState, createContext, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import CompanyServices from "../../services/CompanyServices";
+import ProductsServices from "../../services/ProductsServices";
 import { setAuthenticated } from "../../store/features/AuthSlice";
 
-export const CompanyContext = createContext();
+export const ProductsContext = createContext();
 
-export const CompanyContextProvider = (props) => {
+export const ProductsContextProvider = (props) => {
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
   useEffect(() => {
-    getCompany();
+    getProducts();
   }, []);
 
-  const getCompany = async () => {
+  const getProducts = async () => {
     try {
-      const company = await CompanyServices.getCompany();
-      setData(company.data);
+      const products = await ProductsServices.getProducts();
+      setData(products.data);
     } catch (error) {
       if (error.response.data.message === "Unauthorized") {
         localStorage.removeItem("access_token");
@@ -25,5 +25,5 @@ export const CompanyContextProvider = (props) => {
     }
   };
 
-  return <CompanyContext.Provider value={{ contextData: [data, setData] }}>{props.children}</CompanyContext.Provider>;
+  return <ProductsContext.Provider value={{ contextData: [data, setData] }}>{props.children}</ProductsContext.Provider>;
 };
