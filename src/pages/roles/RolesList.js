@@ -273,13 +273,13 @@ const RolesList = () => {
                 <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Nombre</label>
+                      <label className="form-label">Nombre del rol</label>
                       <input
                         className="form-control"
                         type="text"
                         name="name"
                         defaultValue={formData.name}
-                        placeholder="Ingresa nombre"
+                        placeholder="Ingresa nombre del rol"
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
@@ -288,13 +288,13 @@ const RolesList = () => {
 
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Descripcion</label>
+                      <label className="form-label">Descripcion del rol</label>
                       <input
                         className="form-control"
                         type="text"
                         name="description"
                         defaultValue={formData.description}
-                        placeholder="Ingresa apellido"
+                        placeholder="Ingresa descripcion del rol"
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.description && <span className="invalid">{errors.description.message}</span>}
@@ -361,18 +361,18 @@ const RolesList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Actualizar Asesor</h5>
+              <h5 className="title">Actualizar Rol</h5>
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Nombre</label>
+                      <label className="form-label">Nombre del rol</label>
                       <input
                         className="form-control"
                         type="text"
                         name="name"
                         defaultValue={editData?.name}
-                        placeholder="Ingresa nombre"
+                        placeholder="Ingresa nombre del rol"
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
@@ -381,13 +381,13 @@ const RolesList = () => {
 
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Descripcion</label>
+                      <label className="form-label">Descripcion del rol</label>
                       <input
                         className="form-control"
                         type="text"
                         name="description"
                         defaultValue={editData?.description}
-                        placeholder="Ingresa nombre"
+                        placeholder="Ingresa descripcion del rol"
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.description && <span className="invalid">{errors.description.message}</span>}
