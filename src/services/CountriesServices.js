@@ -10,7 +10,7 @@ const CountriesServices = {
     return response.data;
   },
   getCities: async (countryId) => {
-    const response = await api.get(`states?countryId=${countryId}`, {
+    const response = await api.get(`states?countryId=${countryId}&limit=100`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;

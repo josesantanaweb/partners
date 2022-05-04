@@ -746,20 +746,6 @@ const CustomersListJuridico = () => {
 
                   <Col md="3">
                     <FormGroup>
-                      <label className="form-label">Obseraviones</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="observations"
-                        defaultValue={formData.observations}
-                        placeholder="Ingresa Obseraviones"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
                       <label className="form-label">Pais</label>
                       <RSelect
                         isSearchable={false}
@@ -976,20 +962,6 @@ const CustomersListJuridico = () => {
                         name="civilStatus"
                         defaultValue={editData?.civilStatus}
                         placeholder="Ingresa Estado civil"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="3">
-                    <FormGroup>
-                      <label className="form-label">Obseraviones</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="observations"
-                        defaultValue={editData?.observations}
-                        placeholder="Ingresa Obseraviones"
                         ref={register({ required: "Este campo es requerido" })}
                       />
                     </FormGroup>
