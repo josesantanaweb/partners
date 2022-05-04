@@ -1,241 +1,399 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import OperationsServices from "../../services/OperationsServices";
-import { Link } from "react-router-dom";
-import { useRut } from "react-rut-formatter";
-import Head from "../../layout/head/Head";
 import Content from "../../layout/content/Content";
-import DatePicker from "react-datepicker";
-import { orderData } from "./OperationData";
+import Head from "../../layout/head/Head";
+import {
+  DropdownMenu,
+  DropdownToggle,
+  FormGroup,
+  UncontrolledDropdown,
+  Modal,
+  ModalBody,
+  DropdownItem,
+  Form,
+} from "reactstrap";
 import {
   Block,
+  BlockBetween,
+  BlockDes,
+  BlockHead,
   BlockHeadContent,
   BlockTitle,
-  BlockBetween,
-  BlockHead,
-  DataTableHead,
-  DataTableItem,
-  DataTableRow,
   Icon,
-  TooltipComponent,
-  PaginationComponent,
-  PreviewAltCard,
   Row,
   Col,
+  PaginationComponent,
+  Button,
+  DataTableHead,
+  DataTableRow,
+  DataTableItem,
+  RSelect,
+  PreviewAltCard,
 } from "../../components/Component";
+import { Card } from "reactstrap";
+import { Link } from "react-router-dom";
 
-import { getDateStructured } from "../../utils/Utils";
+import { DealData } from "./DealData";
 import { useForm } from "react-hook-form";
+import OperationsServices from "../../services/OperationsServices";
 
-import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem, Button, Modal, ModalBody } from "reactstrap";
-
-const OperationDefault = () => {
-  const { rut, updateRut, isValid } = useRut();
-
-  const [data, setData] = useState(orderData);
-  const [smOption, setSmOption] = useState(false);
-
-  const [formData, setFormData] = useState({
-    id: null,
-    operationNumber: "0000001",
-    planNumber: "0000001",
-    customerPlan: "",
-    currencyType: "",
-    operationType: "",
-    customer: "",
-    adviser: "",
-    company: "",
-    productType: "",
-    product: "",
-    investmentAmount: parseInt(0),
-    rut: "",
-    customer: "",
-    period: "",
-    commission: "",
-    annualPayment: 0,
-    formOfPayment: "",
-    paymentMethod: "",
-    amountOfMoney: 0,
-    discretionaryCommission: "",
-    trailerFreeComission: 0,
-  });
-
-  const [view, setView] = useState({
+const DealList = () => {
+  const [data, setData] = useState(DealData);
+  const [sm, updateSm] = useState(false);
+  const [onSearchText] = useState("");
+  const [modal, setModal] = useState({
+    edit: false,
     add: false,
-    details: false,
-    viewChecklist: false,
+    uploadFiles: false,
   });
-
-  const [onSearchText, setSearchText] = useState("");
+  const [editId, setEditedId] = useState();
+  const [formData, setFormData] = useState({
+    planId: Number(""),
+    companyId: Number(""),
+    productTypeId: Number(""),
+    productId: Number(""),
+    currencyId: Number(""),
+    amount: Number(""),
+    amountPaid: Number(""),
+    period: "",
+    annualPayment: Number(""),
+    paymentMethodId: Number(""),
+    paymentMediumId: Number(""),
+    discresionalService: false,
+    discresionalServiceCommission: Number(""), //-> 5%
+    trailerFree: false,
+    trailerFreeCommission: Number(""), //-> 15%
+  });
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(7);
+  const [itemPerPage] = useState(10);
+
+  // Hooks by Jose Contreras
+  const [customerDeals, setCustomerDeals] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [tableCustomers, setTableCustomers] = useState([]);
+  const [search, setSearch] = useState("");
+  const [searchRut, setSearchRut] = useState("");
+
+  // unselects the data on mount
+  useEffect(() => {
+    let newData;
+    newData = DealData.map((item) => {
+      item.checked = false;
+      return item;
+    });
+    setData([...newData]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Changing state value when searching name
   useEffect(() => {
     if (onSearchText !== "") {
-      const filteredObject = orderData.filter((item) => {
-        return item.orderId.includes(onSearchText);
+      const filteredObject = DealData.filter((item) => {
+        return (
+          item.name.toLowerCase().includes(onSearchText.toLowerCase()) ||
+          item.email.toLowerCase().includes(onSearchText.toLowerCase())
+        );
       });
       setData([...filteredObject]);
     } else {
-      setData([...orderData]);
+      setData([...DealData]);
     }
-  }, [onSearchText]);
+  }, [onSearchText, setData]);
 
-  // toggle function to view order details
-  const toggle = (type) => {
-    setView({
-      add: type === "add" ? true : false,
-      details: type === "details" ? true : false,
-      viewChecklist: type === "viewChecklist" ? true : false,
-    });
-  };
-
-  // selects all the order
-  const selectorCheck = (e) => {
-    let newData;
-    newData = data.map((item) => {
-      item.check = e.currentTarget.checked;
-      return item;
-    });
-    setData([...newData]);
-  };
-
-  // selects one order
+  // function to change the selected property of an item
   const onSelectChange = (e, id) => {
     let newData = data;
     let index = newData.findIndex((item) => item.id === id);
-    newData[index].check = e.currentTarget.checked;
+    newData[index].checked = e.currentTarget.checked;
     setData([...newData]);
   };
 
-  // resets forms
+  // function to reset the form
   const resetForm = () => {
     setFormData({
-      id: null,
-      operationNumber: "0000001", //este campo puede ir ""
-      planNumber: "0000001", //este campo puede ir ""
-      currencyType: "",
-      customerPlan: "",
-      operationType: "",
-      adviser: "",
-      company: "",
-      productType: "",
-      product: "",
-      investmentAmount: parseInt(0),
-      rut: "",
-      customer: "",
+      planId: Number(""),
+      companyId: Number(""),
+      productTypeId: Number(""),
+      productId: Number(""),
+      currencyId: Number(""),
+      amount: Number(""),
+      amountPaid: Number(""),
       period: "",
-      commission: "",
-      annualPayment: 0,
-      formOfPayment: "",
-      paymentMethod: "",
-      amountOfMoney: 0,
-      discretionaryCommission: "",
-      trailerFreeComission: 0,
+      annualPayment: Number(""),
+      paymentMethodId: Number(""),
+      paymentMediumId: Number(""),
+      discresionalService: false,
+      discresionalServiceCommission: Number(""), //-> 5%
+      trailerFree: false,
+      trailerFreeCommission: Number(""), //-> 15%
     });
-  };
-
-  const onFormSubmit = (form) => {
-    const {
-      operationNumber,
-      currencyType,
-      planNumber,
-      customerPlan,
-      adviser,
-      company,
-      productType,
-      product,
-      period,
-      investmentAmount,
-      rut,
-      customer,
-      comission,
-      annualPayment,
-      formOfPayment,
-      paymentMethod,
-      amountOfMoney,
-      discretionaryCommission,
-      trailerFreeComission,
-    } = form;
-
-    let submittedData = {
-      id: data.length + 1,
-      operationNumber: "000001",
-      currencyType: currencyType,
-      planNumber: "0000001",
-      customerPlan: customerPlan,
-      adviser: adviser,
-      company: company,
-      productType: productType,
-      product: product,
-      investmentAmount: investmentAmount,
-      rut: rut,
-      customer: customer,
-      period: period,
-      comisión: comission,
-      annualPayment: annualPayment,
-      formOfPayment: formOfPayment,
-      paymentMethod: paymentMethod,
-      amountOfMoney: amountOfMoney,
-      discretionaryCommission: discretionaryCommission,
-      trailerFreeComission: trailerFreeComission,
-    };
-
-    setData([submittedData, ...data]);
-    setView({ add: false, details: false, viewChecklist: false });
-    resetForm();
-  };
-
-  // function to load detail data
-  const loadDetail = (id) => {
-    let index = data.findIndex((item) => item.id === id);
-    setFormData(data[index]);
-  };
-
-  // OnChange function to get the input data
-  const onInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // onChange function for searching name
-  const onFilterChange = (e) => {
-    setSearchText(e.target.value);
   };
 
   // function to close the form modal
   const onFormCancel = () => {
-    setView({ add: false, details: false, viewChecklist: false });
+    setModal({ edit: false, add: false, uploadFiles: false });
     resetForm();
   };
 
-  // function to change to approve property for an item
-  const markAsDelivered = (id) => {
-    let newData = data;
-    let index = newData.findIndex((item) => item.id === id);
-    newData[index].status = "Delivered";
-    setData([...newData]);
+  // submit function to add a new item
+  const onFormSubmit = async (submitData) => {
+    const {
+      planId,
+      companyId,
+      productTypeId,
+      productId,
+      currencyId,
+      amount,
+      amountPaid,
+      period,
+      annualPayment,
+      paymentMethodId,
+      paymentMediumId,
+      discresionalService,
+      discresionalServiceCommission,
+      trailerFree,
+      trailerFreeCommission,
+    } = submitData;
+
+    // get customer id
+    const customerId = tableCustomers.find((item) => item.rut === searchRut);
+
+    let submittedData = {
+      planId: plansOptions.value,
+      companyId: companiesOptions.value,
+      productTypeId: productTypesOptions.value,
+      productId: productsOptions.value,
+      currencyId: currenciesOptions.value,
+      amount: Number(amount),
+      amountPaid: Number(amountPaid),
+      period: period,
+      annualPayment: Number(annualPayment),
+      paymentMethodId: paymentMediumsOptions.value,
+      paymentMediumId: paymentMethodsOptions.value,
+      discresionalService: discresionalOptions.value,
+      discresionalServiceCommission: discresionalServiceCommission, //-> 5% eror 500 server
+      trailerFree: trailerFreeOptions.value,
+      trailerFreeCommission: trailerFreeCommission, //-> 15% error 500 server
+    };
+    try {
+      await OperationsServices.addDeal(submittedData);
+      setData([submittedData, ...data]);
+
+      console.log(submittedData);
+      setSearch("");
+      setSearchRut("");
+      resetForm();
+      setModal({ edit: false }, { add: false }, { uploadFiles: false });
+    } catch (error) {
+      throw error;
+    }
   };
 
-  // function to delete a Order
-  const deleteOrder = (id) => {
+  // function to edit customer deals selected
+  const onEditDeal = async (id) => {
+    const deal = data.find((item) => item.id === id);
+    setFormData({
+      planId: deal.planId,
+      customerId: deal.customerId,
+      companyId: deal.companyId,
+      productTypeId: deal.productTypeId,
+      productId: deal.productId,
+      currencyId: deal.currencyId,
+      amount: deal.amount,
+      amountPaid: deal.amountPaid,
+      period: deal.period,
+      annualPayment: deal.annualPayment,
+      paymentMethodId: deal.paymentMethodId,
+      paymentMediumId: deal.paymentMediumId,
+      discresionalService: deal.discresionalService,
+      discresionalServiceCommission: deal.discresionalServiceCommission,
+      trailerFree: deal.trailerFree,
+      trailerFreeCommission: deal.trailerFreeCommission,
+    });
+    setModal({ edit: true, add: false, uploadFiles: true });
+  };
+
+  // submit function to update a new item
+  const onEditSubmit = (submitData) => {
+    const { name, email, phone } = submitData;
+    let submittedData;
+    let newitems = submitData;
+    newitems.forEach((item) => {
+      if (item.id === editId) {
+        submittedData = {
+          id: item.id,
+          avatarBg: item.avatarBg,
+          name: name,
+          image: item.image,
+          role: item.role,
+          email: email,
+          balance: formData.balance,
+          phone: "+" + phone,
+          emailStatus: item.emailStatus,
+          kycStatus: item.kycStatus,
+          lastLogin: item.lastLogin,
+          status: formData.status,
+          country: item.country,
+        };
+      }
+    });
+    let index = newitems.findIndex((item) => item.id === editId);
+    newitems[index] = submittedData;
+    setModal({ edit: false });
+    resetForm();
+  };
+
+  // function to delete an item deal and get rest items
+  const deleteCustomerDeal = (id) => {
     let defaultData = data;
     defaultData = defaultData.filter((item) => item.id !== id);
     setData([...defaultData]);
   };
 
-  // function to delete the seletected item
-  const selectorDeleteOrder = () => {
+  // function to delete an item deal
+  const deleteDeal = async (id) => {
+    try {
+      await OperationsServices.deleteDeal(id);
+      deleteCustomerDeal(id);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // function to get all customers to deal form
+  const getCustomer = async (customerName) => {
+    try {
+      const customers = await OperationsServices.getCustomer(customerName);
+      const customersData = customers.data.map((customerData) => customerData);
+      customers.data.map((customerData) => customerData.names === customerName && customerData);
+      setCustomers(customersData);
+      setTableCustomers(customersData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  useEffect(() => {
+    getCustomer(search);
+  }, [search]);
+
+  // function to get only 100 customer items
+  const getPrincipalCustomersRegisters = (customersData) => {
+    let newCustomersData = customersData.slice(0, 100);
+    return newCustomersData;
+  };
+
+  // function filter names and rut by customer names (input search)
+  const handleInputSearchChange = (ev) => {
+    setSearch(ev.target.value);
+    setSearchRut(ev.target.value);
+  };
+
+  // function to set input rut value in input field
+  const handleClickedRegisterRut = (customerRut) =>
+    customers.filter((customer) => customer.rut === customerRut && setSearchRut(customerRut));
+
+  // function to reset names and rut fields
+  const handleClearSearch = () => {
+    setSearch("");
+    setSearchRut("");
+    resetForm();
+  };
+
+  // function to get customer names from input search
+  const handleClickedRegisterNames = (customerName) => {
+    customers.filter((customer) => customer.names === customerName && setSearch(customerName));
+  };
+
+  // * Deals
+  // function to get customer item deals
+  const getCustomerDeals = async () => {
+    try {
+      const deals = await OperationsServices.getDeals();
+      const dealsData = deals.data.map((dealData) => dealData);
+      setCustomerDeals(dealsData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  useEffect(() => {
+    getCustomerDeals();
+  }, []);
+
+  // function to parse datepicker value
+  const parseDate = (date) => {
+    let newDate = new Date(date);
+    let day = newDate.getDate();
+    let month = newDate.getMonth() + 1;
+    let year = newDate.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  // function to get total deals
+  const getTotalDeals = () => customerDeals.length;
+
+  // function that loads the want to editted data
+  const onEditClick = (id) => {
+    customerDeals.forEach((item) => {
+      if (item.id === id) {
+        setFormData({
+          name: item.name,
+          email: item.email,
+          status: item.status,
+          phone: item.phone,
+          balance: item.balance,
+        });
+        setModal({ edit: true }, { uploadFiles: false }, { add: false });
+        setEditedId(id);
+      }
+    });
+  };
+
+  // function that loads files
+  const onUploadClick = (id) => {
+    customerDeals.forEach((item) => {
+      if (item.id === id) {
+        setFormData({
+          name: item.name,
+          email: item.email,
+          status: item.status,
+          phone: item.phone,
+          balance: item.balance,
+        });
+        setModal({ uploadFiles: true }, { edit: false }, { add: false });
+        setEditedId(id);
+      }
+    });
+  };
+  // -> editButtons
+
+  // function to change to suspend property for an item
+  const suspendUser = (id) => {
+    let newData = customerDeals; //->data
+    let index = newData.findIndex((item) => item.id === id);
+    newData[index].status = "Suspend";
+    setData([...newData]);
+  };
+
+  // function to change the check property of an item
+  const selectorCheck = (e) => {
     let newData;
-    newData = data.filter((item) => item.check !== true);
+    newData = data.map((item) => {
+      item.checked = e.currentTarget.checked;
+      return item;
+    });
+    setData([...newData]);
+  };
+
+  // function to delete the seletected item
+  const selectorDeleteUser = () => {
+    let newData;
+    newData = data.filter((item) => item.checked !== true);
     setData([...newData]);
   };
 
   // function to change the complete property of an item
-  const selectorMarkAsDelivered = () => {
+  const selectorSuspendUser = () => {
     let newData;
     newData = data.map((item) => {
-      if (item.check === true) item.status = "Delivered";
+      if (item.checked === true) item.status = "Suspend";
       return item;
     });
     setData([...newData]);
@@ -244,136 +402,215 @@ const OperationDefault = () => {
   // Get current list, pagination
   const indexOfLastItem = currentPage * itemPerPage;
   const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+  const customerDealsPage = data.slice(indexOfFirstItem, indexOfLastItem); //->check this
 
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const { errors, register, handleSubmit } = useForm();
 
-  const { errors, register, handleSubmit, formState } = useForm();
+  const [products, setProducts] = useState([]);
+  const [plans, setPlans] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [productTypes, setProductTypes] = useState([]);
+  const [currencies, setCurrencies] = useState([]);
+  const [paymentsMediums, setPaymentsMediums] = useState([]);
+  const [paymentsMethods, setPaymentsMethods] = useState([]);
 
-  // Get select input data
-  const [option, setOption] = useState();
+  const [productsOptions, setProductsOptions] = useState(products);
+  const [plansOptions, setPlansOptions] = useState(plans);
+  const [companiesOptions, setCompaniesOptions] = useState(companies);
+  const [productTypesOptions, setProductTypesOptions] = useState(productTypes);
+  const [currenciesOptions, setCurrenciesOptions] = useState(currencies);
+  const [paymentMediumsOptions, setPaymentMediumsOptions] = useState(paymentsMediums);
+  const [paymentMethodsOptions, setPaymentMethodsOptions] = useState(paymentsMethods);
 
-  function handleChange(event) {
-    setOption(event.target.value);
-  }
-
-  // ************************************************
-  // Get input search data Public API
-  const [customers, setCustomers] = useState([]);
-  const [tableCustomers, setTableCustomers] = useState([]);
-  const [search, setSearch] = useState("");
-
-  // Get customers from API
-  const getCustomer = async (customerName) => {
+  // function to get product select
+  const getProducts = async () => {
     try {
-      const customers = await OperationsServices.getCustomer(customerName);
-      const customersData = customers.data.map((customerData) => customerData);
+      const selectsData = await OperationsServices.getDealSelects();
+      const productsData = await selectsData.products.map((product) => ({ label: product.name, value: product.id }));
+      setProducts(productsData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsProductsChange = (optionValue) => {
+    setProductsOptions(optionValue);
+  };
 
-      const customerFiltredData = customers.data.map((customerData) => {
-        if (customerData.names === customerName) {
-          return customerData;
-        }
-      });
+  useEffect(() => {
+    getProducts();
+  }, []);
 
-      console.log(`Customer:`, customerFiltredData); //-> checked
-      console.log(`Name:`, customerName); //-> checked
+  // console.log(`state:`, products);
+  // console.log(`product:`, productsOptions.value);
 
-      setCustomers(customersData);
-      setTableCustomers(customersData);
+  // function to get plan select
+  const getPlans = async () => {
+    try {
+      const selectsData = await OperationsServices.getDealSelects();
+      const plansData = await selectsData.plans.map((plan) => ({ label: plan.name, value: plan.id }));
+      setPlans(plansData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsPlansChange = (optionValue) => {
+    setPlansOptions(optionValue);
+  };
+  useEffect(() => {
+    getPlans();
+  }, []);
+
+  // function to get company select
+  const getCompanies = async () => {
+    try {
+      const selectsData = await OperationsServices.getDealSelects();
+      const companiesData = await selectsData.companies.map((company) => ({ label: company.name, value: company.id }));
+      setCompanies(companiesData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsCompaniesChange = (optionValue) => {
+    setCompaniesOptions(optionValue);
+  };
+  useEffect(() => {
+    getCompanies();
+  }, []);
+
+  // function to get product type select
+  const getProductTypes = async () => {
+    try {
+      const selectsData = await OperationsServices.getDealSelects();
+      const productTypesData = await selectsData.productTypes.map((productType) => ({
+        label: productType.name,
+        value: productType.id,
+      }));
+      setProductTypes(productTypesData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsProductTypesChange = (optionValue) => {
+    setProductTypesOptions(optionValue);
+  };
+  useEffect(() => {
+    getProductTypes();
+  }, []);
+
+  // function to get product select
+  const getCurrencies = async () => {
+    try {
+      const selectsData = await OperationsServices.getDealSelects();
+      const currenciesData = await selectsData.currencyTypes.map((currencyType) => ({
+        label: currencyType.name,
+        value: currencyType.id,
+      }));
+      setCurrencies(currenciesData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsCurrenciesChange = (optionValue) => {
+    setCurrenciesOptions(optionValue);
+  };
+
+  useEffect(() => {
+    getCurrencies();
+  }, []);
+
+  // function to get payment payment mediums
+  const getPaymentMediums = async () => {
+    try {
+      const selectsData = await OperationsServices.getDealSelects();
+      const paymentMediumsData = await selectsData.paymentMediums.map((paymentMedium) => ({
+        label: paymentMedium.name,
+        value: paymentMedium.id,
+      }));
+      setPaymentsMediums(paymentMediumsData);
     } catch (error) {
       throw error;
     }
   };
 
-  // Get customer names from input search
-  const handleInputSearchChange = (ev) => {
-    setSearch(ev.target.value);
-  };
-
-  const handleClickedRegister = (customerName) => {
-    const customerRutSelected = customers.filter((customer) => {
-      if (customer.names === customerName) {
-        setSearch(customer.names);
-      }
-    });
+  const onOptionsPaymentsMediumsChange = (optionValue) => {
+    setPaymentMediumsOptions(optionValue);
   };
 
   useEffect(() => {
-    getCustomer(search);
-  }, [search]);
+    getPaymentMediums();
+  }, []);
+
+  // function to get payment methods
+  const getPaymentMethods = async () => {
+    try {
+      const selectsData = await OperationsServices.getDealSelects();
+      const paymentMethodsData = await selectsData.paymentMethods.map((paymentMethod) => ({
+        label: paymentMethod.name,
+        value: paymentMethod.id,
+      }));
+      setPaymentsMethods(paymentMethodsData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsPaymentsMethodsChange = (optionValue) => {
+    setPaymentMethodsOptions(optionValue);
+  };
+  useEffect(() => {
+    getPaymentMethods();
+  }, []);
+
+  // Comision fields
+  const [discresionalOptions, setDiscresionalOptionsOptions] = useState();
+  const [trailerFreeOptions, setTrailerFreeOptions] = useState();
+
+  const discresionalServiceOptions = [
+    { label: "Si", value: true },
+    { label: "No", value: false },
+  ];
+
+  const trilerFreeOptions = [
+    { label: "Si", value: true },
+    { label: "No", value: false },
+  ];
+
+  const onOptionsDiscresionalServiceChange = (optionValue) => {
+    setDiscresionalOptionsOptions(optionValue);
+  };
+
+  const onOptionsTrailerFreeChange = (optionValue) => {
+    setTrailerFreeOptions(optionValue);
+  };
 
   return (
     <React.Fragment>
-      <Head title="Order Default"></Head>
+      <Head title="Lista de Operaciones"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
-              <BlockTitle>Operaciones</BlockTitle>
+              <BlockTitle tag="h3" page>
+                Lista de Operaciones
+              </BlockTitle>
+              <BlockDes className="text-soft">
+                <p>Total {getTotalDeals()} operaciones</p>
+              </BlockDes>
             </BlockHeadContent>
-
             <BlockHeadContent>
               <div className="toggle-wrap nk-block-tools-toggle">
-                <a
-                  href="#more"
-                  className="btn btn-icon btn-trigger toggle-expand mr-n1"
-                  onClick={(ev) => {
-                    ev.preventDefault();
-                    setSmOption(!smOption);
-                  }}
+                <Button
+                  className={`btn-icon btn-trigger toggle-expand mr-n1 ${sm ? "active" : ""}`}
+                  onClick={() => updateSm(!sm)}
                 >
-                  <Icon name="more-v"></Icon>
-                </a>
-                <div className="toggle-expand-content" style={{ display: smOption ? "block" : "none" }}>
+                  <Icon name="menu-alt-r"></Icon>
+                </Button>
+                <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
-                    <li>
-                      <div className="form-control-wrap">
-                        <div className="form-icon form-icon-right">
-                          <Icon name="search"></Icon>
-                        </div>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="default-04"
-                          placeholder="Buscar por numero"
-                          onChange={(e) => onFilterChange(e)}
-                        />
-                      </div>
-                    </li>
-                    <li>
-                      <UncontrolledDropdown>
-                        <DropdownToggle
-                          color="transparent"
-                          className="dropdown-toggle dropdown-indicator btn btn-outline-light btn-white"
-                        >
-                          Estado
-                        </DropdownToggle>
-                        <DropdownMenu right>
-                          <ul className="link-list-opt no-bdr">
-                            <li>
-                              <DropdownItem tag="a" href="#dropdownitem" onClick={(ev) => ev.preventDefault()}>
-                                <span>Abierta</span>
-                              </DropdownItem>
-                            </li>
-                            <li>
-                              <DropdownItem tag="a" href="#dropdownitem" onClick={(ev) => ev.preventDefault()}>
-                                <span>Cerrada</span>
-                              </DropdownItem>
-                            </li>
-                            <li>
-                              <DropdownItem tag="a" href="#dropdownitem" onClick={(ev) => ev.preventDefault()}>
-                                <span>Out of Stock</span>
-                              </DropdownItem>
-                            </li>
-                          </ul>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                    </li>
                     <li className="nk-block-tools-opt">
-                      <Button color="primary" className="btn-icon" onClick={() => setView({ add: true })}>
+                      <Button color="primary" className="btn-icon" onClick={() => setModal({ add: true })}>
                         <Icon name="plus"></Icon>
-                        <span className="pr-2">Crear Operación</span>
                       </Button>
                     </li>
                   </ul>
@@ -385,21 +622,10 @@ const OperationDefault = () => {
 
         <Block>
           <div className="container-fluid overflow-auto scrollbar-fluid">
-            <div className="nk-tb-list is-separate is-medium mb-3 ">
+            <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
-                <DataTableRow className="nk-tb-col-check">
-                  <div className="custom-control custom-control-sm custom-checkbox notext">
-                    <input
-                      type="checkbox"
-                      className="custom-control-input form-control"
-                      id="pid-all"
-                      onChange={(e) => selectorCheck(e)}
-                    />
-                    <label className="custom-control-label" htmlFor="pid-all"></label>
-                  </div>
-                </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text text-center">N. de Operacion</span>
+                  <span className="sub-text text-center">N. de Operación</span>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text text-center">N. de Plan</span>
@@ -408,10 +634,13 @@ const OperationDefault = () => {
                   <span className="sub-text text-center">Cliente</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text text-center">Cliente</span>
+                  <span className="sub-text text-center">Rut</span>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text text-center">Asesor</span>
+                </DataTableRow>
+                <DataTableRow>
+                  <span className="sub-text text-center">Plan</span>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text text-center">Empresa</span>
@@ -426,6 +655,9 @@ const OperationDefault = () => {
                   <span className="sub-text text-center">Monto de Inversión</span>
                 </DataTableRow>
                 <DataTableRow>
+                  <span className="sub-text text-center">Abono</span>
+                </DataTableRow>
+                <DataTableRow>
                   <span className="sub-text text-center">Moneda</span>
                 </DataTableRow>
                 <DataTableRow>
@@ -438,10 +670,7 @@ const OperationDefault = () => {
                   <span className="sub-text text-center">Forma de Pago</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text text-center">Medio de Pago</span>
-                </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text text-center">Abono</span>
+                  <span className="sub-text text-center">Metodo de Pago</span>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text text-center">Comisión Discresional</span>
@@ -455,161 +684,177 @@ const OperationDefault = () => {
                 <DataTableRow>
                   <span className="sub-text text-center">Validar Docs. P&A</span>
                 </DataTableRow>
-                <DataTableRow className="nk-tb-col-tools">
-                  <ul className="nk-tb-actions gx-1 my-n1">
-                    <li>
-                      <UncontrolledDropdown>
-                        <DropdownToggle tag="a" className="btn btn-trigger dropdown-toggle btn-icon mr-n1">
-                          <Icon name="more-h"></Icon>
-                        </DropdownToggle>
-                        <DropdownMenu right>
-                          <ul className="link-list-opt no-bdr">
-                            <li>
-                              <DropdownItem
-                                tag="a"
-                                href="#markasdone"
-                                onClick={(ev) => {
-                                  ev.preventDefault();
-                                  selectorMarkAsDelivered();
-                                }}
-                              >
-                                <Icon name="edit"></Icon>
-                                <span>Editar</span>
-                              </DropdownItem>
-                            </li>
-                            <li>
-                              <DropdownItem
-                                tag="a"
-                                href="#remove"
-                                onClick={(ev) => {
-                                  ev.preventDefault();
-                                  selectorDeleteOrder();
-                                }}
-                              >
-                                <Icon name="trash"></Icon>
-                                <span>Remove Orders</span>
-                              </DropdownItem>
-                            </li>
-                          </ul>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                    </li>
-                  </ul>
+                <DataTableRow>
+                  <span className="sub-text text-center">Acción</span>
                 </DataTableRow>
               </DataTableHead>
 
-              {currentItems.length > 0
-                ? currentItems.map((item) => (
-                    <DataTableItem key={item.id}>
-                      <DataTableRow className="nk-tb-col-check text-center">
-                        <div className="custom-control custom-control-sm custom-checkbox notext">
-                          <input
-                            type="checkbox"
-                            className="custom-control-input form-control"
-                            defaultChecked={item.check}
-                            id={item.id + "oId-all"}
-                            key={Math.random()}
-                            onChange={(e) => onSelectChange(e, item.id)}
-                          />
-                          <label className="custom-control-label" htmlFor={item.id + "oId-all"}></label>
-                        </div>
+              {/* Conflictos: customer, rut , company, tipo de dato discresionalServiceCommission y trailerFreeCommission */}
+              {customerDeals.length > 0
+                ? customerDeals.map((deal) => (
+                    <DataTableItem key={deal.id}>
+                      <DataTableRow className="text-center">
+                        <span>{deal.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <a href="#id" onClick={(ev) => ev.preventDefault()}>
-                          #{item.operationNumber}
-                        </a>
+                        <span>{deal.plan.id}</span>
+                      </DataTableRow>
+
+                      {/* Cliente y Rut */}
+                      <DataTableRow className="text-center">
+                        <span>(Nombre cliente *)</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.planNumber}</span>
+                        <span>(Rut del cliente *)</span>
+                      </DataTableRow>
+                      {/* Cliente y Rut */}
+
+                      <DataTableRow className="text-center">
+                        <span>{deal.createdByAdvisor.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.customer}</span>
+                        <span>{deal.plan.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.rut}</span>
+                        <span>(Empresa *)</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.adviser}</span>
+                        <span>{deal.productType.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.company}</span>
+                        <span>{deal.product.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.productType}</span>
+                        <span>{deal.amount}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.product}</span>
+                        <span>{deal.amountPaid}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{parseInt(item.investmentAmount) + 3}</span>
+                        <span>{deal.currency.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.currencyType}</span>
+                        <span>{parseDate(deal.period)}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.period}</span>
+                        <span>{deal.annualPayment}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.annualPayment}</span>
+                        <span>{deal.paymentMedium.id === null ? "No definido" : deal.paymentMedium.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.formOfPayment}</span>
+                        <span>{deal.paymentMethod.id === null ? "No definido" : deal.paymentMethod.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.paymentMethod}</span>
+                        <span>
+                          {deal.discresionalService ? "Si" : "No"}
+                          {" - "}
+                          {deal.discresionalServiceCommission}%
+                        </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.amountOfMoney}</span>
+                        <span>
+                          {deal.trailerFree ? "Si" : "No"}
+                          {" - "}
+                          {deal.trailerFreeCommission}%
+                        </span>
                       </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.discretionaryCommission}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span className="tb-sub">{item.trailerFreeComission}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <ul className="nk-tb-actions gx-1">
+
+                      <DataTableRow className="nk-tb-col-tools">
+                        <ul className="nk-tb-actions gx-1 text-center d-flex justify-content-center">
                           <li>
                             <UncontrolledDropdown>
-                              <DropdownToggle tag="" className="dropdown-toggle bg-transparent border-0">
-                                <DropdownItem
-                                  tag="a"
-                                  href="#dropdown"
-                                  onClick={(ev) => {
-                                    ev.preventDefault();
-                                    loadDetail(item.id);
-                                    toggle("details");
-                                  }}
-                                >
-                                  <div className="icon-status icon-status-na">
-                                    <Icon name="upload" className="text-danger"></Icon>
-                                  </div>
-                                </DropdownItem>
+                              <DropdownToggle tag="a" className="dropdown-toggle btn btn-icon bg-danger">
+                                <Icon name="icon ni ni-files text-white"></Icon>
                               </DropdownToggle>
+                              <DropdownMenu right>
+                                <ul className="link-list-opt no-bdr">
+                                  <li onClick={() => onUploadClick(deal.id)}>
+                                    <DropdownItem
+                                      tag="a"
+                                      href="#uploadFiles"
+                                      onClick={(ev) => {
+                                        ev.preventDefault();
+                                      }}
+                                    >
+                                      <Icon name="icon ni ni-files"></Icon>
+                                      <span>Subir Documentos</span>
+                                    </DropdownItem>
+                                  </li>
+                                </ul>
+                              </DropdownMenu>
+                            </UncontrolledDropdown>
+                          </li>
+                        </ul>
+                      </DataTableRow>
+                      <DataTableRow className="nk-tb-col-tools">
+                        <ul className="nk-tb-actions gx-1 text-center d-flex justify-content-center">
+                          <li>
+                            <UncontrolledDropdown>
+                              <DropdownToggle tag="a" className="dropdown-toggle btn btn-icon bg-danger">
+                                <Icon name="icon ni ni-files text-white"></Icon>
+                              </DropdownToggle>
+                              <DropdownMenu right>
+                                <ul className="link-list-opt no-bdr">
+                                  <li onClick={() => onEditClick(deal.id)}>
+                                    <DropdownItem
+                                      tag="a"
+                                      href="#uploadFiles"
+                                      onClick={(ev) => {
+                                        ev.preventDefault();
+                                      }}
+                                    >
+                                      <Icon name="icon ni ni-files"></Icon>
+                                      <span>Validar Documentos</span>
+                                    </DropdownItem>
+                                  </li>
+                                </ul>
+                              </DropdownMenu>
                             </UncontrolledDropdown>
                           </li>
                         </ul>
                       </DataTableRow>
 
-                      <DataTableRow className="text-center">
+                      <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
                           <li>
                             <UncontrolledDropdown>
-                              <DropdownToggle tag="" className="dropdown-toggle bg-transparent border-0">
-                                <DropdownItem
-                                  tag="a"
-                                  href="#dropdown"
-                                  onClick={(ev) => {
-                                    ev.preventDefault();
-                                    loadDetail(item.id);
-                                    toggle("viewChecklist");
-                                  }}
-                                >
-                                  <div className="icon-status icon-status-na">
-                                    <Icon name="check" className="text-danger"></Icon>
-                                  </div>
-                                </DropdownItem>
+                              <DropdownToggle tag="a" className="dropdown-toggle btn btn-icon btn-trigger">
+                                <Icon name="more-h"></Icon>
                               </DropdownToggle>
+                              <DropdownMenu right>
+                                <ul className="link-list-opt no-bdr">
+                                  <li onClick={() => onEditClick(deal.id)}>
+                                    <DropdownItem
+                                      tag="a"
+                                      href="#edit"
+                                      onClick={(ev) => {
+                                        ev.preventDefault();
+                                      }}
+                                    >
+                                      <Icon name="edit"></Icon>
+                                      <span>Editar Operación</span>
+                                    </DropdownItem>
+                                  </li>
+                                  {deal.status !== "Suspend" && (
+                                    <React.Fragment>
+                                      <li className="divider"></li>
+                                      <li onClick={() => deleteDeal(deal.id)}>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#suspend"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
+                                          }}
+                                        >
+                                          <Icon name="trash"></Icon>
+                                          <span>Eliminar Operación</span>
+                                        </DropdownItem>
+                                      </li>
+                                    </React.Fragment>
+                                  )}
+                                </ul>
+                              </DropdownMenu>
                             </UncontrolledDropdown>
                           </li>
                         </ul>
@@ -618,692 +863,780 @@ const OperationDefault = () => {
                   ))
                 : null}
             </div>
+            <PreviewAltCard>
+              {customerDeals.length > 0 ? (
+                <PaginationComponent
+                  itemPerPage={itemPerPage}
+                  totalItems={data.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                />
+              ) : (
+                <div className="text-center">
+                  <span className="text-silent">No se encontraron operaciones</span>
+                </div>
+              )}
+            </PreviewAltCard>
           </div>
         </Block>
-        <PreviewAltCard>
-          {data.length > 0 ? (
-            <PaginationComponent
-              itemPerPage={itemPerPage}
-              totalItems={data.length}
-              paginate={paginate}
-              currentPage={currentPage}
-            />
-          ) : (
-            <div className="text-center">
-              <span className="text-silent">No se encontaron operaciones</span>
-            </div>
-          )}
-        </PreviewAltCard>
-        {/* Operations Modal Form */}
-        <Modal isOpen={view.add} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
+
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
           <ModalBody>
-            <a href="#cancel" className="close">
-              <Icon
-                name="cross-sm"
-                onClick={(ev) => {
-                  ev.preventDefault();
-                  onFormCancel();
-                }}
-              ></Icon>
+            <a
+              href="#close"
+              onClick={(ev) => {
+                ev.preventDefault();
+                onFormCancel();
+              }}
+              className="close"
+            >
+              <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
               <h5 className="title">Agregar Operación</h5>
               <div className="mt-4">
-                <form onSubmit={handleSubmit(onFormSubmit)}>
-                  <Row className="g-3">
-                    <Col md="12">
-                      <h6 className="border-bottom pb-1">Información del Cliente</h6>
-                    </Col>
-
-                    <Col md="12">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="rut">
-                          Buscar Cliente
-                        </label>
-                        <div className="search flex flex-column">
-                          <div className="form-icon form-icon-right">
-                            <Icon name="search"></Icon>
-                          </div>
-                          <input
-                            type="text"
-                            name="rut"
-                            defaultValue={formData.rut}
-                            value={search}
-                            onChange={handleInputSearchChange}
-                            className="form-control"
-                            placeholder="Nombre de Cliente"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                          />
-                        </div>
+                <Form className="row gy-4" noValidate onSubmit={handleSubmit(onFormSubmit)}>
+                  <Col md="12">
+                    <h6 className="border-bottom pb-1">Información del Cliente</h6>
+                  </Col>
+                  <Col md="7">
+                    <FormGroup>
+                      <label className="form-label">Nombre del Cliente</label>
+                      <div className="search flex flex-row justify-content-between align-items-center">
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="customer"
+                          value={search}
+                          onChange={handleInputSearchChange}
+                          placeholder="Ingresa Nombre"
+                        />
+                        <Button className="bg-primary border border-primary ml-1" onClick={handleClearSearch}>
+                          <em className="icon ni ni-repeat text-white"></em>
+                        </Button>
                       </div>
+                    </FormGroup>
+                  </Col>
+                  <Col md="5">
+                    <FormGroup>
+                      <label className="form-label">Rut</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="rut"
+                        value={searchRut}
+                        onChange={handleInputSearchChange}
+                        readOnly="readonly"
+                      />
+                    </FormGroup>
+                  </Col>
 
-                      <div className="overflow-auto rounded scrollbar-fluid container-fluid">
-                        {customers.length === 0 ? (
-                          <span className="text-danger">
-                            <em className="icon ni ni-info"></em>
-                            <i>Cliente no válido</i>
-                          </span>
-                        ) : (
-                          customers &&
-                          customers.map((customer) => (
-                            <DataTableItem key={customer.id}>
-                              <DataTableRow className="text-center">
-                                <span>{customer.id}</span>
-                              </DataTableRow>
-                              <DataTableRow className="text-center">
-                                <span>{customer.names}</span>
-                              </DataTableRow>
-                              <DataTableRow className="text-center">
-                                <span>{customer.paternalLastName}</span>
-                              </DataTableRow>
-                              <DataTableRow className="text-center">
-                                <span>{customer.rut}</span>
-                              </DataTableRow>
-                              <DataTableRow className="text-center">
-                                <span>{customer.email}</span>
-                              </DataTableRow>
-                              <DataTableRow>
-                                <Button
-                                  onClick={() => handleClickedRegister(customer.names)}
-                                  className="bg-dark border-0 text-white"
-                                >
-                                  <em className="icon ni ni-check"></em>
-                                </Button>
-                              </DataTableRow>
-                            </DataTableItem>
-                          ))
+                  <Col md="12">
+                    <div className="overflow-auto rounded scrollbar-fluid border bg-light">
+                      {customers.length === 0 ? (
+                        <span className="text-danger">
+                          <em className="icon ni ni-info"></em>
+                          <i className="pl-1">Cliente no encontrado</i>
+                        </span>
+                      ) : (
+                        customers &&
+                        getPrincipalCustomersRegisters(customers).map((customer) => (
+                          <DataTableItem key={customer.id} className="bg-white rounded">
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <span className="text-center">{customer.id}</span>
+                            </DataTableRow>
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <span className="text-center text-nowrap pl-2 pr-1">{customer.names}</span>
+                            </DataTableRow>
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <span className="text-center text-nowrap pl-2 pr-1">{customer.paternalLastName}</span>
+                            </DataTableRow>
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <span className="text-center text-nowrap pl-2 pr-1">{customer.rut}</span>
+                            </DataTableRow>
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <span className="text-center text-nowrap pl-2 pr-1">{customer.email}</span>
+                            </DataTableRow>
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <span className="text-center text-nowrap pl-2 pr-1">{parseDate(customer.createdAt)}</span>
+                            </DataTableRow>
+                            <DataTableRow className="text-center ml-3 mr-3">
+                              <Button
+                                onClick={() => {
+                                  handleClickedRegisterNames(customer.names);
+                                  handleClickedRegisterRut(customer.rut);
+                                }}
+                                className="bg-primary border-0 text-white"
+                              >
+                                <em className="icon ni ni-check"></em>
+                              </Button>
+                            </DataTableRow>
+                          </DataTableItem>
+                        ))
+                      )}
+                    </div>
+                  </Col>
+                  <Col md="12">
+                    <h6 className="border-bottom pb-1 mt-3">Plan del Cliente</h6>
+                  </Col>
+                  <Col md="12">
+                    <FormGroup>
+                      <RSelect
+                        value={plansOptions}
+                        options={plans}
+                        onChange={onOptionsPlansChange}
+                        defautlValue={formData.planId}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="12">
+                    <h6 className="border-bottom pb-1 mt-3">Empresa y Producto</h6>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Empresa</label>
+                      <RSelect
+                        value={companiesOptions}
+                        options={companies}
+                        onChange={onOptionsCompaniesChange}
+                        defautlValue={formData.companyId}
+                      />
+                      {errors.companyId && <span className="invalid">{errors.companyId.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Tipo de Producto</label>
+                      <RSelect
+                        value={productTypesOptions}
+                        options={productTypes}
+                        onChange={onOptionsProductTypesChange}
+                        defautlValue={formData.productTypeId}
+                      />
+                      {errors.productTypeId && <span className="invalid">{errors.productTypeId.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Producto</label>
+                      <RSelect
+                        value={productsOptions}
+                        options={products}
+                        onChange={onOptionsProductsChange}
+                        defautlValue={formData.productId}
+                      />
+                      {errors.productId && <span className="invalid">{errors.productId.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="12">
+                    <h6 className="border-bottom pb-1 mt-3">Inversión y Pago</h6>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Moneda</label>
+                      <RSelect
+                        value={currenciesOptions}
+                        options={currencies}
+                        onChange={onOptionsCurrenciesChange}
+                        defautlValue={formData.currencyId}
+                      />
+                      {errors.currencyId && <span className="invalid">{errors.currencyId.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Inversión</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="amount"
+                        ref={register({ required: "Este campo es obligatorio *" })}
+                        defaultValue={formData.amount}
+                      />
+                      {errors.amount && <span className="invalid">{errors.amount.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Abono inicial</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="amountPaid"
+                        ref={register({ required: "Este campo es obligatorio *" })}
+                        defaultValue={formData.amountPaid}
+                      />
+                      {errors.amountPaid && <span className="invalid">{errors.amountPaid.message}</span>}
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6">
+                    <div className="fc fc-button-group">
+                      <label className="form-label" htmlFor="period">
+                        Periodo de Duración
+                      </label>
+                      <div className="form-control-wrap">
+                        <input
+                          className="fc-button bg-light w-100"
+                          type="date"
+                          name="period"
+                          ref={register({ required: "Este campo es obligatorio *" })}
+                          defaultValue={formData.period}
+                        />
+                        {errors.period && <span className="invalid">{errors.period.message}</span>}
+                      </div>
+                    </div>
+                  </Col>
+                  <Col md="6">
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="annual-payment">
+                        Pago Anual
+                      </label>
+                      <div className="form-control-wrap">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="annualPayment"
+                          ref={register({ required: "Este campo es obligatorio *" })}
+                          defaultValue={formData.annualPayment}
+                        />
+                        {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>}
+                      </div>
+                    </div>
+                  </Col>
+                  <Col md="6">
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="payment-medium">
+                        Forma de Pago
+                      </label>
+                      <RSelect
+                        value={paymentMediumsOptions}
+                        options={paymentsMediums}
+                        onChange={onOptionsPaymentsMediumsChange}
+                        defautlValue={formData.paymentMediumId}
+                      />
+                      {errors.paymentMediumId && <span className="invalid">{errors.paymentMediumId.message}</span>}
+                    </div>
+                  </Col>
+
+                  <Col md="6">
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="payment-method">
+                        Metodo de Pago
+                      </label>
+                      <RSelect
+                        value={paymentMethodsOptions}
+                        options={paymentsMethods}
+                        onChange={onOptionsPaymentsMethodsChange}
+                        defautlValue={formData.paymentMethodId}
+                      />
+                      {errors.paymentMethodId && <span className="invalid">{errors.paymentMethodId.message}</span>}
+                    </div>
+                  </Col>
+
+                  <Col md="12">
+                    <h6 className="border-bottom pb-1 mt-3">Servicios de Comisión</h6>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Comisión Discresional</label>
+                      <RSelect
+                        value={discresionalOptions}
+                        options={discresionalServiceOptions}
+                        onChange={onOptionsDiscresionalServiceChange}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Porcentaje</label>
+                      <div className="form-control-wrap">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="discresionalServiceCommission"
+                          ref={register({ required: "Este campo es obligatorio *" })}
+                          defaultValue={formData.discresionalServiceCommission}
+                          placeholder="Ej: 1 - 5 - 10"
+                        />
+                        {errors.discresionalServiceCommission && (
+                          <span className="invalid">{errors.discresionalServiceCommission.message}</span>
                         )}
                       </div>
-                    </Col>
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Comisión Trailer Free</label>
+                      <RSelect
+                        value={trailerFreeOptions}
+                        options={trilerFreeOptions}
+                        onChange={onOptionsTrailerFreeChange}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Porcentaje</label>
+                      <div className="form-control-wrap">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="trailerFreeCommission"
+                          ref={register({ required: "Este campo es obligatorio *" })}
+                          defaultValue={formData.trailerFreeCommission}
+                          placeholder="Ej: 1 - 5 - 10"
+                        />
+                      </div>
+                    </FormGroup>
+                  </Col>
 
-                    <Col md="12">
-                      <h6 className="border-bottom pb-1 mt-2">Plan</h6>
-                    </Col>
-                    <Col md="12">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="customer-plan">
-                          Plan del Cliente
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="customerPlan"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.customerPlan}
-                          >
-                            <option value="">Seleccionar...</option>
-                            <option value="plan-1">Plan 1</option>
-                            <option value="plan-2">Plan 2</option>
-                            <option value="plan-3">Plan 3</option>
-                          </select>
-                          {errors.customerPlan && <span className="invalid">{errors.customerPlan.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="12">
-                      <h6 className="border-bottom pb-1 mt-2">Empresa y Producto</h6>
-                    </Col>
-                    <Col md="4">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="company">
-                          Empresa
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="company"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.company}
-                          >
-                            <option value="">Seleccionar...</option>
-                            <option value="Empresa-1">Empresa 1</option>
-                            <option value="Empresa-2">Empresa 2</option>
-                            <option value="Empresa-3">Empresa 3</option>
-                          </select>
-                          {errors.company && <span className="invalid">{errors.company.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="4">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="product-type">
-                          Tipo de Producto
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="productType"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.productType}
-                          >
-                            <option value="">Seleccionar...</option>
-                            <option value="ADVANCE">ADVANCE</option>
-                            <option value="SENIOR">SENIOR</option>
-                          </select>
-                          {errors.productType && <span className="invalid">{errors.productType.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="4">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="product">
-                          Producto
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="product"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.product}
-                          >
-                            <option value="">Seleccionar...</option>
-                            <option value="PLAT">PLAT</option>
-                            <option value="ACC">ACC</option>
-                            <option value="EVO">EVO</option>
-                            <option value="STONEX">STONEX</option>
-                            <option value="EXCESO">EXCESO</option>
-                          </select>
-                          {errors.product && <span className="invalid">{errors.product.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="12">
-                      <h6 className="border-bottom pb-1 mt-2">Inversión</h6>
-                    </Col>
-                    <Col md="4">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="currency-type">
-                          Tipo de Moneda
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="currencyType"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.currencyType}
-                          >
-                            <option value="">Seleccionar...</option>
-                            <option value="CLP">CLP - Pesos chilenos</option>
-                            <option value="USD">USD - Dolar Estados Unidos</option>
-                            <option value="EUR">EUR - Euros</option>
-                          </select>
-                          {errors.currencyType && <span className="invalid">{errors.currencyType.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="4">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="investment-amount">
-                          Monto de Inversión
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="number"
-                            className="form-control"
-                            name="investmentAmount"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.investmentAmount}
-                          />
-                          {errors.investmentAmount && (
-                            <span className="invalid">{errors.investmentAmount.message}</span>
-                          )}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="4">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="amount-of-money">
-                          Abono
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="number"
-                            className="form-control"
-                            name="amountOfMoney"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.amountOfMoney}
-                          />
-                          {errors.amountOfMoney && <span className="invalid">{errors.amountOfMoney.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="6">
-                      <div className="fc fc-button-group">
-                        <label className="form-label" htmlFor="period">
-                          Periodo de Duración
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            className="fc-button bg-light w-100"
-                            type="date"
-                            name="period"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.period}
-                          />
-                          {errors.period && <span className="invalid">{errors.period.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="6">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="annual-payment">
-                          Pago Anual
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="number"
-                            className="form-control"
-                            name="annualPayment"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.annualPayment}
-                          />
-                          {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="12">
-                      <h6 className="border-bottom pb-1 mt-2">Pago</h6>
-                    </Col>
-                    <Col md="6">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="form-of-payment">
-                          Forma de Pago
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="formOfPayment"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.formOfPayment}
-                          >
-                            <option value="">Seleccionar...</option>
-                            <option value="MENSUAL">MENSUAL</option>
-                            <option value="TRIMESTRAL">TRIMESTRAL</option>
-                            <option value="ANUAL">ANUAL</option>
-                          </select>
-                          {errors.formOfPayment && <span className="invalid">{errors.formOfPayment.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="6">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="payment-method">
-                          Medio de Pago
-                        </label>
-                        <div className="form-control-wrap">
-                          <select
-                            className="form-control"
-                            name="paymentMethod"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            defaultValue={formData.formOfPayment}
-                          >
-                            <option value="">Seleccionar...</option>
-                            <option value="AL CONTADO">AL CONTADO</option>
-                            <option value="TARJETA">TARJETA</option>
-                            <option value="CHEQUE">CHEQUE</option>
-                          </select>
-                          {errors.paymentMethod && <span className="invalid">{errors.paymentMethod.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="12" className="border-bottom mt-2">
-                      <h6>Comisiones de servicio</h6>
-                    </Col>
-                    <Col md="4">
-                      <label className="form-label mt-1">Servicio Discresional</label>
-                      <div className="form-group">
-                        <div className="form-control-wrap flex row ml-0 mt-1">
-                          <div>
-                            Si
-                            <input
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              type="radio"
-                              value="Si"
-                              name="discretionaryCommission"
-                              defaultValue={formData.discretionaryCommission}
-                              className="ml-1"
-                            />
-                          </div>
-                          <div className="ml-3">
-                            No
-                            <input
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              type="radio"
-                              value="No"
-                              name="discretionaryCommission"
-                              defaultValue={formData.discretionaryCommission}
-                              className="ml-1 "
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="8">
-                      <div className="form-group">
-                        <label htmlFor="annual-payment" className="form-label mt-1">
-                          Porcentaje de comisión
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="number"
-                            name="comissionPercentage"
-                            placeholder="Ejemplo: 1, 1.0"
-                            className="form-control"
-                            // name="annualPayment"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            // defaultValue={formData.annualPayment}
-                          />
-                          {/* {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>} */}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="4">
-                      <label className="form-label mt-1">Trailer Free</label>
-                      <div className="form-group">
-                        <div className="form-control-wrap flex row ml-0 mt-1">
-                          <div>
-                            Si
-                            <input
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              type="radio"
-                              value="Si"
-                              name="trailerFreeComission"
-                              defaultValue={formData.trailerFreeComission}
-                              className="ml-1"
-                            />
-                          </div>
-                          <div className="ml-3">
-                            No
-                            <input
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              type="radio"
-                              value="No"
-                              name="trailerFreeComission"
-                              defaultValue={formData.trailerFreeComission}
-                              className="ml-1"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="8">
-                      <div className="form-group">
-                        <label htmlFor="annual-payment" className="form-label mt-1">
-                          Porcentaje de comisión
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="number"
-                            placeholder="Ejemplo: 1, 1.0"
-                            className="form-control"
-                            // name="annualPayment"
-                            ref={register({ required: "Este campo es obligatorio *" })}
-                            // defaultValue={formData.annualPayment}
-                          />
-                          {/* {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>} */}
-                        </div>
-                      </div>
-                    </Col>
-                    <Col size="12">
-                      <div className="text-right pt-4">
-                        <Button color="primary" type="submit">
-                          <span>Agregar Operación</span>
+                  <Col size="12">
+                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                      <li>
+                        <Button color="primary" size="md" type="submit">
+                          Agresar Clientes
                         </Button>
+                      </li>
+                      <li>
+                        <a
+                          href="#cancel"
+                          onClick={(ev) => {
+                            ev.preventDefault();
+                            onFormCancel();
+                          }}
+                          className="link link-light"
+                        >
+                          Cancelar
+                        </a>
+                      </li>
+                    </ul>
+                  </Col>
+                </Form>
+              </div>
+            </div>
+          </ModalBody>
+        </Modal>
+
+        {/* Modal subir Docs */}
+        <Modal
+          isOpen={modal.uploadFiles}
+          toggle={() => setModal({ uploadFiles: false })}
+          className="modal-dialog-centered"
+          size="lg"
+        >
+          <ModalBody>
+            <a
+              href="#uploadFiles"
+              onClick={(ev) => {
+                ev.preventDefault();
+                onFormCancel();
+              }}
+              className="close"
+            >
+              <Icon name="cross-sm"></Icon>
+            </a>
+
+            <h5 className="title">Documentos de la Operación</h5>
+            <div className="mt-4">
+              <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
+                <Col md="12">
+                  <h6 className="border-bottom pb-1 mt-3">Documentos asociados</h6>
+                </Col>
+                <Col md="6">
+                  <Card>
+                    <ul className="nk-top-products">
+                      <li className="item bg-white rounded border m-1 d-flex align-items-center justify-content-between p-2 flex-column">
+                        <div className="p-1 overflow-auto rounded scrollbar-fluid w-auto">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                          <div className="price">
+                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium...
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+                <Col md="6">
+                  <Card>
+                    <ul className="nk-top-products">
+                      <li className="item bg-white rounded border m-1 d-flex align-items-center justify-content-between p-2 flex-column">
+                        <div className="p-1 overflow-auto rounded scrollbar-fluid w-auto">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                          <div className="price">
+                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium...
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+                <Col md="6">
+                  <Card>
+                    <ul className="nk-top-products">
+                      <li className="item bg-white rounded border m-1 d-flex align-items-center justify-content-between p-2 flex-column">
+                        <div className="p-1 overflow-auto rounded scrollbar-fluid w-auto">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                          <div className="price">
+                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium...
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+                <Col md="6">
+                  <Card>
+                    <ul className="nk-top-products">
+                      <li className="item bg-white rounded border m-1 d-flex align-items-center justify-content-between p-2 flex-column">
+                        <div className="p-1 overflow-auto rounded scrollbar-fluid w-auto">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                          <div className="price">
+                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium...
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+
+                <Col md="12">
+                  <h6 className="border-bottom pb-1 mt-3">Documentos de Operación</h6>
+                </Col>
+
+                {/* Docs desde Biblioteca de Clientes */}
+                <Col sm="8">
+                  <Card>
+                    <ul className=" text-center w-auto">
+                      <li className="item bg-white rounded border d-flex align-items-center justify-content-between p-2 ">
+                        <div className="overflow-auto rounded scrollbar-fluid w-100">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+
+                <Col sm="4" className="d-flex align-items-center justify-content-end">
+                  <ul className="d-flex flex-row align-items-center justify-content-end">
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="pr-2 p-2">
+                        <Icon className="icon ni ni-loader"></Icon>
+                      </Button>
+                    </li>
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="btn btn-primary btn-icon pr-2">
+                        <Icon className="icon ni ni-clip p-0"></Icon>
+                        <span className="p-1">Adjuntar</span>
+                      </Button>
+                    </li>
+                  </ul>
+                </Col>
+
+                <Col sm="8">
+                  <Card>
+                    <ul className=" text-center w-auto">
+                      <li className="item bg-white rounded border d-flex align-items-center justify-content-between p-2 ">
+                        <div className="overflow-auto rounded scrollbar-fluid w-100">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+
+                <Col sm="4" className="d-flex align-items-center justify-content-end">
+                  <ul className="d-flex flex-row align-items-center justify-content-end">
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="pr-2 p-2">
+                        <Icon className="icon ni ni-loader"></Icon>
+                      </Button>
+                    </li>
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="btn btn-primary btn-icon pr-2">
+                        <Icon className="icon ni ni-clip p-0"></Icon>
+                        <span className="p-1">Adjuntar</span>
+                      </Button>
+                    </li>
+                  </ul>
+                </Col>
+
+                <Col sm="8">
+                  <Card>
+                    <ul className=" text-center w-auto">
+                      <li className="item bg-white rounded border d-flex align-items-center justify-content-between p-2 ">
+                        <div className="overflow-auto rounded scrollbar-fluid w-100">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+
+                <Col sm="4" className="d-flex align-items-center justify-content-end">
+                  <ul className="d-flex flex-row align-items-center justify-content-end">
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="pr-2 p-2">
+                        <Icon className="icon ni ni-loader"></Icon>
+                      </Button>
+                    </li>
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="btn btn-primary btn-icon pr-2">
+                        <Icon className="icon ni ni-clip p-0"></Icon>
+                        <span className="p-1">Adjuntar</span>
+                      </Button>
+                    </li>
+                  </ul>
+                </Col>
+
+                <Col sm="8">
+                  <Card>
+                    <ul className=" text-center w-auto">
+                      <li className="item bg-white rounded border d-flex align-items-center justify-content-between p-2 ">
+                        <div className="overflow-auto rounded scrollbar-fluid w-100">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+
+                <Col sm="4" className="d-flex align-items-center justify-content-end">
+                  <ul className="d-flex flex-row align-items-center justify-content-end">
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="pr-2 p-2">
+                        <Icon className="icon ni ni-loader"></Icon>
+                      </Button>
+                    </li>
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="btn btn-primary btn-icon pr-2">
+                        <Icon className="icon ni ni-clip p-0"></Icon>
+                        <span className="p-1">Adjuntar</span>
+                      </Button>
+                    </li>
+                  </ul>
+                </Col>
+
+                <Col sm="8">
+                  <Card>
+                    <ul className=" text-center w-auto">
+                      <li className="item bg-white rounded border d-flex align-items-center justify-content-between p-2 ">
+                        <div className="overflow-auto rounded scrollbar-fluid w-100">
+                          <div className="title">Documento: Ficha Perfil cliente</div>
+                        </div>
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+
+                <Col sm="4" className="d-flex align-items-center justify-content-end">
+                  <ul className="d-flex flex-row align-items-center justify-content-end">
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="pr-2 p-2">
+                        <Icon className="icon ni ni-loader"></Icon>
+                      </Button>
+                    </li>
+                    <li className="d-flex align-items-center justify-content-center ml-2">
+                      <Button className="btn btn-primary btn-icon pr-2">
+                        <Icon className="icon ni ni-clip p-0"></Icon>
+                        <span className="p-1">Adjuntar</span>
+                      </Button>
+                    </li>
+                  </ul>
+                </Col>
+
+                {/* Docs desde Biblioteca de Clientes */}
+
+                <Col size="12">
+                  <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                    <li>
+                      <Button color="primary" size="md" type="submit">
+                        Subir
+                      </Button>
+                    </li>
+                    <li>
+                      <a
+                        href="#cancel"
+                        onClick={(ev) => {
+                          ev.preventDefault();
+                          onFormCancel();
+                        }}
+                        className="link link-light"
+                      >
+                        Cancelar
+                      </a>
+                    </li>
+                  </ul>
+                </Col>
+              </Form>
+            </div>
+          </ModalBody>
+        </Modal>
+        {/* Modal subir Docs */}
+
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+          <ModalBody>
+            <a
+              href="#cancel"
+              onClick={(ev) => {
+                ev.preventDefault();
+                onFormCancel();
+              }}
+              className="close"
+            >
+              <Icon name="cross-sm"></Icon>
+            </a>
+            <div className="p-2">
+              <h5 className="title">Actualizar Operación</h5>
+              <div className="mt-4">
+                <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
+                  <Col md="12">
+                    <h6 className="border-bottom pb-1 mt-3">Plan del Cliente</h6>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Empresa</label>
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Tipo de Producto</label>
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    {/* <FormGroup>
+                      <label className="form-label">Producto</label>
+                      <select
+                        className="form-control"
+                        name="productId"
+                        defaultValue={formData.productTypeId}
+                        ref={register({ required: "Este campo es obligatorio *" })}
+                      >
+                        <option value="">Seleccionar...</option>
+                        {selectedProduct &&
+                          selectedProduct.map((product) => (
+                            <option key={product.id} value={product.id}>
+                              {product.name}
+                            </option>
+                          ))}
+                      </select>
+                      {errors.productId && <span className="invalid">{errors.productId.message}</span>}
+                    </FormGroup> */}
+                  </Col>
+
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Producto select</label>
+                      <div className="form-control-wrap">
+                        <RSelect
+                        // isSearchable={false}
+                        // options={companiesOptions}
+                        // defaultValue={formData.companyId}
+                        // onChange={onCountriesChange}
+                        />
                       </div>
-                    </Col>
-                  </Row>
-                </form>
-              </div>
-            </div>
-          </ModalBody>
-        </Modal>
+                    </FormGroup>
+                  </Col>
 
-        {/* Modal Details */}
-        <Modal isOpen={view.details} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
-          <ModalBody>
-            <a href="#cancel" className="close">
-              <Icon
-                name="cross-sm"
-                onClick={(ev) => {
-                  ev.preventDefault();
-                  onFormCancel();
-                }}
-              ></Icon>
-            </a>
-            <div className="nk-tnx-details mt-sm-3">
-              <div className="nk-modal-head mb-3">
-                <h5 className="title">Checklist 1 del Cliente</h5>
-                <h3 className="sub-text">Documentación Necesaria</h3>
-                <Link to="/customer-library" className=" text-dark-50 w-100 bg-transparent">
-                  <span>
-                    <em className="icon ni ni-users-fill"></em>
-                  </span>
-                  <span className="nk-menu-text pl-1">Subir desde Lib. de Clientes</span>
-                </Link>
-              </div>
-              <Row className="gy-3">
-                <Col lg={6}>
-                  <span className="sub-text">N. de Operacion</span>
-                  <span className="caption-text">{formData.id}</span>
-                </Col>
-                <Col lg={6}>
-                  <span className="sub-text">Cliente</span>
-                  <span className="caption-text">{formData.customer}</span>
-                </Col>
+                  {/* <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Email</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="email"
+                        defaultValue={formData.email}
+                        placeholder="Enter email"
+                        ref={register({
+                          required: "This field is required",
+                          pattern: {
+                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                            message: "invalid email address",
+                          },
+                        })}
+                      />
+                      {errors.email && <span className="invalid">{errors.email.message}</span>}
+                    </FormGroup>
+                  </Col> */}
+                  {/* <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Producto</label>
+                      <select
+                        className="form-control"
+                        name="productId"
+                        defaultValue={formData.productTypeId}
+                        ref={register({ required: "Este campo es obligatorio *" })}
+                      >
+                        <option value="">Seleccionar...</option>
+                        {selectedProduct &&
+                          selectedProduct.map((product) => (
+                            <option key={product.id} value={product.id}>
+                              {product.name}
+                            </option>
+                          ))}
+                      </select>
+                      {errors.productId && <span className="invalid">{errors.productId.message}</span>}
+                    </FormGroup>
+                  </Col> */}
+                  {/* <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Phone</label>
+                      <input
+                        className="form-control"
+                        type="number"
+                        name="phone"
+                        defaultValue={Number(formData.phone)}
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                    </FormGroup>
+                  </Col> */}
+                  {/* <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Status</label>
+                      <div className="form-control-wrap">
+                        <RSelect
+                          options={filterStatus}
+                          defaultValue={{
+                            value: formData.status,
+                            label: formData.status,
+                          }}
+                          onChange={(e) => setFormData({ ...formData, status: e.value })}
+                        />
+                      </div>
+                    </FormGroup>
+                  </Col> */}
 
-                <form>
-                  <div className="container-fluid">
-                    <Row className="g-3">
-                      <Col lg="12">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 1
-                          </label>
-                          <div className="form-control-wrap">
-                            <input
-                              type="file"
-                              className="form-control"
-                              name=""
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              // defaultValue={formData.annualPayment}
-                            />
-                            {/* {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>} */}
-                          </div>
-                        </div>
-                      </Col>
-                      <Col lg="12">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 2
-                          </label>
-                          <div className="form-control-wrap">
-                            <input
-                              type="file"
-                              className="form-control"
-                              name=""
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              // defaultValue={formData.annualPayment}
-                            />
-                            {/* {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>} */}
-                          </div>
-                        </div>
-                      </Col>
-                      <Col lg="12">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 3
-                          </label>
-                          <div className="form-control-wrap">
-                            <input
-                              type="file"
-                              className="form-control"
-                              name=""
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                              // defaultValue={formData.annualPayment}
-                            />
-                            {/* {errors.annualPayment && <span className="invalid">{errors.annualPayment.message}</span>} */}
-                          </div>
-                        </div>
-                        <Col size="12">
-                          <Button color="primary" type="submit">
-                            <span>Subir Archivos</span>
-                          </Button>
-                        </Col>
-                      </Col>
-                    </Row>
-                  </div>
-                </form>
-              </Row>
-            </div>
-          </ModalBody>
-        </Modal>
-        {/* Modal Details */}
-
-        {/* Modal View Files */}
-        <Modal isOpen={view.viewChecklist} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
-          <ModalBody>
-            <a href="#cancel" className="close">
-              <Icon
-                name="cross-sm"
-                onClick={(ev) => {
-                  ev.preventDefault();
-                  onFormCancel();
-                }}
-              ></Icon>
-            </a>
-            <div className="nk-tnx-details mt-sm-3">
-              <div className="nk-modal-head mb-3">
-                <h5 className="title">Validar Documentos Checklist 1 del Cliente</h5>
-                <h3 className="sub-text">Documentación Necesaria</h3>
-                <Link to="/customer-library" className=" text-dark-50 w-100 bg-transparent">
-                  <span>
-                    <em className="icon ni ni-users-fill"></em>
-                  </span>
-                  <span className="nk-menu-text pl-1">Subir desde Lib. de Clientes</span>
-                </Link>
-              </div>
-              <Row className="gy-3">
-                <Col lg={6}>
-                  <span className="sub-text">N. de Operacion</span>
-                  <span className="caption-text">{formData.id}</span>
-                </Col>
-                <Col lg={6}>
-                  <span className="sub-text">Cliente</span>
-                  <span className="caption-text">{formData.customer}</span>
-                </Col>
-
-                <form>
-                  <div className="container-fluid">
-                    <Row className="g-3">
-                      <Col md="8">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 1
-                          </label>
-                          <div className="form-control-wrap">
-                            <input
-                              type="file"
-                              className="form-control"
-                              name=""
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                            />
-                          </div>
-                        </div>
-                      </Col>
-                      <Col md="4">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 1
-                          </label>
-                          <div className="form-control-wrap">
-                            <Link to="/customer-library/document-1" className=" text-dark-50 w-100 bg-transparent">
-                              <span>
-                                <em className="icon ni ni-eye "></em>
-                              </span>
-                              <span className="nk-menu-text pl-1 pt-1">Visualizar documento</span>
-                            </Link>
-                          </div>
-                        </div>
-                      </Col>
-
-                      <Col md="8">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 2
-                          </label>
-                          <div className="form-control-wrap">
-                            <input
-                              type="file"
-                              className="form-control"
-                              name=""
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                            />
-                          </div>
-                        </div>
-                      </Col>
-                      <Col md="4">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 2
-                          </label>
-                          <div className="form-control-wrap">
-                            <Link to="/customer-library/document-3" className=" text-dark-50 w-100 bg-transparent">
-                              <span>
-                                <em className="icon ni ni-eye "></em>
-                              </span>
-                              <span className="nk-menu-text pl-1 pt-1">Visualizar documento</span>
-                            </Link>
-                          </div>
-                        </div>
-                      </Col>
-
-                      <Col md="8">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 3
-                          </label>
-                          <div className="form-control-wrap">
-                            <input
-                              type="file"
-                              className="form-control"
-                              name=""
-                              ref={register({ required: "Este campo es obligatorio *" })}
-                            />
-                          </div>
-                        </div>
-                      </Col>
-                      <Col md="4">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="annual-payment">
-                            Documento 3
-                          </label>
-                          <div className="form-control-wrap">
-                            <Link to="/customer-library/document-3" className=" text-dark-50 w-100 bg-transparent">
-                              <span>
-                                <em className="icon ni ni-eye "></em>
-                              </span>
-                              <span className="nk-menu-text pl-1 pt-1">Visualizar documento</span>
-                            </Link>
-                          </div>
-                        </div>
-                      </Col>
-
-                      <Col size="12">
-                        <Button color="primary" type="submit">
-                          <span>Validar Archivos</span>
+                  <Col size="12">
+                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                      <li>
+                        <Button color="primary" size="md" type="submit">
+                          Update User
                         </Button>
-                      </Col>
-                    </Row>
-                  </div>
-                </form>
-              </Row>
+                      </li>
+                      <li>
+                        <a
+                          href="#cancel"
+                          onClick={(ev) => {
+                            ev.preventDefault();
+                            onFormCancel();
+                          }}
+                          className="link link-light"
+                        >
+                          Cancel
+                        </a>
+                      </li>
+                    </ul>
+                  </Col>
+                </Form>
+              </div>
             </div>
           </ModalBody>
         </Modal>
-        {/* Modal View files */}
       </Content>
     </React.Fragment>
   );
 };
-
-export default OperationDefault;
+export default DealList;

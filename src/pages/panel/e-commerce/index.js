@@ -48,11 +48,11 @@ const Dashboard = () => {
             </Col>
 
             <Col className="nk-menu-item text-center btn btn-outline-light" md="3" lg="3">
-              <Link to="/customer-library" className="nk-menu-link text-dark-50 w-100 bg-transparent">
+              <Link to="/customers-library" className="nk-menu-link text-dark-50 w-100 bg-transparent">
                 <span>
                   <em className="icon ni ni-users-fill"></em>
                 </span>
-                <span className="nk-menu-text pl-1">Lib. de Clientes</span>
+                <span className="nk-menu-text pl-1">Bibl. de Clientes</span>
               </Link>
             </Col>
 

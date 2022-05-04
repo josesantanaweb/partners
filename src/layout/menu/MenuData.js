@@ -40,6 +40,11 @@ const menu = [
     link: "/operation",
   },
   {
+    icon: "book-fill",
+    text: "Biblioteca de Clientes",
+    link: "/customers-library",
+  },
+  {
     icon: "building-fill",
     text: "Empresas",
     link: "/company",
