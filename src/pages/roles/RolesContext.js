@@ -1,21 +1,21 @@
 import React, { useState, createContext, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import AdvisersServices from "../../services/AdvisersServices";
+import RolesServices from "../../services/RolesServices";
 import { setAuthenticated } from "../../store/features/AuthSlice";
 
-export const AdviserContext = createContext();
+export const RolesContext = createContext();
 
-export const AdviserContextProvider = (props) => {
+export const RolesContextProvider = (props) => {
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
   useEffect(() => {
-    getAdviser();
+    getRoles();
   }, []);
 
-  const getAdviser = async () => {
+  const getRoles = async () => {
     try {
-      const advisers = await AdvisersServices.getAdvisers();
-      setData(advisers.data);
+      const roles = await RolesServices.getRoles();
+      setData(roles.data);
     } catch (error) {
       if (error.response.data.message === "Unauthorized") {
         localStorage.removeItem("access_token");
@@ -25,5 +25,5 @@ export const AdviserContextProvider = (props) => {
     }
   };
 
-  return <AdviserContext.Provider value={{ contextData: [data, setData] }}>{props.children}</AdviserContext.Provider>;
+  return <RolesContext.Provider value={{ contextData: [data, setData] }}>{props.children}</RolesContext.Provider>;
 };

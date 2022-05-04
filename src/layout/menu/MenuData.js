@@ -7,7 +7,17 @@ const menu = [
   {
     icon: "users-fill",
     text: "Clientes",
-    link: "/customer",
+    active: false,
+    subMenu: [
+      {
+        text: "Cliente Juridico",
+        link: "/customer-juridico",
+      },
+      {
+        text: "Cliente Final",
+        link: "/customer",
+      },
+    ],
   },
   {
     icon: "user-fill",
@@ -25,6 +35,11 @@ const menu = [
     link: "/operation",
   },
   {
+    icon: "book-fill",
+    text: "Biblioteca de Clientes",
+    link: "/customers-library",
+  },
+  {
     icon: "building-fill",
     text: "Empresas",
     link: "/company",
@@ -37,7 +52,7 @@ const menu = [
   {
     icon: "setting-fill",
     text: "Roles",
-    link: "/rols",
+    link: "/roles",
   },
 ];
 export default menu;

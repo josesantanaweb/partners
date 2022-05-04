@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from "react-redux";
 import {
   Block,
   BlockContent,
@@ -18,9 +18,9 @@ import Head from "../../layout/head/Head";
 import AuthFooter from "./AuthFooter";
 import { useForm } from "react-hook-form";
 import { Link, Redirect } from "react-router-dom";
-import AuthServices from '../../services/AuthServices';
-import {setAuthenticated} from '../../store/features/AuthSlice'
-import { isAuthenticatedSelector } from '../../store/selectors';
+import AuthServices from "../../services/AuthServices";
+import { setAuthenticated, setProfile } from "../../store/features/AuthSlice";
+import { isAuthenticatedSelector } from "../../store/selectors";
 
 const Login = () => {
   const isAuthenticated = useSelector(isAuthenticatedSelector);
@@ -32,10 +32,12 @@ const Login = () => {
   const onFormSubmit = async (formData) => {
     setLoading(true);
     try {
-      console.log(formData)
-      const response = await AuthServices.login(formData)
+      console.log(formData);
+      const response = await AuthServices.login(formData);
       localStorage.setItem("access_token", response.access_token);
+      localStorage.setItem("profile", JSON.stringify(response));
       dispatch(setAuthenticated(true));
+      dispatch(setProfile(JSON.stringify(response)));
       setLoading(false);
     } catch (error) {
       setError("Credensiales invalidas");
@@ -43,7 +45,6 @@ const Login = () => {
     }
   };
 
-  
   const { errors, register, handleSubmit } = useForm();
 
   if (isAuthenticated) {
@@ -97,7 +98,7 @@ const Login = () => {
                       type="email"
                       id="default-01"
                       name="email"
-                      defaultValue={"admin@mail.com"}
+                      defaultValue={"josesantana.web@gmail.com"}
                       ref={register({ required: "Este campo es requerido" })}
                       placeholder="Enter your email address or username"
                       className="form-control-lg form-control"
@@ -111,7 +112,7 @@ const Login = () => {
                       Contraseña
                     </label>
                     <Link className="link link-primary link-sm" to={`${process.env.PUBLIC_URL}/auth-reset`}>
-                      Olvido su Contraseña?
+                      Olvido Contraseña
                     </Link>
                   </div>
                   <div className="form-control-wrap">
@@ -131,7 +132,7 @@ const Login = () => {
                       type={passState ? "text" : "password"}
                       id="password"
                       name="password"
-                      defaultValue={"12345678"}
+                      defaultValue={"123456"}
                       ref={register({ required: "Este campo es requerido" })}
                       placeholder="Enter your passcode"
                       className={`form-control-lg form-control ${passState ? "is-hidden" : "is-shown"}`}
