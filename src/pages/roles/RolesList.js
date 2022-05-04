@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import {
   Block,
@@ -22,22 +22,35 @@ import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
 import { RolesContext } from "./RolesContext";
 import RolesServices from "../../services/RolesServices";
+import MenuServices from "../../services/MenuServices";
 
 const RolesList = () => {
   const { contextData } = useContext(RolesContext);
   const [data, setData] = contextData;
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
+  const [menuItems, setMenuItems] = useState([]);
 
   const [modal, setModal] = useState({
     edit: false,
     add: false,
   });
 
+  useEffect(() => {
+    getMenuItems();
+  }, []);
+
   const getRoles = async () => {
     try {
       const roles = await RolesServices.getRoles();
       setData(roles.data);
+    } catch (error) {}
+  };
+
+  const getMenuItems = async () => {
+    try {
+      const menu = await MenuServices.getMenuItems();
+      setMenuItems(menu);
     } catch (error) {}
   };
 
@@ -68,21 +81,19 @@ const RolesList = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { name, description } = submitData;
+    const { name, description, menuItems } = submitData;
+    const numberMenuItems = menuItems.map((i) => Number(i));
     let submittedData = {
       name: name,
       description: description,
+      menuItemsId: numberMenuItems,
     };
     try {
       await RolesServices.addRole(submittedData);
       resetForm();
       getRoles();
       setModal({ edit: false }, { add: false });
-    } catch (error) {
-      if (error.response.data.message === "This user already exists") {
-        setErrorMessage("Usuario ya existe");
-      }
-    }
+    } catch (error) {}
   };
 
   // submit function to update a new item
@@ -289,6 +300,25 @@ const RolesList = () => {
                       {errors.description && <span className="invalid">{errors.description.message}</span>}
                     </FormGroup>
                   </Col>
+
+                  {menuItems &&
+                    menuItems.map((item, i) => (
+                      <Col md="3" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="menuItems"
+                            value={item.id}
+                            class="custom-control-input form-control"
+                            id={item.text}
+                            ref={register()}
+                          />
+                          <label class="custom-control-label" htmlFor={item.text}>
+                            {item.text}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
 
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">

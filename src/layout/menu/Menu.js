@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import menu from "./MenuData";
+import { useDispatch } from "react-redux";
 import { NavLink, Link } from "react-router-dom";
 import Icon from "../../components/icon/Icon";
 import classNames from "classnames";
 import MenuServices from "../../services/MenuServices";
+import { setAuthenticated } from "../../store/features/AuthSlice";
 
 const MenuHeading = ({ heading }) => {
   return (
@@ -261,6 +263,7 @@ const MenuSub = ({ icon, link, text, sub, sidebarToggle, mobileView, ...props })
 };
 
 const Menu = ({ sidebarToggle, mobileView }) => {
+  const dispatch = useDispatch();
   const [data, setMenuData] = useState([]);
   useEffect(() => {
     data?.forEach((item, index) => {
@@ -282,7 +285,13 @@ const Menu = ({ sidebarToggle, mobileView }) => {
       const menu = await MenuServices.getMenu();
       setMenuData(menu);
       console.log(menu);
-    } catch (error) {}
+    } catch (error) {
+      if (error.response.data.message === "Unauthorized") {
+        localStorage.removeItem("access_token");
+        dispatch(setAuthenticated(false));
+        window.location.reload();
+      }
+    }
   };
 
   return (

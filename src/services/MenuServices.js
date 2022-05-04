@@ -9,6 +9,12 @@ const MenuServices = {
     });
     return response.data;
   },
+  getMenuItems: async () => {
+    const response = await api.get(`/menu-items`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
 };
 
 export default MenuServices;
