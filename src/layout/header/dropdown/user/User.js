@@ -33,9 +33,9 @@ const User = () => {
         <div className="user-toggle">
           <UserAvatar icon="user-alt" className="sm" />
           <div className="user-info d-none d-md-block">
-            <div className="user-status">Admin</div>
+            <div className="user-status">{data.session_type === "USER" ? "Admin" : "Asesor"}</div>
             <div className="user-name dropdown-indicator">
-              {data.name} {data.lastName}
+              {data.name} {data.paternalLastName}
             </div>
           </div>
         </div>

@@ -277,26 +277,26 @@ const Menu = ({ sidebarToggle, mobileView }) => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    // getMenu();
+    getMenu();
   }, []);
 
-  // const getMenu = async () => {
-  //   try {
-  //     const menu = await MenuServices.getMenu();
-  //     setMenuData(menu);
-  //     console.log(menu);
-  //   } catch (error) {
-  //     if (error.response.data.message === "Unauthorized") {
-  //       localStorage.removeItem("access_token");
-  //       dispatch(setAuthenticated(false));
-  //       window.location.reload();
-  //     }
-  //   }
-  // };
+  const getMenu = async () => {
+    try {
+      const menu = await MenuServices.getMenu();
+      setMenuData(menu);
+      console.log(menu);
+    } catch (error) {
+      if (error.response.data.message === "Unauthorized") {
+        localStorage.removeItem("access_token");
+        dispatch(setAuthenticated(false));
+        window.location.reload();
+      }
+    }
+  };
 
   return (
     <ul className="nk-menu">
-      {menu?.map((item, index) =>
+      {data?.map((item, index) =>
         item.heading ? (
           <MenuHeading heading={item.heading} key={item.heading} />
         ) : item.panel ? (
@@ -308,7 +308,7 @@ const Menu = ({ sidebarToggle, mobileView }) => {
             index={index}
             panel={item.panel}
             subPanel={item.subPanel}
-            data={menu}
+            data={data}
             setMenuData={setMenuData}
             sidebarToggle={sidebarToggle}
           />

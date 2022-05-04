@@ -264,7 +264,7 @@ const AdviserList = () => {
               />
             ) : (
               <div className="text-center">
-                <span className="text-silent">No data found</span>
+                <span className="text-silent">Sin Registros</span>
               </div>
             )}
           </PreviewAltCard>
