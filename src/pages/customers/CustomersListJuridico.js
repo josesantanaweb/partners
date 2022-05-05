@@ -752,7 +752,7 @@ const CustomersListJuridico = () => {
                       <RSelect
                         isSearchable={false}
                         options={countriesOptions}
-                        defaultValue={formData.address.countryId}
+                        defaultValue={countriesOptions[0]}
                         onChange={onCountriesChange}
                       />
                     </FormGroup>
@@ -973,7 +973,7 @@ const CustomersListJuridico = () => {
                       <RSelect
                         isSearchable={false}
                         options={citiesOptions}
-                        defaultValue={editData?.address?.stateId}
+                        defaultValue={countriesOptions[0]}
                         onChange={onCitiesChange}
                       />
                     </FormGroup>
