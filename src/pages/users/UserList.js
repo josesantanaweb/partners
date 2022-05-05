@@ -152,8 +152,9 @@ const UserListDefaultPage = () => {
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
                     <li className="nk-block-tools-opt">
-                      <Button color="primary" className="btn-icon" onClick={() => setModal({ add: true })}>
-                        <Icon name="plus"></Icon>
+                      <Button color="primary" onClick={() => setModal({ add: true })}>
+                        <Icon name="plus" className="mr-1"></Icon>
+                        Agregar Usuario
                       </Button>
                     </li>
                   </ul>

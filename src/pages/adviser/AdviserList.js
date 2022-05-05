@@ -18,10 +18,12 @@ import {
   TooltipComponent,
   PreviewAltCard,
 } from "../../components/Component";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import { findUpper } from "../../utils/Utils";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { AdviserContext } from "./AdviserContext";
 import AdvisersServices from "../../services/AdvisersServices";
 
@@ -30,6 +32,8 @@ const AdviserList = () => {
   const [data, setData] = contextData;
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
+  const [birthDate, setBirthDate] = useState(new Date());
+  const [editBirthDate, setEditBirthDate] = useState(new Date());
 
   const [modal, setModal] = useState({
     edit: false,
@@ -49,6 +53,7 @@ const AdviserList = () => {
     email: "",
     password: "",
     mobilePhone: "",
+    landlinePhone: "",
     observation: "",
   });
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,7 +61,7 @@ const AdviserList = () => {
 
   const [sm, updateSm] = useState(false);
 
-  const { errors, register, handleSubmit } = useForm();
+  const { errors, register, handleSubmit, control } = useForm();
 
   // Function to reset the form
   const resetForm = () => {
@@ -66,6 +71,7 @@ const AdviserList = () => {
       email: "",
       password: "",
       mobilePhone: "",
+      landlinePhone: "",
       observation: "",
     });
   };
@@ -86,6 +92,7 @@ const AdviserList = () => {
       password: password,
       observation: observation,
       mobilePhone: mobilePhone,
+      birthDate: birthDate,
     };
     try {
       await AdvisersServices.addAdviser(submittedData);
@@ -102,12 +109,14 @@ const AdviserList = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { name, paternalLastName, mobilePhone, observation } = submitData;
+    const { name, paternalLastName, mobilePhone, observation, landlinePhone } = submitData;
     let submittedData = {
       name: name,
       paternalLastName: paternalLastName,
       mobilePhone: mobilePhone,
+      landlinePhone: landlinePhone,
       observation: observation,
+      birthDate: editBirthDate,
     };
 
     try {
@@ -127,6 +136,7 @@ const AdviserList = () => {
   const onEditClick = (id, data) => {
     setModal({ edit: true }, { add: false });
     setEditData(data);
+    setEditBirthDate(new Date(data.birthDate));
   };
 
   // Function to change to delete property for an item
@@ -374,6 +384,31 @@ const AdviserList = () => {
                     </FormGroup>
                   </Col>
 
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Telefono 2</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="landlinePhone"
+                        defaultValue={formData.landlinePhone}
+                        placeholder="Ingresa telefono"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Fecha de nacimiento</label>
+                      <DatePicker
+                        selected={birthDate}
+                        className="form-control"
+                        onChange={(date) => setBirthDate(date)}
+                      />
+                    </FormGroup>
+                  </Col>
+
                   <Col md="12">
                     <FormGroup>
                       <label className="form-label">Observacion</label>
@@ -383,7 +418,7 @@ const AdviserList = () => {
                         placeholder="Ingresa Observacion"
                         cols="30"
                         rows="10"
-                        defaultValue={formData?.observation}
+                        defaultValue={formData.observation}
                         ref={register()}
                       />
                     </FormGroup>
@@ -481,6 +516,32 @@ const AdviserList = () => {
                         defaultValue={editData?.mobilePhone}
                         placeholder="Ingresa telefono"
                         ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Telefono 2</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="landlinePhone"
+                        defaultValue={editData?.landlinePhone}
+                        placeholder="Ingresa telefono 2"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Fecha de nacimiento</label>
+                      <DatePicker
+                        selected={editBirthDate}
+                        className="form-control"
+                        defaultValue={editData?.birthDate}
+                        onChange={(date) => setEditBirthDate(date)}
                       />
                     </FormGroup>
                   </Col>

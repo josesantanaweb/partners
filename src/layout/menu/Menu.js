@@ -284,7 +284,6 @@ const Menu = ({ sidebarToggle, mobileView }) => {
     try {
       const menu = await MenuServices.getMenu();
       setMenuData(menu);
-      console.log(menu);
     } catch (error) {
       if (error.response.data.message === "Unauthorized") {
         localStorage.removeItem("access_token");
