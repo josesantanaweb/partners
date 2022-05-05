@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import {
   Block,
@@ -17,6 +17,7 @@ import {
   DataTableItem,
   TooltipComponent,
   PreviewAltCard,
+  RSelect,
 } from "../../components/Component";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
@@ -24,23 +25,54 @@ import { findUpper } from "../../utils/Utils";
 import { useForm } from "react-hook-form";
 import { UserContext } from "./UserContext";
 import UsersServices from "../../services/UsersServices";
+import RolesServices from "../../services/RolesServices";
 
 const UserListDefaultPage = () => {
   const { contextData } = useContext(UserContext);
   const [data, setData] = contextData;
+  const [roles, setRoles] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
+  const [rolesOptions, setRolesOptions] = useState([]);
+  const [roleDefaultEdit, setRoleDefaultEdit] = useState({});
+  const [roleId, setRoleId] = useState(1);
 
   const [modal, setModal] = useState({
     edit: false,
     add: false,
   });
 
+  useEffect(() => {
+    getRoles();
+  }, []);
+
+  useEffect(() => {
+    if (roles !== undefined) {
+      rolesOptionsData();
+    }
+  }, [roles]);
+
   const getUser = async () => {
     try {
       const users = await UsersServices.getUsers();
       setData(users.data);
     } catch (error) {}
+  };
+
+  const getRoles = async () => {
+    try {
+      const roles = await RolesServices.getRoles();
+      setRoles(roles?.data);
+    } catch (error) {}
+  };
+
+  const rolesOptionsData = () => {
+    const rolesOptionsData = roles?.map((item) => ({ label: item.name, value: item.id }));
+    setRolesOptions(rolesOptionsData);
+  };
+
+  const onRolesChange = (value) => {
+    setRoleId(value.value);
   };
 
   const [formData, setFormData] = useState({
@@ -77,6 +109,7 @@ const UserListDefaultPage = () => {
       lastName: lastName,
       email: email,
       password: password,
+      rolId: roleId,
     };
     try {
       await UsersServices.addUser(submittedData);
@@ -96,6 +129,7 @@ const UserListDefaultPage = () => {
     let submittedData = {
       name: name,
       lastName: lastName,
+      rolId: roleId,
     };
     try {
       await UsersServices.editUser(editData.id, submittedData);
@@ -109,6 +143,12 @@ const UserListDefaultPage = () => {
   const onEditClick = (id, data) => {
     setModal({ edit: true }, { add: false });
     setEditData(data);
+    const filterRole = roles.filter((item) => item.id === data?.rol?.id);
+    const defaultRoleEdit = {
+      label: filterRole[0].name,
+      value: filterRole[0].id,
+    };
+    setRoleDefaultEdit(defaultRoleEdit);
   };
 
   // Function to change to delete property for an item
@@ -344,6 +384,18 @@ const UserListDefaultPage = () => {
                     </FormGroup>
                   </Col>
 
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Rol</label>
+                      <RSelect
+                        isSearchable={false}
+                        options={rolesOptions}
+                        onChange={onRolesChange}
+                        defaultValue={rolesOptions[0]}
+                      />
+                    </FormGroup>
+                  </Col>
+
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
@@ -415,6 +467,18 @@ const UserListDefaultPage = () => {
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.lastName && <span className="invalid">{errors.lastName.message}</span>}
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Rol</label>
+                      <RSelect
+                        isSearchable={false}
+                        options={rolesOptions}
+                        defaultValue={roleDefaultEdit}
+                        onChange={onRolesChange}
+                      />
                     </FormGroup>
                   </Col>
 
