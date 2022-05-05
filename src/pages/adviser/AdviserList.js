@@ -23,7 +23,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import { findUpper } from "../../utils/Utils";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { AdviserContext } from "./AdviserContext";
 import AdvisersServices from "../../services/AdvisersServices";
 
@@ -61,7 +61,7 @@ const AdviserList = () => {
 
   const [sm, updateSm] = useState(false);
 
-  const { errors, register, handleSubmit, control } = useForm();
+  const { errors, register, handleSubmit } = useForm();
 
   // Function to reset the form
   const resetForm = () => {

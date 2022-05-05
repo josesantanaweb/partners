@@ -31,7 +31,6 @@ const CompanyList = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
   const [countries, setCountries] = useState();
-  const [editCountry, setEditCountry] = useState();
   const [cities, setCities] = useState();
   const [countriesOptions, setCountriesOptions] = useState([]);
   const [citiesOptions, setCitiesOptions] = useState([]);
@@ -201,12 +200,6 @@ const CompanyList = () => {
   const onEditClick = (id, data) => {
     setModal({ edit: true }, { add: false });
     setEditData(data);
-    const filterCountry = countries.filter((value) => value.id === editData?.address.countryId);
-    const editCountry = {
-      label: filterCountry[0].name,
-      value: filterCountry[0].id,
-    };
-    setEditCountry(editCountry);
   };
 
   // Function to change to delete property for an item
@@ -419,7 +412,7 @@ const CompanyList = () => {
                       <RSelect
                         isSearchable={false}
                         options={countriesOptions}
-                        defaultValue={formData.address.countryId}
+                        defaultValue={countriesOptions[0]}
                         onChange={onCountriesChange}
                       />
                     </FormGroup>
@@ -431,7 +424,7 @@ const CompanyList = () => {
                       <RSelect
                         isSearchable={false}
                         options={citiesOptions}
-                        defaultValue={formData.address.stateId}
+                        defaultValue={citiesOptions[0]}
                         onChange={onCitiesChange}
                       />
                     </FormGroup>
@@ -568,8 +561,8 @@ const CompanyList = () => {
                       <RSelect
                         isSearchable={false}
                         options={countriesOptions}
-                        defaultValue={editCountry}
                         onChange={onCountriesChange}
+                        defaultValue={countriesOptions[0]}
                       />
                     </FormGroup>
                   </Col>
