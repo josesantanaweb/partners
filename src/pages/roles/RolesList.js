@@ -98,10 +98,12 @@ const RolesList = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { name, description } = submitData;
+    const { name, description, menuItems } = submitData;
+    const numberMenuItems = menuItems.map((i) => Number(i));
     let submittedData = {
       name: name,
       description: description,
+      menuItemsId: numberMenuItems,
     };
 
     try {
@@ -309,11 +311,11 @@ const RolesList = () => {
                             type="checkbox"
                             name="menuItems"
                             value={item.id}
-                            class="custom-control-input form-control"
+                            className="custom-control-input form-control"
                             id={item.text}
                             ref={register()}
                           />
-                          <label class="custom-control-label" htmlFor={item.text}>
+                          <label className="custom-control-label" htmlFor={item.text}>
                             {item.text}
                           </label>
                         </div>
@@ -393,6 +395,25 @@ const RolesList = () => {
                       {errors.description && <span className="invalid">{errors.description.message}</span>}
                     </FormGroup>
                   </Col>
+
+                  {menuItems &&
+                    menuItems.map((item, i) => (
+                      <Col md="3" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="menuItems"
+                            value={item.id}
+                            className="custom-control-input form-control"
+                            id={item.text}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.text}>
+                            {item.text}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
 
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
