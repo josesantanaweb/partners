@@ -115,7 +115,7 @@ const Metting = () => {
 
   return (
     <React.Fragment>
-      <Head title="Calender" />
+      <Head title="Calendario" />
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
