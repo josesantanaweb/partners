@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Content from "../../../layout/content/Content";
 import Head from "../../../layout/head/Head";
 import CalenderApp from "../../../components/partials/calender/Calender";
@@ -16,13 +16,18 @@ import {
   Row,
   RSelect,
 } from "../../../components/Component";
-import { eventOptions, events } from "../../../components/partials/calender/CalenderData";
+import { events } from "../../../components/partials/calender/CalenderData";
 import { useForm } from "react-hook-form";
 import { setDateForPicker } from "../../../utils/Utils";
+import MettingServices from "../../../services/MettingServices";
 
-const Calender = () => {
+const Metting = () => {
   const [modal, setModal] = useState(false);
   const [mockEvents, updateEvent] = useState(events);
+  const [mettings, setMettings] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [categoriesOptions, setCategoriesOptions] = useState([]);
+  const [categoryId, setCategoryId] = useState();
   const [dates, setDates] = useState({
     startDate: new Date(),
     startTime: new Date(),
@@ -33,36 +38,79 @@ const Calender = () => {
   const toggle = () => {
     setModal(!modal);
   };
+
+  useEffect(() => {
+    getMettings();
+  }, []);
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  useEffect(() => {
+    if (categories !== undefined) {
+      categoriesOptionsData();
+    }
+  }, [categories]);
+
+  const getMettings = async () => {
+    try {
+      const mettings = await MettingServices.getMettings();
+      setMettings(mettings.data);
+    } catch (error) {}
+  };
+
+  const getCategories = async () => {
+    try {
+      const categories = await MettingServices.getCategories();
+      setCategories(categories);
+    } catch (error) {}
+  };
+
+  const categoriesOptionsData = () => {
+    const categoriesOptionsData = categories?.map((item) => ({ label: item.name, value: item.id }));
+    setCategoriesOptions(categoriesOptionsData);
+  };
+
+  const onCategoriesChange = (value) => {
+    setCategoryId(value.value);
+  };
+
   const { errors, register, handleSubmit } = useForm();
 
-  const handleFormSubmit = (formData) => {
+  const handleFormSubmit = async (formData) => {
     let newEvent = {
-      id: "default-event-id-" + Math.floor(Math.random() * 9999999),
       title: formData.title,
       start: setDateForPicker(dates.startDate),
       end: setDateForPicker(dates.endDate),
       description: formData.description,
-      className: theme.value,
-      type: theme,
+      categoryId: categoryId,
     };
-    updateEvent([...mockEvents, newEvent]);
-    settheme({
-      value: "fc-event-primary",
-      label: "Company",
-    });
+    try {
+      await MettingServices.addMetting(newEvent);
+      getMettings();
+    } catch (error) {}
     toggle();
   };
 
-  const editEvent = (formData) => {
+  const editEvent = async (formData) => {
     let newEvents = mockEvents;
     const index = newEvents.findIndex((item) => item.id === formData.id);
     events[index] = formData;
-    updateEvent([...events]);
+    console.log(events[index]);
+    try {
+      await MettingServices.editMetting(events[index].id, events[index]);
+      getMettings();
+    } catch (error) {}
   };
 
-  const deleteEvent = (id) => {
+  const deleteEvent = async (id) => {
     let filteredEvents = mockEvents.filter((item) => item.id !== id);
     updateEvent(filteredEvents);
+    try {
+      await MettingServices.deleteMetting(id);
+      getMettings();
+    } catch (error) {}
   };
 
   return (
@@ -72,31 +120,37 @@ const Calender = () => {
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
-              <BlockTitle page>Calendar</BlockTitle>
+              <BlockTitle page>Agenda</BlockTitle>
             </BlockHeadContent>
             <BlockHeadContent>
               <Button color="primary" onClick={toggle}>
                 <Icon name="plus" />
-                <span>Add Event</span>
+                <span>Agregar evento</span>
               </Button>
             </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
         <Block>
           <PreviewAltCard>
-            <CalenderApp events={mockEvents} onDelete={deleteEvent} onEdit={editEvent} />
+            <CalenderApp
+              events={mettings}
+              onDelete={deleteEvent}
+              onEdit={editEvent}
+              categoriesOptions={categoriesOptions}
+              onCategoriesChange={onCategoriesChange}
+            />
           </PreviewAltCard>
         </Block>
       </Content>
       <Modal isOpen={modal} toggle={toggle} className="modal-md">
-        <ModalHeader toggle={toggle}>Add Event</ModalHeader>
+        <ModalHeader toggle={toggle}>Agregar evento</ModalHeader>
         <ModalBody>
           <form className="form-validate is-alter" onSubmit={handleSubmit(handleFormSubmit)}>
             <Row className="gx-4 gy-3">
               <Col size="12">
                 <FormGroup>
                   <label className="form-label" htmlFor="event-title">
-                    Event Title
+                    Titulo de evento
                   </label>
                   <div className="form-control-wrap">
                     <input
@@ -106,13 +160,13 @@ const Calender = () => {
                       className="form-control"
                       ref={register({ required: true })}
                     />
-                    {errors.title && <p className="invalid">This field is required</p>}
+                    {errors.title && <p className="invalid">Este campo es requerido</p>}
                   </div>
                 </FormGroup>
               </Col>
               <Col sm="6">
                 <FormGroup>
-                  <label className="form-label">Start Date &amp; Time</label>
+                  <label className="form-label">Inicio</label>
                   <Row className="gx-2">
                     <div className="w-55">
                       <div className="form-control-wrap">
@@ -142,7 +196,7 @@ const Calender = () => {
               </Col>
               <Col sm="6">
                 <FormGroup>
-                  <label className="form-label">End Date &amp; Time</label>
+                  <label className="form-label">Final</label>
                   <Row className="gx-2">
                     <div className="w-55">
                       <div className="form-control-wrap">
@@ -173,7 +227,7 @@ const Calender = () => {
               <Col size="12">
                 <FormGroup>
                   <label className="form-label" htmlFor="event-description">
-                    Event Description
+                    Descripcion de evento
                   </label>
                   <div className="form-control-wrap">
                     <textarea
@@ -183,21 +237,21 @@ const Calender = () => {
                       ref={register({ required: true })}
                     ></textarea>
 
-                    {errors.description && <p className="invalid">This field is required</p>}
+                    {errors.description && <p className="invalid">Este campo es requerido</p>}
                   </div>
                 </FormGroup>
               </Col>
               <Col size="12">
                 <FormGroup>
-                  <label className="form-label">Event Category</label>
+                  <label className="form-label">Categoria</label>
                   <div className="form-control-wrap">
                     <RSelect
-                      options={eventOptions}
+                      options={categoriesOptions}
                       defaultValue={{
-                        value: "fc-event-primary",
-                        label: "Company",
+                        value: 1,
+                        label: "Reunion Presencial",
                       }}
-                      onChange={(e) => settheme(e)}
+                      onChange={onCategoriesChange}
                       //ref={register({ required: true })}
                     />
                   </div>
@@ -207,12 +261,12 @@ const Calender = () => {
                 <ul className="d-flex justify-content-between gx-4 mt-1">
                   <li>
                     <Button type="submit" color="primary">
-                      Add Event
+                      Agregar evento
                     </Button>
                   </li>
                   <li>
                     <Button color="danger" className="btn-dim" onClick={toggle}>
-                      Discard
+                      Cancelar
                     </Button>
                   </li>
                 </ul>
@@ -224,4 +278,4 @@ const Calender = () => {
     </React.Fragment>
   );
 };
-export default Calender;
+export default Metting;

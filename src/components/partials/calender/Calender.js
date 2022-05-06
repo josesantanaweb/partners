@@ -9,29 +9,13 @@ import { Popover, PopoverHeader, PopoverBody, ModalHeader, Modal, ModalBody, For
 import { useForm } from "react-hook-form";
 import { Col, Row, RSelect } from "../../Component";
 import { setDateForPicker } from "../../../utils/Utils";
-import { eventOptions, returnDate } from "./CalenderData";
+import moment from "moment";
+import "moment/locale/es";
 
-const EventView = (event) => {
-  const [mouseEnter, setMouseEnter] = useState(false);
-  const { title, extendedProps, publicId } = event.event.event._def;
-  return (
-    <React.Fragment>
-      <div id={publicId} onMouseEnter={() => setMouseEnter(true)} onMouseLeave={() => setMouseEnter(false)}>
-        {title}
-      </div>{" "}
-      <Popover placement="bottom" isOpen={mouseEnter} target={publicId}>
-        <PopoverHeader>{title}</PopoverHeader>
-        <PopoverBody>{extendedProps.description}</PopoverBody>
-      </Popover>
-    </React.Fragment>
-  );
-};
-
-const CalenderApp = ({ events, onDelete, onEdit }) => {
+const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions, onCategoriesChange }) => {
   const [modalState, updateModal] = useState(false);
   const [mockEvents, updateEvents] = useState(events);
   const [event, updateEvent] = useState({});
-  const [theme, settheme] = useState();
   const [edit, updateEditModal] = useState(false);
   const [dates, setDates] = useState({
     startDate: new Date(),
@@ -50,15 +34,12 @@ const CalenderApp = ({ events, onDelete, onEdit }) => {
     let newEvent = {};
     newEvent = {
       id: event.id,
-      className: theme.value,
-      type: theme,
       title: formData.title,
       start: event.start,
       end: event.end,
-      description: formData.description,
+      description: null,
     };
     onEdit(newEvent);
-    settheme("");
     toggleEdit();
   };
 
@@ -71,9 +52,8 @@ const CalenderApp = ({ events, onDelete, onEdit }) => {
   };
 
   const handleEventClick = (info) => {
-    const event = events.find((item) => item.id === info.event._def.publicId);
+    const event = events.find((item) => item.id === Number(info.event._def.publicId));
     updateEvent(event);
-    settheme(event.type);
     toggle();
   };
 
@@ -92,7 +72,6 @@ const CalenderApp = ({ events, onDelete, onEdit }) => {
         themeSystem="bootstrap"
         height={800}
         contentHeight={780}
-        eventContent={(e) => <EventView event={e} />}
         aspectRatio={3}
         editable={true}
         droppable={true}
@@ -105,15 +84,15 @@ const CalenderApp = ({ events, onDelete, onEdit }) => {
         <ModalBody>
           <Row className="gy-3 py-1">
             <Col sm="6">
-              <h6 className="overline-title">Start Time</h6>
-              <p id="preview-event-start">{event && returnDate(event.start)}</p>
+              <h6 className="overline-title">Inicio</h6>
+              <p id="preview-event-start">{event && moment(event.start).format("MMMM Do YYYY")}</p>
             </Col>
             <Col sm="6" id="preview-event-end-check">
-              <h6 className="overline-title">End Time</h6>
-              <p id="preview-event-end">{event && returnDate(event.end)}</p>
+              <h6 className="overline-title">Final</h6>
+              <p id="preview-event-end">{event && moment(event.end).format("MMMM Do YYYY")}</p>
             </Col>
             <Col sm="10" id="preview-event-description-check">
-              <h6 className="overline-title">Description</h6>
+              <h6 className="overline-title">Descripcion</h6>
               <p id="preview-event-description">{event && event.description}</p>
             </Col>
           </Row>
@@ -126,7 +105,7 @@ const CalenderApp = ({ events, onDelete, onEdit }) => {
                   toggleEdit();
                 }}
               >
-                Edit Event
+                Editar Evento
               </Button>
             </li>
             <li>
@@ -135,24 +114,24 @@ const CalenderApp = ({ events, onDelete, onEdit }) => {
                 className="btn-dim"
                 onClick={() => {
                   toggle();
-                  onDelete(event && event.id);
+                  // onDelete(event && event.id);
                 }}
               >
-                Delete
+                Borrar
               </Button>
             </li>
           </ul>
         </ModalBody>
       </Modal>
       <Modal isOpen={edit} toggle={toggleEdit} className="modal-md">
-        <ModalHeader toggle={toggleEdit}>Edit Event</ModalHeader>
+        <ModalHeader toggle={toggleEdit}>Editar Evento</ModalHeader>
         <ModalBody>
           <form className="form-validate is-alter" onSubmit={handleSubmit(handleFormSubmit)}>
             <Row className="gx-4 gy-3">
               <Col size="12">
                 <FormGroup>
                   <label className="form-label" htmlFor="event-title">
-                    Event Title
+                    Titulo de Evento
                   </label>
                   <div className="form-control-wrap">
                     <input
@@ -160,16 +139,15 @@ const CalenderApp = ({ events, onDelete, onEdit }) => {
                       id="event-title"
                       name="title"
                       className="form-control"
-                      ref={register({ required: true })}
+                      ref={register()}
                       defaultValue={event.title}
                     />
-                    {errors.title && <p className="invalid">This field is required</p>}
                   </div>
                 </FormGroup>
               </Col>
               <Col sm="6">
                 <FormGroup>
-                  <label className="form-label">Start Date &amp; Time</label>
+                  <label className="form-label">Inicio</label>
                   <Row className="gx-2">
                     <div className="w-55">
                       <div className="form-control-wrap">
@@ -199,7 +177,7 @@ const CalenderApp = ({ events, onDelete, onEdit }) => {
               </Col>
               <Col sm="6">
                 <FormGroup>
-                  <label className="form-label">End Date &amp; Time</label>
+                  <label className="form-label">Final</label>
                   <Row className="gx-2">
                     <div className="w-55">
                       <div className="form-control-wrap">
@@ -230,28 +208,30 @@ const CalenderApp = ({ events, onDelete, onEdit }) => {
               <Col size="12">
                 <FormGroup>
                   <label className="form-label" htmlFor="event-description">
-                    Event Description
+                    Descripcion de Evento
                   </label>
                   <div className="form-control-wrap">
                     <textarea
                       className="form-control"
                       id="event-description"
                       name="description"
-                      ref={register({ required: true })}
+                      ref={register()}
                       defaultValue={event.description}
                     ></textarea>
-                    {errors.description && <p className="invalid">This field is required</p>}
                   </div>
                 </FormGroup>
               </Col>
               <Col size="12">
                 <FormGroup>
-                  <label className="form-label">Event Category</label>
+                  <label className="form-label">Categoria</label>
                   <div className="form-control-wrap">
                     <RSelect
-                      options={eventOptions}
-                      defaultValue={event.type}
-                      onChange={(e) => settheme(e)}
+                      options={categoriesOptions}
+                      defaultValue={{
+                        value: 1,
+                        label: "Reunion Presencial",
+                      }}
+                      onChange={onCategoriesChange}
                       //ref={register({ required: true })}
                     />
                   </div>
@@ -261,12 +241,12 @@ const CalenderApp = ({ events, onDelete, onEdit }) => {
                 <ul className="d-flex justify-content-between gx-4 mt-1">
                   <li>
                     <Button type="submit" color="primary">
-                      Update Event
+                      Editar Evento
                     </Button>
                   </li>
                   <li>
                     <Button color="danger" className="btn-dim" onClick={toggleEdit}>
-                      Discard
+                      Cancelar
                     </Button>
                   </li>
                 </ul>

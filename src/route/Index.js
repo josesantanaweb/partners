@@ -19,7 +19,7 @@ import Adviser from "../pages/adviser/AdviserList";
 import Roles from "../pages/roles/RolesList";
 import Products from "../pages/products/ProductsList";
 import Company from "../pages/company/CompanyList";
-import Agenda from "../pages/app/calender/Calender";
+import Metting from "../pages/app/Metting/Calender";
 import EcomDashboard from "../pages/panel/e-commerce/index";
 import CustomersLibrary from "../pages/customersLibrary/CustomersLibrary";
 
@@ -116,7 +116,7 @@ const Pages = () => {
             </CompanyContextProvider>
           )}
         ></Route>
-        <Route exact path={`${process.env.PUBLIC_URL}/calendar`} render={() => <Agenda />}></Route>
+        <Route exact path={`${process.env.PUBLIC_URL}/calendar`} render={() => <Metting />}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/`} component={Homepage}></Route>
         <Route component={RedirectAs404}></Route>
       </Switch>
