@@ -63,7 +63,11 @@ const RolesList = () => {
 
   const [sm, updateSm] = useState(false);
 
-  const { errors, register, handleSubmit } = useForm();
+  const { errors, register, handleSubmit, reset } = useForm({
+    defaultValues: {
+      menuItems: [],
+    },
+  });
 
   // Function to reset the form
   const resetForm = () => {
@@ -99,6 +103,7 @@ const RolesList = () => {
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
     const { name, description, menuItems } = submitData;
+    console.log(submitData);
     const numberMenuItems = menuItems.map((i) => Number(i));
     let submittedData = {
       name: name,
@@ -118,6 +123,9 @@ const RolesList = () => {
   const onEditClick = (id, data) => {
     setModal({ edit: true }, { add: false });
     setEditData(data);
+    reset({
+      menuItems: data.menuItemsId.map((item) => String(item)),
+    });
   };
 
   // Function to change to delete property for an item
@@ -404,6 +412,7 @@ const RolesList = () => {
                             type="checkbox"
                             name="menuItems"
                             value={item.id}
+                            defaultValue={editData?.menuItemsId.includes(item.id)}
                             className="custom-control-input form-control"
                             id={item.text}
                             ref={register()}
