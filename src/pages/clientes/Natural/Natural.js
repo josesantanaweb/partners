@@ -24,16 +24,19 @@ import { NaturalContext } from "../NaturalContext";
 import classnames from "classnames";
 import AddMainInformation from "./components/Add/MainInformation";
 import EditMainInformation from "./components/Edit/MainInformation";
-import EmploymentHistory from "./components/EmploymentHistory";
+import AccountData from "./components/Edit/AccountData";
+import EmploymentHistory from "./components/Edit/EmploymentHistory";
+import PersonalReferences from "./components/Edit/PersonalReferences";
+import InvestmentExperience from "./components/Edit/InvestmentExperience";
+import SpousalHistory from "./components/Edit/SpousalHistory";
 import CustomersServices from "../../../services/CustomersServices";
-import AccountData from "./components/AccountData";
 
 const Natural = () => {
   const { contextData } = useContext(NaturalContext);
   const [data, setData] = contextData;
 
   const [sm, updateSm] = useState(false);
-  const [modal, setModal] = useState({ edit: false, add: false });
+  const [modal, setModal] = useState({ edit: false, add: false, document: false });
   const [editData, setEditData] = useState();
   const [addActiveTab, setAddActiveTab] = useState("1");
   const [currentPage, setCurrentPage] = useState(1);
@@ -97,13 +100,20 @@ const Natural = () => {
 
   // Cerrar modal
   const onFormCancel = () => {
-    setModal({ edit: false, add: false });
+    setModal({ edit: false, add: false, document: false });
   };
 
   // Edit data
   const onEditClick = (id, data) => {
-    setModal({ edit: true }, { add: false });
+    setModal({ edit: true }, { add: false }, { document: false });
     setEditData(data);
+  };
+
+  // Edit ficha
+  const onDocumentClick = (id, data) => {
+    setModal({ document: true }, { add: false }, { edit: false });
+    setEditData(data);
+    console.log(data);
   };
 
   // Delete
@@ -227,6 +237,16 @@ const Natural = () => {
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
+                          <li className="nk-tb-action-hidden" onClick={() => onDocumentClick(item.id, item)}>
+                            <TooltipComponent
+                              tag="a"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"file" + 1}
+                              icon="file-fill"
+                              direction="top"
+                              text="Editar"
+                            />
+                          </li>
                           <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
@@ -335,6 +355,93 @@ const Natural = () => {
                 <TabPane tabId="1">
                   {editData && <EditMainInformation setModal={setModal} editData={editData} />}
                 </TabPane>
+              </TabContent>
+            </div>
+          </ModalBody>
+        </Modal>
+
+        <Modal
+          isOpen={modal.document}
+          toggle={() => setModal({ document: false })}
+          className="modal-dialog-centered"
+          size="lg"
+          style={{ maxWidth: "1100px" }}
+        >
+          <ModalBody>
+            <a
+              href="#close"
+              onClick={(ev) => {
+                ev.preventDefault();
+                onFormCancel();
+              }}
+              className="close"
+            >
+              <Icon name="cross-sm"></Icon>
+            </a>
+            <div className="p-2">
+              <h5 className="title">Editar Cliente</h5>
+              <Nav tabs>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={classnames({ active: addActiveTab === "1" })}
+                    onClick={() => setAddActiveTab("1")}
+                  >
+                    Informacion Bancaria
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={classnames({ active: addActiveTab === "2" })}
+                    onClick={() => setAddActiveTab("2")}
+                  >
+                    Historia laboral
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={classnames({ active: addActiveTab === "3" })}
+                    onClick={() => setAddActiveTab("3")}
+                  >
+                    Referencias Personales
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={classnames({ active: addActiveTab === "4" })}
+                    onClick={() => setAddActiveTab("4")}
+                  >
+                    Experiencia de Inversión
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={classnames({ active: addActiveTab === "5" })}
+                    onClick={() => setAddActiveTab("5")}
+                  >
+                    Historia conyugal
+                  </NavLink>
+                </NavItem>
+              </Nav>
+              <TabContent activeTab={addActiveTab}>
+                <TabPane tabId="1">{editData && <AccountData setModal={setModal} editData={editData} />}</TabPane>
+                <TabPane tabId="2">{editData && <EmploymentHistory setModal={setModal} editData={editData} />}</TabPane>
+                <TabPane tabId="3">
+                  {editData && <PersonalReferences setModal={setModal} editData={editData} />}
+                </TabPane>
+                <TabPane tabId="4">
+                  {editData && <InvestmentExperience setModal={setModal} editData={editData} />}
+                </TabPane>
+                <TabPane tabId="5">{editData && <SpousalHistory setModal={setModal} editData={editData} />}</TabPane>
               </TabContent>
             </div>
           </ModalBody>

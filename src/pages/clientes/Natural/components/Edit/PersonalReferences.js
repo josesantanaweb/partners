@@ -1,46 +1,86 @@
 import React from "react";
 import { FormGroup, Form } from "reactstrap";
 import { useForm } from "react-hook-form";
-import { Col, Button } from "../../../../components/Component";
+import { Col, Button } from "../../../../../components/Component";
+import CustomersServices from "../../../../../services/CustomersServices";
 
-const AccountData = ({ setModal, formData }) => {
+const PersonalReferences = ({ setModal, editData }) => {
   // useForm
   const { register, handleSubmit } = useForm();
-
-  // Agreagar cliente
-  const onFormSubmit = async (submitData) => {
-    console.log(submitData);
-  };
 
   // Cerrar modal
   const onFormCancel = () => {
     setModal({ edit: false, add: false });
   };
 
+  // Editar cliente
+  const onFormSubmit = async (submitData) => {
+    const { names, paternalLastName, email, phone, address } = submitData;
+    let data = {
+      personalReferences: {
+        names: names,
+        paternalLastName: paternalLastName,
+        email: email,
+        phone: phone,
+        address: address,
+      },
+    };
+    try {
+      await CustomersServices.editCustomerNatural(editData.id, data);
+      setModal({ edit: false }, { add: false }, { document: false });
+    } catch (error) {}
+  };
+
   return (
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Nombre del banco</label>
+          <label className="form-label">Nombres</label>
           <input
             className="form-control"
             type="text"
-            name="currentAccountData.bankName"
-            defaultValue={formData.currentAccountData.bankName}
-            placeholder="Ingresa Nombre del banco"
+            name="names"
+            defaultValue={editData?.personalReferences?.names}
+            placeholder="Ingrese Nombres"
             ref={register()}
           />
         </FormGroup>
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Tipo de cuenta</label>
+          <label className="form-label">Apellidos</label>
           <input
             className="form-control"
             type="text"
-            name="currentAccountData.accountType"
-            defaultValue={formData.currentAccountData.accountType}
-            placeholder="Ingresa Tipo de cuenta"
+            name="paternalLastName"
+            defaultValue={editData?.personalReferences?.paternalLastName}
+            placeholder="Ingresa Apellidos"
+            ref={register()}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="3" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Email</label>
+          <input
+            className="form-control"
+            type="email"
+            name="email"
+            defaultValue={editData?.personalReferences?.email}
+            placeholder="Ingresa Email"
+            ref={register()}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="3" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Telefono</label>
+          <input
+            className="form-control"
+            type="text"
+            name="phone"
+            defaultValue={editData?.personalReferences?.phone}
+            placeholder="Ingresa Telefono"
             ref={register()}
           />
         </FormGroup>
@@ -51,35 +91,9 @@ const AccountData = ({ setModal, formData }) => {
           <input
             className="form-control"
             type="text"
-            name="currentAccountData.sucursalAddress"
-            defaultValue={formData.currentAccountData.sucursalAddress}
+            name="address"
+            defaultValue={editData?.personalReferences?.address}
             placeholder="Ingresa Direccion"
-            ref={register()}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Numero de cuenta</label>
-          <input
-            className="form-control"
-            type="text"
-            name="currentAccountData.accountNumber"
-            defaultValue={formData.currentAccountData.accountNumber}
-            placeholder="Ingresa Direccion"
-            ref={register()}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Fecha de apertura</label>
-          <input
-            className="form-control"
-            type="date"
-            name="currentAccountData.accountOpeningDate"
-            defaultValue={formData.accountOpeningDate}
-            placeholder="Ingresa Fecha de apertura"
             ref={register()}
           />
         </FormGroup>
@@ -88,7 +102,7 @@ const AccountData = ({ setModal, formData }) => {
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
           <li>
             <Button color="primary" size="md" type="submit">
-              Agregar Cliente
+              Guardar
             </Button>
           </li>
           <li>
@@ -109,4 +123,4 @@ const AccountData = ({ setModal, formData }) => {
   );
 };
 
-export default AccountData;
+export default PersonalReferences;

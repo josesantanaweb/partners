@@ -71,7 +71,7 @@ const MainInformation = ({ setModal, editData }) => {
     setModal({ edit: false, add: false });
   };
 
-  // Agreagar cliente
+  // Editar cliente
   const onFormSubmit = async (submitData) => {
     const {
       names,
@@ -127,7 +127,6 @@ const MainInformation = ({ setModal, editData }) => {
       await CustomersServices.editCustomerNatural(editData.id, data);
       setModal({ edit: false }, { add: false });
     } catch (error) {}
-    console.log(data);
   };
 
   return (
