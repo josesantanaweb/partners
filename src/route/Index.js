@@ -2,6 +2,7 @@ import React, { Suspense, useLayoutEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import { UserContextProvider } from "../pages/users/UserContext";
 import { CustomerContextProvider } from "../pages/customers/CustomersContext";
+import { NaturalContextProvider } from "../pages/clientes/NaturalContext";
 import { AdviserContextProvider } from "../pages/adviser/AdviserContext";
 import { RolesContextProvider } from "../pages/roles/RolesContext";
 import { ProductsContextProvider } from "../pages/products/ProductsContext";
@@ -12,6 +13,7 @@ import Homepage from "../pages/Homepage";
 
 import Operation from "../pages/operation/OperationDefault";
 // import EcomProducts from "../pages/panel/e-commerce/product/ProductList";
+import Natural from "../pages/clientes/Natural/Natural";
 import Customer from "../pages/customers/CustomersList";
 import CustomerJuridico from "../pages/customers/CustomersListJuridico";
 import Users from "../pages/users/UserList";
@@ -51,6 +53,15 @@ const Pages = () => {
             <AdviserContextProvider>
               <Adviser />
             </AdviserContextProvider>
+          )}
+        ></Route>
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/natural`}
+          render={() => (
+            <NaturalContextProvider>
+              <Natural />
+            </NaturalContextProvider>
           )}
         ></Route>
         <Route

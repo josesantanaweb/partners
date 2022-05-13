@@ -20,6 +20,21 @@ const menu = [
     ],
   },
   {
+    icon: "users-fill",
+    text: "Tipo de clientes",
+    active: false,
+    subMenu: [
+      {
+        text: "Juridico",
+        link: "/juridico",
+      },
+      {
+        text: "Natural",
+        link: "/natural",
+      },
+    ],
+  },
+  {
     icon: "user-fill",
     text: "Usuario Administrador",
     link: "/users",
