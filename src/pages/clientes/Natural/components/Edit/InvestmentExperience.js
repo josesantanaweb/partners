@@ -16,18 +16,17 @@ const InvestmentExperience = ({ setModal, editData }) => {
   // Editar cliente
   const onFormSubmit = async (submitData) => {
     const { shares, mutualFunds, annuities, options, alternativeInvestments } = submitData;
-    let data = {
-      investmentExperience: {
-        shares: shares,
-        mutualFunds: mutualFunds,
-        annuities: annuities,
-        options: options,
-        alternativeInvestments: alternativeInvestments,
-      },
+    let investmentExperience = {
+      shares: shares,
+      mutualFunds: mutualFunds,
+      annuities: annuities,
+      options: options,
+      alternativeInvestments: alternativeInvestments,
     };
     try {
-      await CustomersServices.editCustomerNatural(editData.id, data);
+      await CustomersServices.editCustomerNatural(editData.id, { investmentExperience });
       setModal({ edit: false }, { add: false }, { document: false });
+      window.location.reload();
     } catch (error) {}
   };
 

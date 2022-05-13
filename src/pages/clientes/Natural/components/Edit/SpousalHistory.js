@@ -30,26 +30,25 @@ const SpousalHistory = ({ setModal, editData }) => {
       nationality,
       birthDate,
     } = submitData;
-    let data = {
-      spousalHistory: {
-        completeName: completeName,
-        address: address,
-        phone: phone,
-        typeOfEmployee: typeOfEmployee,
-        nameOfLastEmployer: nameOfLastEmployer,
-        positionLastEmployed: positionLastEmployed,
-        laborSeniority: laborSeniority,
-        profession: profession,
-        rut: rut,
-        rutIssueDate: rutIssueDate,
-        rutExpirationDate: rutExpirationDate,
-        nationality: nationality,
-        birthDate: birthDate,
-      },
+    let spousalHistory = {
+      completeName: completeName,
+      address: address,
+      phone: phone,
+      typeOfEmployee: typeOfEmployee,
+      nameOfLastEmployer: nameOfLastEmployer,
+      positionLastEmployed: positionLastEmployed,
+      laborSeniority: laborSeniority,
+      profession: profession,
+      rut: rut,
+      rutIssueDate: rutIssueDate,
+      rutExpirationDate: rutExpirationDate,
+      nationality: nationality,
+      birthDate: birthDate,
     };
     try {
-      await CustomersServices.editCustomerNatural(editData.id, data);
+      await CustomersServices.editCustomerNatural(editData.id, { spousalHistory });
       setModal({ edit: false }, { add: false }, { document: false });
+      window.location.reload();
     } catch (error) {}
   };
 

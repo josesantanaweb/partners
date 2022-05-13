@@ -30,6 +30,7 @@ import PersonalReferences from "./components/Edit/PersonalReferences";
 import InvestmentExperience from "./components/Edit/InvestmentExperience";
 import SpousalHistory from "./components/Edit/SpousalHistory";
 import CustomersServices from "../../../services/CustomersServices";
+import Beneficiaries from "./components/Edit/Beneficiaries";
 
 const Natural = () => {
   const { contextData } = useContext(NaturalContext);
@@ -39,6 +40,7 @@ const Natural = () => {
   const [modal, setModal] = useState({ edit: false, add: false, document: false });
   const [editData, setEditData] = useState();
   const [addActiveTab, setAddActiveTab] = useState("1");
+  const [addActiveTabDocument, setAddActiveTabDocument] = useState("1");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
   const [formData, setFormData] = useState({
@@ -113,7 +115,6 @@ const Natural = () => {
   const onDocumentClick = (id, data) => {
     setModal({ document: true }, { add: false }, { edit: false });
     setEditData(data);
-    console.log(data);
   };
 
   // Delete
@@ -183,10 +184,13 @@ const Natural = () => {
                   <span className="sub-text">Tipo</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text">Codeudor</span>
+                  <span className="sub-text">Telefono</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text">Antecedentes Repr. Legal</span>
+                  <span className="sub-text">Profesion</span>
+                </DataTableRow>
+                <DataTableRow>
+                  <span className="sub-text">Informacion Bancaria</span>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text"></span>
@@ -201,13 +205,13 @@ const Natural = () => {
                       </DataTableRow>
                       <DataTableRow>
                         <div className="user-card">
-                          {item.names && <UserAvatar theme="purple" text={findUpper(item?.names)}></UserAvatar>}
+                          {item?.names && <UserAvatar theme="purple" text={findUpper(item?.names)}></UserAvatar>}
                           <div className="user-info">
                             <span className="tb-lead">
-                              {item.names}
+                              {item?.names}
                               <span className="dot dot-success d-md-none ml-1"></span>
                             </span>
-                            <span>{item.email}</span>
+                            <span>{item?.email}</span>
                           </div>
                         </div>
                       </DataTableRow>
@@ -215,23 +219,19 @@ const Natural = () => {
                         <span className="text-info">Natural</span>
                       </DataTableRow>
                       <DataTableRow>
-                        <div className="user-card">
-                          <div className="user-info">
-                            <span className="tb-lead">
-                              Julio Martinez
-                              <span className="dot dot-success d-md-none ml-1"></span>
-                            </span>
-                            <span>julio@gmail.com</span>
-                          </div>
-                        </div>
+                        <span className="text-info">{item?.phone}</span>
+                      </DataTableRow>
+                      <DataTableRow>
+                        <span>{item?.profession}</span>
                       </DataTableRow>
                       <DataTableRow>
                         <div className="user-card">
                           <div className="user-info">
                             <span className="tb-lead">
-                              Maria Perez <span className="dot dot-success d-md-none ml-1"></span>
+                              {item?.currentAccountData?.bankName}
+                              <span className="dot dot-success d-md-none ml-1"></span>
                             </span>
-                            <span>maria@gmail.com</span>
+                            <span>{item?.currentAccountData?.accountNumber}</span>
                           </div>
                         </div>
                       </DataTableRow>
@@ -244,7 +244,7 @@ const Natural = () => {
                               id={"file" + 1}
                               icon="file-fill"
                               direction="top"
-                              text="Editar"
+                              text="Ficha"
                             />
                           </li>
                           <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
@@ -385,8 +385,8 @@ const Natural = () => {
                   <NavLink
                     tag="a"
                     href="#tab"
-                    className={classnames({ active: addActiveTab === "1" })}
-                    onClick={() => setAddActiveTab("1")}
+                    className={classnames({ active: addActiveTabDocument === "1" })}
+                    onClick={() => setAddActiveTabDocument("1")}
                   >
                     Informacion Bancaria
                   </NavLink>
@@ -395,8 +395,8 @@ const Natural = () => {
                   <NavLink
                     tag="a"
                     href="#tab"
-                    className={classnames({ active: addActiveTab === "2" })}
-                    onClick={() => setAddActiveTab("2")}
+                    className={classnames({ active: addActiveTabDocument === "2" })}
+                    onClick={() => setAddActiveTabDocument("2")}
                   >
                     Historia laboral
                   </NavLink>
@@ -405,8 +405,8 @@ const Natural = () => {
                   <NavLink
                     tag="a"
                     href="#tab"
-                    className={classnames({ active: addActiveTab === "3" })}
-                    onClick={() => setAddActiveTab("3")}
+                    className={classnames({ active: addActiveTabDocument === "3" })}
+                    onClick={() => setAddActiveTabDocument("3")}
                   >
                     Referencias Personales
                   </NavLink>
@@ -415,8 +415,8 @@ const Natural = () => {
                   <NavLink
                     tag="a"
                     href="#tab"
-                    className={classnames({ active: addActiveTab === "4" })}
-                    onClick={() => setAddActiveTab("4")}
+                    className={classnames({ active: addActiveTabDocument === "4" })}
+                    onClick={() => setAddActiveTabDocument("4")}
                   >
                     Experiencia de Inversión
                   </NavLink>
@@ -425,14 +425,24 @@ const Natural = () => {
                   <NavLink
                     tag="a"
                     href="#tab"
-                    className={classnames({ active: addActiveTab === "5" })}
-                    onClick={() => setAddActiveTab("5")}
+                    className={classnames({ active: addActiveTabDocument === "5" })}
+                    onClick={() => setAddActiveTabDocument("5")}
                   >
                     Historia conyugal
                   </NavLink>
                 </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={classnames({ active: addActiveTabDocument === "6" })}
+                    onClick={() => setAddActiveTabDocument("6")}
+                  >
+                    Beneficiarios
+                  </NavLink>
+                </NavItem>
               </Nav>
-              <TabContent activeTab={addActiveTab}>
+              <TabContent activeTab={addActiveTabDocument}>
                 <TabPane tabId="1">{editData && <AccountData setModal={setModal} editData={editData} />}</TabPane>
                 <TabPane tabId="2">{editData && <EmploymentHistory setModal={setModal} editData={editData} />}</TabPane>
                 <TabPane tabId="3">
@@ -442,6 +452,7 @@ const Natural = () => {
                   {editData && <InvestmentExperience setModal={setModal} editData={editData} />}
                 </TabPane>
                 <TabPane tabId="5">{editData && <SpousalHistory setModal={setModal} editData={editData} />}</TabPane>
+                <TabPane tabId="6">{editData && <Beneficiaries setModal={setModal} editData={editData} />}</TabPane>
               </TabContent>
             </div>
           </ModalBody>

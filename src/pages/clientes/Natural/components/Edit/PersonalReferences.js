@@ -16,18 +16,17 @@ const PersonalReferences = ({ setModal, editData }) => {
   // Editar cliente
   const onFormSubmit = async (submitData) => {
     const { names, paternalLastName, email, phone, address } = submitData;
-    let data = {
-      personalReferences: {
-        names: names,
-        paternalLastName: paternalLastName,
-        email: email,
-        phone: phone,
-        address: address,
-      },
+    let personalReferences = {
+      names: names,
+      paternalLastName: paternalLastName,
+      email: email,
+      phone: phone,
+      address: address,
     };
     try {
-      await CustomersServices.editCustomerNatural(editData.id, data);
+      await CustomersServices.editCustomerNatural(editData.id, { personalReferences });
       setModal({ edit: false }, { add: false }, { document: false });
+      window.location.reload();
     } catch (error) {}
   };
 

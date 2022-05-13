@@ -26,22 +26,21 @@ const EmploymentHistory = ({ setModal, editData }) => {
       rut,
       zipCode,
     } = submitData;
-    let data = {
-      employmentHistory: {
-        typeOfEmployee: typeOfEmployee,
-        companyName: companyName,
-        address: address,
-        industry: industry,
-        laborSeniority: laborSeniority,
-        charge: charge,
-        businessPhone: businessPhone,
-        email: email,
-        rut: rut,
-        zipCode: zipCode,
-      },
+    let employmentHistory = {
+      typeOfEmployee: typeOfEmployee,
+      companyName: companyName,
+      address: address,
+      industry: industry,
+      laborSeniority: laborSeniority,
+      charge: charge,
+      businessPhone: businessPhone,
+      email: email,
+      rut: rut,
+      zipCode: zipCode,
     };
     try {
-      await CustomersServices.editCustomerNatural(editData.id, data);
+      await CustomersServices.editCustomerNatural(editData.id, { employmentHistory });
+      window.location.reload();
       setModal({ edit: false }, { add: false }, { document: false });
     } catch (error) {}
   };

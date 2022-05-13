@@ -16,18 +16,17 @@ const AccountData = ({ setModal, editData }) => {
   // Editar cliente
   const onFormSubmit = async (submitData) => {
     const { bankName, accountType, sucursalAddress, accountNumber, accountOpeningDate } = submitData;
-    let data = {
-      currentAccountData: {
-        bankName: bankName,
-        accountType: accountType,
-        sucursalAddress: sucursalAddress,
-        accountNumber: accountNumber,
-        accountOpeningDate: accountOpeningDate,
-      },
+    let currentAccountData = {
+      bankName: bankName,
+      accountType: accountType,
+      sucursalAddress: sucursalAddress,
+      accountNumber: accountNumber,
+      accountOpeningDate: accountOpeningDate,
     };
     try {
-      await CustomersServices.editCustomerNatural(editData.id, data);
+      await CustomersServices.editCustomerNatural(editData.id, { currentAccountData });
       setModal({ edit: false }, { add: false }, { document: false });
+      window.location.reload();
     } catch (error) {}
   };
 
