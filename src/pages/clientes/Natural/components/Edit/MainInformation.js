@@ -126,6 +126,7 @@ const MainInformation = ({ setModal, editData }) => {
     try {
       await CustomersServices.editCustomerNatural(editData.id, data);
       setModal({ edit: false }, { add: false });
+      window.location.reload();
     } catch (error) {}
   };
 

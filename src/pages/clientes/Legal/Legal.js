@@ -20,20 +20,17 @@ import {
 import { findUpper } from "../../../utils/Utils";
 import Content from "../../../layout/content/Content";
 import Head from "../../../layout/head/Head";
-import { NaturalContext } from "./NaturalContext";
+import { LegalContext } from "./LegalContext";
 import classnames from "classnames";
 import AddMainInformation from "./components/Add/MainInformation";
 import EditMainInformation from "./components/Edit/MainInformation";
-import AccountData from "./components/Edit/AccountData";
-import EmploymentHistory from "./components/Edit/EmploymentHistory";
-import PersonalReferences from "./components/Edit/PersonalReferences";
-import InvestmentExperience from "./components/Edit/InvestmentExperience";
-import SpousalHistory from "./components/Edit/SpousalHistory";
+import CompanyQuestionnaire from "./components/Edit/CompanyQuestionnaire";
+import CompanyFinancialProfile from "./components/Edit/CompanyFinancialProfile";
+import CompanyBanksItWorksWith from "./components/Edit/CompanyBanksItWorksWith";
 import CustomersServices from "../../../services/CustomersServices";
-import Beneficiaries from "./components/Edit/Beneficiaries";
 
-const Natural = () => {
-  const { contextData } = useContext(NaturalContext);
+const Legal = () => {
+  const { contextData } = useContext(LegalContext);
   const [data, setData] = contextData;
 
   const [sm, updateSm] = useState(false);
@@ -70,32 +67,12 @@ const Natural = () => {
         communne: "",
       },
     },
-    observations: "",
-    employmentHistory: {
-      typeOfEmployee: "",
-      companyName: "",
-      address: "",
-      industry: "",
-      laborSeniority: "",
-      charge: "",
-      businessPhone: "",
-      email: "",
-      rut: "",
-      zipCode: "",
-    },
-    currentAccountData: {
-      bankName: "",
-      accountType: "",
-      sucursalAddress: "",
-      accountNumber: "",
-      accountOpeningDate: "",
-    },
   });
 
-  // Get Natural
+  // Get Legal
   const getCustomers = async () => {
     try {
-      const customers = await CustomersServices.getCustomerNatural();
+      const customers = await CustomersServices.getCustomerLegal();
       setData(customers?.data);
     } catch (error) {}
   };
@@ -120,7 +97,7 @@ const Natural = () => {
   // Delete
   const onDeleteClick = async (id) => {
     try {
-      await CustomersServices.deleteCustomerNatural(id);
+      await CustomersServices.deleteCustomerLegal(id);
       getCustomers();
     } catch (error) {}
   };
@@ -141,7 +118,7 @@ const Natural = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Clientes Naturales
+                Lista de Clientes Legales
               </BlockTitle>
               <BlockDes className="text-soft">
                 <p>Total {currentItems.length} clientes</p>
@@ -187,10 +164,10 @@ const Natural = () => {
                   <span className="sub-text">Telefono</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text">Profesion</span>
+                  <span className="sub-text">Categoria</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text">Informacion Bancaria</span>
+                  <span className="sub-text">Numero de identificacion</span>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text"></span>
@@ -205,10 +182,12 @@ const Natural = () => {
                       </DataTableRow>
                       <DataTableRow>
                         <div className="user-card">
-                          {item?.names && <UserAvatar theme="purple" text={findUpper(item?.names)}></UserAvatar>}
+                          {item?.companyName && (
+                            <UserAvatar theme="purple" text={findUpper(item?.companyName)}></UserAvatar>
+                          )}
                           <div className="user-info">
                             <span className="tb-lead">
-                              {item?.names}
+                              {item?.companyName}
                               <span className="dot dot-success d-md-none ml-1"></span>
                             </span>
                             <span>{item?.email}</span>
@@ -216,24 +195,16 @@ const Natural = () => {
                         </div>
                       </DataTableRow>
                       <DataTableRow>
-                        <span className="text-info">Natural</span>
+                        <span className="text-info">Legal</span>
                       </DataTableRow>
                       <DataTableRow>
                         <span className="text-info">{item?.phone}</span>
                       </DataTableRow>
                       <DataTableRow>
-                        <span>{item?.profession}</span>
+                        <span>{item?.companyCategory}</span>
                       </DataTableRow>
                       <DataTableRow>
-                        <div className="user-card">
-                          <div className="user-info">
-                            <span className="tb-lead">
-                              {item?.currentAccountData?.bankName}
-                              <span className="dot dot-success d-md-none ml-1"></span>
-                            </span>
-                            <span>{item?.currentAccountData?.accountNumber}</span>
-                          </div>
-                        </div>
+                        <span>{item?.taxIdentificationNumber}</span>
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
@@ -290,7 +261,13 @@ const Natural = () => {
           </div>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal
+          isOpen={modal.add}
+          toggle={() => setModal({ add: false })}
+          className="modal-dialog-centered"
+          size="lg"
+          style={{ maxWidth: "1200px" }}
+        >
           <ModalBody>
             <a
               href="#close"
@@ -325,7 +302,13 @@ const Natural = () => {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+        <Modal
+          isOpen={modal.edit}
+          toggle={() => setModal({ edit: false })}
+          className="modal-dialog-centered"
+          size="lg"
+          style={{ maxWidth: "1200px" }}
+        >
           <ModalBody>
             <a
               href="#close"
@@ -388,7 +371,7 @@ const Natural = () => {
                     className={classnames({ active: addActiveTabDocument === "1" })}
                     onClick={() => setAddActiveTabDocument("1")}
                   >
-                    Datos de la cuenta
+                    Cuestionario de la empresa
                   </NavLink>
                 </NavItem>
                 <NavItem>
@@ -398,7 +381,7 @@ const Natural = () => {
                     className={classnames({ active: addActiveTabDocument === "2" })}
                     onClick={() => setAddActiveTabDocument("2")}
                   >
-                    Antecedentes laborales
+                    Perfil de Empresa
                   </NavLink>
                 </NavItem>
                 <NavItem>
@@ -408,51 +391,20 @@ const Natural = () => {
                     className={classnames({ active: addActiveTabDocument === "3" })}
                     onClick={() => setAddActiveTabDocument("3")}
                   >
-                    Referencias Personales
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    tag="a"
-                    href="#tab"
-                    className={classnames({ active: addActiveTabDocument === "4" })}
-                    onClick={() => setAddActiveTabDocument("4")}
-                  >
-                    Experiencia de Inversiones
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    tag="a"
-                    href="#tab"
-                    className={classnames({ active: addActiveTabDocument === "5" })}
-                    onClick={() => setAddActiveTabDocument("5")}
-                  >
-                    Antecedentes del conyuge
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    tag="a"
-                    href="#tab"
-                    className={classnames({ active: addActiveTabDocument === "6" })}
-                    onClick={() => setAddActiveTabDocument("6")}
-                  >
-                    Beneficiarios
+                    Informacion Bancaria
                   </NavLink>
                 </NavItem>
               </Nav>
               <TabContent activeTab={addActiveTabDocument}>
-                <TabPane tabId="1">{editData && <AccountData setModal={setModal} editData={editData} />}</TabPane>
-                <TabPane tabId="2">{editData && <EmploymentHistory setModal={setModal} editData={editData} />}</TabPane>
+                <TabPane tabId="1">
+                  {editData && <CompanyQuestionnaire setModal={setModal} editData={editData} />}
+                </TabPane>
+                <TabPane tabId="2">
+                  {editData && <CompanyFinancialProfile setModal={setModal} editData={editData} />}
+                </TabPane>
                 <TabPane tabId="3">
-                  {editData && <PersonalReferences setModal={setModal} editData={editData} />}
+                  {editData && <CompanyBanksItWorksWith setModal={setModal} editData={editData} />}
                 </TabPane>
-                <TabPane tabId="4">
-                  {editData && <InvestmentExperience setModal={setModal} editData={editData} />}
-                </TabPane>
-                <TabPane tabId="5">{editData && <SpousalHistory setModal={setModal} editData={editData} />}</TabPane>
-                <TabPane tabId="6">{editData && <Beneficiaries setModal={setModal} editData={editData} />}</TabPane>
               </TabContent>
             </div>
           </ModalBody>
@@ -462,4 +414,4 @@ const Natural = () => {
   );
 };
 
-export default Natural;
+export default Legal;

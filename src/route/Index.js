@@ -2,7 +2,8 @@ import React, { Suspense, useLayoutEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import { UserContextProvider } from "../pages/users/UserContext";
 import { CustomerContextProvider } from "../pages/customers/CustomersContext";
-import { NaturalContextProvider } from "../pages/clientes/NaturalContext";
+import { NaturalContextProvider } from "../pages/clientes/Natural/NaturalContext";
+import { LegalContextProvider } from "../pages/clientes/Legal/LegalContext";
 import { AdviserContextProvider } from "../pages/adviser/AdviserContext";
 import { RolesContextProvider } from "../pages/roles/RolesContext";
 import { ProductsContextProvider } from "../pages/products/ProductsContext";
@@ -12,8 +13,8 @@ import { RedirectAs404 } from "../utils/Utils";
 import Homepage from "../pages/Homepage";
 
 import Operation from "../pages/operation/OperationDefault";
-// import EcomProducts from "../pages/panel/e-commerce/product/ProductList";
 import Natural from "../pages/clientes/Natural/Natural";
+import Legal from "../pages/clientes/Legal/Legal";
 import Customer from "../pages/customers/CustomersList";
 import CustomerJuridico from "../pages/customers/CustomersListJuridico";
 import Users from "../pages/users/UserList";
@@ -36,7 +37,6 @@ const Pages = () => {
         {/*Panel */}
         <Route exact path={`${process.env.PUBLIC_URL}/index`} component={EcomDashboard}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/operation`} component={Operation}></Route>
-        {/* <Route exact path={`${process.env.PUBLIC_URL}/products`} component={EcomProducts}></Route> */}
         <Route
           exact
           path={`${process.env.PUBLIC_URL}/users`}
@@ -62,6 +62,15 @@ const Pages = () => {
             <NaturalContextProvider>
               <Natural />
             </NaturalContextProvider>
+          )}
+        ></Route>
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/legal`}
+          render={() => (
+            <LegalContextProvider>
+              <Legal />
+            </LegalContextProvider>
           )}
         ></Route>
         <Route

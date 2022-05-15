@@ -1,7 +1,7 @@
 import React, { useState, createContext, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import CustomersServices from "../../services/CustomersServices";
-import { setAuthenticated } from "../../store/features/AuthSlice";
+import CustomersServices from "../../../services/CustomersServices";
+import { setAuthenticated } from "../../../store/features/AuthSlice";
 
 export const NaturalContext = createContext();
 

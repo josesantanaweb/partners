@@ -9,8 +9,8 @@ const CustomersServices = {
     });
     return response.data;
   },
-  getCustomer: async () => {
-    const response = await api.get("customers", {
+  getCustomerLegal: async () => {
+    const response = await api.get(`customers/legal`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -21,14 +21,32 @@ const CustomersServices = {
     });
     return response.data;
   },
+  addCustomerLegal: async (data) => {
+    const response = await api.post("/customers/legal", data, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
   editCustomerNatural: async (userId, data) => {
     const response = await api.patch(`/customers/natural/${userId}`, data, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
   },
-  deleteCustomer: async (id) => {
-    const response = await api.delete(`/customers/${id}`, {
+  editCustomerLegal: async (userId, data) => {
+    const response = await api.patch(`/customers/legal/${userId}`, data, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+  deleteCustomerNatural: async (id) => {
+    const response = await api.delete(`/customers/natural/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+  deleteCustomerLegal: async (id) => {
+    const response = await api.delete(`/customers/legal/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;

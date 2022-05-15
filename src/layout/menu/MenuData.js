@@ -10,8 +10,8 @@ const menu = [
     active: false,
     subMenu: [
       {
-        text: "Cliente Juridico",
-        link: "/juridico",
+        text: "Cliente Legal",
+        link: "/legal",
       },
       {
         text: "Cliente Natural",
