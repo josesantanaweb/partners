@@ -203,7 +203,7 @@ const CompanyBanksItWorksWith = ({ setModal, editData }) => {
                 className="form-control"
                 type="text"
                 name={`addBanks[${i}].bankBranch`}
-                placeholder="Ingresa Banco"
+                placeholder="Ingresa Sucursal"
                 ref={register()}
               />
             </FormGroup>

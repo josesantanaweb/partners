@@ -90,7 +90,7 @@ $rtl: false;
 
 .form-grid-partners {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 30px;
+  grid-template-columns: repeat(5, 1fr);
   grid-gap: 1rem;
   padding: 0 1rem;
   margin-bottom: 1rem;

@@ -27,6 +27,7 @@ import EditMainInformation from "./components/Edit/MainInformation";
 import CompanyQuestionnaire from "./components/Edit/CompanyQuestionnaire";
 import CompanyFinancialProfile from "./components/Edit/CompanyFinancialProfile";
 import CompanyBanksItWorksWith from "./components/Edit/CompanyBanksItWorksWith";
+import CompanyPartners from "./components/Edit/CompanyPartners";
 import CustomersServices from "../../../services/CustomersServices";
 
 const Legal = () => {
@@ -394,6 +395,16 @@ const Legal = () => {
                     Informacion Bancaria
                   </NavLink>
                 </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={classnames({ active: addActiveTabDocument === "4" })}
+                    onClick={() => setAddActiveTabDocument("4")}
+                  >
+                    Socios
+                  </NavLink>
+                </NavItem>
               </Nav>
               <TabContent activeTab={addActiveTabDocument}>
                 <TabPane tabId="1">
@@ -405,6 +416,7 @@ const Legal = () => {
                 <TabPane tabId="3">
                   {editData && <CompanyBanksItWorksWith setModal={setModal} editData={editData} />}
                 </TabPane>
+                <TabPane tabId="4">{editData && <CompanyPartners setModal={setModal} editData={editData} />}</TabPane>
               </TabContent>
             </div>
           </ModalBody>
