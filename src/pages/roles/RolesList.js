@@ -103,7 +103,6 @@ const RolesList = () => {
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
     const { name, description, menuItems } = submitData;
-    console.log(submitData);
     const numberMenuItems = menuItems.map((i) => Number(i));
     let submittedData = {
       name: name,

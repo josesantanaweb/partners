@@ -106,7 +106,6 @@ const MainInformation = ({ setModal, formData }) => {
       setModal({ edit: false }, { add: false });
       window.location.reload();
     } catch (error) {}
-    console.log(data);
   };
 
   return (

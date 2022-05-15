@@ -50,9 +50,6 @@ const CompanyFinancialProfile = ({ setModal, editData }) => {
       window.location.reload();
     } catch (error) {}
   };
-
-  console.log(editData);
-
   return (
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
       <Col md="3" className="mb-4">
