@@ -1,10 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { FormGroup, Form } from "reactstrap";
-import { useForm } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import { useForm, Controller } from "react-hook-form";
 import { Col, Button, RSelect } from "../../../../../components/Component";
 import CountriesServices from "../../../../../services/CountriesServices";
 import CustomersServices from "../../../../../services/CustomersServices";
+import moment from "moment";
+import "moment/locale/es";
 
 const MainInformation = ({ setModal, formData }) => {
   const [countries, setCountries] = useState();
@@ -13,9 +16,10 @@ const MainInformation = ({ setModal, formData }) => {
   const [countryId, setCountryId] = useState();
   const [cityId, setCityId] = useState();
   const [citiesOptions, setCitiesOptions] = useState([]);
+  const [dateOfMarriage, setDateOfMarriage] = useState(new Date());
 
   // useForm
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, control } = useForm({});
 
   useEffect(() => {
     getCountries();
@@ -200,13 +204,18 @@ const MainInformation = ({ setModal, formData }) => {
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de matrimonio</label>
-          <input
-            className="form-control"
-            type="date"
+          <Controller
+            control={control}
             name="dateOfMarriage"
-            defaultValue={formData.dateOfMarriage}
-            placeholder="Ingresa Fecha de matrimonio"
-            ref={register()}
+            render={({ onChange, value }) => (
+              <DatePicker
+                className="form-control"
+                placeholderText="Select date"
+                value={moment(value).format("DD/MM/YYYY")}
+                selected={value}
+                onChange={onChange}
+              />
+            )}
           />
         </FormGroup>
       </Col>
