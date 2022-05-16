@@ -192,6 +192,14 @@ const UserListDefaultPage = () => {
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
                     <li className="nk-block-tools-opt">
+                      <a href="https://api.elbernv.site/export-information/users">
+                        <Button color="primary" type="button">
+                          <Icon name="printer" className="mr-1"></Icon>
+                          Exportar
+                        </Button>
+                      </a>
+                    </li>
+                    <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>
                         <Icon name="plus" className="mr-1"></Icon>
                         Agregar Usuario
