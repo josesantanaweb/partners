@@ -13,6 +13,8 @@ const AccountData = ({ setModal, editData }) => {
     setModal({ edit: false, add: false });
   };
 
+  console.log(editData);
+
   // Editar cliente
   const onFormSubmit = async (submitData) => {
     const {
@@ -46,7 +48,7 @@ const AccountData = ({ setModal, editData }) => {
     try {
       await CustomersServices.editCustomerNatural(editData.id, { companyQuestionnaire });
       setModal({ edit: false }, { add: false }, { document: false });
-      // window.location.reload();
+      window.location.reload();
     } catch (error) {}
     console.log(companyQuestionnaire);
   };
@@ -59,6 +61,7 @@ const AccountData = ({ setModal, editData }) => {
             type="checkbox"
             name="mailCorrespondence"
             className="custom-control-input form-control"
+            defaultChecked={editData?.companyQuestionnaire?.mailCorrespondence}
             id="1"
             ref={register()}
           />
@@ -73,6 +76,7 @@ const AccountData = ({ setModal, editData }) => {
             type="checkbox"
             name="receiveDocumentsByDocuSign"
             className="custom-control-input form-control"
+            defaultChecked={editData?.companyQuestionnaire?.receiveDocumentsByDocuSign}
             id="2"
             ref={register()}
           />
@@ -87,6 +91,7 @@ const AccountData = ({ setModal, editData }) => {
             type="checkbox"
             name="depositOrWithdrawalOfThirdParties"
             className="custom-control-input form-control"
+            defaultChecked={editData?.companyQuestionnaire?.depositOrWithdrawalOfThirdParties}
             id="3"
             ref={register()}
           />
@@ -101,6 +106,7 @@ const AccountData = ({ setModal, editData }) => {
             type="checkbox"
             name="companyIsAnInvestmentFund"
             className="custom-control-input form-control"
+            defaultChecked={editData?.companyQuestionnaire?.companyIsAnInvestmentFund}
             id="4"
             ref={register()}
           />
@@ -115,6 +121,7 @@ const AccountData = ({ setModal, editData }) => {
             type="checkbox"
             name="businessWithCompaniesInTheUS"
             className="custom-control-input form-control"
+            defaultChecked={editData?.companyQuestionnaire?.businessWithCompaniesInTheUS}
             id="5"
             ref={register()}
           />
@@ -129,6 +136,7 @@ const AccountData = ({ setModal, editData }) => {
             type="checkbox"
             name="otherAccountsInUS"
             className="custom-control-input form-control"
+            defaultChecked={editData?.companyQuestionnaire?.otherAccountsInUS}
             id="6"
             ref={register()}
           />
@@ -143,6 +151,7 @@ const AccountData = ({ setModal, editData }) => {
             type="checkbox"
             name="bearerSharesIssued"
             className="custom-control-input form-control"
+            defaultChecked={editData?.companyQuestionnaire?.bearerSharesIssued}
             id="7"
             ref={register()}
           />
@@ -157,6 +166,7 @@ const AccountData = ({ setModal, editData }) => {
             type="checkbox"
             name="isBankBranchOrARepresentationOfABank"
             className="custom-control-input form-control"
+            defaultChecked={editData?.companyQuestionnaire?.isBankBranchOrARepresentationOfABank}
             id="8"
             ref={register()}
           />
@@ -171,6 +181,7 @@ const AccountData = ({ setModal, editData }) => {
             type="checkbox"
             name="companyLocatedInUSCosideratedAMutualFunds"
             className="custom-control-input form-control"
+            defaultChecked={editData?.companyQuestionnaire?.companyLocatedInUSCosideratedAMutualFunds}
             id="9"
             ref={register()}
           />
@@ -185,6 +196,7 @@ const AccountData = ({ setModal, editData }) => {
             type="checkbox"
             name="isItABureauDeChange"
             className="custom-control-input form-control"
+            defaultChecked={editData?.companyQuestionnaire?.isItABureauDeChange}
             id="10"
             ref={register()}
           />
@@ -199,6 +211,7 @@ const AccountData = ({ setModal, editData }) => {
             type="checkbox"
             name="isAGovernmentEntity"
             className="custom-control-input form-control"
+            defaultChecked={editData?.companyQuestionnaire?.isAGovernmentEntity}
             id="11"
             ref={register()}
           />
@@ -213,6 +226,7 @@ const AccountData = ({ setModal, editData }) => {
             type="checkbox"
             name="isAnInvestmentFundOrFinancialAdvisor"
             className="custom-control-input form-control"
+            defaultChecked={editData?.companyQuestionnaire?.isAnInvestmentFundOrFinancialAdvisor}
             id="12"
             ref={register()}
           />
