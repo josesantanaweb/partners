@@ -16,17 +16,17 @@ const AuthFooter = () => {
             <ul className="nav nav-sm justify-content-center justify-content-lg-end">
               <li className="nav-item">
                 <Link className="nav-link" target="_blank" to={`${process.env.PUBLIC_URL}/auths/terms`}>
-                  Terms &amp; Condition
+                  Terminos &amp; Condiciones
                 </Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link" target="_blank" to={`${process.env.PUBLIC_URL}/auths/terms`}>
-                  Privacy Policy
+                  Politicas de Privacidad
                 </Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link" target="_blank" to={`${process.env.PUBLIC_URL}/auths/faq`}>
-                  Help
+                  Ayuda
                 </Link>
               </li>
               <li className="nav-item ">
@@ -99,7 +99,7 @@ const AuthFooter = () => {
           </Col>
           <Col lg="6">
             <div className="nk-block-content text-center text-lg-left">
-              <p className="text-soft">&copy; 2019 Dashlite`. All Rights Reserved.</p>
+              <p className="text-soft">&copy; 2020 Partners Advisers`. Todos los derechos reservados.</p>
             </div>
           </Col>
         </Row>
