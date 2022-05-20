@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import {
   Block,
@@ -22,12 +22,31 @@ import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
 import { ProductsContext } from "./ProductsContext";
 import ProductsServices from "../../services/ProductsServices";
+import DocumentsServices from "../../services/DocumentsServices";
+import SegmentsServices from "../../services/SegmentsServices";
 
 const ProductsList = () => {
   const { contextData } = useContext(ProductsContext);
   const [data, setData] = contextData;
+  const [documentsId, setDocumentsId] = useState();
+  const [customerSegmentsId, setCustomerSegmentsId] = useState();
+  const [customerNatural, setCustomerNatural] = useState();
+  const [customerLegal, setCustomerLegal] = useState();
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
+
+  useEffect(() => {
+    getDocuments();
+    getSegmentsNatural();
+    getSegmentsLegal();
+  }, []);
+
+  useEffect(() => {
+    if (customerNatural && customerLegal) {
+      const segments = [...customerNatural, ...customerLegal];
+      setCustomerSegmentsId(segments);
+    }
+  }, [customerNatural, customerLegal]);
 
   const [modal, setModal] = useState({
     edit: false,
@@ -41,6 +60,27 @@ const ProductsList = () => {
     } catch (error) {}
   };
 
+  const getSegmentsNatural = async () => {
+    try {
+      const segmentsNatural = await SegmentsServices.getSegmentsNatural();
+      setCustomerNatural(segmentsNatural.data);
+    } catch (error) {}
+  };
+
+  const getSegmentsLegal = async () => {
+    try {
+      const segmentsLegal = await SegmentsServices.getSegmentsLegal();
+      setCustomerLegal(segmentsLegal.data);
+    } catch (error) {}
+  };
+
+  const getDocuments = async () => {
+    try {
+      const documents = await DocumentsServices.getDocuments();
+      setDocumentsId(documents.data);
+    } catch (error) {}
+  };
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -50,7 +90,13 @@ const ProductsList = () => {
 
   const [sm, updateSm] = useState(false);
 
-  const { errors, register, handleSubmit } = useForm();
+  const { errors, register, handleSubmit, reset } = useForm({
+    defaultValues: {
+      documentsId: [],
+      customerNaturalField: [],
+      customerLegalField: [],
+    },
+  });
 
   // Function to reset the form
   const resetForm = () => {
@@ -68,25 +114,37 @@ const ProductsList = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { name, description } = submitData;
+    const { name, description, documentsId, customerNaturalField, customerLegalField } = submitData;
+    const numberDocuments = documentsId.map((i) => Number(i));
+    const numberSegmentsNatural = customerNaturalField.map((i) => Number(i));
+    const numberSegmentsLegal = customerLegalField.map((i) => Number(i));
     let submittedData = {
       name: name,
       description: description,
+      documentsId: numberDocuments,
+      customerSegmentsId: [...numberSegmentsNatural, ...numberSegmentsLegal],
     };
+
     try {
       await ProductsServices.addProduct(submittedData);
       resetForm();
       getProducts();
       setModal({ edit: false }, { add: false });
+      window.location.reload();
     } catch (error) {}
   };
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { name, description } = submitData;
+    const { name, description, documentsId, customerNaturalField, customerLegalField } = submitData;
+    const numberDocuments = documentsId.map((i) => Number(i));
+    const numberSegmentsNatural = customerNaturalField.map((i) => Number(i));
+    const numberSegmentsLegal = customerLegalField.map((i) => Number(i));
     let submittedData = {
       name: name,
       description: description,
+      documentsId: numberDocuments,
+      customerSegmentsId: [...numberSegmentsNatural, ...numberSegmentsLegal],
     };
 
     try {
@@ -94,6 +152,7 @@ const ProductsList = () => {
       resetForm();
       getProducts();
       setModal({ edit: false }, { add: false });
+      window.location.reload();
     } catch (error) {}
   };
 
@@ -101,6 +160,11 @@ const ProductsList = () => {
   const onEditClick = (id, data) => {
     setModal({ edit: true }, { add: false });
     setEditData(data);
+    reset({
+      documentsId: data.documentsId.map((item) => String(item)),
+      customerNaturalField: data.customerSegmentsId.map((item) => String(item)),
+      customerLegalField: data.customerSegmentsId.map((item) => String(item)),
+    });
   };
 
   // Function to change to delete property for an item
@@ -285,6 +349,74 @@ const ProductsList = () => {
                       {errors.description && <span className="invalid">{errors.description.message}</span>}
                     </FormGroup>
                   </Col>
+                  <Col md="12">
+                    <h6>Segmentos de cliente</h6>
+                  </Col>
+
+                  {documentsId &&
+                    documentsId.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="documentsId"
+                            value={item.id}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
+
+                  <Col md="12">
+                    <h6>Cliente Natural</h6>
+                  </Col>
+
+                  {customerNatural &&
+                    customerNatural.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="customerNaturalField"
+                            value={item.id}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
+
+                  <Col md="12">
+                    <h6>Cliente Legal</h6>
+                  </Col>
+
+                  {customerLegal &&
+                    customerLegal.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="customerLegalField"
+                            value={item.id}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
 
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
@@ -359,6 +491,73 @@ const ProductsList = () => {
                       {errors.description && <span className="invalid">{errors.description.message}</span>}
                     </FormGroup>
                   </Col>
+
+                  {documentsId &&
+                    documentsId.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="documentsId"
+                            value={item.id}
+                            defaultValue={editData?.documentsId?.includes(item.id)}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
+                  <Col md="12">
+                    <h6>Cliente Natural</h6>
+                  </Col>
+
+                  {customerNatural &&
+                    customerNatural.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="customerNaturalField"
+                            value={item.id}
+                            defaultValue={editData?.customerSegmentsId?.includes(item.id)}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
+
+                  <Col md="12">
+                    <h6>Cliente Legal</h6>
+                  </Col>
+
+                  {customerLegal &&
+                    customerLegal.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="customerLegalField"
+                            value={item.id}
+                            defaultValue={editData?.customerSegmentsId?.includes(item.id)}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
 
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">

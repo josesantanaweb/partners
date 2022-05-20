@@ -57,7 +57,7 @@ const Pages = () => {
         ></Route>
         <Route
           exact
-          path={`${process.env.PUBLIC_URL}/natural`}
+          path={`${process.env.PUBLIC_URL}/customer`}
           render={() => (
             <NaturalContextProvider>
               <Natural />
@@ -66,29 +66,11 @@ const Pages = () => {
         ></Route>
         <Route
           exact
-          path={`${process.env.PUBLIC_URL}/legal`}
+          path={`${process.env.PUBLIC_URL}/customer-juridico`}
           render={() => (
             <LegalContextProvider>
               <Legal />
             </LegalContextProvider>
-          )}
-        ></Route>
-        <Route
-          exact
-          path={`${process.env.PUBLIC_URL}/customer`}
-          render={() => (
-            <CustomerContextProvider>
-              <Customer />
-            </CustomerContextProvider>
-          )}
-        ></Route>
-        <Route
-          exact
-          path={`${process.env.PUBLIC_URL}/customer-juridico`}
-          render={() => (
-            <CustomerContextProvider>
-              <CustomerJuridico />
-            </CustomerContextProvider>
           )}
         ></Route>
         <Route
