@@ -1,5 +1,4 @@
-import React, { useContext, useState } from "react";
-import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
+import React, { useState, useEffect } from "react";
 import {
   Block,
   BlockBetween,
@@ -17,42 +16,43 @@ import {
   TooltipComponent,
   PreviewAltCard,
 } from "../../components/Component";
+import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
-import { ProductsContext } from "./ProductsContext";
-import ProductsServices from "../../services/ProductsServices";
+import DocumentsServices from "../../services/DocumentsServices";
 
-const ProductsList = () => {
-  const { contextData } = useContext(ProductsContext);
-  const [data, setData] = contextData;
+const DocumentsList = () => {
+  const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
+  const [sm, updateSm] = useState(false);
+  const { errors, register, handleSubmit } = useForm();
   const [modal, setModal] = useState({
     edit: false,
     add: false,
   });
 
-  const getProducts = async () => {
+  const getDocuments = async () => {
     try {
-      const products = await ProductsServices.getProducts();
-      setData(products.data);
+      const documents = await DocumentsServices.getDocuments();
+      const documentsData = await documents.data.map((data) => data);
+      setData(documentsData);
     } catch (error) {}
   };
+
+  useEffect(() => {
+    getDocuments();
+  }, []);
 
   const [formData, setFormData] = useState({
     name: "",
     description: "",
   });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
 
-  const [sm, updateSm] = useState(false);
-
-  const { errors, register, handleSubmit } = useForm();
-
-  // Function to reset the form
+  // function to reset the form
   const resetForm = () => {
     setFormData({
       name: "",
@@ -60,7 +60,7 @@ const ProductsList = () => {
     });
   };
 
-  // Function to close the form modal
+  // function to close the form modal
   const onFormCancel = () => {
     setModal({ edit: false, add: false });
     resetForm();
@@ -74,9 +74,12 @@ const ProductsList = () => {
       description: description,
     };
     try {
-      await ProductsServices.addProduct(submittedData);
+      await DocumentsServices.addDocument(submittedData);
+      setData([submittedData, ...data]);
+      console.log(submittedData);
+
       resetForm();
-      getProducts();
+      getDocuments();
       setModal({ edit: false }, { add: false });
     } catch (error) {}
   };
@@ -90,9 +93,9 @@ const ProductsList = () => {
     };
 
     try {
-      await ProductsServices.editProduct(editData.id, submittedData);
+      await DocumentsServices.editDocument(editData.id, submittedData);
       resetForm();
-      getProducts();
+      getDocuments();
       setModal({ edit: false }, { add: false });
     } catch (error) {}
   };
@@ -104,10 +107,10 @@ const ProductsList = () => {
   };
 
   // Function to change to delete property for an item
-  const deleteUser = async (id) => {
+  const deleteDocument = async (id) => {
     try {
-      await ProductsServices.deleteProduct(id);
-      getProducts();
+      await DocumentsServices.deleteDocument(id);
+      getDocuments();
     } catch (error) {}
   };
 
@@ -119,6 +122,14 @@ const ProductsList = () => {
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  // function to handle description doc length
+  const handleDescriptionLength = (description) => {
+    if (description.length > 35) {
+      return description.substring(0, 35) + "...";
+    }
+    return description;
+  };
+
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -127,10 +138,10 @@ const ProductsList = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Products
+                Lista de Documentos
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} products</p>
+                <p>Total {data.length} documentos</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -146,7 +157,7 @@ const ProductsList = () => {
                     <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>
                         <Icon name="plus" className="mr-1"></Icon>
-                        Agregar Producto
+                        Agregar Documento
                       </Button>
                     </li>
                   </ul>
@@ -160,31 +171,31 @@ const ProductsList = () => {
           <div className="container-fluid overflow-auto scrollbar-fluid">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
-                <DataTableRow>
-                  <span className="sub-text">#</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">N. Documento</span>
                 </DataTableRow>
-                <DataTableRow size="xs">
+                <DataTableRow className="text-center">
                   <span className="sub-text">Nombre</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Descripcion</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Descripción</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text"></span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
               {/*Head*/}
               {currentItems.length > 0
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id}>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.id}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.name}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <span>{item.description}</span>
+                      <DataTableRow className="text-center">
+                        <span>{handleDescriptionLength(item.description)}</span>
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
@@ -195,17 +206,17 @@ const ProductsList = () => {
                               id={"edit" + 1}
                               icon="edit-alt-fill"
                               direction="top"
-                              text="Edit"
+                              text="Editar"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
+                          <li className="nk-tb-action-hidden" onClick={() => deleteDocument(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"delete" + 1}
                               icon="trash-fill"
                               direction="top"
-                              text="Delete"
+                              text="Eliminar"
                             />
                           </li>
                         </ul>
@@ -245,7 +256,7 @@ const ProductsList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Agregar Producto</h5>
+              <h5 className="title">Agregar Documento</h5>
               {errorMessage !== "" && (
                 <div className="my-3">
                   <Alert color="danger" className="alert-icon">
@@ -256,7 +267,7 @@ const ProductsList = () => {
               )}
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
-                  <Col md="6">
+                  <Col md="12">
                     <FormGroup>
                       <label className="form-label">Nombre</label>
                       <input
@@ -264,22 +275,22 @@ const ProductsList = () => {
                         type="text"
                         name="name"
                         defaultValue={formData.name}
-                        placeholder="Ingresa nombre"
+                        placeholder="Nombre documento"
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
                     </FormGroup>
                   </Col>
 
-                  <Col md="6">
+                  <Col md="12">
                     <FormGroup>
-                      <label className="form-label">Descripcion</label>
-                      <input
+                      <label className="form-label">Descripción</label>
+                      <textarea
                         className="form-control"
                         type="text"
                         name="description"
                         defaultValue={formData.description}
-                        placeholder="Ingresa apellido"
+                        placeholder="Descripción documento"
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.description && <span className="invalid">{errors.description.message}</span>}
@@ -290,7 +301,7 @@ const ProductsList = () => {
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Agregar Producto
+                          Agregar Documento
                         </Button>
                       </li>
                       <li>
@@ -327,7 +338,7 @@ const ProductsList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Actualizar Producto</h5>
+              <h5 className="title">Actualizar Documento</h5>
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="6">
@@ -347,7 +358,7 @@ const ProductsList = () => {
 
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Descripcion</label>
+                      <label className="form-label">Descripción</label>
                       <input
                         className="form-control"
                         type="text"
@@ -364,7 +375,7 @@ const ProductsList = () => {
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Actualizar Producto
+                          Actualizar Documento
                         </Button>
                       </li>
                       <li>
@@ -391,4 +402,4 @@ const ProductsList = () => {
   );
 };
 
-export default ProductsList;
+export default DocumentsList;
