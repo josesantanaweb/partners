@@ -36,13 +36,18 @@ const menu = [
   },
   {
     icon: "swap-alt-fill",
-    text: "Operaciones",
-    link: "/operation",
+    text: "Negocios",
+    link: "/deals",
   },
   {
     icon: "book-fill",
     text: "Biblioteca de Clientes",
-    link: "/customers-library",
+    link: "/customer-library",
+  },
+  {
+    icon: "file-plus-fill",
+    text: "Documentos",
+    link: "/documents",
   },
   {
     icon: "building-fill",

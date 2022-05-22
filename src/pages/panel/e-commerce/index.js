@@ -39,7 +39,7 @@ const Dashboard = () => {
             </Col>
 
             <Col className="nk-menu-item text-center btn btn-outline-light" md="3" lg="3">
-              <Link to="/operation" className="nk-menu-link text-dark-50 w-100 bg-transparent">
+              <Link to="/deals" className="nk-menu-link text-dark-50 w-100 bg-transparent">
                 <span>
                   <em className="icon ni ni-swap-alt-fill"></em>
                 </span>
@@ -48,7 +48,7 @@ const Dashboard = () => {
             </Col>
 
             <Col className="nk-menu-item text-center btn btn-outline-light" md="3" lg="3">
-              <Link to="/customers-library" className="nk-menu-link text-dark-50 w-100 bg-transparent">
+              <Link to="/customer-library" className="nk-menu-link text-dark-50 w-100 bg-transparent">
                 <span>
                   <em className="icon ni ni-users-fill"></em>
                 </span>
