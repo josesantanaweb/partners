@@ -189,16 +189,16 @@ const Natural = () => {
                   <span className="sub-text">Cliente</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text">Tipo</span>
+                  <span className="sub-text">Telefono Fijo</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text">Telefono</span>
+                  <span className="sub-text">Telefono Celular</span>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text">Profesion</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text">Informacion Bancaria</span>
+                  <span className="sub-text">Direccion</span>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text"></span>
@@ -224,25 +224,18 @@ const Natural = () => {
                         </div>
                       </DataTableRow>
                       <DataTableRow>
-                        <span className="text-info">Natural</span>
+                        <span className="text-info">{item?.phone}</span>
                       </DataTableRow>
                       <DataTableRow>
-                        <span className="text-info">{item?.phone}</span>
+                        <span className="text-info">{item?.mobilePhone}</span>
                       </DataTableRow>
                       <DataTableRow>
                         <span>{item?.profession}</span>
                       </DataTableRow>
                       <DataTableRow>
-                        <div className="user-card">
-                          <div className="user-info">
-                            <span className="tb-lead">
-                              {item?.currentAccountData?.bankName}
-                              <span className="dot dot-success d-md-none ml-1"></span>
-                            </span>
-                            <span>{item?.currentAccountData?.accountNumber}</span>
-                          </div>
-                        </div>
+                        <span>{item?.address?.detailedAddress?.address}</span>
                       </DataTableRow>
+
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
                           <li className="nk-tb-action-hidden" onClick={() => onDocumentClick(item.id, item)}>
@@ -262,7 +255,7 @@ const Natural = () => {
                               id={"edit" + 1}
                               icon="edit-alt-fill"
                               direction="top"
-                              text="Editar"
+                              text="Datos Personales"
                             />
                           </li>
                           <li className="nk-tb-action-hidden" onClick={() => onDeleteClick(item.id)}>
