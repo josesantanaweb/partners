@@ -1,4 +1,4 @@
-import React, { Suspense, useLayoutEffect } from "react";
+import React, { useState, useEffect, Suspense, useLayoutEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import { UserContextProvider } from "../pages/users/UserContext";
 import { CustomerContextProvider } from "../pages/customers/CustomersContext";
@@ -24,9 +24,35 @@ import Metting from "../pages/app/Metting/Calender";
 import EcomDashboard from "../pages/panel/e-commerce/index";
 import Deals from "../pages/deals/DealsList";
 import CustomerLibrary from "../pages/customerLibrary/CustomerLibrary";
+import CustomerId from "../pages/customerLibrary/CustomerId";
+import CustomersServices from "../services/CustomersServices";
+
 import Documents from "../pages/documents/DocumentsList";
 
 const Pages = () => {
+  const [data, setData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
+
+  // Get Legal
+  const getCustomers = async () => {
+    try {
+      const customers = await CustomersServices.getCustomerNatural();
+      setData(customers?.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getCustomers();
+  }, []);
+
+  // Get current list, pagination
+  const indexOfLastItem = currentPage * itemPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemPerPage;
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); //current items = data
+
+  const customerId = (customerId) => currentItems.find((item) => item.id == customerId);
+
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   });
@@ -117,15 +143,7 @@ const Pages = () => {
             </RolesContextProvider>
           )}
         ></Route>
-        <Route
-          exact
-          path={`${process.env.PUBLIC_URL}/customer-library`}
-          render={() => (
-            <RolesContextProvider>
-              <CustomerLibrary />
-            </RolesContextProvider>
-          )}
-        ></Route>
+
         <Route
           exact
           path={`${process.env.PUBLIC_URL}/documents`}
@@ -135,6 +153,7 @@ const Pages = () => {
             </RolesContextProvider>
           )}
         ></Route>
+
         <Route
           exact
           path={`${process.env.PUBLIC_URL}/products`}
@@ -155,6 +174,29 @@ const Pages = () => {
         ></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/calendar`} render={() => <Metting />}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/`} component={Homepage}></Route>
+        <Switch>
+          <Route
+            exact
+            path={`${process.env.PUBLIC_URL}/customer-library`}
+            render={() => (
+              <Route>
+                <RolesContextProvider>
+                  <CustomerLibrary />
+                </RolesContextProvider>
+              </Route>
+            )}
+          ></Route>
+          <Route
+            path={`${process.env.PUBLIC_URL}/:id`}
+            render={() => (
+              <Route>
+                <RolesContextProvider>
+                  <CustomerId customerId={customerId} />
+                </RolesContextProvider>
+              </Route>
+            )}
+          ></Route>
+        </Switch>
         <Route component={RedirectAs404}></Route>
       </Switch>
     </Suspense>

@@ -6,7 +6,7 @@ import CustomersServices from "../../../../services/CustomersServices";
 import DealsServices from "../../../../services/DealsServices";
 
 // Deals data
-const MainInformation = () => {
+const CustomerFile = () => {
   const [data, setData] = useState([]);
   const [dataCust, setCust] = useState([]);
   const [dataCustLegal, setCustLegal] = useState([]);
@@ -317,19 +317,25 @@ const MainInformation = () => {
           <div className="nk-tb-list is-separate is-medium">
             <DataTableHead className="nk-tb-item scrollbar-fluid overflow-auto">
               <DataTableRow className="text-center border-bottom border bg-light">
-                <span className="sub-text">N. de Cliente</span>
-              </DataTableRow>
-              <DataTableRow className="text-center border-bottom border bg-light">
                 <span className="sub-text">Ciente</span>
               </DataTableRow>
               <DataTableRow className="text-center border-bottom border bg-light">
                 <span className="sub-text">Rut</span>
               </DataTableRow>
               <DataTableRow className="text-center border-bottom border bg-light">
-                <span className="sub-text">Tipo</span>
+                <span className="sub-text">Email</span>
               </DataTableRow>
               <DataTableRow className="text-center border-bottom border bg-light">
-                <span className="sub-text">Acción</span>
+                <span className="sub-text">Teléfono fijo</span>
+              </DataTableRow>
+              <DataTableRow className="text-center border-bottom border bg-light">
+                <span className="sub-text">Teléfono celular</span>
+              </DataTableRow>
+              <DataTableRow className="text-center border-bottom border bg-light">
+                <span className="sub-text">Dirección</span>
+              </DataTableRow>
+              <DataTableRow className="text-center border-bottom border bg-light">
+                <span className="sub-text">Selección</span>
               </DataTableRow>
             </DataTableHead>
 
@@ -337,16 +343,22 @@ const MainInformation = () => {
               ? dataCust.map((customer) => (
                   <DataTableItem key={customer.id}>
                     <DataTableRow className="text-center">
-                      <span>{customer.id}</span>
-                    </DataTableRow>
-                    <DataTableRow className="text-center">
                       <span>{customer.names}</span>
                     </DataTableRow>
                     <DataTableRow className="text-center">
                       <span>{customer.rut}</span>
                     </DataTableRow>
                     <DataTableRow className="text-center">
-                      <span>{customer.names}</span>
+                      <span>{customer.email}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{customer.phone}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{customer.mobilePhone}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{customer.address.detailedAddress.address}</span>
                     </DataTableRow>
 
                     <DataTableRow className="text-center">
@@ -581,4 +593,4 @@ const MainInformation = () => {
   );
 };
 
-export default MainInformation;
+export default CustomerFile;

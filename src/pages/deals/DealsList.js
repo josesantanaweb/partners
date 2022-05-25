@@ -19,8 +19,10 @@ import {
 import { FormGroup, Modal, ModalBody, Form, Alert, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import classnames from "classnames";
 import AddMainInformation from "./components/Add/MainInformation";
-import EditMainInformation from "./components/Edit/MainInformation";
+import AddCustomerFile from "./components/Add/CustomerFile";
+import AddAccountData from "./components/Add/AccountData";
 
+import EditMainInformation from "./components/Edit/MainInformation";
 import AccountData from "../clientes/Natural/components/Edit/AccountData";
 import EmploymentHistory from "../clientes/Natural/components/Edit/EmploymentHistory";
 
@@ -75,10 +77,10 @@ const DealsList = () => {
   // };
 
   // function to close the form modal
-  // const onFormCancel = () => {
-  //   setModal({ edit: false, add: false, document: false });
-  //   resetForm();
-  // };
+  const onFormCancel = () => {
+    setModal({ edit: false, add: false, document: false });
+    // resetForm();
+  };
 
   // Submit function to add a new item
   // const onFormSubmit = async (submitData) => {
@@ -305,14 +307,20 @@ const DealsList = () => {
         </Block>
 
         {/* Nuevo elemento Modal */}
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal
+          isOpen={modal.add}
+          toggle={() => setModal({ add: false })}
+          className="modal-dialog-centered"
+          size="lg"
+          style={{ maxWidth: "992px" }}
+        >
           <ModalBody>
             <a
               href="#close"
-              // onClick={(ev) => {
-              //   ev.preventDefault();
-              //   onFormCancel();
-              // }}
+              onClick={(ev) => {
+                ev.preventDefault();
+                onFormCancel();
+              }}
               className="close"
             >
               <Icon name="cross-sm"></Icon>
@@ -327,7 +335,7 @@ const DealsList = () => {
                     className={classnames({ active: addActiveTab === "1" })}
                     onClick={() => setAddActiveTab("1")}
                   >
-                    Datos del Negocio
+                    Negocio
                   </NavLink>
                 </NavItem>
                 <NavItem>
@@ -367,6 +375,12 @@ const DealsList = () => {
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>
+              <TabContent activeTab={addActiveTab}>
+                <TabPane tabId="2">
+                  <AddCustomerFile setModal={setModal} />
+                  {/* formData={formData} */}
+                </TabPane>
+              </TabContent>
             </div>
           </ModalBody>
         </Modal>
@@ -375,10 +389,10 @@ const DealsList = () => {
           <ModalBody>
             <a
               href="#close"
-              // onClick={(ev) => {
-              //   ev.preventDefault();
-              //   onFormCancel();
-              // }}
+              onClick={(ev) => {
+                ev.preventDefault();
+                onFormCancel();
+              }}
               className="close"
             >
               <Icon name="cross-sm"></Icon>
@@ -416,10 +430,10 @@ const DealsList = () => {
           <ModalBody>
             <a
               href="#close"
-              // onClick={(ev) => {
-              //   ev.preventDefault();
-              //   onFormCancel();
-              // }
+              onClick={(ev) => {
+                ev.preventDefault();
+                onFormCancel();
+              }}
               className="close"
             >
               <Icon name="cross-sm"></Icon>
@@ -489,8 +503,8 @@ const DealsList = () => {
                 </NavItem>
               </Nav>
               <TabContent activeTab={addActiveTabDocument}>
-                <TabPane tabId="1">{editData && <AccountData setModal={setModal} editData={editData} />}</TabPane>
-                <TabPane tabId="2">{editData && <EmploymentHistory setModal={setModal} editData={editData} />}</TabPane>
+                {/* <TabPane tabId="1">{editData && <AccountData setModal={setModal} editData={editData} />}</TabPane>
+                <TabPane tabId="2">{editData && <EmploymentHistory setModal={setModal} editData={editData} />}</TabPane> */}
                 {/* <TabPane tabId="3">
                   {editData && <PersonalReferences setModal={setModal} editData={editData} />}
                 </TabPane>

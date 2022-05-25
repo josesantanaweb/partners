@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { Modal, ModalBody, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import {
   Block,
   BlockBetween,
@@ -18,18 +19,20 @@ import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import CustomersServices from "../../services/CustomersServices";
 import CustomersLibraryServices from "../../services/CustomersLibraryServices";
+import CustomerId from "./CustomerId";
 
-const Legal = () => {
+const CustomerLibrary = () => {
+  const { id } = useParams();
+
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
-
-  const [customerDocSelected, setCustomerDocSelected] = useState(null);
+  const [customerId, setCustomerId] = useState(false);
 
   // Get Legal
   const getCustomers = async () => {
     try {
-      const customers = await CustomersServices.getCustomerLegal();
+      const customers = await CustomersServices.getCustomerNatural();
       setData(customers?.data);
     } catch (error) {}
   };
@@ -52,7 +55,6 @@ const Legal = () => {
   const getCustomersLibrary = async (customerId) => {
     try {
       const customerLibrary = await CustomersLibraryServices.getCustomerLibrary(customerId);
-      console.log(currentItems);
       return customerLibrary.data;
     } catch (error) {
       throw error;
@@ -70,38 +72,37 @@ const Legal = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Clientes Legales
+                Biblioteca de clientes
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Últimos {currentItems.length} clientes</p>
+                <p>Últimos {currentItems.length} clientes naturales</p>
               </BlockDes>
             </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
-
         <Block>
           <div className="container-fluid overflow-auto scrollbar-fluid">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
-                <DataTableRow>
-                  <span className="sub-text">#</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Nombre</span>
                 </DataTableRow>
-                <DataTableRow size="xs">
-                  <span className="sub-text">Cliente</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Rut</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Tipo</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Email</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Telefono</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Teléfono fijo</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Categoria</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Teléfono celular</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Numero de identificacion</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Dirección</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
@@ -109,55 +110,54 @@ const Legal = () => {
               {currentItems.length > 0
                 ? lastCustomers(currentItems).map((item) => (
                     <DataTableItem key={item.id}>
-                      <DataTableRow>
-                        <span>{item.id}</span>
+                      <DataTableRow className="text-center">
+                        <span>{item?.names}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <div className="user-card">
-                          {item?.companyName && (
-                            <UserAvatar theme="purple" text={findUpper(item?.companyName)}></UserAvatar>
-                          )}
-                          <div className="user-info">
-                            <span className="tb-lead">
-                              {item?.companyName}
-                              <span className="dot dot-success d-md-none ml-1"></span>
-                            </span>
-                            <span>{item?.email}</span>
-                          </div>
-                        </div>
+                      <DataTableRow className="text-center">
+                        <span>{item?.rut}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <span className="text-info">Legal</span>
+                      <DataTableRow className="text-center">
+                        <span>{item?.email}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <span className="text-info">{item?.phone}</span>
+                      <DataTableRow className="text-center">
+                        <span>{item?.phone}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <span>{item?.companyCategory}</span>
+                      <DataTableRow className="text-center">
+                        <span>{item?.mobilePhone}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <span>{item?.taxIdentificationNumber}</span>
+                      <DataTableRow className="text-center">
+                        <span>{item?.address.detailedAddress.address}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <Link
-                          to="customer-library/documents"
-                          className="dropdown-toggle nk-quick-nav-icon"
-                          onClick={() => setCustomerDocSelected(item.id)}
+                      <DataTableRow className="text-center">
+                        <Nav>
+                          <NavItem>
+                            <Link to={`customer-library/${item.id}`} className="d-flex align-items-center">
+                              <div className="dropdown-toggle nk-quick-nav-icon icon-status text-primary ml-4">
+                                <Icon name="book" />
+                              </div>
+                            </Link>
+                          </NavItem>
+                        </Nav>
+                      </DataTableRow>
+                      {/* <DataTableRow>
+                        <div
+                          onClick={() => setCustomerId(!customerId)}
+                          className="dropdown-toggle nk-quick-nav-icon icon-status text-primary"
                         >
-                          <div className="icon-status text-primary">
-                            <Icon name="book" />
-                          </div>
-                        </Link>
-                      </DataTableRow>
+                          <Icon name="book" />
+                        </div>
+                      </DataTableRow> */}
                     </DataTableItem>
                   ))
                 : null}
             </div>
           </div>
         </Block>
+
+        {/* {customerId ? currentItems.map((item) => <CustomerId key={item.id} customerId={item.id} />) : null} */}
       </Content>
     </React.Fragment>
   );
 };
 
-export default Legal;
+export default CustomerLibrary;
