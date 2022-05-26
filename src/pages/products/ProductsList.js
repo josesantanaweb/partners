@@ -191,10 +191,10 @@ const ProductsList = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Products
+                Lista de Planes
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} products</p>
+                <p>Total {data.length} planes</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -210,7 +210,7 @@ const ProductsList = () => {
                     <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>
                         <Icon name="plus" className="mr-1"></Icon>
-                        Agregar Producto
+                        Agregar Plan
                       </Button>
                     </li>
                   </ul>
@@ -309,17 +309,22 @@ const ProductsList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Agregar Producto</h5>
+              <h5 className="title">Agregar Plan</h5>
               {errorMessage !== "" && (
                 <div className="my-3">
                   <Alert color="danger" className="alert-icon">
                     <Icon name="alert-circle" />
-                    Producto ya existe
+                    Plan ya existe
                   </Alert>
                 </div>
               )}
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
+                  <Col md="12">
+                    <div className="custom-tab">
+                      <h6>Datos del Cliente</h6>
+                    </div>
+                  </Col>
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Nombre</label>
@@ -350,7 +355,9 @@ const ProductsList = () => {
                     </FormGroup>
                   </Col>
                   <Col md="12">
-                    <h6>Segmentos de cliente</h6>
+                    <div className="custom-tab">
+                      <h6>Informacion Requerida</h6>
+                    </div>
                   </Col>
 
                   {documentsId &&
@@ -373,7 +380,9 @@ const ProductsList = () => {
                     ))}
 
                   <Col md="12">
-                    <h6>Cliente Natural</h6>
+                    <div className="custom-tab">
+                      <h6>Cliente Natural</h6>
+                    </div>
                   </Col>
 
                   {customerNatural &&
@@ -396,7 +405,9 @@ const ProductsList = () => {
                     ))}
 
                   <Col md="12">
-                    <h6>Cliente Legal</h6>
+                    <div className="custom-tab">
+                      <h6>Cliente Legal</h6>
+                    </div>
                   </Col>
 
                   {customerLegal &&
@@ -422,7 +433,7 @@ const ProductsList = () => {
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Agregar Producto
+                          Agregar Plan
                         </Button>
                       </li>
                       <li>
@@ -462,6 +473,11 @@ const ProductsList = () => {
               <h5 className="title">Actualizar Producto</h5>
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
+                  <Col md="12">
+                    <div className="custom-tab">
+                      <h6>Datos del Cliente</h6>
+                    </div>
+                  </Col>
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Nombre</label>
@@ -492,6 +508,11 @@ const ProductsList = () => {
                     </FormGroup>
                   </Col>
 
+                  <Col md="12">
+                    <div className="custom-tab">
+                      <h6>Informacion Requerida</h6>
+                    </div>
+                  </Col>
                   {documentsId &&
                     documentsId.map((item, i) => (
                       <Col md="6" key={i}>
@@ -511,8 +532,11 @@ const ProductsList = () => {
                         </div>
                       </Col>
                     ))}
+
                   <Col md="12">
-                    <h6>Cliente Natural</h6>
+                    <div className="custom-tab">
+                      <h6>Cliente Natural</h6>
+                    </div>
                   </Col>
 
                   {customerNatural &&
@@ -536,7 +560,9 @@ const ProductsList = () => {
                     ))}
 
                   <Col md="12">
-                    <h6>Cliente Legal</h6>
+                    <div className="custom-tab">
+                      <h6>Cliente Legal</h6>
+                    </div>
                   </Col>
 
                   {customerLegal &&
@@ -563,7 +589,7 @@ const ProductsList = () => {
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Actualizar Producto
+                          Actualizar Plan
                         </Button>
                       </li>
                       <li>
