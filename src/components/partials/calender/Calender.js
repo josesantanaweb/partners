@@ -12,11 +12,12 @@ import { setDateForPicker } from "../../../utils/Utils";
 import moment from "moment";
 import "moment/locale/es";
 
-const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions, onCategoriesChange }) => {
+const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions }) => {
   const [modalState, updateModal] = useState(false);
   const [mockEvents, updateEvents] = useState(events);
   const [event, updateEvent] = useState({});
   const [edit, updateEditModal] = useState(false);
+  const [categoryId, setCategoryId] = useState();
   const [dates, setDates] = useState({
     startDate: new Date(),
     startTime: new Date(),
@@ -37,7 +38,8 @@ const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions, onCategories
       title: formData.title,
       start: event.start,
       end: event.end,
-      description: null,
+      description: formData.description,
+      categoryId: categoryId,
     };
     onEdit(newEvent);
     toggleEdit();
@@ -49,6 +51,10 @@ const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions, onCategories
 
   const toggleEdit = () => {
     updateEditModal(!edit);
+  };
+
+  const onCategoriesChange = (value) => {
+    setCategoryId(value.value);
   };
 
   const handleEventClick = (info) => {
