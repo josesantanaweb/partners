@@ -84,6 +84,7 @@ const ProductsList = () => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
+    observation: "",
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
@@ -103,6 +104,7 @@ const ProductsList = () => {
     setFormData({
       name: "",
       description: "",
+      observation: "",
     });
   };
 
@@ -114,13 +116,14 @@ const ProductsList = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { name, description, documentsId, customerNaturalField, customerLegalField } = submitData;
+    const { name, description, observation, documentsId, customerNaturalField, customerLegalField } = submitData;
     const numberDocuments = documentsId.map((i) => Number(i));
     const numberSegmentsNatural = customerNaturalField.map((i) => Number(i));
     const numberSegmentsLegal = customerLegalField.map((i) => Number(i));
     let submittedData = {
       name: name,
       description: description,
+      observation: observation,
       documentsId: numberDocuments,
       customerSegmentsId: [...numberSegmentsNatural, ...numberSegmentsLegal],
     };
@@ -136,13 +139,14 @@ const ProductsList = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { name, description, documentsId, customerNaturalField, customerLegalField } = submitData;
+    const { name, description, observation, documentsId, customerNaturalField, customerLegalField } = submitData;
     const numberDocuments = documentsId.map((i) => Number(i));
     const numberSegmentsNatural = customerNaturalField.map((i) => Number(i));
     const numberSegmentsLegal = customerLegalField.map((i) => Number(i));
     let submittedData = {
       name: name,
       description: description,
+      observation: observation,
       documentsId: numberDocuments,
       customerSegmentsId: [...numberSegmentsNatural, ...numberSegmentsLegal],
     };
@@ -322,7 +326,7 @@ const ProductsList = () => {
                 <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="12">
                     <div className="custom-tab">
-                      <h6>Datos del Cliente</h6>
+                      <h6>Datos del Plan</h6>
                     </div>
                   </Col>
                   <Col md="6">
@@ -354,34 +358,22 @@ const ProductsList = () => {
                       {errors.description && <span className="invalid">{errors.description.message}</span>}
                     </FormGroup>
                   </Col>
-                  <Col md="12">
-                    <div className="custom-tab">
-                      <h6>Informacion Requerida</h6>
-                    </div>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Observacion</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="observation"
+                        defaultValue={formData.observation}
+                        placeholder="Ingresa apellido"
+                        ref={register()}
+                      />
+                    </FormGroup>
                   </Col>
-
-                  {documentsId &&
-                    documentsId.map((item, i) => (
-                      <Col md="6" key={i}>
-                        <div className="custom-control custom-checkbox">
-                          <input
-                            type="checkbox"
-                            name="documentsId"
-                            value={item.id}
-                            className="custom-control-input form-control"
-                            id={item.name}
-                            ref={register()}
-                          />
-                          <label className="custom-control-label" htmlFor={item.name}>
-                            {item.name}
-                          </label>
-                        </div>
-                      </Col>
-                    ))}
-
                   <Col md="12">
                     <div className="custom-tab">
-                      <h6>Cliente Natural</h6>
+                      <h6>Informacion Solicitada Para Cliente Natural</h6>
                     </div>
                   </Col>
 
@@ -406,7 +398,7 @@ const ProductsList = () => {
 
                   <Col md="12">
                     <div className="custom-tab">
-                      <h6>Cliente Legal</h6>
+                      <h6>Informacion Solicitada Para Cliente Legal</h6>
                     </div>
                   </Col>
 
@@ -417,6 +409,31 @@ const ProductsList = () => {
                           <input
                             type="checkbox"
                             name="customerLegalField"
+                            value={item.id}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
+
+                  <Col md="12">
+                    <div className="custom-tab">
+                      <h6>Informacion Requerida</h6>
+                    </div>
+                  </Col>
+
+                  {documentsId &&
+                    documentsId.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="documentsId"
                             value={item.id}
                             className="custom-control-input form-control"
                             id={item.name}
@@ -475,7 +492,7 @@ const ProductsList = () => {
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="12">
                     <div className="custom-tab">
-                      <h6>Datos del Cliente</h6>
+                      <h6>Datos del Plan</h6>
                     </div>
                   </Col>
                   <Col md="6">
@@ -508,34 +525,23 @@ const ProductsList = () => {
                     </FormGroup>
                   </Col>
 
-                  <Col md="12">
-                    <div className="custom-tab">
-                      <h6>Informacion Requerida</h6>
-                    </div>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Observacion</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="observation"
+                        defaultValue={editData?.observation}
+                        placeholder="Ingresa observacion"
+                        ref={register()}
+                      />
+                    </FormGroup>
                   </Col>
-                  {documentsId &&
-                    documentsId.map((item, i) => (
-                      <Col md="6" key={i}>
-                        <div className="custom-control custom-checkbox">
-                          <input
-                            type="checkbox"
-                            name="documentsId"
-                            value={item.id}
-                            defaultValue={editData?.documentsId?.includes(item.id)}
-                            className="custom-control-input form-control"
-                            id={item.name}
-                            ref={register()}
-                          />
-                          <label className="custom-control-label" htmlFor={item.name}>
-                            {item.name}
-                          </label>
-                        </div>
-                      </Col>
-                    ))}
 
                   <Col md="12">
                     <div className="custom-tab">
-                      <h6>Cliente Natural</h6>
+                      <h6>Informacion Solicitada Para Cliente Natural</h6>
                     </div>
                   </Col>
 
@@ -561,7 +567,7 @@ const ProductsList = () => {
 
                   <Col md="12">
                     <div className="custom-tab">
-                      <h6>Cliente Legal</h6>
+                      <h6>Informacion Solicitada Para Cliente Legal</h6>
                     </div>
                   </Col>
 
@@ -574,6 +580,31 @@ const ProductsList = () => {
                             name="customerLegalField"
                             value={item.id}
                             defaultValue={editData?.customerSegmentsId?.includes(item.id)}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
+
+                  <Col md="12">
+                    <div className="custom-tab">
+                      <h6>Informacion Requerida</h6>
+                    </div>
+                  </Col>
+                  {documentsId &&
+                    documentsId.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="documentsId"
+                            value={item.id}
+                            defaultValue={editData?.documentsId?.includes(item.id)}
                             className="custom-control-input form-control"
                             id={item.name}
                             ref={register()}
