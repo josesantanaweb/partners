@@ -31,27 +31,21 @@ import Documents from "../pages/documents/DocumentsList";
 
 const Pages = () => {
   const [data, setData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
+  const customerId = data;
 
   // Get Legal
   const getCustomers = async () => {
     try {
       const customers = await CustomersServices.getCustomerNatural();
-      setData(customers?.data);
+      const customerDataId = customers.data.map((customer) => customer.id);
+
+      setData(customerDataId); //-> 1-2-3
     } catch (error) {}
   };
 
   useEffect(() => {
     getCustomers();
   }, []);
-
-  // Get current list, pagination
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); //current items = data
-
-  const customerId = (customerId) => currentItems.find((item) => item.id == customerId);
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0);

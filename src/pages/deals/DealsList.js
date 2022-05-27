@@ -152,7 +152,6 @@ const DealsList = () => {
     try {
       const deals = await DealsServices.getDeal();
       const dealsData = await deals.data.map((data) => data);
-      // console.log(dealsData); -> lista de negocios/operaciones
       setData(dealsData);
     } catch (error) {}
   };
@@ -310,7 +309,7 @@ const DealsList = () => {
         <Modal
           isOpen={modal.add}
           toggle={() => setModal({ add: false })}
-          className="modal-dialog-centered"
+          className="modal-dialog-centered "
           size="lg"
           style={{ maxWidth: "992px" }}
         >
@@ -325,7 +324,7 @@ const DealsList = () => {
             >
               <Icon name="cross-sm"></Icon>
             </a>
-            <div className="p-2">
+            <div className="p-2 table-record">
               <h5 className="title">Agregar Negocio</h5>
               <Nav tabs>
                 <NavItem>

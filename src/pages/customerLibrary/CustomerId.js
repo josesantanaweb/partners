@@ -18,11 +18,13 @@ import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import { useForm } from "react-hook-form";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
-import DealsServices from "../../services/DealsServices";
 import CustomersLibraryServices from "../../services/CustomersLibraryServices";
+import DocumentsServices from "../../services/DocumentsServices";
 
-const CustomerId = ({ customerId }) => {
+const CustomerId = () => {
   const [data, setData] = useState([]);
+  const [documents, setDocuments] = useState([]);
+  const [documentsOptions, setDocumentsOptions] = useState(documents);
   const [sm, updateSm] = useState(false);
   const { register, handleSubmit } = useForm();
   const [errorMessage, setErrorMessage] = useState("");
@@ -30,57 +32,43 @@ const CustomerId = ({ customerId }) => {
     edit: false,
     add: false,
   });
-  const [plans, setPlans] = useState([]);
-  const [plansOptions, setPlansOptions] = useState(plans);
+
+  const matched = data.find((item) => {
+    if (item.id == documentsOptions.value) {
+      return item;
+    }
+  });
+
   const [formData, setFormData] = useState({
-    planId: "",
-    description: "",
+    documentTypeId: "",
+    description: documentsOptions.value?.description,
     observation: "",
     expirationDate: "",
     file: "",
   });
 
+  // get dinamic customerId
+  const index = window.location.href.indexOf("customer-library") + 17;
+  const customerId = window.location.href.slice(index);
+
   // function to get customer document
   const getCustomerDocument = async (customerId) => {
     try {
       const customerDocument = await CustomersLibraryServices.getCustomerDocument(customerId);
-      console.log(`customerDocument:`, customerDocument.data);
       setData(customerDocument.data);
     } catch (error) {
       throw error;
     }
   };
-  useEffect(() => {
-    getCustomerDocument(1);
-  }, []);
-
-  console.log(`Data:`, data);
-
-  const formDataDoc = new FormData();
-  // function to get plan select
-  const getPlans = async () => {
-    try {
-      const selectsData = await DealsServices.getDealSelects();
-      const plansData = await selectsData.plans.map((plan) => ({ label: plan.name, value: plan.id }));
-      setPlans(plansData);
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const onOptionsPlansChange = (optionValue) => {
-    formDataDoc.append("planId", optionValue);
-    setPlansOptions(optionValue);
-  };
 
   useEffect(() => {
-    getPlans();
+    getCustomerDocument(parseInt(customerId));
   }, []);
 
   // function to reset the form
   const resetForm = () => {
     setFormData({
-      planId: "",
+      documentTypeId: "",
       description: "",
       observation: "",
       expirationDate: "",
@@ -96,33 +84,48 @@ const CustomerId = ({ customerId }) => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { planId, description, observation, expirationDate, file } = submitData;
+    const { documentTypeId, description, observation, expirationDate, file } = submitData;
     let submittedData = {
-      planId: plansOptions.value,
-      description: description,
+      documentTypeId: documentsOptions.value,
+      description: documentsOptions.value,
       observation: observation,
       expirationDate: expirationDate,
       file: file[0].name,
     };
+    console.log(submittedData);
 
     try {
       const formData = new FormData();
       await CustomersLibraryServices.addCustomerLibDoc(formData);
-
       formData.append("file", submittedData.file);
-      formData.append("planId", submittedData.planId);
+      formData.append("documentTypeId", submittedData.documentTypeId);
       formData.append("description", submittedData.description);
       formData.append("observation", submittedData.observation);
       formData.append("expirationDate", submittedData.expirationDate);
-
       setData([submittedData, ...data]);
-      console.log(submittedData);
-
       resetForm();
       setModal({ edit: false }, { add: false });
-      // window.location.reload();
     } catch (error) {}
   };
+
+  // function to get company select
+  const getDocuments = async () => {
+    try {
+      const documents = await DocumentsServices.getDocuments();
+      const documentsData = await documents.data.map((document) => ({ label: document.name, value: document.id }));
+      setDocuments(documentsData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsDocumentsChange = (optionValue) => {
+    setDocumentsOptions(optionValue);
+  };
+
+  useEffect(() => {
+    getDocuments();
+    console.log(`DOV:`, documentsOptions.value);
+  }, [documentsOptions.value]);
 
   return (
     <React.Fragment>
@@ -193,7 +196,7 @@ const CustomerId = ({ customerId }) => {
                         <span>{item?.createdAt}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center border-bottom">
-                        <a href={item.url}>
+                        <a href={item.url} target="_blank" rel="noreferrer">
                           <Button color="primary" type="button">
                             <Icon name="eye" className="mr-1"></Icon>
                             <span className="text-white">Visualizar</span>
@@ -234,11 +237,12 @@ const CustomerId = ({ customerId }) => {
                 <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="12">
                     <FormGroup>
+                      <label className="form-label">Documento</label>
                       <RSelect
-                        value={plansOptions}
-                        options={plans}
-                        onChange={onOptionsPlansChange}
-                        defautlValue={formData.planId}
+                        value={documentsOptions}
+                        options={documents}
+                        onChange={onOptionsDocumentsChange}
+                        defautlValue={formData.documentTypeId}
                       />
                     </FormGroup>
                   </Col>
@@ -250,7 +254,7 @@ const CustomerId = ({ customerId }) => {
                         className="form-control"
                         type="text"
                         name="description"
-                        // defaultValue={formData.description}
+                        defaultValue={data.map((item) => item?.description)}
                         placeholder="Descripción documento"
                         ref={register({ required: "Este campo es requerido" })}
                       />

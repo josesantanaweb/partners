@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Modal, ModalBody, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
+import { Nav, NavItem } from "reactstrap";
 import {
   Block,
   BlockBetween,
@@ -9,12 +9,12 @@ import {
   BlockHeadContent,
   BlockTitle,
   Icon,
-  UserAvatar,
   DataTableHead,
   DataTableRow,
   DataTableItem,
+  TooltipComponent,
 } from "../../components/Component";
-import { findUpper } from "../../utils/Utils";
+
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import CustomersServices from "../../services/CustomersServices";
@@ -23,7 +23,6 @@ import CustomerId from "./CustomerId";
 
 const CustomerLibrary = () => {
   const { id } = useParams();
-
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
@@ -85,6 +84,9 @@ const CustomerLibrary = () => {
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
+                  <span className="sub-text text-primary">#</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">Nombre</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
@@ -111,6 +113,9 @@ const CustomerLibrary = () => {
                 ? lastCustomers(currentItems).map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow className="text-center">
+                        <span>{item?.id}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item?.names}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
@@ -129,24 +134,115 @@ const CustomerLibrary = () => {
                         <span>{item?.address.detailedAddress.address}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <Nav>
-                          <NavItem>
-                            <Link to={`customer-library/${item.id}`} className="d-flex align-items-center">
-                              <div className="dropdown-toggle nk-quick-nav-icon icon-status text-primary ml-4">
-                                <Icon name="book" />
-                              </div>
-                            </Link>
-                          </NavItem>
-                        </Nav>
+                        {item.id ? (
+                          <Link
+                            to={`customer-library/${item.id}`}
+                            className="d-flex align-items-center justify-content-center"
+                          >
+                            <TooltipComponent
+                              tag="span"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"edit" + 1}
+                              icon="book"
+                              direction="top"
+                              text="Mis documentos"
+                            />
+                          </Link>
+                        ) : null}
                       </DataTableRow>
-                      {/* <DataTableRow>
-                        <div
-                          onClick={() => setCustomerId(!customerId)}
-                          className="dropdown-toggle nk-quick-nav-icon icon-status text-primary"
-                        >
-                          <Icon name="book" />
-                        </div>
-                      </DataTableRow> */}
+                    </DataTableItem>
+                  ))
+                : null}
+            </div>
+          </div>
+        </Block>
+      </Content>
+
+      {/* Clientes Legales */}
+      <Content>
+        <BlockHead size="sm">
+          <BlockBetween>
+            <BlockHeadContent>
+              <BlockTitle tag="h3" page>
+                Biblioteca de clientes
+              </BlockTitle>
+              <BlockDes className="text-soft">
+                <p>Últimos {currentItems.length} clientes legales</p>
+              </BlockDes>
+            </BlockHeadContent>
+          </BlockBetween>
+        </BlockHead>
+        <Block>
+          <div className="container-fluid overflow-auto scrollbar-fluid ">
+            <div className="nk-tb-list is-separate is-medium mb-3">
+              <DataTableHead className="nk-tb-item">
+                <DataTableRow className="text-center">
+                  <span className="sub-text text-primary">#</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Nombre</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Rut</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Email</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Teléfono fijo</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Teléfono celular</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Dirección</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Acción</span>
+                </DataTableRow>
+              </DataTableHead>
+
+              {currentItems.length > 0
+                ? lastCustomers(currentItems).map((item) => (
+                    <DataTableItem key={item.id}>
+                      <DataTableRow className="text-center">
+                        <span>{item?.id}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.names}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.rut}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.email}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.phone}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.mobilePhone}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.address.detailedAddress.address}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        {item.id ? (
+                          <Link
+                            to={`customer-library/${item.id}`}
+                            className="d-flex align-items-center justify-content-center"
+                          >
+                            <TooltipComponent
+                              tag="a"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"edit" + 1}
+                              icon="book"
+                              direction="top"
+                              text="Mis documentos"
+                            />
+                          </Link>
+                        ) : null}
+                      </DataTableRow>
                     </DataTableItem>
                   ))
                 : null}
@@ -154,7 +250,7 @@ const CustomerLibrary = () => {
           </div>
         </Block>
 
-        {/* {customerId ? currentItems.map((item) => <CustomerId key={item.id} customerId={item.id} />) : null} */}
+        {customerId ? currentItems.map((item) => <CustomerId key={item.id} customerId={item.id} />) : null}
       </Content>
     </React.Fragment>
   );

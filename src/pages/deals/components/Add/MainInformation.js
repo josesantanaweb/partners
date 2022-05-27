@@ -360,7 +360,6 @@ const CustomerFile = () => {
                     <DataTableRow className="text-center">
                       <span>{customer.address.detailedAddress.address}</span>
                     </DataTableRow>
-
                     <DataTableRow className="text-center">
                       <Button
                         onClick={(e) => {
@@ -572,7 +571,7 @@ const CustomerFile = () => {
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
           <li>
             <Button color="primary" size="md" type="submit">
-              Guardar
+              Siguiente
             </Button>
           </li>
           <li>
