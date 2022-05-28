@@ -166,16 +166,16 @@ const Legal = () => {
                   <span className="sub-text">Cliente</span>
                 </DataTableRow>
                 <DataTableRow>
-                  <span className="sub-text">Tipo</span>
+                  <span className="sub-text">Telefono Fijo</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Telefono</span>
-                </DataTableRow>
-                <DataTableRow>
+                <DataTableRow size="xs">
                   <span className="sub-text">Categoria</span>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text">Numero de identificacion</span>
+                </DataTableRow>
+                <DataTableRow>
+                  <span className="sub-text">Direccion</span>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="sub-text"></span>
@@ -203,9 +203,6 @@ const Legal = () => {
                         </div>
                       </DataTableRow>
                       <DataTableRow>
-                        <span className="text-info">Legal</span>
-                      </DataTableRow>
-                      <DataTableRow>
                         <span className="text-info">{item?.phone}</span>
                       </DataTableRow>
                       <DataTableRow>
@@ -213,6 +210,9 @@ const Legal = () => {
                       </DataTableRow>
                       <DataTableRow>
                         <span>{item?.taxIdentificationNumber}</span>
+                      </DataTableRow>
+                      <DataTableRow>
+                        <span>{item?.address?.detailedAddress?.address}</span>
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
@@ -233,7 +233,7 @@ const Legal = () => {
                               id={"edit" + 1}
                               icon="edit-alt-fill"
                               direction="top"
-                              text="Editar"
+                              text="Datos de la empresa"
                             />
                           </li>
                           <li className="nk-tb-action-hidden" onClick={() => onDeleteClick(item.id)}>
