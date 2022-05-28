@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import {
   Block,
@@ -22,12 +22,31 @@ import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
 import { ProductsContext } from "./ProductsContext";
 import ProductsServices from "../../services/ProductsServices";
+import DocumentsServices from "../../services/DocumentsServices";
+import SegmentsServices from "../../services/SegmentsServices";
 
 const ProductsList = () => {
   const { contextData } = useContext(ProductsContext);
   const [data, setData] = contextData;
+  const [documentsId, setDocumentsId] = useState();
+  const [customerSegmentsId, setCustomerSegmentsId] = useState();
+  const [customerNatural, setCustomerNatural] = useState();
+  const [customerLegal, setCustomerLegal] = useState();
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
+
+  useEffect(() => {
+    getDocuments();
+    getSegmentsNatural();
+    getSegmentsLegal();
+  }, []);
+
+  useEffect(() => {
+    if (customerNatural && customerLegal) {
+      const segments = [...customerNatural, ...customerLegal];
+      setCustomerSegmentsId(segments);
+    }
+  }, [customerNatural, customerLegal]);
 
   const [modal, setModal] = useState({
     edit: false,
@@ -41,6 +60,27 @@ const ProductsList = () => {
     } catch (error) {}
   };
 
+  const getSegmentsNatural = async () => {
+    try {
+      const segmentsNatural = await SegmentsServices.getSegmentsNatural();
+      setCustomerNatural(segmentsNatural.data);
+    } catch (error) {}
+  };
+
+  const getSegmentsLegal = async () => {
+    try {
+      const segmentsLegal = await SegmentsServices.getSegmentsLegal();
+      setCustomerLegal(segmentsLegal.data);
+    } catch (error) {}
+  };
+
+  const getDocuments = async () => {
+    try {
+      const documents = await DocumentsServices.getDocuments();
+      setDocumentsId(documents.data);
+    } catch (error) {}
+  };
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -51,7 +91,13 @@ const ProductsList = () => {
 
   const [sm, updateSm] = useState(false);
 
-  const { errors, register, handleSubmit } = useForm();
+  const { errors, register, handleSubmit, reset } = useForm({
+    defaultValues: {
+      documentsId: [],
+      customerNaturalField: [],
+      customerLegalField: [],
+    },
+  });
 
   // Function to reset the form
   const resetForm = () => {
@@ -81,11 +127,13 @@ const ProductsList = () => {
       documentsId: numberDocuments,
       customerSegmentsId: [...numberSegmentsNatural, ...numberSegmentsLegal],
     };
+
     try {
       await ProductsServices.addProduct(submittedData);
       resetForm();
       getProducts();
       setModal({ edit: false }, { add: false });
+      window.location.reload();
     } catch (error) {}
   };
 
@@ -108,6 +156,7 @@ const ProductsList = () => {
       resetForm();
       getProducts();
       setModal({ edit: false }, { add: false });
+      window.location.reload();
     } catch (error) {}
   };
 
@@ -115,6 +164,11 @@ const ProductsList = () => {
   const onEditClick = (id, data) => {
     setModal({ edit: true }, { add: false });
     setEditData(data);
+    reset({
+      documentsId: data.documentsId.map((item) => String(item)),
+      customerNaturalField: data.customerSegmentsId.map((item) => String(item)),
+      customerLegalField: data.customerSegmentsId.map((item) => String(item)),
+    });
   };
 
   // Function to change to delete property for an item
