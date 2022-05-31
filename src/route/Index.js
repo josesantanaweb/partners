@@ -1,4 +1,4 @@
-import React, { Suspense, useLayoutEffect } from "react";
+import React, { useState, useEffect, Suspense, useLayoutEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import { UserContextProvider } from "../pages/users/UserContext";
 import { NaturalContextProvider } from "../pages/clientes/Natural/NaturalContext";
@@ -10,8 +10,6 @@ import { CompanyContextProvider } from "../pages/company/CompanyContext";
 import { RedirectAs404 } from "../utils/Utils";
 
 import Homepage from "../pages/Homepage";
-
-import Operation from "../pages/operation/OperationDefault";
 import Natural from "../pages/clientes/Natural/Natural";
 import Legal from "../pages/clientes/Legal/Legal";
 import Users from "../pages/users/UserList";
@@ -21,9 +19,31 @@ import Products from "../pages/products/ProductsList";
 import Company from "../pages/company/CompanyList";
 import Metting from "../pages/app/Metting/Calender";
 import EcomDashboard from "../pages/panel/e-commerce/index";
-import CustomersLibrary from "../pages/customersLibrary/CustomersLibrary";
+import Deals from "../pages/deals/DealsList";
+import CustomerLibrary from "../pages/customerLibrary/CustomerLibrary";
+import CustomerId from "../pages/customerLibrary/CustomerId";
+import CustomersServices from "../services/CustomersServices";
+
+import Documents from "../pages/documents/DocumentsList";
 
 const Pages = () => {
+  const [data, setData] = useState([]);
+  const customerId = data;
+
+  // Get Legal
+  const getCustomers = async () => {
+    try {
+      const customers = await CustomersServices.getCustomerNatural();
+      const customerDataId = customers.data.map((customer) => customer.id);
+
+      setData(customerDataId); //-> 1-2-3
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getCustomers();
+  }, []);
+
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   });
@@ -33,7 +53,6 @@ const Pages = () => {
       <Switch>
         {/*Panel */}
         <Route exact path={`${process.env.PUBLIC_URL}/index`} component={EcomDashboard}></Route>
-        <Route exact path={`${process.env.PUBLIC_URL}/operation`} component={Operation}></Route>
         <Route
           exact
           path={`${process.env.PUBLIC_URL}/users`}
@@ -54,7 +73,7 @@ const Pages = () => {
         ></Route>
         <Route
           exact
-          path={`${process.env.PUBLIC_URL}/customer`}
+          path={`${process.env.PUBLIC_URL}/natural`}
           render={() => (
             <NaturalContextProvider>
               <Natural />
@@ -63,11 +82,29 @@ const Pages = () => {
         ></Route>
         <Route
           exact
-          path={`${process.env.PUBLIC_URL}/customer-juridico`}
+          path={`${process.env.PUBLIC_URL}/legal`}
           render={() => (
             <LegalContextProvider>
               <Legal />
             </LegalContextProvider>
+          )}
+        ></Route>
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/customer`}
+          render={() => (
+            <CustomerContextProvider>
+              <Customer />
+            </CustomerContextProvider>
+          )}
+        ></Route>
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/customer-juridico`}
+          render={() => (
+            <CustomerContextProvider>
+              <CustomerJuridico />
+            </CustomerContextProvider>
           )}
         ></Route>
         <Route
@@ -90,13 +127,24 @@ const Pages = () => {
         ></Route>
         <Route
           exact
-          path={`${process.env.PUBLIC_URL}/customers-library`}
+          path={`${process.env.PUBLIC_URL}/deals`}
           render={() => (
             <RolesContextProvider>
-              <CustomersLibrary />
+              <Deals />
             </RolesContextProvider>
           )}
         ></Route>
+
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/documents`}
+          render={() => (
+            <RolesContextProvider>
+              <Documents />
+            </RolesContextProvider>
+          )}
+        ></Route>
+
         <Route
           exact
           path={`${process.env.PUBLIC_URL}/products`}
@@ -117,6 +165,29 @@ const Pages = () => {
         ></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/calendar`} render={() => <Metting />}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/`} component={Homepage}></Route>
+        <Switch>
+          <Route
+            exact
+            path={`${process.env.PUBLIC_URL}/customer-library`}
+            render={() => (
+              <Route>
+                <RolesContextProvider>
+                  <CustomerLibrary />
+                </RolesContextProvider>
+              </Route>
+            )}
+          ></Route>
+          <Route
+            path={`${process.env.PUBLIC_URL}/:id`}
+            render={() => (
+              <Route>
+                <RolesContextProvider>
+                  <CustomerId customerId={customerId} />
+                </RolesContextProvider>
+              </Route>
+            )}
+          ></Route>
+        </Switch>
         <Route component={RedirectAs404}></Route>
       </Switch>
     </Suspense>

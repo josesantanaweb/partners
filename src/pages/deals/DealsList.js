@@ -1,5 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Modal, ModalBody, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
+import React, { useState, useEffect } from "react";
 import {
   Block,
   BlockBetween,
@@ -8,122 +7,128 @@ import {
   BlockHeadContent,
   BlockTitle,
   Icon,
+  Col,
+  PaginationComponent,
   Button,
-  UserAvatar,
   DataTableHead,
   DataTableRow,
   DataTableItem,
   TooltipComponent,
-  PaginationComponent,
   PreviewAltCard,
-} from "../../../components/Component";
-import { findUpper } from "../../../utils/Utils";
-import Content from "../../../layout/content/Content";
-import Head from "../../../layout/head/Head";
-import { NaturalContext } from "./NaturalContext";
+} from "../../components/Component";
+import { FormGroup, Modal, ModalBody, Form, Alert, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import classnames from "classnames";
 import AddMainInformation from "./components/Add/MainInformation";
+import AddCustomerFile from "./components/Add/CustomerFile";
+import AddAccountData from "./components/Add/AccountData";
+
 import EditMainInformation from "./components/Edit/MainInformation";
-import AccountData from "./components/Edit/AccountData";
-import EmploymentHistory from "./components/Edit/EmploymentHistory";
-import PersonalReferences from "./components/Edit/PersonalReferences";
-import InvestmentExperience from "./components/Edit/InvestmentExperience";
-import SpousalHistory from "./components/Edit/SpousalHistory";
-import CustomersServices from "../../../services/CustomersServices";
-import Beneficiaries from "./components/Edit/Beneficiaries";
+import AccountData from "../clientes/Natural/components/Edit/AccountData";
+import EmploymentHistory from "../clientes/Natural/components/Edit/EmploymentHistory";
 
-const Natural = () => {
-  const { contextData } = useContext(NaturalContext);
-  const [data, setData] = contextData;
+import Content from "../../layout/content/Content";
+import Head from "../../layout/head/Head";
+import { useForm } from "react-hook-form";
+import DocumentsServices from "../../services/DocumentsServices";
 
-  const [sm, updateSm] = useState(false);
-  const [modal, setModal] = useState({ edit: false, add: false, document: false });
+// Desde acá
+import DealsServices from "../../services/DealsServices";
+
+const DealsList = () => {
+  const [data, setData] = useState([]);
   const [editData, setEditData] = useState();
   const [addActiveTab, setAddActiveTab] = useState("1");
   const [addActiveTabDocument, setAddActiveTabDocument] = useState("1");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
-  const [formData, setFormData] = useState({
-    names: "",
-    paternalLastName: "",
-    email: "",
-    phone: "",
-    mobilePhone: "",
-    birthDate: "",
-    civilStatus: "",
-    dateOfMarriage: "",
-    profession: "",
-    annualIncome: "",
-    totalNetWorthUSD: "",
-    totalPatrimonyWithoutProperties: "",
-    maritalRegime: "",
-    nationality: "",
-    rut: "",
-    rutIssueDate: "",
-    rutExpirationDate: "",
-    zipCode: "",
-    address: {
-      countryId: 1,
-      stateId: 1,
-      detailedAddress: {
-        address: "",
-        communne: "",
-      },
-    },
-    observations: "",
-    employmentHistory: {
-      typeOfEmployee: "",
-      companyName: "",
-      address: "",
-      industry: "",
-      laborSeniority: "",
-      charge: "",
-      businessPhone: "",
-      email: "",
-      rut: "",
-      zipCode: "",
-    },
-    currentAccountData: {
-      bankName: "",
-      accountType: "",
-      sucursalAddress: "",
-      accountNumber: "",
-      accountOpeningDate: "",
-    },
+  const [modal, setModal] = useState({
+    edit: false,
+    add: false,
+    document: false,
   });
 
-  // Get Natural
-  const getCustomers = async () => {
-    try {
-      const customers = await CustomersServices.getCustomerNatural();
-      setData(customers?.data);
-    } catch (error) {}
-  };
+  // const getDocuments = async () => {
+  //   try {
+  //     const documents = await DocumentsServices.getDocuments();
+  //     const documentsData = await documents.data.map((data) => data);
 
-  // Cerrar modal
+  //     setData(documentsData);
+  //   } catch (error) {}
+  // };
+
+  // useEffect(() => {
+  //   getDocuments();
+  // }, []);
+
+  // const [formData, setFormData] = useState({
+  //   name: "",
+  //   description: "",
+  // });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
+  const [sm, updateSm] = useState(false);
+  const { errors, register, handleSubmit } = useForm();
+
+  // function to reset the form
+  // const resetForm = () => {
+  //   setFormData({
+  //     name: "",
+  //     description: "",
+  //   });
+  // };
+
+  // function to close the form modal
   const onFormCancel = () => {
     setModal({ edit: false, add: false, document: false });
+    // resetForm();
   };
 
-  // Edit data
-  const onEditClick = (id, data) => {
-    setModal({ edit: true }, { add: false }, { document: false });
-    setEditData(data);
-  };
+  // Submit function to add a new item
+  // const onFormSubmit = async (submitData) => {
+  //   const { name, description } = submitData;
+  //   let submittedData = {
+  //     name: name,
+  //     description: description,
+  //   };
+  //   try {
+  //     await DocumentsServices.addDocument(submittedData);
+  //     setData([submittedData, ...data]);
+  //     console.log(submittedData);
 
-  // Edit ficha
-  const onDocumentClick = (id, data) => {
-    setModal({ document: true }, { add: false }, { edit: false });
-    setEditData(data);
-  };
+  //     resetForm();
+  //     getDocuments();
+  //     setModal({ edit: false }, { add: false });
+  //   } catch (error) {}
+  // };
 
-  // Delete
-  const onDeleteClick = async (id) => {
-    try {
-      await CustomersServices.deleteCustomerNatural(id);
-      getCustomers();
-    } catch (error) {}
-  };
+  // submit function to update a new item
+  // const onEditSubmit = async (submitData) => {
+  //   const { name, description } = submitData;
+  //   let submittedData = {
+  //     name: name,
+  //     description: description,
+  //   };
+
+  //   try {
+  //     await DocumentsServices.editDocument(editData.id, submittedData);
+  //     resetForm();
+  //     getDocuments();
+  //     setModal({ edit: false }, { add: false });
+  //   } catch (error) {}
+  // };
+
+  // function that loads the want to editted data
+  // const onEditClick = (id, data) => {
+  //   setModal({ edit: true }, { add: false }, { document: false });
+  //   setEditData(data);
+  // };
+
+  // Function to change to delete property for an item
+  // const deleteDocument = async (id) => {
+  //   try {
+  //     await DocumentsServices.deleteDocument(id);
+  //     getDocuments();
+  //   } catch (error) {}
+  // };
 
   // Get current list, pagination
   const indexOfLastItem = currentPage * itemPerPage;
@@ -133,18 +138,40 @@ const Natural = () => {
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  // function to handle description doc length
+  // const handleDescriptionLength = (description) => {
+  //   if (description.length > 35) {
+  //     return description.substring(0, 35) + "...";
+  //   }
+  //   return description;
+  // };
+
+  // Desde acá
+  //  *** function to get deals list
+  const getDeals = async () => {
+    try {
+      const deals = await DealsServices.getDeal();
+      const dealsData = await deals.data.map((data) => data);
+      setData(dealsData);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getDeals();
+  }, []);
+
   return (
     <React.Fragment>
-      <Head title="Clientes"></Head>
+      <Head title="Products"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Clientes Naturales
+                Lista de Negocios
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {currentItems.length} clientes</p>
+                <p>Total {currentItems.length} negocios</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -158,17 +185,9 @@ const Natural = () => {
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
                     <li className="nk-block-tools-opt">
-                      <a href="https://api.elbernv.site/export-information/customers/natural">
-                        <Button color="primary" type="button">
-                          <Icon name="printer" className="mr-1"></Icon>
-                          Exportar
-                        </Button>
-                      </a>
-                    </li>
-                    <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>
                         <Icon name="plus" className="mr-1"></Icon>
-                        Agregar Cliente
+                        Agregar Negocio
                       </Button>
                     </li>
                   </ul>
@@ -182,90 +201,84 @@ const Natural = () => {
           <div className="container-fluid overflow-auto scrollbar-fluid">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
-                <DataTableRow>
-                  <span className="sub-text">#</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">N. Negocio</span>
                 </DataTableRow>
-                <DataTableRow size="xs">
+                <DataTableRow className="text-center">
                   <span className="sub-text">Cliente</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Telefono Fijo</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Rut</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Telefono Celular</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Asesor</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Profesion</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Plan/Producto</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Direccion</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Institución</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text"></span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Años del Plan</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Inversión</span> {/* Monto de Inversión */}
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Moneda</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Monto real</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Método de Pago</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Origen de los Fondos</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Advisor-Fee</span> {/* % */}
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
-
+              {/*Head*/}
               {currentItems.length > 0
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id}>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.id}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <div className="user-card">
-                          {item?.names && <UserAvatar theme="purple" text={findUpper(item?.names)}></UserAvatar>}
-                          <div className="user-info">
-                            <span className="tb-lead">
-                              {item?.names}
-                              <span className="dot dot-success d-md-none ml-1"></span>
-                            </span>
-                            <span>{item?.email}</span>
-                          </div>
-                        </div>
+                      <DataTableRow className="text-center">
+                        <span>{item.name}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <span className="text-info">{item?.phone}</span>
+                      <DataTableRow className="text-center">
+                        {/* <span>{handleDescriptionLength(item.description)}</span> */}
                       </DataTableRow>
-                      <DataTableRow>
-                        <span className="text-info">{item?.mobilePhone}</span>
-                      </DataTableRow>
-                      <DataTableRow>
-                        <span>{item?.profession}</span>
-                      </DataTableRow>
-                      <DataTableRow>
-                        <span>{item?.address?.detailedAddress?.address}</span>
-                      </DataTableRow>
-
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
-                          <li className="nk-tb-action-hidden" onClick={() => onDocumentClick(item.id, item)}>
-                            <TooltipComponent
-                              tag="a"
-                              containerClassName="btn btn-trigger btn-icon"
-                              id={"file" + 1}
-                              icon="file-fill"
-                              direction="top"
-                              text="Ficha"
-                            />
-                          </li>
-                          <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                          <li className="nk-tb-action-hidden">
+                            {/* onClick={() => onEditClick(item.id, item)} */}
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"edit" + 1}
                               icon="edit-alt-fill"
                               direction="top"
-                              text="Datos Personales"
+                              text="Editar"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden" onClick={() => onDeleteClick(item.id)}>
+                          <li className="nk-tb-action-hidden">
+                            {/* onClick={() => deleteDocument(item.id)} */}
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"delete" + 1}
                               icon="trash-fill"
                               direction="top"
-                              text="Borrar"
+                              text="Eliminar"
                             />
                           </li>
                         </ul>
@@ -274,6 +287,7 @@ const Natural = () => {
                   ))
                 : null}
             </div>
+
             <PreviewAltCard>
               {currentItems.length > 0 ? (
                 <PaginationComponent
@@ -284,14 +298,21 @@ const Natural = () => {
                 />
               ) : (
                 <div className="text-center">
-                  <span className="text-silent">Sin registros</span>
+                  <span className="text-silent">Sin Registros</span>
                 </div>
               )}
             </PreviewAltCard>
           </div>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        {/* Nuevo elemento Modal */}
+        <Modal
+          isOpen={modal.add}
+          toggle={() => setModal({ add: false })}
+          className="modal-dialog-centered "
+          size="lg"
+          style={{ maxWidth: "992px" }}
+        >
           <ModalBody>
             <a
               href="#close"
@@ -303,8 +324,8 @@ const Natural = () => {
             >
               <Icon name="cross-sm"></Icon>
             </a>
-            <div className="p-2">
-              <h5 className="title">Agregar Cliente</h5>
+            <div className="p-2 table-record">
+              <h5 className="title">Agregar Negocio</h5>
               <Nav tabs>
                 <NavItem>
                   <NavLink
@@ -313,13 +334,50 @@ const Natural = () => {
                     className={classnames({ active: addActiveTab === "1" })}
                     onClick={() => setAddActiveTab("1")}
                   >
-                    Antecedentes personales
+                    Negocio
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={classnames({ active: addActiveTab === "2" })}
+                    onClick={() => setAddActiveTab("2")}
+                  >
+                    Ficha de Cliente
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={classnames({ active: addActiveTab === "3" })}
+                    onClick={() => setAddActiveTab("3")}
+                  >
+                    Perfil de Inversionista
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={classnames({ active: addActiveTab === "4" })}
+                    onClick={() => setAddActiveTab("4")}
+                  >
+                    Ajuntar Documentos
                   </NavLink>
                 </NavItem>
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation setModal={setModal} formData={formData} />
+                  <AddMainInformation setModal={setModal} />
+                  {/* formData={formData} */}
+                </TabPane>
+              </TabContent>
+              <TabContent activeTab={addActiveTab}>
+                <TabPane tabId="2">
+                  <AddCustomerFile setModal={setModal} />
+                  {/* formData={formData} */}
                 </TabPane>
               </TabContent>
             </div>
@@ -444,23 +502,24 @@ const Natural = () => {
                 </NavItem>
               </Nav>
               <TabContent activeTab={addActiveTabDocument}>
-                <TabPane tabId="1">{editData && <AccountData setModal={setModal} editData={editData} />}</TabPane>
-                <TabPane tabId="2">{editData && <EmploymentHistory setModal={setModal} editData={editData} />}</TabPane>
-                <TabPane tabId="3">
+                {/* <TabPane tabId="1">{editData && <AccountData setModal={setModal} editData={editData} />}</TabPane>
+                <TabPane tabId="2">{editData && <EmploymentHistory setModal={setModal} editData={editData} />}</TabPane> */}
+                {/* <TabPane tabId="3">
                   {editData && <PersonalReferences setModal={setModal} editData={editData} />}
                 </TabPane>
                 <TabPane tabId="4">
                   {editData && <InvestmentExperience setModal={setModal} editData={editData} />}
                 </TabPane>
                 <TabPane tabId="5">{editData && <SpousalHistory setModal={setModal} editData={editData} />}</TabPane>
-                <TabPane tabId="6">{editData && <Beneficiaries setModal={setModal} editData={editData} />}</TabPane>
+                <TabPane tabId="6">{editData && <Beneficiaries setModal={setModal} editData={editData} />}</TabPane> */}
               </TabContent>
             </div>
           </ModalBody>
         </Modal>
+        {/* Nuevo elemento Modal */}
       </Content>
     </React.Fragment>
   );
 };
 
-export default Natural;
+export default DealsList;
