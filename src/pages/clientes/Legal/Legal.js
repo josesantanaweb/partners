@@ -33,6 +33,7 @@ import CustomersServices from "../../../services/CustomersServices";
 const Legal = () => {
   const { contextData } = useContext(LegalContext);
   const [data, setData] = contextData;
+
   const [sm, updateSm] = useState(false);
   const [modal, setModal] = useState({ edit: false, add: false, document: false });
   const [editData, setEditData] = useState();
