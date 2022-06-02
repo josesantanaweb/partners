@@ -35,6 +35,7 @@ const DocumentsList = () => {
     add: false,
   });
 
+  // function to get documents
   const getDocuments = async () => {
     try {
       const documents = await DocumentsServices.getDocuments();
@@ -157,7 +158,7 @@ const DocumentsList = () => {
                     <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>
                         <Icon name="plus" className="mr-1"></Icon>
-                        Agregar Documento
+                        Agregar Documento modal
                       </Button>
                     </li>
                   </ul>
@@ -198,8 +199,8 @@ const DocumentsList = () => {
                         <span>{handleDescriptionLength(item.description)}</span>
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
-                        <ul className="nk-tb-actions gx-1">
-                          <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                        <ul className="nk-tb-actions gx-1 d-flex justify-content-center">
+                          <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
@@ -209,7 +210,7 @@ const DocumentsList = () => {
                               text="Editar"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden" onClick={() => deleteDocument(item.id)}>
+                          <li className="nk-tb-action" onClick={() => deleteDocument(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"

@@ -95,7 +95,6 @@ const CustomerId = () => {
       expirationDate: expirationDate,
       file: file[0],
     };
-
     try {
       const formData = new FormData();
       let object = {};

@@ -1,48 +1,51 @@
 /// Global Auths
 /////////////////////////////
 
-.nk-auth{
-    &-body{
-        padding: 1.25rem;
-    }
-    &-footer{
-        padding-bottom: 40px;
-    }
-    &-body,&-footer{
-        width: 100%;
-        max-width: 420px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    &-footer{
-        padding-left: 1.25rem;
-        padding-right: 1.25rem;
-    }
-    &-footer-full{
-        margin-top: 0;
-    }
+.nk-auth {
+  &-body {
+    padding: 1.25rem;
+  }
+  &-footer {
+    padding-bottom: 40px;
+  }
+  &-body,
+  &-footer {
+    width: 100%;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  &-footer {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+  &-footer-full {
+    margin-top: 0;
+  }
 }
 
-@include media-breakpoint-up(lg){
-    .nk-auth{
-        &-container{
-            width: 45%;
-        }
+@include media-breakpoint-up(lg) {
+  .nk-auth {
+    &-container {
+      width: 45%;
     }
+  }
 }
-@include media-breakpoint-up(xxl){
-    .nk-auth{
-        &-body,&-footer{
-            .nk-split & {
-                margin-right: 90px;
-            }
-        }
+@include media-breakpoint-up(xxl) {
+  .nk-auth {
+    &-body,
+    &-footer {
+      .nk-split & {
+        margin-right: 90px;
+      }
     }
+  }
 }
 
 .login {
-    padding: 0 !important;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  padding: 0 !important;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: url(../../../../images/intranet.png);
 }

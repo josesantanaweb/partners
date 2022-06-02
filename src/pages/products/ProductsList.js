@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import {
   Block,
@@ -22,12 +22,31 @@ import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
 import { ProductsContext } from "./ProductsContext";
 import ProductsServices from "../../services/ProductsServices";
+import DocumentsServices from "../../services/DocumentsServices";
+import SegmentsServices from "../../services/SegmentsServices";
 
 const ProductsList = () => {
   const { contextData } = useContext(ProductsContext);
   const [data, setData] = contextData;
+  const [documentsId, setDocumentsId] = useState();
+  const [customerSegmentsId, setCustomerSegmentsId] = useState();
+  const [customerNatural, setCustomerNatural] = useState();
+  const [customerLegal, setCustomerLegal] = useState();
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
+
+  useEffect(() => {
+    getDocuments();
+    getSegmentsNatural();
+    getSegmentsLegal();
+  }, []);
+
+  useEffect(() => {
+    if (customerNatural && customerLegal) {
+      const segments = [...customerNatural, ...customerLegal];
+      setCustomerSegmentsId(segments);
+    }
+  }, [customerNatural, customerLegal]);
 
   const [modal, setModal] = useState({
     edit: false,
@@ -41,22 +60,51 @@ const ProductsList = () => {
     } catch (error) {}
   };
 
+  const getSegmentsNatural = async () => {
+    try {
+      const segmentsNatural = await SegmentsServices.getSegmentsNatural();
+      setCustomerNatural(segmentsNatural.data);
+    } catch (error) {}
+  };
+
+  const getSegmentsLegal = async () => {
+    try {
+      const segmentsLegal = await SegmentsServices.getSegmentsLegal();
+      setCustomerLegal(segmentsLegal.data);
+    } catch (error) {}
+  };
+
+  const getDocuments = async () => {
+    try {
+      const documents = await DocumentsServices.getDocuments();
+      setDocumentsId(documents.data);
+    } catch (error) {}
+  };
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
+    observation: "",
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
 
   const [sm, updateSm] = useState(false);
 
-  const { errors, register, handleSubmit } = useForm();
+  const { errors, register, handleSubmit, reset } = useForm({
+    defaultValues: {
+      documentsId: [],
+      customerNaturalField: [],
+      customerLegalField: [],
+    },
+  });
 
   // Function to reset the form
   const resetForm = () => {
     setFormData({
       name: "",
       description: "",
+      observation: "",
     });
   };
 
@@ -68,25 +116,39 @@ const ProductsList = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { name, description } = submitData;
+    const { name, description, observation, documentsId, customerNaturalField, customerLegalField } = submitData;
+    const numberDocuments = documentsId.map((i) => Number(i));
+    const numberSegmentsNatural = customerNaturalField.map((i) => Number(i));
+    const numberSegmentsLegal = customerLegalField.map((i) => Number(i));
     let submittedData = {
       name: name,
       description: description,
+      observation: observation,
+      documentsId: numberDocuments,
+      customerSegmentsId: [...numberSegmentsNatural, ...numberSegmentsLegal],
     };
+
     try {
       await ProductsServices.addProduct(submittedData);
       resetForm();
       getProducts();
       setModal({ edit: false }, { add: false });
+      window.location.reload();
     } catch (error) {}
   };
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { name, description } = submitData;
+    const { name, description, observation, documentsId, customerNaturalField, customerLegalField } = submitData;
+    const numberDocuments = documentsId.map((i) => Number(i));
+    const numberSegmentsNatural = customerNaturalField.map((i) => Number(i));
+    const numberSegmentsLegal = customerLegalField.map((i) => Number(i));
     let submittedData = {
       name: name,
       description: description,
+      observation: observation,
+      documentsId: numberDocuments,
+      customerSegmentsId: [...numberSegmentsNatural, ...numberSegmentsLegal],
     };
 
     try {
@@ -94,6 +156,7 @@ const ProductsList = () => {
       resetForm();
       getProducts();
       setModal({ edit: false }, { add: false });
+      window.location.reload();
     } catch (error) {}
   };
 
@@ -101,6 +164,11 @@ const ProductsList = () => {
   const onEditClick = (id, data) => {
     setModal({ edit: true }, { add: false });
     setEditData(data);
+    reset({
+      documentsId: data.documentsId.map((item) => String(item)),
+      customerNaturalField: data.customerSegmentsId.map((item) => String(item)),
+      customerLegalField: data.customerSegmentsId.map((item) => String(item)),
+    });
   };
 
   // Function to change to delete property for an item
@@ -127,10 +195,10 @@ const ProductsList = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Products
+                Lista de Planes
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} products</p>
+                <p>Total {data.length} planes</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -146,7 +214,7 @@ const ProductsList = () => {
                     <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>
                         <Icon name="plus" className="mr-1"></Icon>
-                        Agregar Producto
+                        Agregar Plan
                       </Button>
                     </li>
                   </ul>
@@ -245,17 +313,22 @@ const ProductsList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Agregar Producto</h5>
+              <h5 className="title">Agregar Plan</h5>
               {errorMessage !== "" && (
                 <div className="my-3">
                   <Alert color="danger" className="alert-icon">
                     <Icon name="alert-circle" />
-                    Producto ya existe
+                    Plan ya existe
                   </Alert>
                 </div>
               )}
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
+                  <Col md="12">
+                    <div className="custom-tab">
+                      <h6>Datos del Plan</h6>
+                    </div>
+                  </Col>
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Nombre</label>
@@ -285,12 +358,99 @@ const ProductsList = () => {
                       {errors.description && <span className="invalid">{errors.description.message}</span>}
                     </FormGroup>
                   </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Observacion</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="observation"
+                        defaultValue={formData.observation}
+                        placeholder="Ingresa apellido"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md="12">
+                    <div className="custom-tab">
+                      <h6>Informacion Solicitada Para Cliente Natural</h6>
+                    </div>
+                  </Col>
+
+                  {customerNatural &&
+                    customerNatural.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="customerNaturalField"
+                            value={item.id}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
+
+                  <Col md="12">
+                    <div className="custom-tab">
+                      <h6>Informacion Solicitada Para Cliente Legal</h6>
+                    </div>
+                  </Col>
+
+                  {customerLegal &&
+                    customerLegal.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="customerLegalField"
+                            value={item.id}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
+
+                  <Col md="12">
+                    <div className="custom-tab">
+                      <h6>Informacion Requerida</h6>
+                    </div>
+                  </Col>
+
+                  {documentsId &&
+                    documentsId.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="documentsId"
+                            value={item.id}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
 
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Agregar Producto
+                          Agregar Plan
                         </Button>
                       </li>
                       <li>
@@ -327,9 +487,14 @@ const ProductsList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Actualizar Producto</h5>
+              <h5 className="title">Actualizar Plan</h5>
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
+                  <Col md="12">
+                    <div className="custom-tab">
+                      <h6>Datos del Plan</h6>
+                    </div>
+                  </Col>
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Nombre</label>
@@ -360,11 +525,102 @@ const ProductsList = () => {
                     </FormGroup>
                   </Col>
 
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Observacion</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="observation"
+                        defaultValue={editData?.observation}
+                        placeholder="Ingresa observacion"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="12">
+                    <div className="custom-tab">
+                      <h6>Informacion Solicitada Para Cliente Natural</h6>
+                    </div>
+                  </Col>
+
+                  {customerNatural &&
+                    customerNatural.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="customerNaturalField"
+                            value={item.id}
+                            defaultValue={editData?.customerSegmentsId?.includes(item.id)}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
+
+                  <Col md="12">
+                    <div className="custom-tab">
+                      <h6>Informacion Solicitada Para Cliente Legal</h6>
+                    </div>
+                  </Col>
+
+                  {customerLegal &&
+                    customerLegal.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="customerLegalField"
+                            value={item.id}
+                            defaultValue={editData?.customerSegmentsId?.includes(item.id)}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
+
+                  <Col md="12">
+                    <div className="custom-tab">
+                      <h6>Informacion Requerida</h6>
+                    </div>
+                  </Col>
+                  {documentsId &&
+                    documentsId.map((item, i) => (
+                      <Col md="6" key={i}>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="documentsId"
+                            value={item.id}
+                            defaultValue={editData?.documentsId?.includes(item.id)}
+                            className="custom-control-input form-control"
+                            id={item.name}
+                            ref={register()}
+                          />
+                          <label className="custom-control-label" htmlFor={item.name}>
+                            {item.name}
+                          </label>
+                        </div>
+                      </Col>
+                    ))}
+
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Actualizar Producto
+                          Actualizar Plan
                         </Button>
                       </li>
                       <li>

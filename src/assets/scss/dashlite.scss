@@ -112,3 +112,64 @@ $rtl: false;
   border: 1px dashed #e5e5e5;
   margin-bottom: 2rem;
 }
+
+.profile-investment-item {
+  margin-bottom: 3rem;
+}
+
+.profile-investment-item input[type="radio"] {
+  width: 20px;
+}
+
+.profile-investment-item h3 {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: #1ee0ac;
+}
+
+.profile-investment-item h4 {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.profile-investment-item li {
+  margin: 0 1rem;
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+
+.profile-investment-item label {
+  margin: 0;
+  font-size: 16px;
+  margin-left: 1rem;
+}
+
+.nk-footer {
+  background: none;
+  border: none;
+}
+
+.custom-tab {
+  padding: 13px 0;
+  border-bottom: 1px solid #e1e1e1;
+  position: relative;
+}
+
+.custom-tab h6 {
+  font-size: 16px;
+  position: relative;
+  display: inline;
+}
+
+.custom-tab h6:after {
+  content: "";
+  position: absolute;
+  bottom: -17px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #ffa31e;
+}

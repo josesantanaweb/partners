@@ -136,7 +136,46 @@ const MainInformation = ({ setModal, formData }) => {
 
   return (
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
-      <Col md="3" className="mb-4">
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Rut</label>
+          <input
+            className="form-control"
+            type="text"
+            name="rut"
+            defaultValue={formData.rut}
+            placeholder="Ingresa rut"
+            ref={register()}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Fecha de emisión</label>
+          <input
+            className="form-control"
+            type="date"
+            name="rutIssueDate"
+            defaultValue={formData.rutIssueDate}
+            placeholder="Ingresa Fecha de emisión"
+            ref={register()}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Fecha de expiracion</label>
+          <input
+            className="form-control"
+            type="date"
+            name="rutExpirationDate"
+            defaultValue={formData.rutExpirationDate}
+            placeholder="Ingresa Fecha de expiracion"
+            ref={register()}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
         <FormGroup>
           <label className="form-label">Nombres</label>
           <input
@@ -149,33 +188,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Apellidos</label>
-          <input
-            className="form-control"
-            type="text"
-            name="paternalLastName"
-            defaultValue={formData.paternalLastName}
-            placeholder="Ingresa Apellidos"
-            ref={register()}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Email</label>
-          <input
-            className="form-control"
-            type="email"
-            name="email"
-            defaultValue={formData.email}
-            placeholder="Ingresa Email"
-            ref={register()}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
+      <Col md="4" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de nacimiento</label>
           <input
@@ -188,7 +201,102 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="3" className="mb-4">
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Email</label>
+          <input
+            className="form-control"
+            type="email"
+            name="email"
+            defaultValue={formData.email}
+            placeholder="Ingresa Email"
+            ref={register()}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Apellidos</label>
+          <input
+            className="form-control"
+            type="text"
+            name="paternalLastName"
+            defaultValue={formData.paternalLastName}
+            placeholder="Ingresa Apellidos"
+            ref={register()}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Telefono Celular</label>
+          <input
+            className="form-control"
+            type="text"
+            name="mobilePhone"
+            defaultValue={formData.mobilePhone}
+            placeholder="Ingresa Telefono"
+            ref={register()}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Telefono Fijo</label>
+          <input
+            className="form-control"
+            type="text"
+            name="phone"
+            defaultValue={formData.phone}
+            placeholder="Ingresa Telefono Fijo"
+            ref={register()}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Pais</label>
+          <RSelect
+            isSearchable={false}
+            options={countriesOptions}
+            defaultValue={countriesOptions[0]}
+            onChange={onCountriesChange}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Nacionalidad</label>
+          <input
+            className="form-control"
+            type="text"
+            name="nationality"
+            defaultValue={formData.nationality}
+            placeholder="Ingresa nacionalidad"
+            ref={register()}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Codigo postal</label>
+          <input
+            className="form-control"
+            type="text"
+            name="zipCode"
+            defaultValue={formData.zipCode}
+            placeholder="Codigo postal"
+            ref={register()}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Ciudad</label>
+          <RSelect isSearchable={false} options={citiesOptions} onChange={onCitiesChange} />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
         <FormGroup>
           <label className="form-label">Estado Civil</label>
           <input
@@ -201,7 +309,46 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="3" className="mb-4">
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Regimen conyugal</label>
+          <input
+            className="form-control"
+            type="text"
+            name="maritalRegime"
+            defaultValue={formData.maritalRegime}
+            placeholder="Ingresa Regimen conyugal"
+            ref={register()}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Comuna</label>
+          <input
+            className="form-control"
+            type="text"
+            name="address.communne"
+            defaultValue={formData.address.communne}
+            placeholder="Ingresa Comuna"
+            ref={register({ required: "Este campo es requerido" })}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Ingreso Anual</label>
+          <input
+            className="form-control"
+            type="text"
+            name="annualIncome"
+            defaultValue={formData.annualIncome}
+            placeholder="Ingreso Anual"
+            ref={register()}
+          />
+        </FormGroup>
+      </Col>
+      <Col md="4" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de matrimonio</label>
           <Controller
@@ -219,72 +366,20 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="3" className="mb-4">
+      <Col md="4" className="mb-4">
         <FormGroup>
-          <label className="form-label">Profesion</label>
+          <label className="form-label">Direccion</label>
           <input
             className="form-control"
             type="text"
-            name="profession"
-            defaultValue={formData.profession}
-            placeholder="Ingresa Estado civil"
+            name="address.address"
+            defaultValue={formData.address.address}
+            placeholder="Ingresa address"
             ref={register()}
           />
         </FormGroup>
       </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Telefono</label>
-          <input
-            className="form-control"
-            type="text"
-            name="mobilePhone"
-            defaultValue={formData.mobilePhone}
-            placeholder="Ingresa Telefono"
-            ref={register()}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Telefono 2</label>
-          <input
-            className="form-control"
-            type="text"
-            name="phone"
-            defaultValue={formData.phone}
-            placeholder="Ingresa Telefono 2"
-            ref={register()}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Ingreso Anual</label>
-          <input
-            className="form-control"
-            type="text"
-            name="annualIncome"
-            defaultValue={formData.annualIncome}
-            placeholder="Ingreso Anual"
-            ref={register()}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Codigo postal</label>
-          <input
-            className="form-control"
-            type="text"
-            name="zipCode"
-            defaultValue={formData.zipCode}
-            placeholder="Codigo postal"
-            ref={register()}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
+      <Col md="4" className="mb-4">
         <FormGroup>
           <label className="form-label">Valor neto total USD</label>
           <input
@@ -297,7 +392,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="3" className="mb-4">
+      <Col md="4" className="mb-4">
         <FormGroup>
           <label className="form-label">Neto de patrimonio</label>
           <input
@@ -310,110 +405,15 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="3" className="mb-4">
+      <Col md="4" className="mb-4">
         <FormGroup>
-          <label className="form-label">Regimen conyugal</label>
+          <label className="form-label">Profesion</label>
           <input
             className="form-control"
             type="text"
-            name="maritalRegime"
-            defaultValue={formData.maritalRegime}
-            placeholder="Ingresa Regimen conyugal"
-            ref={register()}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Nacionalidad</label>
-          <input
-            className="form-control"
-            type="text"
-            name="nationality"
-            defaultValue={formData.nationality}
-            placeholder="Ingresa nacionalidad"
-            ref={register()}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Rut</label>
-          <input
-            className="form-control"
-            type="text"
-            name="rut"
-            defaultValue={formData.rut}
-            placeholder="Ingresa rut"
-            ref={register()}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Fecha de emisión</label>
-          <input
-            className="form-control"
-            type="date"
-            name="rutIssueDate"
-            defaultValue={formData.rutIssueDate}
-            placeholder="Ingresa Fecha de emisión"
-            ref={register()}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Fecha de expiracion</label>
-          <input
-            className="form-control"
-            type="date"
-            name="rutExpirationDate"
-            defaultValue={formData.rutExpirationDate}
-            placeholder="Ingresa Fecha de expiracion"
-            ref={register()}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Pais</label>
-          <RSelect
-            isSearchable={false}
-            options={countriesOptions}
-            defaultValue={countriesOptions[0]}
-            onChange={onCountriesChange}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Ciudad</label>
-          <RSelect isSearchable={false} options={citiesOptions} onChange={onCitiesChange} />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Comuna</label>
-          <input
-            className="form-control"
-            type="text"
-            name="address.communne"
-            defaultValue={formData.address.communne}
-            placeholder="Ingresa Comuna"
-            ref={register({ required: "Este campo es requerido" })}
-          />
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mb-4">
-        <FormGroup>
-          <label className="form-label">Direccion</label>
-          <input
-            className="form-control"
-            type="text"
-            name="address.address"
-            defaultValue={formData.address.address}
-            placeholder="Ingresa address"
+            name="profession"
+            defaultValue={formData.profession}
+            placeholder="Ingresa Estado civil"
             ref={register()}
           />
         </FormGroup>

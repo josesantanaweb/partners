@@ -27,6 +27,7 @@ const CustomerLibrary = () => {
   const [dataLegal, setDataLegal] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
+  const [customerId, setCustomerId] = useState(false);
 
   // function to get natual customers
   const getCustomers = async () => {
@@ -255,6 +256,8 @@ const CustomerLibrary = () => {
             </div>
           </div>
         </Block>
+
+        {customerId ? currentItems.map((item) => <CustomerId key={item.id} customerId={item.id} />) : null}
       </Content>
     </React.Fragment>
   );
