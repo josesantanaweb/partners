@@ -34,6 +34,7 @@ const Pages = () => {
     <Suspense fallback={<div />}>
       <Switch>
         <Route exact path={`${process.env.PUBLIC_URL}/index`} component={EcomDashboard}></Route>
+        <Route exact path={`${process.env.PUBLIC_URL}/operation`} component={Documents}></Route>
         <Route
           exact
           path={`${process.env.PUBLIC_URL}/users`}
@@ -90,7 +91,7 @@ const Pages = () => {
         ></Route>
         <Route
           exact
-          path={`${process.env.PUBLIC_URL}/deals`}
+          path={`${process.env.PUBLIC_URL}/customers-library`}
           render={() => (
             <RolesContextProvider>
               <Deals />
@@ -103,7 +104,7 @@ const Pages = () => {
           path={`${process.env.PUBLIC_URL}/documents`}
           render={() => (
             <RolesContextProvider>
-              <CustomersLibrary />
+              <CustomerLibrary />
             </RolesContextProvider>
           )}
         ></Route>
