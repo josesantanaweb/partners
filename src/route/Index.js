@@ -1,7 +1,6 @@
 import React, { useState, useEffect, Suspense, useLayoutEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import { UserContextProvider } from "../pages/users/UserContext";
-import { CustomerContextProvider } from "../pages/customers/CustomersContext";
 import { NaturalContextProvider } from "../pages/clientes/Natural/NaturalContext";
 import { LegalContextProvider } from "../pages/clientes/Legal/LegalContext";
 import { AdviserContextProvider } from "../pages/adviser/AdviserContext";
@@ -13,8 +12,6 @@ import { RedirectAs404 } from "../utils/Utils";
 import Homepage from "../pages/Homepage";
 import Natural from "../pages/clientes/Natural/Natural";
 import Legal from "../pages/clientes/Legal/Legal";
-import Customer from "../pages/customers/CustomersList";
-import CustomerJuridico from "../pages/customers/CustomersListJuridico";
 import Users from "../pages/users/UserList";
 import Adviser from "../pages/adviser/AdviserList";
 import Roles from "../pages/roles/RolesList";

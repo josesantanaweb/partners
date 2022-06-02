@@ -97,7 +97,6 @@ const Metting = () => {
     let newEvents = mockEvents;
     const index = newEvents.findIndex((item) => item.id === formData.id);
     events[index] = formData;
-    console.log(events[index]);
     try {
       await MettingServices.editMetting(events[index].id, events[index]);
       getMettings();
@@ -137,7 +136,6 @@ const Metting = () => {
               onDelete={deleteEvent}
               onEdit={editEvent}
               categoriesOptions={categoriesOptions}
-              onCategoriesChange={onCategoriesChange}
             />
           </PreviewAltCard>
         </Block>
