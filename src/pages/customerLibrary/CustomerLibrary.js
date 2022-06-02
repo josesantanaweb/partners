@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { Nav, NavItem } from "reactstrap";
 import {
   Block,
   BlockBetween,
@@ -8,34 +9,47 @@ import {
   BlockHeadContent,
   BlockTitle,
   Icon,
-  UserAvatar,
   DataTableHead,
   DataTableRow,
   DataTableItem,
+  TooltipComponent,
 } from "../../components/Component";
-import { findUpper } from "../../utils/Utils";
+
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import CustomersServices from "../../services/CustomersServices";
 import CustomersLibraryServices from "../../services/CustomersLibraryServices";
+import CustomerId from "./CustomerId";
 
-const Legal = () => {
+const CustomerLibrary = () => {
+  const { id } = useParams();
   const [data, setData] = useState([]);
+  const [dataLegal, setDataLegal] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
 
-  const [customerDocSelected, setCustomerDocSelected] = useState(null);
-
-  // Get Legal
+  // function to get natual customers
   const getCustomers = async () => {
     try {
-      const customers = await CustomersServices.getCustomerLegal();
+      const customers = await CustomersServices.getCustomerNatural();
       setData(customers?.data);
     } catch (error) {}
   };
 
   useEffect(() => {
     getCustomers();
+  }, []);
+
+  // function to get legal customers
+  const getCustomerLegal = async () => {
+    try {
+      const customersLegal = await CustomersServices.getCustomerLegal();
+      setDataLegal(customersLegal?.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getCustomerLegal();
   }, []);
 
   // Get current list, pagination
@@ -52,7 +66,6 @@ const Legal = () => {
   const getCustomersLibrary = async (customerId) => {
     try {
       const customerLibrary = await CustomersLibraryServices.getCustomerLibrary(customerId);
-      console.log(currentItems);
       return customerLibrary.data;
     } catch (error) {
       throw error;
@@ -70,38 +83,40 @@ const Legal = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Clientes Legales
+                Clientes Naturales
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Últimos {currentItems.length} clientes</p>
+                <p>Últimos {currentItems.length} clientes naturales</p>
               </BlockDes>
             </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
-
         <Block>
-          <div className="container-fluid overflow-auto scrollbar-fluid">
+          <div className="container-fluid overflow-auto scrollbar-fluid table-records">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
-                <DataTableRow>
-                  <span className="sub-text">#</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text text-primary">#</span>
                 </DataTableRow>
-                <DataTableRow size="xs">
-                  <span className="sub-text">Cliente</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Nombre</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Tipo</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Rut</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Telefono</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Email</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Categoria</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Teléfono fijo</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Numero de identificacion</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Teléfono celular</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Dirección</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
@@ -109,45 +124,130 @@ const Legal = () => {
               {currentItems.length > 0
                 ? lastCustomers(currentItems).map((item) => (
                     <DataTableItem key={item.id}>
-                      <DataTableRow>
-                        <span>{item.id}</span>
+                      <DataTableRow className="text-center">
+                        <span>{item?.id}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <div className="user-card">
-                          {item?.companyName && (
-                            <UserAvatar theme="purple" text={findUpper(item?.companyName)}></UserAvatar>
-                          )}
-                          <div className="user-info">
-                            <span className="tb-lead">
-                              {item?.companyName}
-                              <span className="dot dot-success d-md-none ml-1"></span>
-                            </span>
-                            <span>{item?.email}</span>
-                          </div>
-                        </div>
+                      <DataTableRow className="text-center">
+                        <span>{item?.names}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <span className="text-info">Legal</span>
+                      <DataTableRow className="text-center">
+                        <span>{item?.rut}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <span className="text-info">{item?.phone}</span>
+                      <DataTableRow className="text-center">
+                        <span>{item?.email}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.phone}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.mobilePhone}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.address.detailedAddress.address}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        {item.id ? (
+                          <Link
+                            to={`customer-library/${item.id}`}
+                            className="d-flex align-items-center justify-content-center"
+                          >
+                            <TooltipComponent
+                              tag="span"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"edit" + 1}
+                              icon="book"
+                              direction="top"
+                              text="Mis documentos"
+                            />
+                          </Link>
+                        ) : null}
+                      </DataTableRow>
+                    </DataTableItem>
+                  ))
+                : null}
+            </div>
+          </div>
+        </Block>
+      </Content>
+
+      {/* Clientes Legales */}
+      <Content>
+        <BlockHead size="sm">
+          <BlockBetween>
+            <BlockHeadContent>
+              <BlockTitle tag="h3" page>
+                Clientes Legales
+              </BlockTitle>
+              <BlockDes className="text-soft">
+                <p>Últimos {dataLegal.length} clientes legales</p>
+              </BlockDes>
+            </BlockHeadContent>
+          </BlockBetween>
+        </BlockHead>
+        <Block>
+          <div className="container-fluid overflow-auto scrollbar-fluid table-records">
+            <div className="nk-tb-list is-separate is-medium mb-3">
+              <DataTableHead className="nk-tb-item">
+                <DataTableRow className="text-center">
+                  <span className="sub-text text-primary">#</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Nombre de empresa</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Categoría</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Email</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Teléfono fijo</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Dirección</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Acción</span>
+                </DataTableRow>
+              </DataTableHead>
+
+              {dataLegal.length > 0
+                ? lastCustomers(dataLegal).map((item) => (
+                    <DataTableItem key={item.id}>
+                      <DataTableRow className="text-center">
+                        <span>{item?.id}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.companyName}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item?.companyCategory}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <span>{item?.taxIdentificationNumber}</span>
+                      <DataTableRow className="text-center">
+                        <span>{item?.email}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <Link
-                          to="customer-library/documents"
-                          className="dropdown-toggle nk-quick-nav-icon"
-                          onClick={() => setCustomerDocSelected(item.id)}
-                        >
-                          <div className="icon-status text-primary">
-                            <Icon name="book" />
-                          </div>
-                        </Link>
+                      <DataTableRow className="text-center">
+                        <span>{item?.phone}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.address.detailedAddress.address}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        {item.id ? (
+                          <Link
+                            to={`customer-library/${item.id}`}
+                            className="d-flex align-items-center justify-content-center"
+                          >
+                            <TooltipComponent
+                              tag="span"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"edit" + 1}
+                              icon="book"
+                              direction="top"
+                              text="Mis documentos"
+                            />
+                          </Link>
+                        ) : null}
                       </DataTableRow>
                     </DataTableItem>
                   ))
@@ -160,4 +260,4 @@ const Legal = () => {
   );
 };
 
-export default Legal;
+export default CustomerLibrary;

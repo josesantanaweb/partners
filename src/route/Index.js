@@ -1,7 +1,6 @@
 import React, { Suspense, useLayoutEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import { UserContextProvider } from "../pages/users/UserContext";
-import { CustomerContextProvider } from "../pages/customers/CustomersContext";
 import { NaturalContextProvider } from "../pages/clientes/Natural/NaturalContext";
 import { LegalContextProvider } from "../pages/clientes/Legal/LegalContext";
 import { AdviserContextProvider } from "../pages/adviser/AdviserContext";
@@ -13,8 +12,6 @@ import { RedirectAs404 } from "../utils/Utils";
 import Homepage from "../pages/Homepage";
 import Natural from "../pages/clientes/Natural/Natural";
 import Legal from "../pages/clientes/Legal/Legal";
-import Customer from "../pages/customers/CustomersList";
-import CustomerJuridico from "../pages/customers/CustomersListJuridico";
 import Users from "../pages/users/UserList";
 import Adviser from "../pages/adviser/AdviserList";
 import Roles from "../pages/roles/RolesList";
@@ -24,6 +21,7 @@ import Metting from "../pages/app/Metting/Calender";
 import EcomDashboard from "../pages/panel/e-commerce/index";
 import Deals from "../pages/deals/DealsList";
 import CustomerLibrary from "../pages/customerLibrary/CustomerLibrary";
+import CustomerId from "../pages/customerLibrary/CustomerId";
 import Documents from "../pages/documents/DocumentsList";
 
 const Pages = () => {
@@ -34,7 +32,6 @@ const Pages = () => {
   return (
     <Suspense fallback={<div />}>
       <Switch>
-        {/*Panel */}
         <Route exact path={`${process.env.PUBLIC_URL}/index`} component={EcomDashboard}></Route>
         <Route
           exact
@@ -117,15 +114,7 @@ const Pages = () => {
             </RolesContextProvider>
           )}
         ></Route>
-        <Route
-          exact
-          path={`${process.env.PUBLIC_URL}/customer-library`}
-          render={() => (
-            <RolesContextProvider>
-              <CustomerLibrary />
-            </RolesContextProvider>
-          )}
-        ></Route>
+
         <Route
           exact
           path={`${process.env.PUBLIC_URL}/documents`}
@@ -135,6 +124,7 @@ const Pages = () => {
             </RolesContextProvider>
           )}
         ></Route>
+
         <Route
           exact
           path={`${process.env.PUBLIC_URL}/products`}
@@ -155,6 +145,29 @@ const Pages = () => {
         ></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/calendar`} render={() => <Metting />}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/`} component={Homepage}></Route>
+        <Switch>
+          <Route
+            exact
+            path={`${process.env.PUBLIC_URL}/customer-library`}
+            render={() => (
+              <Route>
+                <RolesContextProvider>
+                  <CustomerLibrary />
+                </RolesContextProvider>
+              </Route>
+            )}
+          ></Route>
+          <Route
+            path={`${process.env.PUBLIC_URL}/:id`}
+            render={() => (
+              <Route>
+                <RolesContextProvider>
+                  <CustomerId />
+                </RolesContextProvider>
+              </Route>
+            )}
+          ></Route>
+        </Switch>
         <Route component={RedirectAs404}></Route>
       </Switch>
     </Suspense>
