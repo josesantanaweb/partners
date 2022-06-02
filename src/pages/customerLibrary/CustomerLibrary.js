@@ -24,11 +24,12 @@ import CustomerId from "./CustomerId";
 const CustomerLibrary = () => {
   const { id } = useParams();
   const [data, setData] = useState([]);
+  const [dataLegal, setDataLegal] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
   const [customerId, setCustomerId] = useState(false);
 
-  // Get Legal
+  // function to get natual customers
   const getCustomers = async () => {
     try {
       const customers = await CustomersServices.getCustomerNatural();
@@ -38,6 +39,18 @@ const CustomerLibrary = () => {
 
   useEffect(() => {
     getCustomers();
+  }, []);
+
+  // function to get legal customers
+  const getCustomerLegal = async () => {
+    try {
+      const customersLegal = await CustomersServices.getCustomerLegal();
+      setDataLegal(customersLegal?.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getCustomerLegal();
   }, []);
 
   // Get current list, pagination
@@ -71,7 +84,7 @@ const CustomerLibrary = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Biblioteca de clientes
+                Clientes Naturales
               </BlockTitle>
               <BlockDes className="text-soft">
                 <p>Últimos {currentItems.length} clientes naturales</p>
@@ -80,7 +93,7 @@ const CustomerLibrary = () => {
           </BlockBetween>
         </BlockHead>
         <Block>
-          <div className="container-fluid overflow-auto scrollbar-fluid">
+          <div className="container-fluid overflow-auto scrollbar-fluid table-records">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
@@ -164,35 +177,32 @@ const CustomerLibrary = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Biblioteca de clientes
+                Clientes Legales
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Últimos {currentItems.length} clientes legales</p>
+                <p>Últimos {dataLegal.length} clientes legales</p>
               </BlockDes>
             </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
         <Block>
-          <div className="container-fluid overflow-auto scrollbar-fluid ">
+          <div className="container-fluid overflow-auto scrollbar-fluid table-records">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
                   <span className="sub-text text-primary">#</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Nombre</span>
+                  <span className="sub-text">Nombre de empresa</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Rut</span>
+                  <span className="sub-text">Categoría</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Email</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Teléfono fijo</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Teléfono celular</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Dirección</span>
@@ -202,26 +212,23 @@ const CustomerLibrary = () => {
                 </DataTableRow>
               </DataTableHead>
 
-              {currentItems.length > 0
-                ? lastCustomers(currentItems).map((item) => (
+              {dataLegal.length > 0
+                ? lastCustomers(dataLegal).map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow className="text-center">
                         <span>{item?.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item?.names}</span>
+                        <span>{item?.companyName}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item?.rut}</span>
+                        <span>{item?.companyCategory}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item?.email}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item?.phone}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item?.mobilePhone}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item?.address.detailedAddress.address}</span>
@@ -233,7 +240,7 @@ const CustomerLibrary = () => {
                             className="d-flex align-items-center justify-content-center"
                           >
                             <TooltipComponent
-                              tag="a"
+                              tag="span"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"edit" + 1}
                               icon="book"
