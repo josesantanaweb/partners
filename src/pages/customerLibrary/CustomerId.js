@@ -33,16 +33,13 @@ const CustomerId = () => {
     add: false,
   });
 
-  const matched = data.find((item) => {
-    if (item.id == documentsOptions.value) {
-      return item;
-    }
-  });
+  const filterDocumentType = documents.find((item) => item.value == documentsOptions.value);
 
   const [formData, setFormData] = useState({
     documentTypeId: "",
-    description: documentsOptions.value?.description,
-    observation: "",
+    // description: filterDocumentType?.description,
+    // observation: "",
+    issueDate: "",
     expirationDate: "",
     file: "",
   });
@@ -69,8 +66,9 @@ const CustomerId = () => {
   const resetForm = () => {
     setFormData({
       documentTypeId: "",
-      description: "",
-      observation: "",
+      // description: "",
+      // observation: "",
+      issueDate: "",
       expirationDate: "",
       file: "",
     });
@@ -84,35 +82,51 @@ const CustomerId = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { documentTypeId, description, observation, expirationDate, file } = submitData;
+    const { documentTypeId, description, observation, issueDate, expirationDate, file } = submitData;
     let submittedData = {
-      documentTypeId: documentsOptions.value,
-      description: documentsOptions.value,
-      observation: observation,
+      documentTypeId: documentsOptions?.value,
+      // description: documentsOptions.value,
+      // observation: observation,
+      issueDate: issueDate,
       expirationDate: expirationDate,
-      file: file[0].name,
+      file: file[0],
     };
     console.log(submittedData);
-
     try {
       const formData = new FormData();
-      await CustomersLibraryServices.addCustomerLibDoc(formData);
-      formData.append("file", submittedData.file);
-      formData.append("documentTypeId", submittedData.documentTypeId);
-      formData.append("description", submittedData.description);
-      formData.append("observation", submittedData.observation);
-      formData.append("expirationDate", submittedData.expirationDate);
-      setData([submittedData, ...data]);
+      let object = {};
+
+      formData.append("file", file[0]);
+      formData.append("documentTypeId", documentsOptions.value);
+      formData.append("expirationDate", expirationDate);
+      formData.append("issueDate", issueDate);
+
+      formData.forEach((value, key) => (object[key] = value));
+      var json = JSON.stringify(object);
+      JSON.stringify(Object.fromEntries(formData));
+      console.log(json);
+
+      await CustomersLibraryServices.addCustomerLibDoc(formData, customerId);
+      setData([submittedData, customerId]);
+      setModal({ edit: false, add: false });
       resetForm();
-      setModal({ edit: false }, { add: false });
-    } catch (error) {}
+      getCustomerDocument(Number(customerId));
+      window.location.reload();
+    } catch (error) {
+      throw error;
+    }
   };
 
   // function to get company select
   const getDocuments = async () => {
     try {
       const documents = await DocumentsServices.getDocuments();
-      const documentsData = await documents.data.map((document) => ({ label: document.name, value: document.id }));
+      const documentsData = await documents.data.map((document) => ({
+        label: document?.name,
+        value: document?.id,
+        description: document?.description,
+      }));
+
       setDocuments(documentsData);
     } catch (error) {
       throw error;
@@ -124,7 +138,10 @@ const CustomerId = () => {
 
   useEffect(() => {
     getDocuments();
-    console.log(`DOV:`, documentsOptions.value);
+    // get document type filtred
+    if (documentsOptions.value) {
+      return documents.find((item) => item.value == documentsOptions.value);
+    }
   }, [documentsOptions.value]);
 
   return (
@@ -187,10 +204,10 @@ const CustomerId = () => {
                 ? data.map((item) => (
                     <DataTableItem key={item.id} className="rounded-0">
                       <DataTableRow className="text-center border-bottom">
-                        <span>{item?.documentType.name}</span>
+                        <span>{item?.documentType?.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center border-bottom">
-                        <span>{item?.documentType.description}</span>
+                        <span>{item?.documentType?.description}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center border-bottom">
                         <span>{item?.createdAt}</span>
@@ -254,14 +271,16 @@ const CustomerId = () => {
                         className="form-control"
                         type="text"
                         name="description"
-                        defaultValue={data.map((item) => item?.description)}
+                        style={{ backgroundColor: "#e5e9f2", color: "black !important" }}
+                        defaultValue={filterDocumentType?.description}
                         placeholder="Descripción documento"
                         ref={register({ required: "Este campo es requerido" })}
+                        readOnly
                       />
                     </FormGroup>
                   </Col>
 
-                  <Col md="8" className="mb-4">
+                  <Col md="12" className="mb-4">
                     <FormGroup>
                       <label className="form-label">Observación</label>
                       <input
@@ -275,7 +294,20 @@ const CustomerId = () => {
                     </FormGroup>
                   </Col>
 
-                  <Col md="4" className="mb-4">
+                  <Col md="6" className="mb-4">
+                    <FormGroup>
+                      <label className="form-label">Fecha de emisión</label>
+                      <input
+                        className="form-control"
+                        type="date"
+                        name="issueDate"
+                        defaultValue={formData.issueDate}
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6" className="mb-4">
                     <FormGroup>
                       <label className="form-label">Fecha de expiración</label>
                       <input
@@ -283,7 +315,6 @@ const CustomerId = () => {
                         type="date"
                         name="expirationDate"
                         defaultValue={formData.expirationDate}
-                        placeholder="Ingresa Fecha de nacimiento"
                         ref={register()}
                       />
                     </FormGroup>

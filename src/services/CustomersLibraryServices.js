@@ -8,9 +8,9 @@ const CustomersLibraryServices = {
     });
     return response.data;
   },
-  addCustomerLibDoc: async (customerId, document) => {
-    const response = await api.post(`/customer-library`, document, {
-      headers: { Authorization: `Bearer ${token}` },
+  addCustomerLibDoc: async (formData, customerId) => {
+    const response = await api.post(`customer-library/${customerId}`, formData, {
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
     });
     return response.data;
   },
