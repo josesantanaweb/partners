@@ -295,7 +295,7 @@ const Menu = ({ sidebarToggle, mobileView }) => {
 
   return (
     <ul className="nk-menu">
-      {data?.map((item, index) =>
+      {menu?.map((item, index) =>
         item.heading ? (
           <MenuHeading heading={item.heading} key={item.heading} />
         ) : item.panel ? (
@@ -307,7 +307,7 @@ const Menu = ({ sidebarToggle, mobileView }) => {
             index={index}
             panel={item.panel}
             subPanel={item.subPanel}
-            menu={data}
+            menu={menu}
             setMenuData={setMenuData}
             sidebarToggle={sidebarToggle}
           />
