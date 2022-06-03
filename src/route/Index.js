@@ -7,6 +7,7 @@ import { AdviserContextProvider } from "../pages/adviser/AdviserContext";
 import { RolesContextProvider } from "../pages/roles/RolesContext";
 import { ProductsContextProvider } from "../pages/products/ProductsContext";
 import { CompanyContextProvider } from "../pages/company/CompanyContext";
+import { DocumentsContextProvider } from "../pages/documents/DocumentsContext";
 import { RedirectAs404 } from "../utils/Utils";
 
 import Homepage from "../pages/Homepage";
@@ -41,6 +42,15 @@ const Pages = () => {
             <UserContextProvider>
               <Users />
             </UserContextProvider>
+          )}
+        ></Route>
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/documents`}
+          render={() => (
+            <DocumentsContextProvider>
+              <Documents />
+            </DocumentsContextProvider>
           )}
         ></Route>
         <Route
