@@ -13,12 +13,14 @@ import {
   DataTableHead,
   DataTableRow,
   DataTableItem,
+  PreviewAltCard,
+  PaginationComponent,
 } from "../../components/Component";
 import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import { useForm } from "react-hook-form";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
-import CustomersLibraryServices from "../../services/CustomersLibraryServices";
+import LibraryServices from "../../services/LibraryServices";
 import DocumentsServices from "../../services/DocumentsServices";
 
 const CustomerId = () => {
@@ -28,6 +30,8 @@ const CustomerId = () => {
   const [sm, updateSm] = useState(false);
   const { register, handleSubmit } = useForm();
   const [errorMessage, setErrorMessage] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
   const [modal, setModal] = useState({
     edit: false,
     add: false,
@@ -51,7 +55,7 @@ const CustomerId = () => {
   // function to get customer document
   const getCustomerDocument = async (customerId) => {
     try {
-      const customerDocument = await CustomersLibraryServices.getCustomerDocument(customerId);
+      const customerDocument = await LibraryServices.getCustomerDocument(customerId);
       setData(customerDocument.data);
     } catch (error) {
       throw error;
@@ -91,7 +95,6 @@ const CustomerId = () => {
       expirationDate: expirationDate,
       file: file[0],
     };
-    console.log(submittedData);
     try {
       const formData = new FormData();
       let object = {};
@@ -106,7 +109,7 @@ const CustomerId = () => {
       JSON.stringify(Object.fromEntries(formData));
       console.log(json);
 
-      await CustomersLibraryServices.addCustomerLibDoc(formData, customerId);
+      await LibraryServices.addCustomerLibDoc(formData, customerId);
       setData([submittedData, customerId]);
       setModal({ edit: false, add: false });
       resetForm();
@@ -143,6 +146,14 @@ const CustomerId = () => {
       return documents.find((item) => item.value == documentsOptions.value);
     }
   }, [documentsOptions.value]);
+
+  // Get current list, pagination
+  const indexOfLastItem = currentPage * itemPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemPerPage;
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Change Page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <React.Fragment>
@@ -224,6 +235,20 @@ const CustomerId = () => {
                   ))
                 : null}
             </div>
+            <PreviewAltCard>
+              {currentItems.length > 0 ? (
+                <PaginationComponent
+                  itemPerPage={itemPerPage}
+                  totalItems={data.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                />
+              ) : (
+                <div className="text-center">
+                  <span className="text-silent">No se encontaron documentos</span>
+                </div>
+              )}
+            </PreviewAltCard>
           </div>
         </Block>
 

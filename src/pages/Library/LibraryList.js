@@ -8,7 +8,6 @@ import {
   BlockHead,
   BlockHeadContent,
   BlockTitle,
-  Icon,
   DataTableHead,
   DataTableRow,
   DataTableItem,
@@ -18,10 +17,10 @@ import {
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import CustomersServices from "../../services/CustomersServices";
-import CustomersLibraryServices from "../../services/CustomersLibraryServices";
+import CustomersLibraryServices from "../../services/LibraryServices";
 import CustomerId from "./CustomerId";
 
-const CustomerLibrary = () => {
+const LibraryList = () => {
   const { id } = useParams();
   const [data, setData] = useState([]);
   const [dataLegal, setDataLegal] = useState([]);
@@ -177,7 +176,7 @@ const CustomerLibrary = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Clientes Legales
+                Clientes Legales/Empresa
               </BlockTitle>
               <BlockDes className="text-soft">
                 <p>Últimos {dataLegal.length} clientes legales</p>
@@ -256,11 +255,9 @@ const CustomerLibrary = () => {
             </div>
           </div>
         </Block>
-
-        {customerId ? currentItems.map((item) => <CustomerId key={item.id} customerId={item.id} />) : null}
       </Content>
     </React.Fragment>
   );
 };
 
-export default CustomerLibrary;
+export default LibraryList;
