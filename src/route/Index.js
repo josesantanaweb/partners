@@ -7,6 +7,7 @@ import { AdviserContextProvider } from "../pages/adviser/AdviserContext";
 import { RolesContextProvider } from "../pages/roles/RolesContext";
 import { ProductsContextProvider } from "../pages/products/ProductsContext";
 import { CompanyContextProvider } from "../pages/company/CompanyContext";
+import { DocumentsContextProvider } from "../pages/documents/DocumentsContext";
 import { RedirectAs404 } from "../utils/Utils";
 
 import Homepage from "../pages/Homepage";
@@ -21,7 +22,8 @@ import Products from "../pages/products/ProductsList";
 import Company from "../pages/company/CompanyList";
 import Metting from "../pages/app/Metting/Calender";
 import EcomDashboard from "../pages/panel/e-commerce/index";
-import CustomersLibrary from "../pages/customersLibrary/CustomersLibrary";
+import CustomersLibrary from "../pages/customerLibrary/CustomerLibrary";
+import Documents from "../pages/documents/DocumentsList";
 
 const Pages = () => {
   useLayoutEffect(() => {
@@ -41,6 +43,15 @@ const Pages = () => {
             <UserContextProvider>
               <Users />
             </UserContextProvider>
+          )}
+        ></Route>
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/documents`}
+          render={() => (
+            <DocumentsContextProvider>
+              <Documents />
+            </DocumentsContextProvider>
           )}
         ></Route>
         <Route
