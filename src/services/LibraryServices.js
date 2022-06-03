@@ -1,7 +1,7 @@
 import api from "../config/api";
 const token = localStorage.getItem("access_token");
 
-const CustomersLibraryServices = {
+const LibraryServices = {
   getCustomerLibrary: async (customerId) => {
     const response = await api.get(`customer-library/${customerId}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -15,7 +15,6 @@ const CustomersLibraryServices = {
     return response.data;
   },
 
-  // Documents
   getCustomerDocument: async (customerId) => {
     const response = await api.get(`customer-library/${customerId}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -24,4 +23,4 @@ const CustomersLibraryServices = {
   },
 };
 
-export default CustomersLibraryServices;
+export default LibraryServices;

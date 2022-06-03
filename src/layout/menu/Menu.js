@@ -308,7 +308,7 @@ const Menu = ({ sidebarToggle, mobileView }) => {
             index={index}
             panel={item.panel}
             subPanel={item.subPanel}
-            menu={data}
+            menu={menu}
             setMenuData={setMenuData}
             sidebarToggle={sidebarToggle}
           />
