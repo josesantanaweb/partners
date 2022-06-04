@@ -125,6 +125,7 @@ const CompanyList = () => {
       email: "",
       businessPhone: "",
       observation: "",
+      rut: "",
       address: {
         countryId: 1,
         stateId: 1,
@@ -143,10 +144,11 @@ const CompanyList = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { name, email, address, businessPhone, observation } = submitData;
+    const { name, email, address, businessPhone, observation, rut } = submitData;
     let submittedData = {
       name: name,
       email: email,
+      rut: rut,
       businessPhone: businessPhone,
       observation: observation,
       address: {
@@ -169,10 +171,11 @@ const CompanyList = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { name, email, address, businessPhone, observation } = submitData;
+    const { name, email, address, businessPhone, observation, rut } = submitData;
     let submittedData = {
       name: name,
       email: email,
+      rut: rut,
       businessPhone: businessPhone,
       observation: observation,
       address: {
@@ -269,6 +272,9 @@ const CompanyList = () => {
                   <span className="sub-text">Email</span>
                 </DataTableRow>
                 <DataTableRow>
+                  <span className="sub-text">RUT</span>
+                </DataTableRow>
+                <DataTableRow>
                   <span className="sub-text">Telefono</span>
                 </DataTableRow>
                 <DataTableRow>
@@ -287,6 +293,9 @@ const CompanyList = () => {
                       </DataTableRow>
                       <DataTableRow>
                         <span>{item.email}</span>
+                      </DataTableRow>
+                      <DataTableRow>
+                        <span>{item.rut}</span>
                       </DataTableRow>
                       <DataTableRow>
                         <span>{item.businessPhone}</span>
@@ -373,6 +382,20 @@ const CompanyList = () => {
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Rut</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="rut"
+                        defaultValue={formData.rut}
+                        placeholder="Ingresa Rut"
+                        ref={register()}
+                      />
                     </FormGroup>
                   </Col>
 
@@ -523,6 +546,20 @@ const CompanyList = () => {
                         ref={register({ required: "Este campo es requerido" })}
                       />
                       {errors.name && <span className="invalid">{errors.name.message}</span>}
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Rut</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="rut"
+                        defaultValue={editData?.rut}
+                        placeholder="Ingresa Rut"
+                        ref={register()}
+                      />
                     </FormGroup>
                   </Col>
 
