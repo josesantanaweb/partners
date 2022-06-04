@@ -136,7 +136,7 @@ const MainInformation = ({ setModal, formData }) => {
 
   return (
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Rut</label>
           <input
@@ -149,7 +149,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de emisión</label>
           <input
@@ -162,7 +162,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de expiracion</label>
           <input
@@ -175,7 +175,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Nombres</label>
           <input
@@ -188,7 +188,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de nacimiento</label>
           <input
@@ -201,7 +201,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Email</label>
           <input
@@ -214,7 +214,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Apellidos</label>
           <input
@@ -227,7 +227,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Telefono Celular</label>
           <input
@@ -240,7 +240,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Telefono Fijo</label>
           <input
@@ -253,7 +253,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Pais</label>
           <RSelect
@@ -264,7 +264,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Nacionalidad</label>
           <input
@@ -277,7 +277,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Codigo postal</label>
           <input
@@ -290,13 +290,13 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Ciudad</label>
           <RSelect isSearchable={false} options={citiesOptions} onChange={onCitiesChange} />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Estado Civil</label>
           <input
@@ -309,7 +309,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Regimen conyugal</label>
           <input
@@ -322,7 +322,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Comuna</label>
           <input
@@ -335,7 +335,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Ingreso Anual</label>
           <input
@@ -348,7 +348,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de matrimonio</label>
           <Controller
@@ -366,7 +366,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Direccion</label>
           <input
@@ -379,7 +379,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Valor neto total USD</label>
           <input
@@ -392,7 +392,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Neto de patrimonio</label>
           <input
@@ -405,7 +405,7 @@ const MainInformation = ({ setModal, formData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Profesion</label>
           <input
