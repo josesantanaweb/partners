@@ -173,3 +173,33 @@ $rtl: false;
   height: 2px;
   background-color: #ffa31e;
 }
+
+.table-scroll {
+  max-height: 600px;
+  overflow-y: scroll;
+  overflow-x: clip;
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $scrollBg;
+    border-radius: 4px;
+    &:hover {
+      background: $scrollHover;
+    }
+    &:active {
+      background-color: $isScrollActive;
+    }
+  }
+  &::-webkit-scrollbar-track {
+    background: $scrollTrack;
+    border-radius: 4px;
+    &:hover {
+      background: $scrollHoverTrack;
+    }
+    &:active {
+      background: $scrollHoverTrack;
+    }
+  }
+}
