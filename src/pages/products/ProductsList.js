@@ -360,15 +360,16 @@ const ProductsList = () => {
                         {errors.description && <span className="invalid">{errors.description.message}</span>}
                       </FormGroup>
                     </Col>
-                    <Col md="6">
+                    <Col md="12">
                       <FormGroup>
                         <label className="form-label">Observacion</label>
-                        <input
+                        <textarea
                           className="form-control"
-                          type="text"
                           name="observation"
+                          placeholder="Ingresa Observacion"
+                          cols="30"
+                          rows="10"
                           defaultValue={formData.observation}
-                          placeholder="Ingresa apellido"
                           ref={register()}
                         />
                       </FormGroup>
@@ -529,15 +530,16 @@ const ProductsList = () => {
                       </FormGroup>
                     </Col>
 
-                    <Col md="6">
+                    <Col md="12">
                       <FormGroup>
                         <label className="form-label">Observacion</label>
-                        <input
+                        <textarea
                           className="form-control"
-                          type="text"
                           name="observation"
+                          placeholder="Ingresa Observacion"
+                          cols="30"
+                          rows="10"
                           defaultValue={editData?.observation}
-                          placeholder="Ingresa observacion"
                           ref={register()}
                         />
                       </FormGroup>
