@@ -65,6 +65,13 @@ const CompanyList = () => {
     } catch (error) {}
   };
 
+  const getCompanies = async (filter) => {
+    try {
+      const company = await CompanyServices.getCompanies(filter);
+      setData(company.data);
+    } catch (error) {}
+  };
+
   const getCountries = async () => {
     try {
       const countries = await CountriesServices.getCountries();
@@ -221,6 +228,14 @@ const CompanyList = () => {
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const onFilter = (e) => {
+    if (e.target.value.length > 1) {
+      getCompanies(e.target.value);
+    } else {
+      getCompanies("");
+    }
+  };
+
   return (
     <React.Fragment>
       <Head title="Empresa"></Head>
@@ -245,6 +260,9 @@ const CompanyList = () => {
                 </Button>
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
+                    <li className="nk-block-tools-opt">
+                      <input className="form-control" onChange={onFilter} />
+                    </li>
                     <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>
                         <Icon name="plus" className="mr-1"></Icon>

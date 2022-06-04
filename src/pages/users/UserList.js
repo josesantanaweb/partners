@@ -36,7 +36,6 @@ const UserListDefaultPage = () => {
   const [rolesOptions, setRolesOptions] = useState([]);
   const [roleDefaultEdit, setRoleDefaultEdit] = useState({});
   const [roleId, setRoleId] = useState(1);
-  const [filter, setFilter] = useState("");
 
   const [modal, setModal] = useState({
     edit: false,
@@ -169,7 +168,6 @@ const UserListDefaultPage = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const onFilter = (e) => {
-    setFilter(e.target.value);
     if (e.target.value.length > 1) {
       getUser(e.target.value);
     } else {
