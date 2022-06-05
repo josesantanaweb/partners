@@ -117,6 +117,12 @@ const CompanyList = () => {
         address: "",
       },
     },
+    contactPerson: {
+      name: "",
+      lastName: "",
+      email: "",
+      phone: "",
+    },
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
@@ -140,6 +146,12 @@ const CompanyList = () => {
           address: "",
         },
       },
+      contactPerson: {
+        name: "",
+        lastName: "",
+        email: "",
+        phone: "",
+      },
     });
   };
 
@@ -151,7 +163,7 @@ const CompanyList = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { name, email, address, businessPhone, observation, rut } = submitData;
+    const { name, email, address, businessPhone, observation, rut, contactPerson } = submitData;
     let submittedData = {
       name: name,
       email: email,
@@ -164,6 +176,12 @@ const CompanyList = () => {
         detailedAddress: {
           address: address.detailedAddress.address,
         },
+      },
+      contactPerson: {
+        name: contactPerson.name,
+        lastName: contactPerson.lastName,
+        email: contactPerson.email,
+        phone: contactPerson.phone,
       },
     };
 
@@ -178,7 +196,7 @@ const CompanyList = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { name, email, address, businessPhone, observation, rut } = submitData;
+    const { name, email, address, businessPhone, observation, rut, contactPerson } = submitData;
     let submittedData = {
       name: name,
       email: email,
@@ -191,6 +209,12 @@ const CompanyList = () => {
         detailedAddress: {
           address: address.detailedAddress.address,
         },
+      },
+      contactPerson: {
+        name: contactPerson.name,
+        lastName: contactPerson.lastName,
+        email: contactPerson.email,
+        phone: contactPerson.phone,
       },
     };
 
@@ -386,143 +410,201 @@ const CompanyList = () => {
                   </Alert>
                 </div>
               )}
-              <div className="mt-4">
-                <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Nombre</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="name"
-                        defaultValue={formData.name}
-                        placeholder="Ingresa nombre"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.name && <span className="invalid">{errors.name.message}</span>}
-                    </FormGroup>
-                  </Col>
+              <div className="table-scroll">
+                <div className="mt-4">
+                  <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Nombre</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="name"
+                          defaultValue={formData.name}
+                          placeholder="Ingresa nombre"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.name && <span className="invalid">{errors.name.message}</span>}
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Rut</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="rut"
-                        defaultValue={formData.rut}
-                        placeholder="Ingresa Rut"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Rut</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="rut"
+                          defaultValue={formData.rut}
+                          placeholder="Ingresa Rut"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Email</label>
-                      <input
-                        className="form-control"
-                        type="email"
-                        name="email"
-                        defaultValue={formData.email}
-                        placeholder="Ingresa email"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.email && <span className="invalid">{errors.email.message}</span>}
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Email</label>
+                        <input
+                          className="form-control"
+                          type="email"
+                          name="email"
+                          defaultValue={formData.email}
+                          placeholder="Ingresa email"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.email && <span className="invalid">{errors.email.message}</span>}
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Telefono</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="businessPhone"
-                        defaultValue={formData.businessPhone}
-                        placeholder="Ingresa Telefono"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.businessPhone && <span className="invalid">{errors.businessPhone.message}</span>}
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Telefono</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="businessPhone"
+                          defaultValue={formData.businessPhone}
+                          placeholder="Ingresa Telefono"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.businessPhone && <span className="invalid">{errors.businessPhone.message}</span>}
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Pais</label>
-                      <RSelect
-                        isSearchable={false}
-                        options={countriesOptions}
-                        defaultValue={countriesOptions[0]}
-                        onChange={onCountriesChange}
-                      />
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Pais</label>
+                        <RSelect
+                          isSearchable={false}
+                          options={countriesOptions}
+                          defaultValue={countriesOptions[0]}
+                          onChange={onCountriesChange}
+                        />
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Ciudad</label>
-                      <RSelect
-                        isSearchable={false}
-                        options={citiesOptions}
-                        defaultValue={citiesOptions[0]}
-                        onChange={onCitiesChange}
-                      />
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Ciudad</label>
+                        <RSelect
+                          isSearchable={false}
+                          options={citiesOptions}
+                          defaultValue={citiesOptions[0]}
+                          onChange={onCitiesChange}
+                        />
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Direccion</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="address.detailedAddress.address"
-                        defaultValue={formData.address.detailedAddress.address}
-                        placeholder="Ingresa Direccion"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Direccion</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="address.detailedAddress.address"
+                          defaultValue={formData.address.detailedAddress.address}
+                          placeholder="Ingresa Direccion"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Observacion</label>
-                      <textarea
-                        className="form-control"
-                        name="observation"
-                        placeholder="Ingresa Observacion"
-                        cols="30"
-                        rows="10"
-                        defaultValue={formData?.observation}
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Nombre de Contacto</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="contactPerson.name"
+                          defaultValue={formData.contactPerson.name}
+                          placeholder="Ingresa Nombre de Contacto"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
 
-                  <Col size="12">
-                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
-                      <li>
-                        <Button color="primary" size="md" type="submit">
-                          Agregar Empresa
-                        </Button>
-                      </li>
-                      <li>
-                        <a
-                          href="#cancel"
-                          onClick={(ev) => {
-                            ev.preventDefault();
-                            onFormCancel();
-                            setErrorMessage("");
-                          }}
-                          className="link link-light"
-                        >
-                          Cancelar
-                        </a>
-                      </li>
-                    </ul>
-                  </Col>
-                </Form>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Apellido de Contacto</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="contactPerson.lastName"
+                          defaultValue={formData.contactPerson.lastName}
+                          placeholder="Ingresa Apellido de Contacto"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Email de Contacto</label>
+                        <input
+                          className="form-control"
+                          type="email"
+                          name="contactPerson.email"
+                          defaultValue={formData.contactPerson.email}
+                          placeholder="Ingresa Email de Contacto"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Telefono de Contacto</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="contactPerson.phone"
+                          defaultValue={formData.contactPerson.phone}
+                          placeholder="Ingresa Telefono de Contacto"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="12">
+                      <FormGroup>
+                        <label className="form-label">Observacion</label>
+                        <textarea
+                          className="form-control"
+                          name="observation"
+                          placeholder="Ingresa Observacion"
+                          cols="30"
+                          rows="10"
+                          defaultValue={formData?.observation}
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col size="12">
+                      <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                        <li>
+                          <Button color="primary" size="md" type="submit">
+                            Agregar Empresa
+                          </Button>
+                        </li>
+                        <li>
+                          <a
+                            href="#cancel"
+                            onClick={(ev) => {
+                              ev.preventDefault();
+                              onFormCancel();
+                              setErrorMessage("");
+                            }}
+                            className="link link-light"
+                          >
+                            Cancelar
+                          </a>
+                        </li>
+                      </ul>
+                    </Col>
+                  </Form>
+                </div>
               </div>
             </div>
           </ModalBody>
@@ -550,142 +632,200 @@ const CompanyList = () => {
                   </Alert>
                 </div>
               )}
-              <div className="mt-4">
-                <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Nombre</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="name"
-                        defaultValue={editData?.name}
-                        placeholder="Ingresa nombre"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.name && <span className="invalid">{errors.name.message}</span>}
-                    </FormGroup>
-                  </Col>
+              <div className="table-scroll">
+                <div className="mt-4">
+                  <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Nombre</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="name"
+                          defaultValue={editData?.name}
+                          placeholder="Ingresa nombre"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.name && <span className="invalid">{errors.name.message}</span>}
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Rut</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="rut"
-                        defaultValue={editData?.rut}
-                        placeholder="Ingresa Rut"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Rut</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="rut"
+                          defaultValue={editData?.rut}
+                          placeholder="Ingresa Rut"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Email</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="email"
-                        defaultValue={editData?.email}
-                        placeholder="Ingresa nombre"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.email && <span className="invalid">{errors.email.message}</span>}
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Email</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="email"
+                          defaultValue={editData?.email}
+                          placeholder="Ingresa nombre"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.email && <span className="invalid">{errors.email.message}</span>}
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Telefono</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="businessPhone"
-                        defaultValue={editData?.businessPhone}
-                        placeholder="Ingresa nombre"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Telefono</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="businessPhone"
+                          defaultValue={editData?.businessPhone}
+                          placeholder="Ingresa nombre"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Pais</label>
-                      <RSelect
-                        isSearchable={false}
-                        options={countriesOptions}
-                        onChange={onCountriesChange}
-                        defaultValue={countriesOptions[0]}
-                      />
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Pais</label>
+                        <RSelect
+                          isSearchable={false}
+                          options={countriesOptions}
+                          onChange={onCountriesChange}
+                          defaultValue={countriesOptions[0]}
+                        />
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Ciudad</label>
-                      <RSelect
-                        isSearchable={false}
-                        options={citiesOptions}
-                        defaultValue={editData?.address.stateId}
-                        onChange={onCitiesChange}
-                      />
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Ciudad</label>
+                        <RSelect
+                          isSearchable={false}
+                          options={citiesOptions}
+                          defaultValue={editData?.address.stateId}
+                          onChange={onCitiesChange}
+                        />
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Direccion</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="address.detailedAddress.address"
-                        defaultValue={editData?.address.detailedAddress.address}
-                        placeholder="Ingresa Direccion"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Direccion</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="address.detailedAddress.address"
+                          defaultValue={editData?.address.detailedAddress.address}
+                          placeholder="Ingresa Direccion"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Observacion</label>
-                      <textarea
-                        className="form-control"
-                        name="observation"
-                        placeholder="Ingresa Observacion"
-                        cols="30"
-                        rows="10"
-                        defaultValue={editData?.observation}
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Nombre de Contacto</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="contactPerson.name"
+                          defaultValue={editData?.contactPerson.name}
+                          placeholder="Ingresa Nombre de Contacto"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
 
-                  <Col size="12">
-                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
-                      <li>
-                        <Button color="primary" size="md" type="submit">
-                          Actualizar Empresa
-                        </Button>
-                      </li>
-                      <li>
-                        <a
-                          href="#cancel"
-                          onClick={(ev) => {
-                            ev.preventDefault();
-                            onFormCancel();
-                            setErrorMessage("");
-                          }}
-                          className="link link-light"
-                        >
-                          Cancelar
-                        </a>
-                      </li>
-                    </ul>
-                  </Col>
-                </Form>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Apellido de Contacto</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="contactPerson.lastName"
+                          defaultValue={editData?.contactPerson.lastName}
+                          placeholder="Ingresa Apellido de Contacto"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Email de Contacto</label>
+                        <input
+                          className="form-control"
+                          type="email"
+                          name="contactPerson.email"
+                          defaultValue={editData?.contactPerson.email}
+                          placeholder="Ingresa Email de Contacto"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Telefono de Contacto</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="contactPerson.phone"
+                          defaultValue={editData?.contactPerson.phone}
+                          placeholder="Ingresa Telefono de Contacto"
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col md="12">
+                      <FormGroup>
+                        <label className="form-label">Observacion</label>
+                        <textarea
+                          className="form-control"
+                          name="observation"
+                          placeholder="Ingresa Observacion"
+                          cols="30"
+                          rows="10"
+                          defaultValue={editData?.observation}
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+
+                    <Col size="12">
+                      <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                        <li>
+                          <Button color="primary" size="md" type="submit">
+                            Actualizar Empresa
+                          </Button>
+                        </li>
+                        <li>
+                          <a
+                            href="#cancel"
+                            onClick={(ev) => {
+                              ev.preventDefault();
+                              onFormCancel();
+                              setErrorMessage("");
+                            }}
+                            className="link link-light"
+                          >
+                            Cancelar
+                          </a>
+                        </li>
+                      </ul>
+                    </Col>
+                  </Form>
+                </div>
               </div>
             </div>
           </ModalBody>
