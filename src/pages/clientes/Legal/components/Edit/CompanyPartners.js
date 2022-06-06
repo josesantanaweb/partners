@@ -262,7 +262,7 @@ const CompanyPartners = ({ setModal, editData }) => {
               />
             </FormGroup>
           </div>
-          <div>
+          {/* <div>
             <FormGroup>
               <label className="form-label">Fecha de Nacimiento</label>
               <DatePicker
@@ -272,7 +272,7 @@ const CompanyPartners = ({ setModal, editData }) => {
                 onChange={(date) => setEditBirthDate(date)}
               />
             </FormGroup>
-          </div>
+          </div> */}
           <div>
             <FormGroup>
               <label className="form-label">Numero Pais del documento</label>
@@ -312,7 +312,7 @@ const CompanyPartners = ({ setModal, editData }) => {
               />
             </FormGroup>
           </div>
-          <div>
+          {/* <div>
             <FormGroup>
               <label className="form-label">Fecha de Emision</label>
               <input
@@ -324,8 +324,8 @@ const CompanyPartners = ({ setModal, editData }) => {
                 ref={register()}
               />
             </FormGroup>
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <FormGroup>
               <label className="form-label">Fecha de Expiracion</label>
               <input
@@ -337,7 +337,7 @@ const CompanyPartners = ({ setModal, editData }) => {
                 ref={register()}
               />
             </FormGroup>
-          </div>
+          </div> */}
           <div>
             <FormGroup>
               <label className="form-label">Nacionalidad</label>
@@ -541,7 +541,7 @@ const CompanyPartners = ({ setModal, editData }) => {
               />
             </FormGroup>
           </div>
-          <div>
+          {/* <div>
             <FormGroup>
               <label className="form-label">Fecha de Nacimiento</label>
               <input
@@ -552,7 +552,7 @@ const CompanyPartners = ({ setModal, editData }) => {
                 ref={register()}
               />
             </FormGroup>
-          </div>
+          </div> */}
           <div>
             <FormGroup>
               <label className="form-label">Numero Pais del documento</label>
@@ -589,7 +589,7 @@ const CompanyPartners = ({ setModal, editData }) => {
               />
             </FormGroup>
           </div>
-          <div>
+          {/* <div>
             <FormGroup>
               <label className="form-label">Fecha de Emision</label>
               <input
@@ -600,8 +600,8 @@ const CompanyPartners = ({ setModal, editData }) => {
                 ref={register()}
               />
             </FormGroup>
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <FormGroup>
               <label className="form-label">Fecha de Expiracion</label>
               <input
@@ -612,7 +612,7 @@ const CompanyPartners = ({ setModal, editData }) => {
                 ref={register()}
               />
             </FormGroup>
-          </div>
+          </div> */}
           <div>
             <FormGroup>
               <label className="form-label">Nacionalidad</label>
