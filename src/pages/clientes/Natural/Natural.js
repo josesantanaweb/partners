@@ -93,9 +93,9 @@ const Natural = () => {
   });
 
   // Get Natural
-  const getCustomers = async () => {
+  const getCustomers = async (filter) => {
     try {
-      const customers = await CustomersServices.getCustomerNatural();
+      const customers = await CustomersServices.getCustomerNatural(filter);
       setData(customers?.data);
     } catch (error) {}
   };
@@ -133,6 +133,14 @@ const Natural = () => {
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const onFilter = (e) => {
+    if (e.target.value.length > 1) {
+      getCustomers(e.target.value);
+    } else {
+      getCustomers("");
+    }
+  };
+
   return (
     <React.Fragment>
       <Head title="Clientes"></Head>
@@ -157,6 +165,9 @@ const Natural = () => {
                 </Button>
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
+                    <li className="nk-block-tools-opt">
+                      <input className="form-control" onChange={onFilter} />
+                    </li>
                     <li className="nk-block-tools-opt">
                       <a href="https://api.elbernv.site/export-information/customers/natural">
                         <Button color="primary" type="button">
