@@ -27,7 +27,7 @@ const Metting = () => {
   const [mettings, setMettings] = useState([]);
   const [categories, setCategories] = useState([]);
   const [categoriesOptions, setCategoriesOptions] = useState([]);
-  const [categoryId, setCategoryId] = useState();
+  const [categoryId, setCategoryId] = useState(1);
   const [dates, setDates] = useState({
     startDate: new Date(),
     startTime: new Date(),

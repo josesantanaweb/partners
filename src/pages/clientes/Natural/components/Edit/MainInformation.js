@@ -150,7 +150,7 @@ const MainInformation = ({ setModal, editData }) => {
 
   return (
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Rut</label>
           <input
@@ -163,13 +163,13 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de emisión</label>
           <DatePicker selected={rutIssueDate} className="form-control" onChange={(date) => setRutIssueDate(date)} />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de expiracion</label>
           <DatePicker
@@ -179,7 +179,7 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Nombres</label>
           <input
@@ -192,13 +192,13 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de nacimiento</label>
           <DatePicker selected={birthDate} className="form-control" onChange={(date) => setBirthDate(date)} />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Email</label>
           <input
@@ -211,7 +211,7 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Apellidos</label>
           <input
@@ -224,7 +224,7 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Telefono</label>
           <input
@@ -237,7 +237,7 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Telefono Fijo</label>
           <input
@@ -250,7 +250,7 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Pais</label>
           <RSelect
@@ -261,7 +261,7 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Nacionalidad</label>
           <input
@@ -274,7 +274,7 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Codigo postal</label>
           <input
@@ -287,13 +287,13 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Ciudad</label>
           <RSelect isSearchable={false} options={citiesOptions} onChange={onCitiesChange} />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Estado Civil</label>
           <input
@@ -306,7 +306,7 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Regimen conyugal</label>
           <input
@@ -319,7 +319,7 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Comuna</label>
           <input
@@ -332,7 +332,7 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Ingreso Anual</label>
           <input
@@ -345,13 +345,13 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Fecha de matrimonio</label>
+          <label className="form-label">F de matrimonio</label>
           <DatePicker selected={dateOfMarriage} className="form-control" onChange={(date) => setDateOfMarriage(date)} />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Direccion</label>
           <input
@@ -364,7 +364,7 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Valor neto total USD</label>
           <input
@@ -377,7 +377,7 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Neto de patrimonio</label>
           <input
@@ -390,7 +390,7 @@ const MainInformation = ({ setModal, editData }) => {
           />
         </FormGroup>
       </Col>
-      <Col md="4" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <label className="form-label">Profesion</label>
           <input
