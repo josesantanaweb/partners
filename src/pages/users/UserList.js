@@ -203,7 +203,8 @@ const UserListDefaultPage = () => {
                       <input className="form-control" onChange={onFilter} />
                     </li>
                     <li className="nk-block-tools-opt">
-                      <a href="https://api.elbernv.site/export-information/users">
+                      <a href={`${process.env.REACT_APP_API_URL}/export-information/users`}>
+                        natural
                         <Button color="primary" type="button">
                           <Icon name="printer" className="mr-1"></Icon>
                           Exportar

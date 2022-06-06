@@ -147,7 +147,7 @@ const Legal = () => {
                       <input className="form-control" onChange={onFilter} />
                     </li>
                     <li className="nk-block-tools-opt">
-                      <a href="https://api.elbernv.site/export-information/customers/legal">
+                      <a href={`${process.env.REACT_APP_API_URL}/export-information/customers/legal`}>
                         <Button color="primary" type="button">
                           <Icon name="printer" className="mr-1"></Icon>
                           Exportar

@@ -169,7 +169,7 @@ const Natural = () => {
                       <input className="form-control" onChange={onFilter} />
                     </li>
                     <li className="nk-block-tools-opt">
-                      <a href="https://api.elbernv.site/export-information/customers/natural">
+                      <a href={`${process.env.REACT_APP_API_URL}/export-information/customers/natural`}>
                         <Button color="primary" type="button">
                           <Icon name="printer" className="mr-1"></Icon>
                           Exportar
