@@ -203,3 +203,7 @@ $rtl: false;
     }
   }
 }
+
+.react-datepicker-popper[data-placement^="bottom"] {
+  transform: translate(0px, 65.25px) !important;
+}
