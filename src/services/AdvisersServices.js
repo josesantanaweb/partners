@@ -3,8 +3,8 @@ import api from "../config/api";
 const token = localStorage.getItem("access_token");
 
 const AdvisersServices = {
-  getAdvisers: async () => {
-    const response = await api.get(`advisors`, {
+  getAdvisers: async (filter) => {
+    const response = await api.get(`advisors?filter=${filter || ""}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;

@@ -52,9 +52,9 @@ const UserListDefaultPage = () => {
     }
   }, [roles]);
 
-  const getUser = async () => {
+  const getUser = async (filter) => {
     try {
-      const users = await UsersServices.getUsers();
+      const users = await UsersServices.getUsers(filter);
       setData(users.data);
     } catch (error) {}
   };
@@ -167,6 +167,14 @@ const UserListDefaultPage = () => {
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const onFilter = (e) => {
+    if (e.target.value.length > 1) {
+      getUser(e.target.value);
+    } else {
+      getUser("");
+    }
+  };
+
   return (
     <React.Fragment>
       <Head title="Usuarios"></Head>
@@ -191,6 +199,9 @@ const UserListDefaultPage = () => {
                 </Button>
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
+                    <li className="nk-block-tools-opt">
+                      <input className="form-control" onChange={onFilter} />
+                    </li>
                     <li className="nk-block-tools-opt">
                       <a href="https://api.elbernv.site/export-information/users">
                         <Button color="primary" type="button">

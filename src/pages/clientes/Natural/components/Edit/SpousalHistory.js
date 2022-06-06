@@ -1,10 +1,28 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FormGroup, Form } from "reactstrap";
 import { useForm } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { Col, Button } from "../../../../../components/Component";
 import CustomersServices from "../../../../../services/CustomersServices";
 
 const SpousalHistory = ({ setModal, editData }) => {
+  const [rutIssueDate, setRutIssueDate] = useState(new Date());
+  const [rutExpirationDate, setRutExpirationDate] = useState(new Date());
+  const [birthDate, setBirthDate] = useState(new Date());
+
+  useEffect(() => {
+    if (editData?.spousalHistory?.rutIssueDate) {
+      setRutIssueDate(new Date(editData?.spousalHistory?.rutIssueDate));
+    }
+    if (editData?.spousalHistory?.rutExpirationDate) {
+      setRutExpirationDate(new Date(editData?.spousalHistory?.rutExpirationDate));
+    }
+    if (editData?.spousalHistory?.birthDate) {
+      setBirthDate(new Date(editData?.spousalHistory?.birthDate));
+    }
+  }, []);
+
   // useForm
   const { register, handleSubmit } = useForm();
 
@@ -25,10 +43,7 @@ const SpousalHistory = ({ setModal, editData }) => {
       laborSeniority,
       profession,
       rut,
-      rutIssueDate,
-      rutExpirationDate,
       nationality,
-      birthDate,
     } = submitData;
     let spousalHistory = {
       completeName: completeName,
@@ -48,7 +63,7 @@ const SpousalHistory = ({ setModal, editData }) => {
     try {
       await CustomersServices.editCustomerNatural(editData.id, { spousalHistory });
       setModal({ edit: false }, { add: false }, { document: false });
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {}
   };
 
@@ -174,26 +189,16 @@ const SpousalHistory = ({ setModal, editData }) => {
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de emisión</label>
-          <input
-            className="form-control"
-            type="date"
-            name="rutIssueDate"
-            defaultValue={editData?.spousalHistory?.rutIssueDate}
-            placeholder="Ingresa Fecha de emisión"
-            ref={register()}
-          />
+          <DatePicker selected={rutIssueDate} className="form-control" onChange={(date) => setRutIssueDate(date)} />
         </FormGroup>
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de expiracion</label>
-          <input
+          <DatePicker
+            selected={rutExpirationDate}
             className="form-control"
-            type="date"
-            name="rutExpirationDate"
-            defaultValue={editData?.spousalHistory?.rutExpirationDate}
-            placeholder="Ingresa Fecha de expiracion"
-            ref={register()}
+            onChange={(date) => setRutExpirationDate(date)}
           />
         </FormGroup>
       </Col>
@@ -213,14 +218,7 @@ const SpousalHistory = ({ setModal, editData }) => {
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de nacimineto</label>
-          <input
-            className="form-control"
-            type="date"
-            name="birthDate"
-            defaultValue={editData?.spousalHistory?.birthDate}
-            placeholder="Ingresa Fecha de nacimineto"
-            ref={register()}
-          />
+          <DatePicker selected={birthDate} className="form-control" onChange={(date) => setBirthDate(date)} />
         </FormGroup>
       </Col>
       <Col size="12">

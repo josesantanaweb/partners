@@ -118,19 +118,6 @@ const Beneficiaries = ({ setModal, editData }) => {
           </div>
           <div>
             <FormGroup>
-              <label className="form-label">Fecha de Nacimineto</label>
-              <input
-                className="form-control"
-                type="date"
-                name={`editBeneficiaries[${i}].birthDate`}
-                defaultValue={editData?.beneficiaries[i].birthDate}
-                placeholder="Ingresa Fecha de Nacimineto"
-                ref={register()}
-              />
-            </FormGroup>
-          </div>
-          <div>
-            <FormGroup>
               <label className="form-label">Porcentaje</label>
               <input
                 className="form-control"
@@ -142,6 +129,19 @@ const Beneficiaries = ({ setModal, editData }) => {
               />
             </FormGroup>
           </div>
+          {/* <div>
+            <FormGroup>
+              <label className="form-label">Fecha de Nacimineto</label>
+              <input
+                className="form-control"
+                type="date"
+                name={`editBeneficiaries[${i}].birthDate`}
+                defaultValue={editData?.beneficiaries[i].birthDate}
+                placeholder="Ingresa Fecha de Nacimineto"
+                ref={register()}
+              />
+            </FormGroup>
+          </div> */}
           <div>
             <FormGroup>
               <label className="form-label">Parentesco</label>
@@ -237,18 +237,6 @@ const Beneficiaries = ({ setModal, editData }) => {
           </div>
           <div>
             <FormGroup>
-              <label className="form-label">Fecha de cumpleanos</label>
-              <input
-                className="form-control"
-                type="date"
-                name={`addBeneficiaries[${i}].birthDate`}
-                placeholder="Ingresa Fecha de cumpleanos"
-                ref={register()}
-              />
-            </FormGroup>
-          </div>
-          <div>
-            <FormGroup>
               <label className="form-label">Porcentange</label>
               <input
                 className="form-control"
@@ -259,6 +247,18 @@ const Beneficiaries = ({ setModal, editData }) => {
               />
             </FormGroup>
           </div>
+          {/* <div>
+            <FormGroup>
+              <label className="form-label">Fecha de cumpleanos</label>
+              <input
+                className="form-control"
+                type="date"
+                name={`addBeneficiaries[${i}].birthDate`}
+                placeholder="Ingresa Fecha de cumpleanos"
+                ref={register()}
+              />
+            </FormGroup>
+          </div> */}
           <div>
             <FormGroup>
               <label className="form-label">Parentesco</label>
