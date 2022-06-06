@@ -158,7 +158,7 @@ const DocumentsList = () => {
                     <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>
                         <Icon name="plus" className="mr-1"></Icon>
-                        Agregar Documento modal
+                        Agregar Documento
                       </Button>
                     </li>
                   </ul>

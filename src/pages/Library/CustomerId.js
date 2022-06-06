@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Block,
   BlockBetween,
@@ -22,11 +23,14 @@ import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import LibraryServices from "../../services/LibraryServices";
 import DocumentsServices from "../../services/DocumentsServices";
+import CustomersServices from "../../services/CustomersServices";
 
 const CustomerId = () => {
   const [data, setData] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [documentsOptions, setDocumentsOptions] = useState(documents);
+  const [customer, setCustomer] = useState([]);
+  const [customerLegal, setCustomerLegal] = useState([]);
   const [sm, updateSm] = useState(false);
   const { register, handleSubmit } = useForm();
   const [errorMessage, setErrorMessage] = useState("");
@@ -36,17 +40,17 @@ const CustomerId = () => {
     edit: false,
     add: false,
   });
-
-  const filterDocumentType = documents.find((item) => item.value == documentsOptions.value);
-
   const [formData, setFormData] = useState({
     documentTypeId: "",
     // description: filterDocumentType?.description,
-    // observation: "",
+    observation: "",
     issueDate: "",
     expirationDate: "",
     file: "",
   });
+
+  // function to find document type
+  const filterDocumentType = documents.find((item) => item.value == documentsOptions.value);
 
   // get dinamic customerId
   const index = window.location.href.indexOf("customer-library") + 17;
@@ -62,6 +66,35 @@ const CustomerId = () => {
     }
   };
 
+  // function to get customers natural
+  const getCustomers = async () => {
+    try {
+      const customers = await CustomersServices.getCustomerNatural();
+      const filterCustomerId = customers.data.find((item) => item.id == customerId);
+      setCustomer(filterCustomerId);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    getCustomers(customerId);
+  }, [customerId]);
+
+  const getCustomersLegal = async () => {
+    try {
+      const customersLegal = await CustomersServices.getCustomerLegal();
+      const filterCustomerId = customersLegal.data.find((item) => item.id == customerId);
+      setCustomerLegal(filterCustomerId);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    getCustomersLegal(customerId);
+  }, [customerId]);
+
   useEffect(() => {
     getCustomerDocument(parseInt(customerId));
   }, []);
@@ -71,7 +104,7 @@ const CustomerId = () => {
     setFormData({
       documentTypeId: "",
       // description: "",
-      // observation: "",
+      observation: "",
       issueDate: "",
       expirationDate: "",
       file: "",
@@ -90,7 +123,7 @@ const CustomerId = () => {
     let submittedData = {
       documentTypeId: documentsOptions?.value,
       // description: documentsOptions.value,
-      // observation: observation,
+      observation: observation,
       issueDate: issueDate,
       expirationDate: expirationDate,
       file: file[0],
@@ -103,6 +136,7 @@ const CustomerId = () => {
       formData.append("documentTypeId", documentsOptions.value);
       formData.append("expirationDate", expirationDate);
       formData.append("issueDate", issueDate);
+      formData.append("observation", observation);
 
       formData.forEach((value, key) => (object[key] = value));
       var json = JSON.stringify(object);
@@ -155,6 +189,15 @@ const CustomerId = () => {
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  // parse date
+  const parseDate = (date) => {
+    const dateParse = new Date(date);
+    const day = dateParse.getDate();
+    const month = dateParse.getMonth() + 1;
+    const year = dateParse.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <React.Fragment>
       <Head title="Clientes"></Head>
@@ -162,12 +205,31 @@ const CustomerId = () => {
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
-              <BlockTitle tag="h3" page>
-                Lista de Documentos
-              </BlockTitle>
-              <BlockDes className="text-soft">
-                <p>Documentos básicos de Negocio</p>
-              </BlockDes>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginRight: "2.5rem",
+                }}
+              >
+                <Link to="/customer-library" className="dropdown-toggle nk-quick-nav-icon mr-2">
+                  <Icon name="arrow-left" />
+                </Link>
+                <div>
+                  <BlockTitle tag="h3" page>
+                    Lista de Documentos
+                  </BlockTitle>
+                  <BlockDes className="text-soft">
+                    <p>
+                      Documentos de{" "}
+                      <span className="text-primary bold">{customer?.names || customerLegal?.companyName}</span> (
+                      {data?.length} documentos)
+                    </p>
+                  </BlockDes>
+                </div>
+              </div>
             </BlockHeadContent>
             <BlockHeadContent>
               <div className="toggle-wrap nk-block-tools-toggle">
@@ -198,6 +260,9 @@ const CustomerId = () => {
             <div className="nk-tb-list is-separate is-medium mb-3 ">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
+                  <span className="sub-text">Cliente</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">Documento</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
@@ -215,13 +280,24 @@ const CustomerId = () => {
                 ? data.map((item) => (
                     <DataTableItem key={item.id} className="rounded-0">
                       <DataTableRow className="text-center border-bottom">
+                        <div className="user-card">
+                          <div className="user-info">
+                            <span className="tb-lead">
+                              {customer?.names || customerLegal?.companyName}
+                              <span className="dot dot-success d-md-none ml-1"></span>
+                            </span>
+                            <span>{customer?.email || customerLegal?.email}</span>
+                          </div>
+                        </div>
+                      </DataTableRow>
+                      <DataTableRow className="text-center border-bottom">
                         <span>{item?.documentType?.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center border-bottom">
                         <span>{item?.documentType?.description}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center border-bottom">
-                        <span>{item?.createdAt}</span>
+                        <span>{parseDate(item?.createdAt)}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center border-bottom">
                         <a href={item.url} target="_blank" rel="noreferrer">
@@ -312,7 +388,6 @@ const CustomerId = () => {
                         type="text"
                         className="form-control"
                         name="observation"
-                        ref={register({ required: "Este campo es obligatorio *" })}
                         placeholder="Ingresa observación"
                         defaultValue={formData.observation}
                       />
@@ -325,6 +400,10 @@ const CustomerId = () => {
                       <input
                         className="form-control"
                         type="date"
+                        required
+                        pattern="\d{4}-\d{2}-\d{2}"
+                        min="1997-01-01"
+                        max="2030-12-31"
                         name="issueDate"
                         defaultValue={formData.issueDate}
                         ref={register()}
