@@ -5,11 +5,10 @@ $scrollHoverTrack: #d4d4d4;
 $scrollTrack: #e1e1e1;
 
 .table-records {
-  height: 20rem;
+  height: 13rem;
   width: auto;
   overflow-y: scroll;
 }
-
 .table-records {
   &::-webkit-scrollbar {
     width: 8px;

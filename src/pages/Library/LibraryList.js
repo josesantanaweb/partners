@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Nav, NavItem } from "reactstrap";
 import {
   Block,
   BlockBetween,
@@ -12,13 +11,18 @@ import {
   DataTableRow,
   DataTableItem,
   TooltipComponent,
+  UserAvatar,
+  Icon,
 } from "../../components/Component";
-
+import { findUpper } from "../../utils/Utils";
+import { useForm } from "react-hook-form";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import CustomersServices from "../../services/CustomersServices";
 import CustomersLibraryServices from "../../services/LibraryServices";
-import CustomerId from "./CustomerId";
+
+import LibraryServices from "../../services/LibraryServices";
+import DocumentsServices from "../../services/DocumentsServices";
 
 const LibraryList = () => {
   const { id } = useParams();
@@ -26,14 +30,58 @@ const LibraryList = () => {
   const [dataLegal, setDataLegal] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
-  const [customerId, setCustomerId] = useState(false);
+  // const [customerId, setCustomerId] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const { register, handleSubmit } = useForm();
 
-  // function to get natual customers
+  const [documents, setDocuments] = useState([]);
+  const [documentsOptions, setDocumentsOptions] = useState(documents);
+
+  const [sm, updateSm] = useState(false);
+  const [modal, setModal] = useState({
+    edit: false,
+    add: false,
+  });
+
+  // Filter customers input search bar
+  const [customers, setCustomers] = useState([]); //usuarios/setUsuarios
+  const [customersTable, setCustomersTable] = useState([]); //tabalUsuarios/setTablaUsuarios
+  const [search, setSearch] = useState(""); //busqueda
+
+  // Customers Legal
+  const [customersLegal, setCustomersLegal] = useState([]); //usuarios/setUsuarios
+  const [customersLegalTable, setCustomersLegalTable] = useState([]); //tabalUsuarios/setTablaUsuarios
+  const [searchLegal, setSearchLegal] = useState(""); //busqueda
+
+  // function to get natural customers
   const getCustomers = async () => {
     try {
       const customers = await CustomersServices.getCustomerNatural();
-      setData(customers?.data);
+      setCustomers(customers?.data);
+      setCustomersTable(customers?.data);
     } catch (error) {}
+  };
+
+  // Nuevo
+  const handleChange = (e) => {
+    console.log(e.target.value);
+    setSearch(e.target.value);
+    filter(e.target.value);
+  };
+
+  const filter = (input) => {
+    var res = customersTable.filter((customer) => {
+      if (
+        customer?.names.toString().toLowerCase().includes(input.toLowerCase()) ||
+        customer?.rut.toString().toLowerCase().includes(input.toLowerCase()) ||
+        customer?.email.toString().toLowerCase().includes(input.toLowerCase()) ||
+        customer?.phone.toString().toLowerCase().includes(input.toLowerCase()) ||
+        customer?.mobilePhone.toString().toLowerCase().includes(input.toLowerCase())
+      ) {
+        return customer;
+      }
+    });
+    setCustomers(res);
   };
 
   useEffect(() => {
@@ -44,8 +92,31 @@ const LibraryList = () => {
   const getCustomerLegal = async () => {
     try {
       const customersLegal = await CustomersServices.getCustomerLegal();
-      setDataLegal(customersLegal?.data);
+      setCustomersLegal(customersLegal?.data);
+      setCustomersLegalTable(customersLegal?.data);
     } catch (error) {}
+  };
+
+  // Nuevo
+  const handleChangeLegal = (e) => {
+    console.log(e.target.value);
+    setSearchLegal(e.target.value);
+    filterLegal(e.target.value);
+  };
+
+  const filterLegal = (input) => {
+    var res = customersLegalTable.filter((customer) => {
+      if (
+        customer?.companyName.toString().toLowerCase().includes(input.toLowerCase()) ||
+        customer?.companyCategory.toString().toLowerCase().includes(input.toLowerCase()) ||
+        customer?.email.toString().toLowerCase().includes(input.toLowerCase()) ||
+        customer?.email.toString().toLowerCase().includes(input.toLowerCase()) ||
+        customer?.phone.toString().toLowerCase().includes(input.toLowerCase())
+      ) {
+        return customer;
+      }
+    });
+    setCustomersLegal(res);
   };
 
   useEffect(() => {
@@ -55,7 +126,7 @@ const LibraryList = () => {
   // Get current list, pagination
   const indexOfLastItem = currentPage * itemPerPage;
   const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); //current items = data
+  const currentItems = customers.slice(indexOfFirstItem, indexOfLastItem); //current items = data
 
   // get the las 5 customers
   const lastCustomers = (data) => {
@@ -75,6 +146,117 @@ const LibraryList = () => {
     currentItems.map((customer) => getCustomersLibrary(customer?.id === undefined ? customer.id : customer.id));
   }, []);
 
+  // Modal get data
+  const filterDocumentType = documents.find((item) => item.value == documentsOptions.value);
+
+  const [formData, setFormData] = useState({
+    documentTypeId: "",
+    // description: filterDocumentType?.description,
+    // observation: "",
+    issueDate: "",
+    expirationDate: "",
+    file: "",
+  });
+
+  // get dinamic customerId
+  const index = window.location.href.indexOf("customer-library") + 17;
+  const customerId = window.location.href.slice(index);
+
+  // function to get customer document
+  const getCustomerDocument = async (customerId) => {
+    try {
+      const customerDocument = await LibraryServices.getCustomerDocument(customerId);
+      setData(customerDocument.data);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    getCustomerDocument(parseInt(customerId));
+  }, []);
+
+  // function to reset the form
+  const resetForm = () => {
+    setFormData({
+      documentTypeId: "",
+      // description: "",
+      // observation: "",
+      issueDate: "",
+      expirationDate: "",
+      file: "",
+    });
+  };
+
+  // function to close the form modal
+  const onFormCancel = () => {
+    setModal({ edit: false, add: false });
+    resetForm();
+  };
+
+  // Submit function to add a new item
+  const onFormSubmit = async (submitData) => {
+    const { documentTypeId, description, observation, issueDate, expirationDate, file } = submitData;
+    let submittedData = {
+      documentTypeId: documentsOptions?.value,
+      // description: documentsOptions.value,
+      // observation: observation,
+      issueDate: issueDate,
+      expirationDate: expirationDate,
+      file: file[0],
+    };
+    try {
+      const formData = new FormData();
+      let object = {};
+
+      formData.append("file", file[0]);
+      formData.append("documentTypeId", documentsOptions.value);
+      formData.append("expirationDate", expirationDate);
+      formData.append("issueDate", issueDate);
+
+      formData.forEach((value, key) => (object[key] = value));
+      var json = JSON.stringify(object);
+      JSON.stringify(Object.fromEntries(formData));
+      console.log(json);
+
+      await LibraryServices.addCustomerLibDoc(formData, customerId);
+      setData([submittedData, customerId]);
+      setModal({ edit: false, add: false });
+      resetForm();
+      getCustomerDocument(Number(customerId));
+      window.location.reload();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // function to get company select
+  const getDocuments = async () => {
+    try {
+      const documents = await DocumentsServices.getDocuments();
+      const documentsData = await documents.data.map((document) => ({
+        label: document?.name,
+        value: document?.id,
+        description: document?.description,
+      }));
+
+      setDocuments(documentsData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsDocumentsChange = (optionValue) => {
+    setDocumentsOptions(optionValue);
+  };
+
+  useEffect(() => {
+    getDocuments();
+    // get document type filtred
+    if (documentsOptions.value) {
+      return documents.find((item) => item.value == documentsOptions.value);
+    }
+  }, [documentsOptions.value]);
+
   return (
     <React.Fragment>
       <Head title="Clientes"></Head>
@@ -89,6 +271,26 @@ const LibraryList = () => {
                 <p>Últimos {currentItems.length} clientes naturales</p>
               </BlockDes>
             </BlockHeadContent>
+
+            <BlockHeadContent>
+              <ul className="nk-block-tools g-3">
+                <li>
+                  <div className="form-control-wrap">
+                    <div className="form-icon form-icon-right">
+                      <Icon name="search" />
+                    </div>
+                    <input
+                      type="text"
+                      value={search}
+                      onChange={handleChange}
+                      className="form-control"
+                      placeholder="Buscar por: Cliente, Rut, Email, Teléfono fijo o celular"
+                      style={{ minWidth: "25rem" }}
+                    />
+                  </div>
+                </li>
+              </ul>
+            </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
         <Block>
@@ -99,7 +301,7 @@ const LibraryList = () => {
                   <span className="sub-text text-primary">#</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Nombre</span>
+                  <span className="sub-text">Cliente</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Rut</span>
@@ -114,9 +316,6 @@ const LibraryList = () => {
                   <span className="sub-text">Teléfono celular</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Dirección</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
@@ -128,7 +327,16 @@ const LibraryList = () => {
                         <span>{item?.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item?.names}</span>
+                        <div className="user-card">
+                          {item?.names && <UserAvatar theme="purple" text={findUpper(item?.names)}></UserAvatar>}
+                          <div className="user-info">
+                            <span className="tb-lead">
+                              {item?.names}
+                              <span className="dot dot-success d-md-none ml-1"></span>
+                            </span>
+                            <span>{item?.email}</span>
+                          </div>
+                        </div>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item?.rut}</span>
@@ -143,12 +351,9 @@ const LibraryList = () => {
                         <span>{item?.mobilePhone}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item?.address.detailedAddress.address}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
                         {item.id ? (
                           <Link
-                            to={`customer-library/${item.id}`}
+                            to={`/customer-library/${item?.id}`}
                             className="d-flex align-items-center justify-content-center"
                           >
                             <TooltipComponent
@@ -179,8 +384,27 @@ const LibraryList = () => {
                 Clientes Legales/Empresa
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Últimos {dataLegal.length} clientes legales</p>
+                <p>Últimos {customersLegal.length} clientes legales</p>
               </BlockDes>
+            </BlockHeadContent>
+            <BlockHeadContent>
+              <ul className="nk-block-tools g-3">
+                <li>
+                  <div className="form-control-wrap">
+                    <div className="form-icon form-icon-right">
+                      <Icon name="search" />
+                    </div>
+                    <input
+                      type="text"
+                      value={searchLegal}
+                      onChange={handleChangeLegal}
+                      className="form-control"
+                      placeholder="Buscar por: Empresa, Categoria, Email o Teléfono"
+                      style={{ minWidth: "25rem" }}
+                    />
+                  </div>
+                </li>
+              </ul>
             </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
@@ -192,10 +416,7 @@ const LibraryList = () => {
                   <span className="sub-text text-primary">#</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Nombre de empresa</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Categoría</span>
+                  <span className="sub-text">Cliente</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Email</span>
@@ -204,24 +425,28 @@ const LibraryList = () => {
                   <span className="sub-text">Teléfono fijo</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Dirección</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Acción</span>
+                  <span className="sub-text">Biblioteca</span>
                 </DataTableRow>
               </DataTableHead>
-
-              {dataLegal.length > 0
-                ? lastCustomers(dataLegal).map((item) => (
+              {customersLegal.length > 0
+                ? lastCustomers(customersLegal).map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow className="text-center">
                         <span>{item?.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item?.companyName}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item?.companyCategory}</span>
+                        <div className="user-card">
+                          {item?.companyName && (
+                            <UserAvatar theme="purple" text={findUpper(item?.companyName)}></UserAvatar>
+                          )}
+                          <div className="user-info">
+                            <span className="tb-lead">
+                              {item?.companyName}
+                              <span className="dot dot-success d-md-none ml-1"></span>
+                            </span>
+                            <span>{item?.email}</span>
+                          </div>
+                        </div>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item?.email}</span>
@@ -230,12 +455,9 @@ const LibraryList = () => {
                         <span>{item?.phone}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item?.address.detailedAddress.address}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
                         {item.id ? (
                           <Link
-                            to={`customer-library/${item.id}`}
+                            to={`/customer-library/${item?.id}`}
                             className="d-flex align-items-center justify-content-center"
                           >
                             <TooltipComponent
