@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { FormGroup, Form } from "reactstrap";
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { useForm, Controller } from "react-hook-form";
 import { Col, Button, RSelect } from "../../../../../components/Component";
 import CountriesServices from "../../../../../services/CountriesServices";
@@ -17,6 +18,9 @@ const MainInformation = ({ setModal, formData }) => {
   const [cityId, setCityId] = useState();
   const [citiesOptions, setCitiesOptions] = useState([]);
   const [dateOfMarriage, setDateOfMarriage] = useState(new Date());
+  const [rutIssueDate, setRutIssueDate] = useState(new Date());
+  const [rutExpirationDate, setRutExpirationDate] = useState(new Date());
+  const [birthDate, setBirthDate] = useState(new Date());
 
   // useForm
   const { register, handleSubmit, control } = useForm({});
@@ -85,7 +89,6 @@ const MainInformation = ({ setModal, formData }) => {
       mobilePhone,
       birthDate,
       civilStatus,
-      dateOfMarriage,
       profession,
       totalNetWorthUSD,
       totalPatrimonyWithoutProperties,
@@ -93,8 +96,6 @@ const MainInformation = ({ setModal, formData }) => {
       maritalRegime,
       nationality,
       rut,
-      rutIssueDate,
-      rutExpirationDate,
       address,
       zipCode,
       observations,
@@ -152,26 +153,16 @@ const MainInformation = ({ setModal, formData }) => {
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de emisión</label>
-          <input
-            className="form-control"
-            type="date"
-            name="rutIssueDate"
-            defaultValue={formData.rutIssueDate}
-            placeholder="Ingresa Fecha de emisión"
-            ref={register()}
-          />
+          <DatePicker selected={rutIssueDate} className="form-control" onChange={(date) => setRutIssueDate(date)} />
         </FormGroup>
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de expiracion</label>
-          <input
+          <DatePicker
+            selected={rutExpirationDate}
             className="form-control"
-            type="date"
-            name="rutExpirationDate"
-            defaultValue={formData.rutExpirationDate}
-            placeholder="Ingresa Fecha de expiracion"
-            ref={register()}
+            onChange={(date) => setRutExpirationDate(date)}
           />
         </FormGroup>
       </Col>
@@ -191,14 +182,7 @@ const MainInformation = ({ setModal, formData }) => {
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de nacimiento</label>
-          <input
-            className="form-control"
-            type="date"
-            name="birthDate"
-            defaultValue={formData.birthDate}
-            placeholder="Ingresa Fecha de nacimiento"
-            ref={register()}
-          />
+          <DatePicker selected={birthDate} className="form-control" onChange={(date) => setBirthDate(date)} />
         </FormGroup>
       </Col>
       <Col md="3" className="mb-4">
@@ -350,20 +334,8 @@ const MainInformation = ({ setModal, formData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Fecha de matrimonio</label>
-          <Controller
-            control={control}
-            name="dateOfMarriage"
-            render={({ onChange, value }) => (
-              <DatePicker
-                className="form-control"
-                placeholderText="Select date"
-                value={moment(value).format("DD/MM/YYYY")}
-                selected={value}
-                onChange={onChange}
-              />
-            )}
-          />
+          <label className="form-label">F de matrimonio</label>
+          <DatePicker selected={dateOfMarriage} className="form-control" onChange={(date) => setDateOfMarriage(date)} />
         </FormGroup>
       </Col>
       <Col md="6" className="mb-4">

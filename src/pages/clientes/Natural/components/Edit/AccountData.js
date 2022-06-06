@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FormGroup, Form } from "reactstrap";
 import { useForm } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { Col, Button } from "../../../../../components/Component";
 import CustomersServices from "../../../../../services/CustomersServices";
 
 const AccountData = ({ setModal, editData }) => {
+  const [accountOpeningDate, setAccountOpeningDate] = useState(new Date());
+
+  useEffect(() => {
+    if (editData?.currentAccountData) {
+      setAccountOpeningDate(new Date(editData?.currentAccountData?.accountOpeningDate));
+    }
+  }, []);
+
   // useForm
   const { register, handleSubmit } = useForm();
 
@@ -15,7 +25,7 @@ const AccountData = ({ setModal, editData }) => {
 
   // Editar cliente
   const onFormSubmit = async (submitData) => {
-    const { bankName, accountType, sucursalAddress, accountNumber, accountOpeningDate } = submitData;
+    const { bankName, accountType, sucursalAddress, accountNumber } = submitData;
     let currentAccountData = {
       bankName: bankName,
       accountType: accountType,
@@ -87,13 +97,10 @@ const AccountData = ({ setModal, editData }) => {
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de apertura</label>
-          <input
+          <DatePicker
+            selected={accountOpeningDate}
             className="form-control"
-            type="date"
-            name="accountOpeningDate"
-            defaultValue={editData?.currentAccountData?.accountOpeningDate}
-            placeholder="Ingresa Fecha de apertura"
-            ref={register()}
+            onChange={(date) => setAccountOpeningDate(date)}
           />
         </FormGroup>
       </Col>
