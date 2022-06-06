@@ -3,14 +3,14 @@ import api from "../config/api";
 const token = localStorage.getItem("access_token");
 
 const CustomersServices = {
-  getCustomerNatural: async () => {
-    const response = await api.get(`customers/natural`, {
+  getCustomerNatural: async (filter) => {
+    const response = await api.get(`customers/natural?filter=${filter || ""}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
   },
-  getCustomerLegal: async () => {
-    const response = await api.get(`customers/legal`, {
+  getCustomerLegal: async (filter) => {
+    const response = await api.get(`customers/legal?filter=${filter || ""}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
