@@ -16,12 +16,31 @@ const MainInformation = ({ setModal, editData }) => {
   const [countryId, setCountryId] = useState();
   const [cityId, setCityId] = useState();
   const [citiesOptions, setCitiesOptions] = useState([]);
+  const [dateOfMarriage, setDateOfMarriage] = useState(new Date());
+  const [rutIssueDate, setRutIssueDate] = useState(new Date());
+  const [rutExpirationDate, setRutExpirationDate] = useState(new Date());
+  const [birthDate, setBirthDate] = useState(new Date());
 
   // useForm
   const { register, handleSubmit, control } = useForm();
 
   useEffect(() => {
     getCountries();
+  }, []);
+
+  useEffect(() => {
+    if (editData?.dateOfMarriage) {
+      setDateOfMarriage(new Date(editData?.dateOfMarriage));
+    }
+    if (editData?.rutIssueDate) {
+      setRutIssueDate(new Date(editData?.rutIssueDate));
+    }
+    if (editData?.rutExpirationDate) {
+      setRutExpirationDate(new Date(editData?.rutExpirationDate));
+    }
+    if (editData?.birthDate) {
+      setBirthDate(new Date(editData?.birthDate));
+    }
   }, []);
 
   useEffect(() => {
@@ -82,9 +101,7 @@ const MainInformation = ({ setModal, editData }) => {
       email,
       phone,
       mobilePhone,
-      birthDate,
       civilStatus,
-      dateOfMarriage,
       profession,
       totalNetWorthUSD,
       totalPatrimonyWithoutProperties,
@@ -92,8 +109,6 @@ const MainInformation = ({ setModal, editData }) => {
       maritalRegime,
       nationality,
       rut,
-      rutIssueDate,
-      rutExpirationDate,
       address,
       zipCode,
       observations,
@@ -105,9 +120,9 @@ const MainInformation = ({ setModal, editData }) => {
       email,
       phone,
       mobilePhone,
-      birthDate: editData.birthDate,
+      birthDate,
       civilStatus,
-      dateOfMarriage: editData.dateOfMarriage,
+      dateOfMarriage,
       profession,
       totalNetWorthUSD,
       totalPatrimonyWithoutProperties,
@@ -116,8 +131,8 @@ const MainInformation = ({ setModal, editData }) => {
       annualIncome,
       zipCode,
       rut,
-      rutIssueDate: editData.rutIssueDate,
-      rutExpirationDate: editData.rutExpirationDate,
+      rutIssueDate,
+      rutExpirationDate,
       address: {
         countryId: countryId,
         stateId: cityId,
@@ -151,26 +166,16 @@ const MainInformation = ({ setModal, editData }) => {
       <Col md="4" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de emisión</label>
-          <input
-            className="form-control"
-            type="date"
-            name="rutIssueDate"
-            defaultValue={editData?.rutIssueDate}
-            placeholder="Ingresa Fecha de emisión"
-            ref={register()}
-          />
+          <DatePicker selected={rutIssueDate} className="form-control" onChange={(date) => setRutIssueDate(date)} />
         </FormGroup>
       </Col>
       <Col md="4" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de expiracion</label>
-          <input
+          <DatePicker
+            selected={rutExpirationDate}
             className="form-control"
-            type="date"
-            name="rutExpirationDate"
-            defaultValue={editData?.rutExpirationDate}
-            placeholder="Ingresa Fecha de expiracion"
-            ref={register()}
+            onChange={(date) => setRutExpirationDate(date)}
           />
         </FormGroup>
       </Col>
@@ -190,14 +195,7 @@ const MainInformation = ({ setModal, editData }) => {
       <Col md="4" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de nacimiento</label>
-          <input
-            className="form-control"
-            type="date"
-            name="birthDate"
-            defaultValue={editData?.birthDate}
-            placeholder="Ingresa Fecha de nacimiento"
-            ref={register()}
-          />
+          <DatePicker selected={birthDate} className="form-control" onChange={(date) => setBirthDate(date)} />
         </FormGroup>
       </Col>
       <Col md="4" className="mb-4">
@@ -350,19 +348,7 @@ const MainInformation = ({ setModal, editData }) => {
       <Col md="4" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de matrimonio</label>
-          <Controller
-            control={control}
-            name="dateOfMarriage"
-            render={({ onChange, value }) => (
-              <DatePicker
-                className="form-control"
-                value={moment(value).format("DD/MM/YYYY")}
-                placeholderText="Select date"
-                selected={value}
-                onChange={onChange}
-              />
-            )}
-          />
+          <DatePicker selected={dateOfMarriage} className="form-control" onChange={(date) => setDateOfMarriage(date)} />
         </FormGroup>
       </Col>
       <Col md="4" className="mb-4">

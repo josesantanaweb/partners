@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FormGroup, Form } from "reactstrap";
 import { useForm, useFieldArray } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { Col, Button, Icon, RSelect } from "../../../../../components/Component";
 import CountriesServices from "../../../../../services/CountriesServices";
 import CustomersServices from "../../../../../services/CustomersServices";
@@ -12,6 +14,7 @@ const CompanyPartners = ({ setModal, editData }) => {
   const [countryId, setCountryId] = useState(1);
   const [cityId, setCityId] = useState(2);
   const [citiesOptions, setCitiesOptions] = useState([]);
+  const [editBirthDate, setEditBirthDate] = useState(new Date(editData?.companyPartners[0].birthDate));
 
   // useForm
   const { register, handleSubmit, control } = useForm();
@@ -259,19 +262,17 @@ const CompanyPartners = ({ setModal, editData }) => {
               />
             </FormGroup>
           </div>
-          <div>
+          {/* <div>
             <FormGroup>
               <label className="form-label">Fecha de Nacimiento</label>
-              <input
+              <DatePicker
+                selected={editBirthDate}
                 className="form-control"
-                type="date"
-                name={`editPartners[${i}].birthDate`}
-                defaultValue={editData?.companyPartners[i].birthDate}
-                placeholder="Ingresa Fecha de Nacimiento"
-                ref={register()}
+                defaultValue={new Date(editData?.companyPartners[i].birthDate)}
+                onChange={(date) => setEditBirthDate(date)}
               />
             </FormGroup>
-          </div>
+          </div> */}
           <div>
             <FormGroup>
               <label className="form-label">Numero Pais del documento</label>
@@ -311,7 +312,7 @@ const CompanyPartners = ({ setModal, editData }) => {
               />
             </FormGroup>
           </div>
-          <div>
+          {/* <div>
             <FormGroup>
               <label className="form-label">Fecha de Emision</label>
               <input
@@ -323,8 +324,8 @@ const CompanyPartners = ({ setModal, editData }) => {
                 ref={register()}
               />
             </FormGroup>
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <FormGroup>
               <label className="form-label">Fecha de Expiracion</label>
               <input
@@ -336,7 +337,7 @@ const CompanyPartners = ({ setModal, editData }) => {
                 ref={register()}
               />
             </FormGroup>
-          </div>
+          </div> */}
           <div>
             <FormGroup>
               <label className="form-label">Nacionalidad</label>
@@ -540,7 +541,7 @@ const CompanyPartners = ({ setModal, editData }) => {
               />
             </FormGroup>
           </div>
-          <div>
+          {/* <div>
             <FormGroup>
               <label className="form-label">Fecha de Nacimiento</label>
               <input
@@ -551,7 +552,7 @@ const CompanyPartners = ({ setModal, editData }) => {
                 ref={register()}
               />
             </FormGroup>
-          </div>
+          </div> */}
           <div>
             <FormGroup>
               <label className="form-label">Numero Pais del documento</label>
@@ -588,7 +589,7 @@ const CompanyPartners = ({ setModal, editData }) => {
               />
             </FormGroup>
           </div>
-          <div>
+          {/* <div>
             <FormGroup>
               <label className="form-label">Fecha de Emision</label>
               <input
@@ -599,8 +600,8 @@ const CompanyPartners = ({ setModal, editData }) => {
                 ref={register()}
               />
             </FormGroup>
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <FormGroup>
               <label className="form-label">Fecha de Expiracion</label>
               <input
@@ -611,7 +612,7 @@ const CompanyPartners = ({ setModal, editData }) => {
                 ref={register()}
               />
             </FormGroup>
-          </div>
+          </div> */}
           <div>
             <FormGroup>
               <label className="form-label">Nacionalidad</label>

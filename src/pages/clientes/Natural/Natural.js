@@ -319,7 +319,9 @@ const Natural = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation setModal={setModal} formData={formData} />
+                  <div className="table-scroll">
+                    <AddMainInformation setModal={setModal} formData={formData} />
+                  </div>
                 </TabPane>
               </TabContent>
             </div>
@@ -354,7 +356,9 @@ const Natural = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  {editData && <EditMainInformation setModal={setModal} editData={editData} />}
+                  <div className="table-scroll">
+                    {editData && <EditMainInformation setModal={setModal} editData={editData} />}
+                  </div>
                 </TabPane>
               </TabContent>
             </div>

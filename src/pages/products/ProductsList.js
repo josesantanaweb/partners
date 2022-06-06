@@ -322,153 +322,157 @@ const ProductsList = () => {
                   </Alert>
                 </div>
               )}
+
               <div className="mt-4">
-                <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
-                  <Col md="12">
-                    <div className="custom-tab">
-                      <h6>Datos del Plan</h6>
-                    </div>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Nombre</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="name"
-                        defaultValue={formData.name}
-                        placeholder="Ingresa nombre"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.name && <span className="invalid">{errors.name.message}</span>}
-                    </FormGroup>
-                  </Col>
+                <div className="table-scroll">
+                  <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
+                    <Col md="12">
+                      <div className="custom-tab">
+                        <h6>Datos del Plan</h6>
+                      </div>
+                    </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Nombre</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="name"
+                          defaultValue={formData.name}
+                          placeholder="Ingresa nombre"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.name && <span className="invalid">{errors.name.message}</span>}
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Descripcion</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="description"
-                        defaultValue={formData.description}
-                        placeholder="Ingresa apellido"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.description && <span className="invalid">{errors.description.message}</span>}
-                    </FormGroup>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Observacion</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="observation"
-                        defaultValue={formData.observation}
-                        placeholder="Ingresa apellido"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col md="12">
-                    <div className="custom-tab">
-                      <h6>Informacion Solicitada Para Cliente Natural</h6>
-                    </div>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Descripcion</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="description"
+                          defaultValue={formData.description}
+                          placeholder="Ingresa apellido"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.description && <span className="invalid">{errors.description.message}</span>}
+                      </FormGroup>
+                    </Col>
+                    <Col md="12">
+                      <FormGroup>
+                        <label className="form-label">Observacion</label>
+                        <textarea
+                          className="form-control"
+                          name="observation"
+                          placeholder="Ingresa Observacion"
+                          cols="30"
+                          rows="10"
+                          defaultValue={formData.observation}
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md="12">
+                      <div className="custom-tab">
+                        <h6>Informacion Solicitada Para Cliente Natural</h6>
+                      </div>
+                    </Col>
 
-                  {customerNatural &&
-                    customerNatural.map((item, i) => (
-                      <Col md="6" key={i}>
-                        <div className="custom-control custom-checkbox">
-                          <input
-                            type="checkbox"
-                            name="customerNaturalField"
-                            value={item.id}
-                            className="custom-control-input form-control"
-                            id={item.name}
-                            ref={register()}
-                          />
-                          <label className="custom-control-label" htmlFor={item.name}>
-                            {item.name}
-                          </label>
-                        </div>
-                      </Col>
-                    ))}
+                    {customerNatural &&
+                      customerNatural.map((item, i) => (
+                        <Col md="6" key={i}>
+                          <div className="custom-control custom-checkbox">
+                            <input
+                              type="checkbox"
+                              name="customerNaturalField"
+                              value={item.id}
+                              className="custom-control-input form-control"
+                              id={item.name}
+                              ref={register()}
+                            />
+                            <label className="custom-control-label" htmlFor={item.name}>
+                              {item.name}
+                            </label>
+                          </div>
+                        </Col>
+                      ))}
 
-                  <Col md="12">
-                    <div className="custom-tab">
-                      <h6>Informacion Solicitada Para Cliente Legal</h6>
-                    </div>
-                  </Col>
+                    <Col md="12">
+                      <div className="custom-tab">
+                        <h6>Informacion Solicitada Para Cliente Legal</h6>
+                      </div>
+                    </Col>
 
-                  {customerLegal &&
-                    customerLegal.map((item, i) => (
-                      <Col md="6" key={i}>
-                        <div className="custom-control custom-checkbox">
-                          <input
-                            type="checkbox"
-                            name="customerLegalField"
-                            value={item.id}
-                            className="custom-control-input form-control"
-                            id={item.name}
-                            ref={register()}
-                          />
-                          <label className="custom-control-label" htmlFor={item.name}>
-                            {item.name}
-                          </label>
-                        </div>
-                      </Col>
-                    ))}
+                    {customerLegal &&
+                      customerLegal.map((item, i) => (
+                        <Col md="6" key={i}>
+                          <div className="custom-control custom-checkbox">
+                            <input
+                              type="checkbox"
+                              name="customerLegalField"
+                              value={item.id}
+                              className="custom-control-input form-control"
+                              id={item.name}
+                              ref={register()}
+                            />
+                            <label className="custom-control-label" htmlFor={item.name}>
+                              {item.name}
+                            </label>
+                          </div>
+                        </Col>
+                      ))}
 
-                  <Col md="12">
-                    <div className="custom-tab">
-                      <h6>Informacion Requerida</h6>
-                    </div>
-                  </Col>
+                    <Col md="12">
+                      <div className="custom-tab">
+                        <h6>Informacion Requerida</h6>
+                      </div>
+                    </Col>
 
-                  {documentsId &&
-                    documentsId.map((item, i) => (
-                      <Col md="6" key={i}>
-                        <div className="custom-control custom-checkbox">
-                          <input
-                            type="checkbox"
-                            name="documentsId"
-                            value={item.id}
-                            className="custom-control-input form-control"
-                            id={item.name}
-                            ref={register()}
-                          />
-                          <label className="custom-control-label" htmlFor={item.name}>
-                            {item.name}
-                          </label>
-                        </div>
-                      </Col>
-                    ))}
+                    {documentsId &&
+                      documentsId.map((item, i) => (
+                        <Col md="6" key={i}>
+                          <div className="custom-control custom-checkbox">
+                            <input
+                              type="checkbox"
+                              name="documentsId"
+                              value={item.id}
+                              className="custom-control-input form-control"
+                              id={item.name}
+                              ref={register()}
+                            />
+                            <label className="custom-control-label" htmlFor={item.name}>
+                              {item.name}
+                            </label>
+                          </div>
+                        </Col>
+                      ))}
 
-                  <Col size="12">
-                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
-                      <li>
-                        <Button color="primary" size="md" type="submit">
-                          Agregar Plan
-                        </Button>
-                      </li>
-                      <li>
-                        <a
-                          href="#cancel"
-                          onClick={(ev) => {
-                            ev.preventDefault();
-                            onFormCancel();
-                            setErrorMessage("");
-                          }}
-                          className="link link-light"
-                        >
-                          Cancelar
-                        </a>
-                      </li>
-                    </ul>
-                  </Col>
-                </Form>
+                    <Col size="12">
+                      <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                        <li>
+                          <Button color="primary" size="md" type="submit">
+                            Agregar Plan
+                          </Button>
+                        </li>
+                        <li>
+                          <a
+                            href="#cancel"
+                            onClick={(ev) => {
+                              ev.preventDefault();
+                              onFormCancel();
+                              setErrorMessage("");
+                            }}
+                            className="link link-light"
+                          >
+                            Cancelar
+                          </a>
+                        </li>
+                      </ul>
+                    </Col>
+                  </Form>
+                </div>
               </div>
             </div>
           </ModalBody>
@@ -488,156 +492,159 @@ const ProductsList = () => {
             </a>
             <div className="p-2">
               <h5 className="title">Actualizar Plan</h5>
-              <div className="mt-4">
-                <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
-                  <Col md="12">
-                    <div className="custom-tab">
-                      <h6>Datos del Plan</h6>
-                    </div>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Nombre</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="name"
-                        defaultValue={editData?.name}
-                        placeholder="Ingresa nombre"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.name && <span className="invalid">{errors.name.message}</span>}
-                    </FormGroup>
-                  </Col>
+              <div className="table-scroll">
+                <div className="mt-4">
+                  <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
+                    <Col md="12">
+                      <div className="custom-tab">
+                        <h6>Datos del Plan</h6>
+                      </div>
+                    </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Nombre</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="name"
+                          defaultValue={editData?.name}
+                          placeholder="Ingresa nombre"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.name && <span className="invalid">{errors.name.message}</span>}
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Descripcion</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="description"
-                        defaultValue={editData?.description}
-                        placeholder="Ingresa nombre"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.description && <span className="invalid">{errors.description.message}</span>}
-                    </FormGroup>
-                  </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <label className="form-label">Descripcion</label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="description"
+                          defaultValue={editData?.description}
+                          placeholder="Ingresa nombre"
+                          ref={register({ required: "Este campo es requerido" })}
+                        />
+                        {errors.description && <span className="invalid">{errors.description.message}</span>}
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Observacion</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="observation"
-                        defaultValue={editData?.observation}
-                        placeholder="Ingresa observacion"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
+                    <Col md="12">
+                      <FormGroup>
+                        <label className="form-label">Observacion</label>
+                        <textarea
+                          className="form-control"
+                          name="observation"
+                          placeholder="Ingresa Observacion"
+                          cols="30"
+                          rows="10"
+                          defaultValue={editData?.observation}
+                          ref={register()}
+                        />
+                      </FormGroup>
+                    </Col>
 
-                  <Col md="12">
-                    <div className="custom-tab">
-                      <h6>Informacion Solicitada Para Cliente Natural</h6>
-                    </div>
-                  </Col>
+                    <Col md="12">
+                      <div className="custom-tab">
+                        <h6>Informacion Solicitada Para Cliente Natural</h6>
+                      </div>
+                    </Col>
 
-                  {customerNatural &&
-                    customerNatural.map((item, i) => (
-                      <Col md="6" key={i}>
-                        <div className="custom-control custom-checkbox">
-                          <input
-                            type="checkbox"
-                            name="customerNaturalField"
-                            value={item.id}
-                            defaultValue={editData?.customerSegmentsId?.includes(item.id)}
-                            className="custom-control-input form-control"
-                            id={item.name}
-                            ref={register()}
-                          />
-                          <label className="custom-control-label" htmlFor={item.name}>
-                            {item.name}
-                          </label>
-                        </div>
-                      </Col>
-                    ))}
+                    {customerNatural &&
+                      customerNatural.map((item, i) => (
+                        <Col md="6" key={i}>
+                          <div className="custom-control custom-checkbox">
+                            <input
+                              type="checkbox"
+                              name="customerNaturalField"
+                              value={item.id}
+                              defaultValue={editData?.customerSegmentsId?.includes(item.id)}
+                              className="custom-control-input form-control"
+                              id={item.name}
+                              ref={register()}
+                            />
+                            <label className="custom-control-label" htmlFor={item.name}>
+                              {item.name}
+                            </label>
+                          </div>
+                        </Col>
+                      ))}
 
-                  <Col md="12">
-                    <div className="custom-tab">
-                      <h6>Informacion Solicitada Para Cliente Legal</h6>
-                    </div>
-                  </Col>
+                    <Col md="12">
+                      <div className="custom-tab">
+                        <h6>Informacion Solicitada Para Cliente Legal</h6>
+                      </div>
+                    </Col>
 
-                  {customerLegal &&
-                    customerLegal.map((item, i) => (
-                      <Col md="6" key={i}>
-                        <div className="custom-control custom-checkbox">
-                          <input
-                            type="checkbox"
-                            name="customerLegalField"
-                            value={item.id}
-                            defaultValue={editData?.customerSegmentsId?.includes(item.id)}
-                            className="custom-control-input form-control"
-                            id={item.name}
-                            ref={register()}
-                          />
-                          <label className="custom-control-label" htmlFor={item.name}>
-                            {item.name}
-                          </label>
-                        </div>
-                      </Col>
-                    ))}
+                    {customerLegal &&
+                      customerLegal.map((item, i) => (
+                        <Col md="6" key={i}>
+                          <div className="custom-control custom-checkbox">
+                            <input
+                              type="checkbox"
+                              name="customerLegalField"
+                              value={item.id}
+                              defaultValue={editData?.customerSegmentsId?.includes(item.id)}
+                              className="custom-control-input form-control"
+                              id={item.name}
+                              ref={register()}
+                            />
+                            <label className="custom-control-label" htmlFor={item.name}>
+                              {item.name}
+                            </label>
+                          </div>
+                        </Col>
+                      ))}
 
-                  <Col md="12">
-                    <div className="custom-tab">
-                      <h6>Informacion Requerida</h6>
-                    </div>
-                  </Col>
-                  {documentsId &&
-                    documentsId.map((item, i) => (
-                      <Col md="6" key={i}>
-                        <div className="custom-control custom-checkbox">
-                          <input
-                            type="checkbox"
-                            name="documentsId"
-                            value={item.id}
-                            defaultValue={editData?.documentsId?.includes(item.id)}
-                            className="custom-control-input form-control"
-                            id={item.name}
-                            ref={register()}
-                          />
-                          <label className="custom-control-label" htmlFor={item.name}>
-                            {item.name}
-                          </label>
-                        </div>
-                      </Col>
-                    ))}
+                    <Col md="12">
+                      <div className="custom-tab">
+                        <h6>Informacion Requerida</h6>
+                      </div>
+                    </Col>
+                    {documentsId &&
+                      documentsId.map((item, i) => (
+                        <Col md="6" key={i}>
+                          <div className="custom-control custom-checkbox">
+                            <input
+                              type="checkbox"
+                              name="documentsId"
+                              value={item.id}
+                              defaultValue={editData?.documentsId?.includes(item.id)}
+                              className="custom-control-input form-control"
+                              id={item.name}
+                              ref={register()}
+                            />
+                            <label className="custom-control-label" htmlFor={item.name}>
+                              {item.name}
+                            </label>
+                          </div>
+                        </Col>
+                      ))}
 
-                  <Col size="12">
-                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
-                      <li>
-                        <Button color="primary" size="md" type="submit">
-                          Actualizar Plan
-                        </Button>
-                      </li>
-                      <li>
-                        <a
-                          href="#cancel"
-                          onClick={(ev) => {
-                            ev.preventDefault();
-                            onFormCancel();
-                          }}
-                          className="link link-light"
-                        >
-                          Cancelar
-                        </a>
-                      </li>
-                    </ul>
-                  </Col>
-                </Form>
+                    <Col size="12">
+                      <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                        <li>
+                          <Button color="primary" size="md" type="submit">
+                            Actualizar Plan
+                          </Button>
+                        </li>
+                        <li>
+                          <a
+                            href="#cancel"
+                            onClick={(ev) => {
+                              ev.preventDefault();
+                              onFormCancel();
+                            }}
+                            className="link link-light"
+                          >
+                            Cancelar
+                          </a>
+                        </li>
+                      </ul>
+                    </Col>
+                  </Form>
+                </div>
               </div>
             </div>
           </ModalBody>

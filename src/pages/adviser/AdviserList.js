@@ -40,9 +40,9 @@ const AdviserList = () => {
     add: false,
   });
 
-  const getAdvisers = async () => {
+  const getAdvisers = async (filter) => {
     try {
-      const advisers = await AdvisersServices.getAdvisers();
+      const advisers = await AdvisersServices.getAdvisers(filter);
       setData(advisers.data);
     } catch (error) {}
   };
@@ -155,6 +155,14 @@ const AdviserList = () => {
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const onFilter = (e) => {
+    if (e.target.value.length > 1) {
+      getAdvisers(e.target.value);
+    } else {
+      getAdvisers("");
+    }
+  };
+
   return (
     <React.Fragment>
       <Head title="Asesores"></Head>
@@ -179,6 +187,9 @@ const AdviserList = () => {
                 </Button>
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
+                    <li className="nk-block-tools-opt">
+                      <input className="form-control" onChange={onFilter} />
+                    </li>
                     <li className="nk-block-tools-opt">
                       <a href="https://api.elbernv.site/export-information/advisors">
                         <Button color="primary" type="button">
