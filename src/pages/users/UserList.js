@@ -200,11 +200,10 @@ const UserListDefaultPage = () => {
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
                     <li className="nk-block-tools-opt">
-                      <input className="form-control" onChange={onFilter} />
+                      <input className="form-control" onChange={onFilter} placeholder="Buscar" />
                     </li>
                     <li className="nk-block-tools-opt">
                       <a href={`${process.env.REACT_APP_API_URL}/export-information/users`}>
-                        natural
                         <Button color="primary" type="button">
                           <Icon name="printer" className="mr-1"></Icon>
                           Exportar
