@@ -288,13 +288,11 @@ const CustomerFile = ({setRequiredDocument}) => {
 
   //Guardo el tipo de cliente natural o jurdico
   const [typeClient, useTypeClient] = useState(1); 
-  const [typePlan, useTypePlan] = useState();
   //Peticion en base al tipo de client y el plan escogido
   const getDealsType = async (type = 1, planId = 1) => {
     const dataTlf = await DealsServices.getDealsTypeForms(type, planId.value)
-    setRequiredDocument(dataTlf.documents)
-    
-    
+    setRequiredDocument(dataTlf.customerSegments)
+      
   }
 
 
