@@ -41,10 +41,26 @@ export const DataTableRow = ({ className, size, ...props }) => {
     "nk-tb-col": true,
     [`${className}`]: className,
     [`tb-col-${size}`]: size,
+  
   });
   return <div className={rowClass}>{props.children}</div>;
 };
 
-export const DataTableItem = ({ className, ...props }) => {
-  return <div className={`nk-tb-item ${className ? className : ""}`}>{props.children}</div>;
+export const DataTableItem = ({ className, handleClickedRegisterNames, handleClickedRegisterRut, customer,useTypeClient,...props }) => {
+  
+  
+
+  return (
+  <div 
+    className={`nk-tb-item ${className ? className : ""}`}
+    onClick={ () => {
+      handleClickedRegisterNames(customer.names); 
+      handleClickedRegisterRut(customer.rut);
+      useTypeClient(customer.type.id);
+      
+      }
+    } 
+  >
+    {props.children}
+  </div>)
 };
