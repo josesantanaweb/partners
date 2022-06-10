@@ -5,9 +5,8 @@ import { FormGroup, Form } from "reactstrap";
 import { Col, DataTableHead, DataTableRow, DataTableItem, Button, RSelect } from "../../../../components/Component";
 import CustomersServices from "../../../../services/CustomersServices";
 import DealsServices from "../../../../services/DealsServices";
-
 // Deals data
-const CustomerFile = () => {
+const CustomerFile = ({setRequiredDocument}) => {
   const [data, setData] = useState([]);
   const [dataCust, setCust] = useState([]);
   const [dataCustLegal, setCustLegal] = useState([]);
@@ -163,13 +162,16 @@ const CustomerFile = () => {
       const selectsData = await DealsServices.getDealSelects();
       const plansData = await selectsData.plans.map((plan) => ({ label: plan.name, value: plan.id }));
       setPlans(plansData);
+      console.log(plansData)
     } catch (error) {
       throw error;
     }
   };
-  const onOptionsPlansChange = (optionValue) => {
+
+  const onOptionsPlansChange = async(optionValue) => {
     setPlansOptions(optionValue);
   };
+
   useEffect(() => {
     getPlans();
   }, []);
@@ -281,6 +283,18 @@ const CustomerFile = () => {
   // const [dataCust, setCust] = useState([]); usuarios
   // const [CustTable, setCutTable] = useState([]);
   // const [search, setSearch] = useState("");
+  
+  /////////////////////////// llealg1 ///////////////////////////////////
+
+  //Guardo el tipo de cliente natural o jurdico
+  const [typeClient, useTypeClient] = useState(1); 
+  //Peticion en base al tipo de client y el plan escogido
+  const getDealsType = async (type = 1, planId = 1) => {
+    const dataTlf = await DealsServices.getDealsTypeForms(type, planId.value)
+    setRequiredDocument(dataTlf.customerSegments)
+      
+  }
+
 
   return (
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
@@ -342,7 +356,7 @@ const CustomerFile = () => {
 
             {dataCust.length > 0
               ? dataCust.map((customer) => (
-                  <DataTableItem key={customer.id} handleClickedRegisterNames={handleClickedRegisterNames} handleClickedRegisterRut={handleClickedRegisterRut} customer={customer}>
+                  <DataTableItem key={customer.id} handleClickedRegisterNames={handleClickedRegisterNames} handleClickedRegisterRut={handleClickedRegisterRut} customer={customer} useTypeClient={useTypeClient}>
                     <DataTableRow className="text-center">
                       <span>{customer.names}</span>
                     </DataTableRow>
@@ -436,7 +450,12 @@ const CustomerFile = () => {
           <RSelect
             value={plansOptions}
             options={plans}
-            onChange={onOptionsPlansChange}
+            onChange={ (e) =>{ 
+              getDealsType(typeClient,e);
+              onOptionsPlansChange(e)
+          
+              }
+            }
             defautlValue={formData.planId}
           />
         </FormGroup>
