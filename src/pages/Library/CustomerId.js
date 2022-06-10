@@ -446,37 +446,37 @@ const CustomerId = () => {
                   <Col md="6" className="mb-4">
                     <FormGroup>
                       <label className="form-label">Fecha de emisión</label>
-                      {/* <input
+                      <input
                         className="form-control"
                         type="date"
                         name="issueDate"
                         defaultValue={formData.issueDate}
                         ref={register()}
-                      /> */}
+                      />
                       {/* aca */}
-                      <DatePicker
+                      {/* <DatePicker
                         selected={issueDate}
                         className="form-control"
                         onChange={(date) => setIssueDate(date)}
-                      />
+                      /> */}
                     </FormGroup>
                   </Col>
 
                   <Col md="6" className="mb-4">
                     <FormGroup>
                       <label className="form-label">Fecha de expiración</label>
-                      {/* <input
+                      <input
                         className="form-control"
                         type="date"
                         name="expirationDate"
                         defaultValue={formData.expirationDate}
                         ref={register()}
-                      /> */}
-                      <DatePicker
+                      />
+                      {/* <DatePicker
                         selected={expirationDate}
                         className="form-control"
                         onChange={(date) => setExpirationDate(date)}
-                      />
+                      /> */}
                     </FormGroup>
                   </Col>
 
