@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Col, Button } from "../../../../components/Component";
 import CustomersServices from "../../../../services/CustomersServices";
 
-const AccountData = ({ setModal, editData }) => {
+const AccountData = ({ setModal, editData, selectClient}) => {
   // useForm
   const { register, handleSubmit } = useForm();
 

@@ -159,8 +159,8 @@ const DealsList = () => {
     getDeals();
   }, []);
   //////////////////// llealg 1 //////////////////////////////////
-  const [requiredDocument, setRequiredDocument] = useState([])
-
+  const [requiredDocument, setRequiredDocument] = useState([]);
+  const [selectClient, setSelectClient] = useState({});
   
   return (
     <React.Fragment>
@@ -375,13 +375,13 @@ const DealsList = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation setModal={setModal} setRequiredDocument={setRequiredDocument} />
+                  <AddMainInformation setModal={setModal} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="2">
-                  <AddCustomerFile setModal={setModal} />
+                  <AddCustomerFile setModal={setModal} selectClient={selectClient}/>
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>

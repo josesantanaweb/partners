@@ -6,7 +6,7 @@ import { Col, DataTableHead, DataTableRow, DataTableItem, Button, RSelect } from
 import CustomersServices from "../../../../services/CustomersServices";
 import DealsServices from "../../../../services/DealsServices";
 // Deals data
-const CustomerFile = ({setRequiredDocument}) => {
+const CustomerFile = ({setRequiredDocument, setSelectClient}) => {
   const [data, setData] = useState([]);
   const [dataCust, setCust] = useState([]);
   const [dataCustLegal, setCustLegal] = useState([]);
@@ -54,6 +54,7 @@ const CustomerFile = ({setRequiredDocument}) => {
       const customersLegalData = await customers1.data.map((data) => data);
       setCust([...customersData, ...customersLegalData]);
       setCustTable(customersData);
+      console.log(customersData)
 
     } catch (error) {}
   };
@@ -162,7 +163,6 @@ const CustomerFile = ({setRequiredDocument}) => {
       const selectsData = await DealsServices.getDealSelects();
       const plansData = await selectsData.plans.map((plan) => ({ label: plan.name, value: plan.id }));
       setPlans(plansData);
-      console.log(plansData)
     } catch (error) {
       throw error;
     }
@@ -288,6 +288,7 @@ const CustomerFile = ({setRequiredDocument}) => {
 
   //Guardo el tipo de cliente natural o jurdico
   const [typeClient, useTypeClient] = useState(1); 
+
   //Peticion en base al tipo de client y el plan escogido
   const getDealsType = async (type = 1, planId = 1) => {
     const dataTlf = await DealsServices.getDealsTypeForms(type, planId.value)
@@ -356,12 +357,12 @@ const CustomerFile = ({setRequiredDocument}) => {
 
             {dataCust.length > 0
               ? dataCust.map((customer) => (
-                  <DataTableItem key={customer.id} handleClickedRegisterNames={handleClickedRegisterNames} handleClickedRegisterRut={handleClickedRegisterRut} customer={customer} useTypeClient={useTypeClient}>
+                  <DataTableItem key={customer.id} handleClickedRegisterNames={handleClickedRegisterNames} handleClickedRegisterRut={handleClickedRegisterRut} customer={customer} useTypeClient={useTypeClient} setSelectClient={setSelectClient}>
                     <DataTableRow className="text-center">
-                      <span>{customer.names}</span>
+                      <span>{customer.names? customer.names:customer.companyName}</span>
                     </DataTableRow>
                     <DataTableRow className="text-center">
-                      <span>{customer.rut}</span>
+                      <span>{customer.rut? customer.rut : ""}</span>
                     </DataTableRow>
                     <DataTableRow className="text-center">
                       <span>{customer.type.name}</span>
@@ -370,7 +371,7 @@ const CustomerFile = ({setRequiredDocument}) => {
                       <span>{customer.email}</span>
                     </DataTableRow>
                     <DataTableRow className="text-center">
-                      <span>{customer.mobilePhone}</span>
+                      <span>{customer.mobilePhone? customer.mobilePhone:customer.phone}</span>
                     </DataTableRow>
                   </DataTableItem>
                 ))

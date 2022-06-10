@@ -46,10 +46,8 @@ export const DataTableRow = ({ className, size, ...props }) => {
   return <div className={rowClass}>{props.children}</div>;
 };
 
-export const DataTableItem = ({ className, handleClickedRegisterNames, handleClickedRegisterRut, customer,useTypeClient,...props }) => {
+export const DataTableItem = ({ className, handleClickedRegisterNames, handleClickedRegisterRut, customer,useTypeClient,setSelectClient,...props }) => {
   
-  
-
   return (
   <div 
     className={`nk-tb-item ${className ? className : ""}`}
@@ -57,7 +55,8 @@ export const DataTableItem = ({ className, handleClickedRegisterNames, handleCli
       handleClickedRegisterNames(customer.names); 
       handleClickedRegisterRut(customer.rut);
       useTypeClient(customer.type.id);
-      
+      setSelectClient(customer)
+      console.log(customer)
       }
     } 
   >

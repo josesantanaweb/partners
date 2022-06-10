@@ -3,18 +3,27 @@ import { FormGroup, Modal, ModalBody, Form, Alert, Nav, NavItem, NavLink, TabCon
 import classnames from "classnames";
 
 import AddAccountData from "./AccountData.js";
+import AddEmploymentHistory from "./EmploymentHistory.js";
+import PersonalReferences from "../../../clientes/Natural/components/Edit/PersonalReferences.js";
+import InvestMentExpirence from "../../../clientes/Natural/components/Edit/InvestmentExperience"
+import SpousalHistory from "../../../clientes/Natural/components/Edit/SpousalHistory"
+import Beneficiaries from "../../../clientes/Natural/components/Edit/Beneficiaries"
 
-const CustomerFile = () => {
+
+const CustomerFile = ({selectClient}) => {
   const [addActiveTab, setAddActiveTab] = useState("1");
   const [addActiveTabDocument, setAddActiveTabDocument] = useState("1");
   const [modal, setModal] = useState({
     edit: false,
     add: false,
+
   });
 
+ 
   return (
     <React.Fragment>
-      <Nav tabs>
+      {
+        selectClient?.type?.id  == 1? <Nav tabs>
         <NavItem>
           <NavLink
             tag="a"
@@ -76,9 +85,83 @@ const CustomerFile = () => {
           </NavLink>
         </NavItem>
       </Nav>
+    : <Nav tabs>
+        <NavItem>
+          <NavLink
+            tag="a"
+            href="#tab"
+            className={classnames({ active: addActiveTab === "7" })}
+            onClick={() => setAddActiveTab("7")}
+          >
+            Cuestionario de la empresa
+          </NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink
+          tag="a"
+          href="#tab"
+          className={classnames({ active: addActiveTab === "8" })}
+          onClick={() => setAddActiveTab("8")}
+        >
+          Perfil de Empresa
+        </NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink
+          tag="a"
+          href="#tab"
+          className={classnames({ active: addActiveTab === "9" })}
+          onClick={() => setAddActiveTab("9")}
+        >
+          Informacion Bancaria
+        </NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink
+          tag="a"
+          href="#tab"
+          className={classnames({ active: addActiveTab === "10" })}
+          onClick={() => setAddActiveTab("10")}
+        >
+          Socios
+        </NavLink>
+      </NavItem>
+    </Nav>
+      }
+  
       <TabContent activeTab={addActiveTab}>
         <TabPane tabId="1">
-          <AddAccountData setModal={setModal} />
+          <AddAccountData setModal={setModal} editData={selectClient} selectClient={selectClient} />
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="2">
+          <AddEmploymentHistory setModal={setModal}  editData={selectClient} selectClient={selectClient} />
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="3">
+          <PersonalReferences setModal={setModal}  editData={selectClient} selectClient={selectClient} />
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="4">
+          <InvestMentExpirence setModal={setModal}  editData={selectClient} selectClient={selectClient} />
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="5">
+          <SpousalHistory setModal={setModal}  editData={selectClient} selectClient={selectClient} />
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="6">
+          <Beneficiaries setModal={setModal} selectClient={selectClient} />
           {/* formData={formData} */}
         </TabPane>
       </TabContent>
