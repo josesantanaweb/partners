@@ -285,7 +285,7 @@ const CompanyList = () => {
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
                     <li className="nk-block-tools-opt">
-                      <input className="form-control" onChange={onFilter} />
+                      <input className="form-control" onChange={onFilter} placeholder="Buscar" />
                     </li>
                     <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>

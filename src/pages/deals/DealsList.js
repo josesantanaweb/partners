@@ -155,11 +155,13 @@ const DealsList = () => {
       setData(dealsData);
     } catch (error) {}
   };
-
   useEffect(() => {
     getDeals();
   }, []);
+  //////////////////// llealg 1 //////////////////////////////////
+  const [requiredDocument, setRequiredDocument] = useState([])
 
+  
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -311,7 +313,7 @@ const DealsList = () => {
           toggle={() => setModal({ add: false })}
           className="modal-dialog-centered "
           size="lg"
-          style={{ maxWidth: "992px" }}
+          style={{ maxWidth: "1092px" }}
         >
           <ModalBody>
             <a
@@ -319,13 +321,16 @@ const DealsList = () => {
               onClick={(ev) => {
                 ev.preventDefault();
                 onFormCancel();
+                setRequiredDocument([])
               }}
               className="close"
             >
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2 table-record">
-              <h5 className="title">Agregar Negocio</h5>
+              <h5 className="title" >Agregar Negocio</h5> <br/>
+              { requiredDocument.length ? <span style={{color:'red'}}>Requerido: </span>: ""}
+              { requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
               <Nav tabs>
                 <NavItem>
                   <NavLink
@@ -370,7 +375,7 @@ const DealsList = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation setModal={setModal} />
+                  <AddMainInformation setModal={setModal} setRequiredDocument={setRequiredDocument} />
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>
@@ -378,6 +383,11 @@ const DealsList = () => {
                 <TabPane tabId="2">
                   <AddCustomerFile setModal={setModal} />
                   {/* formData={formData} */}
+                </TabPane>
+              </TabContent>
+              <TabContent activeTab={addActiveTab}>
+                <TabPane tabId="4">
+                  
                 </TabPane>
               </TabContent>
             </div>
