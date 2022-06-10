@@ -17,6 +17,7 @@ import {
   PreviewAltCard,
   PaginationComponent,
 } from "../../components/Component";
+import DatePicker from "react-datepicker";
 import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import { useForm } from "react-hook-form";
 import Content from "../../layout/content/Content";
@@ -31,6 +32,9 @@ const CustomerId = () => {
   const [documentsOptions, setDocumentsOptions] = useState(documents);
   const [customer, setCustomer] = useState([]);
   const [customerLegal, setCustomerLegal] = useState([]);
+  const [issueDate, setIssueDate] = useState(new Date());
+  const [expirationDate, setExpirationDate] = useState(new Date());
+
   const [sm, updateSm] = useState(false);
   const { register, handleSubmit } = useForm();
   const [errorMessage, setErrorMessage] = useState("");
@@ -44,10 +48,15 @@ const CustomerId = () => {
     documentTypeId: "",
     // description: filterDocumentType?.description,
     observation: "",
-    issueDate: "",
+    // issueDate: "",
     expirationDate: "",
     file: "",
   });
+
+  // Filter customers input search bar
+  const [documentsfiltred, setDocumentsfiltred] = useState([]); //usuarios/setUsuarios
+  const [documentsTable, setDocumentsTable] = useState([]); //tabalUsuarios/setTablaUsuarios
+  const [search, setSearch] = useState(""); //busqueda
 
   // function to find document type
   const filterDocumentType = documents.find((item) => item.value == documentsOptions.value);
@@ -60,10 +69,25 @@ const CustomerId = () => {
   const getCustomerDocument = async (customerId) => {
     try {
       const customerDocument = await LibraryServices.getCustomerDocument(customerId);
-      setData(customerDocument.data);
+      setDocumentsTable(customerDocument?.data);
+      setDocumentsfiltred(customerDocument?.data);
     } catch (error) {
       throw error;
     }
+  };
+
+  const handleChange = (e) => {
+    setSearch(e.target.value);
+    filter(e.target.value);
+  };
+
+  const filter = (input) => {
+    var res = documentsTable.filter((document) => {
+      if (document?.documentType?.name.toString().toLowerCase().includes(input.toLowerCase())) {
+        return document;
+      }
+    });
+    setDocumentsfiltred(res);
   };
 
   // function to get customers natural
@@ -103,7 +127,7 @@ const CustomerId = () => {
   const resetForm = () => {
     setFormData({
       documentTypeId: "",
-      // description: "",
+      description: "",
       observation: "",
       issueDate: "",
       expirationDate: "",
@@ -122,10 +146,10 @@ const CustomerId = () => {
     const { documentTypeId, description, observation, issueDate, expirationDate, file } = submitData;
     let submittedData = {
       documentTypeId: documentsOptions?.value,
-      // description: documentsOptions.value,
+      // description: documentsOptions?.value,
       observation: observation,
-      issueDate: issueDate,
-      expirationDate: expirationDate,
+      issueDate,
+      expirationDate,
       file: file[0],
     };
     try {
@@ -141,7 +165,7 @@ const CustomerId = () => {
       formData.forEach((value, key) => (object[key] = value));
       var json = JSON.stringify(object);
       JSON.stringify(Object.fromEntries(formData));
-      console.log(json);
+      // console.log(json);
 
       await LibraryServices.addCustomerLibDoc(formData, customerId);
       setData([submittedData, customerId]);
@@ -163,7 +187,6 @@ const CustomerId = () => {
         value: document?.id,
         description: document?.description,
       }));
-
       setDocuments(documentsData);
     } catch (error) {
       throw error;
@@ -175,7 +198,6 @@ const CustomerId = () => {
 
   useEffect(() => {
     getDocuments();
-    // get document type filtred
     if (documentsOptions.value) {
       return documents.find((item) => item.value == documentsOptions.value);
     }
@@ -184,7 +206,7 @@ const CustomerId = () => {
   // Get current list, pagination
   const indexOfLastItem = currentPage * itemPerPage;
   const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = documentsfiltred.slice(indexOfFirstItem, indexOfLastItem);
 
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -225,29 +247,50 @@ const CustomerId = () => {
                     <p>
                       Documentos de{" "}
                       <span className="text-primary bold">{customer?.names || customerLegal?.companyName}</span> (
-                      {data?.length} documentos)
+                      {documentsTable?.length} documentos)
                     </p>
                   </BlockDes>
                 </div>
               </div>
             </BlockHeadContent>
             <BlockHeadContent>
-              <div className="toggle-wrap nk-block-tools-toggle">
-                <Button
-                  className={`btn-icon btn-trigger toggle-expand mr-n1 ${sm ? "active" : ""}`}
-                  onClick={() => updateSm(!sm)}
-                >
-                  <Icon name="menu-alt-r"></Icon>
-                </Button>
-                <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
+              <div className="d-flex flex-row">
+                <div className="mr-4">
                   <ul className="nk-block-tools g-3">
-                    <li className="nk-block-tools-opt">
-                      <Button color="primary" onClick={() => setModal({ add: true })}>
-                        <Icon name="plus" className="mr-1"></Icon>
-                        Agregar Documento
-                      </Button>
+                    <li>
+                      <div className="form-control-wrap">
+                        <div className="form-icon form-icon-right">
+                          <Icon name="search" />
+                        </div>
+                        <input
+                          type="text"
+                          value={search}
+                          onChange={handleChange}
+                          className="form-control"
+                          placeholder="Buscar por: Documento, Descripción, Fecha de emisión o caducidad"
+                          style={{ minWidth: "30rem" }}
+                        />
+                      </div>
                     </li>
                   </ul>
+                </div>
+                <div className="toggle-wrap nk-block-tools-toggle">
+                  <Button
+                    className={`btn-icon btn-trigger toggle-expand mr-n1 ${sm ? "active" : ""}`}
+                    onClick={() => updateSm(!sm)}
+                  >
+                    <Icon name="menu-alt-r"></Icon>
+                  </Button>
+                  <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
+                    <ul className="nk-block-tools g-3">
+                      <li className="nk-block-tools-opt">
+                        <Button color="primary" onClick={() => setModal({ add: true })}>
+                          <Icon name="plus" className="mr-1"></Icon>
+                          Agregar Documento
+                        </Button>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </BlockHeadContent>
@@ -272,16 +315,19 @@ const CustomerId = () => {
                   <span className="sub-text">Fecha de creación</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
+                  <span className="sub-text">Fecha de expiración</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">Archivo</span>
                 </DataTableRow>
               </DataTableHead>
 
-              {data.length > 0
-                ? data.map((item) => (
-                    <DataTableItem key={item.id} className="rounded-0">
-                      <DataTableRow className="text-center border-bottom">
-                        <div className="user-card">
-                          <div className="user-info">
+              {currentItems.length > 0
+                ? currentItems.map((item) => (
+                    <DataTableItem key={item.id} className="rounded-0 text-center">
+                      <DataTableRow className="text-center ">
+                        <div className="user-card text-center d-flex align-items-center justify-content-center">
+                          <div className="user-info text-center">
                             <span className="tb-lead">
                               {customer?.names || customerLegal?.companyName}
                               <span className="dot dot-success d-md-none ml-1"></span>
@@ -290,16 +336,19 @@ const CustomerId = () => {
                           </div>
                         </div>
                       </DataTableRow>
-                      <DataTableRow className="text-center border-bottom">
+                      <DataTableRow className="text-center">
                         <span>{item?.documentType?.name}</span>
                       </DataTableRow>
-                      <DataTableRow className="text-center border-bottom">
+                      <DataTableRow className="text-center">
                         <span>{item?.documentType?.description}</span>
                       </DataTableRow>
-                      <DataTableRow className="text-center border-bottom">
-                        <span>{parseDate(item?.createdAt)}</span>
+                      <DataTableRow className="text-center">
+                        <span>{parseDate(item?.issueDate)}</span>
                       </DataTableRow>
-                      <DataTableRow className="text-center border-bottom">
+                      <DataTableRow className="text-center">
+                        <span>{parseDate(item?.expirationDate)}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
                         <a href={item.url} target="_blank" rel="noreferrer">
                           <Button color="primary" type="button">
                             <Icon name="eye" className="mr-1"></Icon>
@@ -384,7 +433,7 @@ const CustomerId = () => {
                   <Col md="12" className="mb-4">
                     <FormGroup>
                       <label className="form-label">Observación</label>
-                      <input
+                      <textarea
                         type="text"
                         className="form-control"
                         name="observation"
@@ -397,16 +446,18 @@ const CustomerId = () => {
                   <Col md="6" className="mb-4">
                     <FormGroup>
                       <label className="form-label">Fecha de emisión</label>
-                      <input
+                      {/* <input
                         className="form-control"
                         type="date"
-                        required
-                        pattern="\d{4}-\d{2}-\d{2}"
-                        min="1997-01-01"
-                        max="2030-12-31"
                         name="issueDate"
                         defaultValue={formData.issueDate}
                         ref={register()}
+                      /> */}
+                      {/* aca */}
+                      <DatePicker
+                        selected={issueDate}
+                        className="form-control"
+                        onChange={(date) => setIssueDate(date)}
                       />
                     </FormGroup>
                   </Col>
@@ -414,12 +465,17 @@ const CustomerId = () => {
                   <Col md="6" className="mb-4">
                     <FormGroup>
                       <label className="form-label">Fecha de expiración</label>
-                      <input
+                      {/* <input
                         className="form-control"
                         type="date"
                         name="expirationDate"
                         defaultValue={formData.expirationDate}
                         ref={register()}
+                      /> */}
+                      <DatePicker
+                        selected={expirationDate}
+                        className="form-control"
+                        onChange={(date) => setExpirationDate(date)}
                       />
                     </FormGroup>
                   </Col>
@@ -434,6 +490,7 @@ const CustomerId = () => {
                             name="file"
                             defaultValue={formData.file}
                             ref={register()}
+                            accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.jpg, .jpeg, .png, application/vnd.ms-excel"
                           />
                         </label>
                       </div>

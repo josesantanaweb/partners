@@ -435,11 +435,11 @@ const LibraryList = () => {
                         <span>{item?.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <div className="user-card">
+                        <div className="user-card text-center d-flex align-items-center justify-content-center">
                           {item?.companyName && (
                             <UserAvatar theme="purple" text={findUpper(item?.companyName)}></UserAvatar>
                           )}
-                          <div className="user-info">
+                          <div className="user-info text-center">
                             <span className="tb-lead">
                               {item?.companyName}
                               <span className="dot dot-success d-md-none ml-1"></span>
