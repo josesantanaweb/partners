@@ -34,6 +34,14 @@ const DealsServices = {
     });
     return response.data;
   },
+
+  getDealsTypeForms: async(type, idPlan) => {
+    console.log("Pasando:! ",type,idPlan)
+    const response = await api.get(`/deal-product/${idPlan}?customerTypeId=${type}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  }
 };
 
 export default DealsServices;
