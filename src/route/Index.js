@@ -24,6 +24,7 @@ import Deals from "../pages/deals/DealsList";
 import Library from "../pages/Library/LibraryList";
 import CustomerId from "../pages/Library/CustomerId";
 import Documents from "../pages/documents/DocumentsList";
+import AfterSales from "../pages/afterSales/AfterSalesList";
 
 const Pages = () => {
   useLayoutEffect(() => {
@@ -113,6 +114,15 @@ const Pages = () => {
           render={() => (
             <ProductsContextProvider>
               <Documents />
+            </ProductsContextProvider>
+          )}
+        ></Route>
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/after-sales`}
+          render={() => (
+            <ProductsContextProvider>
+              <AfterSales />
             </ProductsContextProvider>
           )}
         ></Route>

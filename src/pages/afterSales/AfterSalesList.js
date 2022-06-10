@@ -22,7 +22,7 @@ import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
 import DocumentsServices from "../../services/DocumentsServices";
 
-const DocumentsList = () => {
+const AfterSalesList = () => {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
@@ -139,10 +139,10 @@ const DocumentsList = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Documentos
+                Post Ventas
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} documentos</p>
+                <p>Total {data.length} post ventas</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -158,7 +158,7 @@ const DocumentsList = () => {
                     <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>
                         <Icon name="plus" className="mr-1"></Icon>
-                        Agregar Documento
+                        Agregar
                       </Button>
                     </li>
                   </ul>
@@ -173,7 +173,7 @@ const DocumentsList = () => {
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
-                  <span className="sub-text">N. Documento</span>
+                  <span className="sub-text">N. Post Venta</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Nombre</span>
@@ -186,7 +186,7 @@ const DocumentsList = () => {
                 </DataTableRow>
               </DataTableHead>
               {/*Head*/}
-              {currentItems.length > 0
+              {/* {currentItems.length > 0
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow className="text-center">
@@ -224,7 +224,7 @@ const DocumentsList = () => {
                       </DataTableRow>
                     </DataTableItem>
                   ))
-                : null}
+                : null} */}
             </div>
 
             <PreviewAltCard>
@@ -403,4 +403,4 @@ const DocumentsList = () => {
   );
 };
 
-export default DocumentsList;
+export default AfterSalesList;

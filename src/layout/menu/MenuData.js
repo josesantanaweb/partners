@@ -50,6 +50,11 @@ const menu = [
     link: "/documents",
   },
   {
+    icon: "file-plus-fill",
+    text: "Post Ventas",
+    link: "/after-sales",
+  },
+  {
     icon: "building-fill",
     text: "Empresas",
     link: "/company",
