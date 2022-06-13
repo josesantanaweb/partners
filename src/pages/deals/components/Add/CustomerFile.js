@@ -8,7 +8,10 @@ import PersonalReferences from "../../../clientes/Natural/components/Edit/Person
 import InvestMentExpirence from "../../../clientes/Natural/components/Edit/InvestmentExperience"
 import SpousalHistory from "../../../clientes/Natural/components/Edit/SpousalHistory"
 import Beneficiaries from "../../../clientes/Natural/components/Edit/Beneficiaries"
-
+import CompanyQyestionnaire from '../../../clientes/Legal/components/Edit/CompanyQuestionnaire'
+import CompanyFinancialProfile from '../../../clientes/Legal/components/Edit/CompanyFinancialProfile'
+import CompanyBanksItWorksWith from '../../../clientes/Legal/components/Edit/CompanyBanksItWorksWith'
+import CompanyPartners from '../../../clientes/Legal/components/Edit/CompanyPartners'
 
 const CustomerFile = ({selectClient}) => {
   const [addActiveTab, setAddActiveTab] = useState("1");
@@ -19,7 +22,6 @@ const CustomerFile = ({selectClient}) => {
 
   });
 
- 
   return (
     <React.Fragment>
       {
@@ -161,7 +163,31 @@ const CustomerFile = ({selectClient}) => {
       </TabContent>
       <TabContent activeTab={addActiveTab}>
         <TabPane tabId="6">
-          <Beneficiaries setModal={setModal} selectClient={selectClient} />
+          <Beneficiaries setModal={setModal}  selectClient={selectClient} />
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="7">
+          <CompanyQyestionnaire setModal={setModal} selectClient={selectClient} />
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="8">
+          <CompanyFinancialProfile setModal={setModal} selectClient={selectClient} />
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="9">
+          <CompanyBanksItWorksWith setModal={setModal} selectClient={selectClient} />
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="10">
+          <CompanyPartners setModal={setModal} selectClient={selectClient} />
           {/* formData={formData} */}
         </TabPane>
       </TabContent>

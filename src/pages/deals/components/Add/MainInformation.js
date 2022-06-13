@@ -54,7 +54,7 @@ const CustomerFile = ({setRequiredDocument, setSelectClient}) => {
       const customersLegalData = await customers1.data.map((data) => data);
       setCust([...customersData, ...customersLegalData]);
       setCustTable(customersData);
-      console.log(customersData)
+      console.log(customersLegalData)
 
     } catch (error) {}
   };
@@ -295,6 +295,8 @@ const CustomerFile = ({setRequiredDocument, setSelectClient}) => {
     setRequiredDocument(dataTlf.customerSegments)
       
   }
+
+  
 
 
   return (
