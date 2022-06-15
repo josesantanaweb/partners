@@ -21,7 +21,7 @@ import classnames from "classnames";
 import AddMainInformation from "./components/Add/MainInformation";
 import AddCustomerFile from "./components/Add/CustomerFile";
 import AddAccountData from "./components/Add/AccountData";
-
+import DocumentRequired from "./components/Add/DocumentRequired";
 import EditMainInformation from "./components/Edit/MainInformation";
 import AccountData from "../clientes/Natural/components/Edit/AccountData";
 import EmploymentHistory from "../clientes/Natural/components/Edit/EmploymentHistory";
@@ -161,7 +161,7 @@ const DealsList = () => {
   //////////////////// llealg 1 //////////////////////////////////
   const [requiredDocument, setRequiredDocument] = useState([]);
   const [selectClient, setSelectClient] = useState({});
-  
+  const [needDocument, setNeeedDocument] = useState({})
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -375,7 +375,7 @@ const DealsList = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation setModal={setModal} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
+                  <AddMainInformation setModal={setModal} setNeeedDocument={setNeeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>
@@ -387,7 +387,7 @@ const DealsList = () => {
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="4">
-                  
+                  <DocumentRequired needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
                 </TabPane>
               </TabContent>
             </div>

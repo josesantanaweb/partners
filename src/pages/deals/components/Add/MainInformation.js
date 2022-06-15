@@ -6,7 +6,7 @@ import { Col, DataTableHead, DataTableRow, DataTableItem, Button, RSelect } from
 import CustomersServices from "../../../../services/CustomersServices";
 import DealsServices from "../../../../services/DealsServices";
 // Deals data
-const CustomerFile = ({setRequiredDocument, setSelectClient}) => {
+const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) => {
   const [data, setData] = useState([]);
   const [dataCust, setCust] = useState([]);
   const [dataCustLegal, setCustLegal] = useState([]);
@@ -170,6 +170,7 @@ const CustomerFile = ({setRequiredDocument, setSelectClient}) => {
 
   const onOptionsPlansChange = async(optionValue) => {
     setPlansOptions(optionValue);
+    
   };
 
   useEffect(() => {
@@ -292,9 +293,11 @@ const CustomerFile = ({setRequiredDocument, setSelectClient}) => {
   //Peticion en base al tipo de client y el plan escogido
   const getDealsType = async (type = 1, planId = 1) => {
     const dataTlf = await DealsServices.getDealsTypeForms(type, planId.value)
+    console.log("data! :",dataTlf.documents)
     setRequiredDocument(dataTlf.customerSegments)
-      
-  }
+    setNeeedDocument(dataTlf)
+    console.log('select',dataTlf)
+  } 
 
   
 
