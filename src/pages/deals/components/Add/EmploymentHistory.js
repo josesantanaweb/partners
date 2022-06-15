@@ -1,10 +1,10 @@
 import React from "react";
 import { FormGroup, Form } from "reactstrap";
 import { useForm } from "react-hook-form";
-import { Col, Button } from "../../../../../components/Component";
-import CustomersServices from "../../../../../services/CustomersServices";
+import { Col, Button } from "../../../../components/Component";
+import CustomersServices from "../../../../services/CustomersServices";
 
-const EmploymentHistory = ({ setModal, editData }) => {
+const EmploymentHistory = ({ setModal, editData,selectClient }) => {
   // useForm
   const { register, handleSubmit } = useForm();
 
@@ -54,7 +54,7 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="typeOfEmployee"
-            defaultValue={editData?.employmentHistory?.typeOfEmployee}
+            defaultValue={selectClient?.employmentHistory?.typeOfEmployee}
             placeholder="Ingresa Tipo de empleo"
             ref={register()}
           />
@@ -67,7 +67,7 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="companyName"
-            defaultValue={editData?.employmentHistory?.companyName}
+            defaultValue={selectClient?.employmentHistory?.companyName}
             placeholder="Ingresa Nombre de empresa"
             ref={register()}
           />
@@ -80,7 +80,7 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="address"
-            defaultValue={editData?.employmentHistory?.address}
+            defaultValue={selectClient?.employmentHistory?.address}
             placeholder="Ingresa Direccion"
             ref={register()}
           />
@@ -93,7 +93,7 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="industry"
-            defaultValue={editData?.employmentHistory?.industry}
+            defaultValue={selectClient?.employmentHistory?.industry}
             placeholder="Ingresa Industria"
             ref={register()}
           />
@@ -106,7 +106,7 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="laborSeniority"
-            defaultValue={editData?.employmentHistory?.laborSeniority}
+            defaultValue={selectClient?.employmentHistory?.laborSeniority}
             placeholder="Ingresa Antoguedad laboral"
             ref={register()}
           />
@@ -119,7 +119,7 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="charge"
-            defaultValue={editData?.employmentHistory?.charge}
+            defaultValue={selectClient?.employmentHistory?.charge}
             placeholder="Ingresa Cargo"
             ref={register()}
           />
@@ -132,7 +132,7 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="businessPhone"
-            defaultValue={editData?.employmentHistory?.businessPhone}
+            defaultValue={selectClient?.employmentHistory?.businessPhone}
             placeholder="Ingresa Telefono"
             ref={register()}
           />
@@ -145,7 +145,7 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="email"
-            defaultValue={editData?.employmentHistory?.email}
+            defaultValue={selectClient?.employmentHistory?.email}
             placeholder="Ingresa Emal"
             ref={register()}
           />
@@ -158,7 +158,7 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="rut"
-            defaultValue={editData?.employmentHistory?.rut}
+            defaultValue={selectClient?.employmentHistory?.rut}
             placeholder="Ingresa RUT"
             ref={register()}
           />
@@ -171,7 +171,7 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="zipCode"
-            defaultValue={editData?.employmentHistory?.zipCode}
+            defaultValue={selectClient?.employmentHistory?.zipCode}
             placeholder="Ingresa Codigo Postal"
             ref={register()}
           />
