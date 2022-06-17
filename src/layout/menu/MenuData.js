@@ -49,11 +49,23 @@ const menu = [
     text: "Documentos",
     link: "/documents",
   },
+
   {
     icon: "file-plus-fill",
     text: "Post Ventas",
-    link: "/after-sales",
+    active: false,
+    subMenu: [
+      {
+        text: "Operaciones vigentes",
+        link: "/valid-deals",
+      },
+      {
+        text: "Acciones Post Venta",
+        link: "/after-sales-actions",
+      },
+    ],
   },
+
   {
     icon: "building-fill",
     text: "Empresas",

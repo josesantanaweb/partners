@@ -22,7 +22,7 @@ import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
 import DocumentsServices from "../../services/DocumentsServices";
 
-const AfterSalesList = () => {
+const DocumentsList = () => {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
@@ -88,6 +88,7 @@ const AfterSalesList = () => {
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
     const { name, description } = submitData;
+
     let submittedData = {
       name: name,
       description: description,
@@ -139,10 +140,10 @@ const AfterSalesList = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Post Ventas
+                Operaciones Post Venta
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} post ventas</p>
+                <p>Total {data.length} acciones</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -156,10 +157,19 @@ const AfterSalesList = () => {
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
                     <li className="nk-block-tools-opt">
-                      <Button color="primary" onClick={() => setModal({ add: true })}>
-                        <Icon name="plus" className="mr-1"></Icon>
-                        Agregar
-                      </Button>
+                      <div className="form-control-wrap">
+                        <div className="form-icon form-icon-right">
+                          <Icon name="search" />
+                        </div>
+                        <input
+                          type="text"
+                          // value={search}
+                          // onChange={handleChange}
+                          className="form-control"
+                          placeholder="Buscar por: Cliente, Asesor/a, Plan o Empresa"
+                          style={{ minWidth: "25rem" }}
+                        />
+                      </div>
                     </li>
                   </ul>
                 </div>
@@ -173,58 +183,40 @@ const AfterSalesList = () => {
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
-                  <span className="sub-text">N. Post Venta</span>
+                  <span className="sub-text">Tipo Post Venta</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Nombre</span>
+                  <span className="sub-text">Cliente</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Descripción</span>
+                  <span className="sub-text">N. de Operación</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Asesor</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Plan/Producto</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Empresa</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Fecha de Ingreso</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Fecha Proceso</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Monto</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Moneda</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
               {/*Head*/}
-              {/* {currentItems.length > 0
-                ? currentItems.map((item) => (
-                    <DataTableItem key={item.id}>
-                      <DataTableRow className="text-center">
-                        <span>{item.id}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.name}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{handleDescriptionLength(item.description)}</span>
-                      </DataTableRow>
-                      <DataTableRow className="nk-tb-col-tools">
-                        <ul className="nk-tb-actions gx-1 d-flex justify-content-center">
-                          <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
-                            <TooltipComponent
-                              tag="a"
-                              containerClassName="btn btn-trigger btn-icon"
-                              id={"edit" + 1}
-                              icon="edit-alt-fill"
-                              direction="top"
-                              text="Editar"
-                            />
-                          </li>
-                          <li className="nk-tb-action" onClick={() => deleteDocument(item.id)}>
-                            <TooltipComponent
-                              tag="a"
-                              containerClassName="btn btn-trigger btn-icon"
-                              id={"delete" + 1}
-                              icon="trash-fill"
-                              direction="top"
-                              text="Eliminar"
-                            />
-                          </li>
-                        </ul>
-                      </DataTableRow>
-                    </DataTableItem>
-                  ))
-                : null} */}
             </div>
 
             <PreviewAltCard>
@@ -403,4 +395,4 @@ const AfterSalesList = () => {
   );
 };
 
-export default AfterSalesList;
+export default DocumentsList;

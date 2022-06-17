@@ -88,6 +88,7 @@ const DocumentsList = () => {
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
     const { name, description } = submitData;
+
     let submittedData = {
       name: name,
       description: description,
