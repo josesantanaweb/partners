@@ -91,11 +91,11 @@ const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions }) => {
           <Row className="gy-3 py-1">
             <Col sm="6">
               <h6 className="overline-title">Inicio</h6>
-              <p id="preview-event-start">{event && moment(event.start).format("MMMM Do YYYY")}</p>
+              <p id="preview-event-start">{event && moment(event.start).format("Do MMMM YYYY")}</p>
             </Col>
             <Col sm="6" id="preview-event-end-check">
               <h6 className="overline-title">Final</h6>
-              <p id="preview-event-end">{event && moment(event.end).format("MMMM Do YYYY")}</p>
+              <p id="preview-event-end">{event && moment(event.end).format("Do MMMM YYYY")}</p>
             </Col>
             <Col sm="10" id="preview-event-description-check">
               <h6 className="overline-title">Descripcion</h6>
@@ -161,6 +161,7 @@ const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions }) => {
                           selected={new Date(event.start)}
                           onChange={(date) => updateEvent({ ...event, start: setDateForPicker(date) })}
                           className="form-control date-picker"
+                          dateFormat="dd/MM/yyyy"
                         />
                       </div>
                     </div>
@@ -191,6 +192,7 @@ const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions }) => {
                           selected={new Date(event.end)}
                           onChange={(date) => updateEvent({ ...event, end: setDateForPicker(date) })}
                           className="form-control date-picker"
+                          dateFormat="dd/MM/yyyy"
                         />
                       </div>
                     </div>
