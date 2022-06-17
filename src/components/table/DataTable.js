@@ -52,7 +52,7 @@ export const DataTableItem = ({ className, handleClickedRegisterNames, handleCli
   <div 
     className={`nk-tb-item ${className ? className : ""}`}
     onClick={ () => {
-      handleClickedRegisterNames(customer.names); 
+      customer.names? handleClickedRegisterNames(customer.names):handleClickedRegisterNames(customer.companyName)
       handleClickedRegisterRut(customer.rut);
       useTypeClient(customer.type.id);
       setSelectClient(customer)

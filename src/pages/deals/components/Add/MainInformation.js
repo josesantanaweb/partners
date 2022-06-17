@@ -56,6 +56,7 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
       setCustTable(customersData);
       console.log(customersLegalData)
 
+
     } catch (error) {}
   };
 
@@ -267,8 +268,10 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
 
   // function to get customer names from input search
   const handleClickedRegisterNames = (customerName) => {
-    dataCust.filter((customer) => customer.names === customerName && setSearch(customerName));
-  };
+    
+    dataCust.filter((customer) => customer.names === customerName && setSearch(customerName) || customerName === customer.companyName && setSearch(customerName));
+
+  };  
 
   useEffect(() => {
     getCustomers(search);
