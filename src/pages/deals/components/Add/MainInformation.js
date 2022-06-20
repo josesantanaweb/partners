@@ -308,7 +308,7 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeedDocument}) =
     const dataTlf = await DealsServices.getDealsTypeForms(type, planId.value);
     
     setRequiredDocument(dataTlf.customerSegments); // segmentos requeridos
-    setNeedDocument(dataTlf.documents) // documentos requeridos
+    setNeedDocument(dataTlf) // documentos requeridos
   } 
 
   

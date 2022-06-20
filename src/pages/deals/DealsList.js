@@ -332,8 +332,8 @@ const DealsList = () => {
               <h5 className="title" >Agregar Negocio</h5> <br/>
               { requiredDocument.length ? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
               { requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)} <br></br>
-              { needDocument.length ? <span style={{color:'red'}}>Documentos del cliente requeridos: </span>: ""}
-              { needDocument.length && needDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
+              { needDocument.documents?.length ? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
+              { needDocument.documents?.length > 0 && needDocument.documents.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
               <Nav tabs>
                 <NavItem>
                   <NavLink
