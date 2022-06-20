@@ -33,6 +33,7 @@ import DocumentsServices from "../../services/DocumentsServices";
 
 // Desde acá
 import DealsServices from "../../services/DealsServices";
+import InvestorProfile from "./components/Add/InvestorProfile";
 
 const DealsList = () => {
   const [data, setData] = useState([]);
@@ -329,8 +330,8 @@ const DealsList = () => {
             </a>
             <div className="p-2 table-record">
               <h5 className="title" >Agregar Negocio</h5> <br/>
-              { requiredDocument.length ? <span style={{color:'red'}}>Requerido: </span>: ""}
-              { requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
+              { requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{color:'red'}}>Requerido: </span>: ""}
+              { requiredDocument.length != 0 && addActiveTab == 2 && requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
               <Nav tabs>
                 <NavItem>
                   <NavLink
@@ -383,6 +384,12 @@ const DealsList = () => {
                 <TabPane tabId="2">
                   <AddCustomerFile setModal={setModal} selectClient={selectClient}/>
                   {/* formData={formData} */}
+                </TabPane>
+              </TabContent>
+              <TabContent activeTab={addActiveTab}>
+                <TabPane tabId="3">
+                  <InvestorProfile setModal={setModal} selectClient={selectClient}/>
+
                 </TabPane>
               </TabContent>
               <TabContent activeTab={addActiveTab}>
