@@ -8,7 +8,7 @@ import DealsServices from "../../../../services/DealsServices";
 
 let customerDebounce = null;
 // Deals data
-const CustomerFile = ({setRequiredDocument, setSelectClient, setNeedDocument}) => {
+const CustomerFile = ({setLibraryClient,setRequiredDocument, setSelectClient, setNeedDocument}) => {
   const [data, setData] = useState([]);
   const [dataCust, setCust] = useState([]);
   const [dataCustLegal, setCustLegal] = useState([]);
@@ -374,7 +374,7 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeedDocument}) =
 
             {dataCust.length > 0
               ? dataCust.map((customer) => (
-                  <DataTableItem key={customer.id} handleClickedRegisterNames={handleClickedRegisterNames} handleClickedRegisterRut={handleClickedRegisterRut} customer={customer} useTypeClient={useTypeClient} setSelectClient={setSelectClient}>
+                  <DataTableItem setLibraryClient={setLibraryClient} key={customer.id} handleClickedRegisterNames={handleClickedRegisterNames} handleClickedRegisterRut={handleClickedRegisterRut} customer={customer} useTypeClient={useTypeClient} setSelectClient={setSelectClient}>
                     <DataTableRow className="text-center">
                       <span>{customer.names? customer.names:customer.companyName}</span>
                     </DataTableRow>

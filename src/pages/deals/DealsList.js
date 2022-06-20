@@ -163,6 +163,7 @@ const DealsList = () => {
   const [requiredDocument, setRequiredDocument] = useState([]);
   const [selectClient, setSelectClient] = useState({});
   const [needDocument, setNeedDocument] = useState({})
+  const [libraryClient, setLibraryClient] = useState([])
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -333,8 +334,9 @@ const DealsList = () => {
               <h5 className="title" >Agregar Negocio</h5> <br/>
               { requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{color:'red'}}>Requerido: </span>: ""}
               { requiredDocument.length != 0 && addActiveTab == 2 && requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
-              { needDocument.documents?.length ? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
-              { needDocument.documents?.length > 0 && needDocument.documents.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
+
+              { needDocument.documents?.length && addActiveTab == 4? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
+              { needDocument.documents?.length > 0 && addActiveTab == 4 && needDocument.documents.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
               <Nav tabs>
                 <NavItem>
                   <NavLink
@@ -379,7 +381,7 @@ const DealsList = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation setModal={setModal} setNeedDocument={setNeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
+                  <AddMainInformation setLibraryClient={setLibraryClient} setModal={setModal} setNeedDocument={setNeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>
@@ -397,7 +399,7 @@ const DealsList = () => {
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="4">
-                  <DocumentRequired needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
+                  <DocumentRequired libraryClient={libraryClient} needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
                 </TabPane>
               </TabContent>
             </div>

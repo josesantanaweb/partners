@@ -17,7 +17,7 @@ import LibraryServices from "../../../../services/LibraryServices";
 import DocumentsServices from "../../../../services/DocumentsServices";
 import CustomersServices from "../../../../services/CustomersServices";
 
-const DocumentRequired = ({ setModal, editData, selectClient, needDocument,requiredDocument}) => {
+const DocumentRequired = ({ libraryClient ,setModal, editData, selectClient, needDocument,requiredDocument}) => {
 
   useEffect(()=> console.log('hasta cuando',needDocument) ,[needDocument])
 
@@ -271,17 +271,40 @@ const DocumentRequired = ({ setModal, editData, selectClient, needDocument,requi
           {
                 needDocument.documents
                 ? needDocument.documents.map(act => 
+                  <>
                   <DataTableItem className=" text-center border-bottom border bg-light">
                     <DataTableRow className="text-center d-flex justify-content-between">
                       <span className="sub-text">{act.name}</span>
+                
                       <Button color="primary" size="md"  onClick={() => setModalDocument({ add: true })}>
-                        Guardar
+                        Subir
                       </Button>
                     </DataTableRow> 
+                    <DataTableRow className="text-center d-flex justify-content-between">
+                      {
+                        libraryClient.filter( e=> e.documentType.id == act.id )
+                        .map( elem => (
+                          <>
+                            <DataTableItem> 
+                              <DataTableRow className=" text-center border-bottom border ">{elem.documentType.name}</DataTableRow>
+                              <DataTableRow className=" text-center border-bottom border ">Created: {elem.createdAt.split('T')[0]}</DataTableRow>
+                              <DataTableRow className=" text-center border-bottom border ">Exp: {elem.expirationDate.split('T')[0]}</DataTableRow>
+                              <DataTableRow className="p-0"><a target="blank" className="text-white" href={elem.url} ><Button color="primary" size="md">Ver</Button></a></DataTableRow>
+                              <DataTableRow className=" "><a target="blank" className="text-white" href={elem.url} ><Button  color="primary" size="md">Vincular</Button></a></DataTableRow>
+                            </DataTableItem>
+                          </>    
+                        ))
+                      }
+                    </DataTableRow> 
                   </DataTableItem>
+                  
+                
+                  </>
                   )
-                :<></>
+                :<>
+                </>
               }
+              
           </div>
         </div>
       </Col>
