@@ -162,7 +162,7 @@ const DealsList = () => {
   //////////////////// llealg 1 //////////////////////////////////
   const [requiredDocument, setRequiredDocument] = useState([]);
   const [selectClient, setSelectClient] = useState({});
-  const [needDocument, setNeeedDocument] = useState({})
+  const [needDocument, setNeedDocument] = useState({})
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -322,7 +322,8 @@ const DealsList = () => {
               onClick={(ev) => {
                 ev.preventDefault();
                 onFormCancel();
-                setRequiredDocument([])
+                setRequiredDocument([]);
+                setNeedDocument([]);
               }}
               className="close"
             >
@@ -332,6 +333,8 @@ const DealsList = () => {
               <h5 className="title" >Agregar Negocio</h5> <br/>
               { requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{color:'red'}}>Requerido: </span>: ""}
               { requiredDocument.length != 0 && addActiveTab == 2 && requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
+              { needDocument.documents?.length ? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
+              { needDocument.documents?.length > 0 && needDocument.documents.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
               <Nav tabs>
                 <NavItem>
                   <NavLink
@@ -376,7 +379,7 @@ const DealsList = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation setModal={setModal} setNeeedDocument={setNeeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
+                  <AddMainInformation setModal={setModal} setNeedDocument={setNeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>
