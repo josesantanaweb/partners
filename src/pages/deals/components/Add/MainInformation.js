@@ -8,7 +8,7 @@ import DealsServices from "../../../../services/DealsServices";
 
 let customerDebounce = null;
 // Deals data
-const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) => {
+const CustomerFile = ({setRequiredDocument, setSelectClient, setNeedDocument}) => {
   const [data, setData] = useState([]);
   const [dataCust, setCust] = useState([]);
   const [dataCustLegal, setCustLegal] = useState([]);
@@ -168,7 +168,6 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
 
   const onOptionsPlansChange = async(optionValue) => {
     setPlansOptions(optionValue);
-    
   };
 
   useEffect(() => {
@@ -306,11 +305,10 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
 
   //Peticion en base al tipo de client y el plan escogido
   const getDealsType = async (type = 1, planId = 1) => {
-    const dataTlf = await DealsServices.getDealsTypeForms(type, planId.value)
+    const dataTlf = await DealsServices.getDealsTypeForms(type, planId.value);
     
-    setRequiredDocument(dataTlf.customerSegments)
-    setNeeedDocument(dataTlf)
-    
+    setRequiredDocument(dataTlf.customerSegments); // segmentos requeridos
+    setNeedDocument(dataTlf.documents) // documentos requeridos
   } 
 
   
