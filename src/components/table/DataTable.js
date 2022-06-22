@@ -48,19 +48,31 @@ export const DataTableRow = ({ className, size, ...props }) => {
   return <div className={rowClass}>{props.children}</div>;
 };
 
-export const DataTableItem = ({ className, handleClickedRegisterNames, handleClickedRegisterRut, customer,useTypeClient,setSelectClient,setLibraryClient,...props }) => {
+export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerState,setValue, handleSubmitGeneral ,className, handleClickedRegisterNames, handleClickedRegisterRut, customer,useTypeClient,setSelectClient,setLibraryClient,...props }) => {
+  
+
   
   return (
   <div 
     className={`nk-tb-item ${className ? className : ""}`}
     onClick={ async() => {
+      console.log(customer)
+ 
+      setGeneralStateForm( prev => {
+ 
+
+        return {
+          ...prev,customerId:customer.id
+        }
+      })
+      
+      console.log(registerState)
       customer.names? handleClickedRegisterNames(customer.names):handleClickedRegisterNames(customer.companyName)
       handleClickedRegisterRut(customer.rut);
       useTypeClient(customer.type.id);
       setSelectClient(customer)
       const response = await DealsServices.getCustomerLibraryId(customer.id)
       setLibraryClient(response.data)
-      console.log(response)
   
       }
     } 

@@ -8,7 +8,7 @@ import DealsServices from "../../../../services/DealsServices";
 
 let customerDebounce = null;
 // Deals data
-const CustomerFile = ({setLibraryClient,setRequiredDocument, setSelectClient, setNeedDocument}) => {
+const CustomerFile = ({generalStateForm,setGeneralStateForm,registerState, handleSubmitGeneral, setValue ,setLibraryClient,setRequiredDocument, setSelectClient, setNeedDocument}) => {
   const [data, setData] = useState([]);
   const [dataCust, setCust] = useState([]);
   const [dataCustLegal, setCustLegal] = useState([]);
@@ -131,6 +131,7 @@ const CustomerFile = ({setLibraryClient,setRequiredDocument, setSelectClient, se
       rut,
       names,
     } = submitData;
+
     let submittedData = {
       planId: plansOptions.value,
       companyId: companiesOptions.value,
@@ -168,6 +169,10 @@ const CustomerFile = ({setLibraryClient,setRequiredDocument, setSelectClient, se
 
   const onOptionsPlansChange = async(optionValue) => {
     setPlansOptions(optionValue);
+    setGeneralStateForm( prev => {
+      return {
+        ...prev,planId:optionValue.value }
+    })
   };
 
   useEffect(() => {
@@ -186,6 +191,11 @@ const CustomerFile = ({setLibraryClient,setRequiredDocument, setSelectClient, se
   };
   const onOptionsCompaniesChange = (optionValue) => {
     setCompaniesOptions(optionValue);
+    setGeneralStateForm( prev => {
+      return {
+        ...prev,companyId:optionValue.value
+      }
+    })
   };
   useEffect(() => {
     getCompanies();
@@ -318,7 +328,9 @@ const CustomerFile = ({setLibraryClient,setRequiredDocument, setSelectClient, se
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
       <Col md="12" className="mb-4">
         <FormGroup className="border-bottom pb-2">
-          <h6>Datos del Cliente - Natural</h6>
+          <h6 onClick={ ()=> {
+   
+          }}>Datos del Cliente - Natural</h6>
         </FormGroup>
       </Col>
       <Col md="6" className="mb-4">
@@ -374,7 +386,7 @@ const CustomerFile = ({setLibraryClient,setRequiredDocument, setSelectClient, se
 
             {dataCust.length > 0
               ? dataCust.map((customer) => (
-                  <DataTableItem setLibraryClient={setLibraryClient} key={customer.id} handleClickedRegisterNames={handleClickedRegisterNames} handleClickedRegisterRut={handleClickedRegisterRut} customer={customer} useTypeClient={useTypeClient} setSelectClient={setSelectClient}>
+                  <DataTableItem generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setValue={setValue} registerState={registerState} handleSubmitGeneral={handleSubmitGeneral} setLibraryClient={setLibraryClient} key={customer.id} handleClickedRegisterNames={handleClickedRegisterNames} handleClickedRegisterRut={handleClickedRegisterRut} customer={customer} useTypeClient={useTypeClient} setSelectClient={setSelectClient}>
                     <DataTableRow className="text-center">
                       <span>{customer.names? customer.names:customer.companyName}</span>
                     </DataTableRow>
@@ -471,7 +483,7 @@ const CustomerFile = ({setLibraryClient,setRequiredDocument, setSelectClient, se
             onChange={ (e) =>{ 
               getDealsType(typeClient,e);
               onOptionsPlansChange(e)
-          
+             
               }
             }
             defautlValue={formData.planId}
@@ -483,7 +495,12 @@ const CustomerFile = ({setLibraryClient,setRequiredDocument, setSelectClient, se
         <RSelect
           value={companiesOptions}
           options={companies}
-          onChange={onOptionsCompaniesChange}
+          onChange={(e)=>{
+            
+            onOptionsCompaniesChange(e)
+          
+          }
+          }
           defautlValue={formData.companyId}
         />
       </Col>

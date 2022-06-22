@@ -67,7 +67,6 @@ const DealsList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
   const [sm, updateSm] = useState(false);
-  const { errors, register, handleSubmit } = useForm();
 
   // function to reset the form
   // const resetForm = () => {
@@ -162,8 +161,16 @@ const DealsList = () => {
   //////////////////// llealg 1 //////////////////////////////////
   const [requiredDocument, setRequiredDocument] = useState([]);
   const [selectClient, setSelectClient] = useState({});
-  const [needDocument, setNeedDocument] = useState({})
-  const [libraryClient, setLibraryClient] = useState([])
+  const [needDocument, setNeedDocument] = useState({});
+  const [libraryClient, setLibraryClient] = useState([]);
+  const { errors, register, setValue, handleSubmit } = useForm();
+  const [generalStateForm, setGeneralStateForm] = useState({
+    name: "luis felipe"
+  })
+  const onSubmit = data => {
+    console.log(generalStateForm);
+  };
+
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -317,7 +324,8 @@ const DealsList = () => {
           size="lg"
           style={{ maxWidth: "1092px" }}
         >
-          <ModalBody>
+        <form onSubmit={handleSubmit(onSubmit)}>
+        <ModalBody>
             <a
               href="#close"
               onClick={(ev) => {
@@ -332,7 +340,7 @@ const DealsList = () => {
             </a>
             <div className="p-2 table-record">
               <h5 className="title" >Agregar Negocio</h5> <br/>
-              { requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{color:'red'}}>Requerido: </span>: ""}
+              <button type="submit">save</button>              { requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{color:'red'}}>Requerido: </span>: ""}
               { requiredDocument.length != 0 && addActiveTab == 2 && requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
 
               { needDocument.documents?.length && addActiveTab == 4? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
@@ -381,7 +389,7 @@ const DealsList = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation setLibraryClient={setLibraryClient} setModal={setModal} setNeedDocument={setNeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
+                  <AddMainInformation generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setValue={setValue} registerState={register} handleSubmitGeneral={handleSubmit} setLibraryClient={setLibraryClient} setModal={setModal} setNeedDocument={setNeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>
@@ -404,6 +412,7 @@ const DealsList = () => {
               </TabContent>
             </div>
           </ModalBody>
+        </form>
         </Modal>
 
         <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
