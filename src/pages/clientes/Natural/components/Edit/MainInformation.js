@@ -166,7 +166,12 @@ const MainInformation = ({ setModal, editData }) => {
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de emisión</label>
-          <DatePicker selected={rutIssueDate} className="form-control" onChange={(date) => setRutIssueDate(date)} />
+          <DatePicker
+            selected={rutIssueDate}
+            className="form-control"
+            onChange={(date) => setRutIssueDate(date)}
+            dateFormat="dd/MM/yyyy"
+          />
         </FormGroup>
       </Col>
       <Col md="3" className="mb-4">
@@ -176,6 +181,7 @@ const MainInformation = ({ setModal, editData }) => {
             selected={rutExpirationDate}
             className="form-control"
             onChange={(date) => setRutExpirationDate(date)}
+            dateFormat="dd/MM/yyyy"
           />
         </FormGroup>
       </Col>
@@ -195,7 +201,12 @@ const MainInformation = ({ setModal, editData }) => {
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de nacimiento</label>
-          <DatePicker selected={birthDate} className="form-control" onChange={(date) => setBirthDate(date)} />
+          <DatePicker
+            selected={birthDate}
+            className="form-control"
+            onChange={(date) => setBirthDate(date)}
+            dateFormat="dd/MM/yyyy"
+          />
         </FormGroup>
       </Col>
       <Col md="3" className="mb-4">
@@ -348,7 +359,12 @@ const MainInformation = ({ setModal, editData }) => {
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">F de matrimonio</label>
-          <DatePicker selected={dateOfMarriage} className="form-control" onChange={(date) => setDateOfMarriage(date)} />
+          <DatePicker
+            selected={dateOfMarriage}
+            className="form-control"
+            onChange={(date) => setDateOfMarriage(date)}
+            dateFormat="dd/MM/yyyy"
+          />
         </FormGroup>
       </Col>
       <Col md="6" className="mb-4">

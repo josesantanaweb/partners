@@ -101,6 +101,7 @@ const AccountData = ({ setModal, editData }) => {
             selected={accountOpeningDate}
             className="form-control"
             onChange={(date) => setAccountOpeningDate(date)}
+            dateFormat="dd/MM/yyyy"
           />
         </FormGroup>
       </Col>

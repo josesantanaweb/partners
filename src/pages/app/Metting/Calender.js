@@ -172,6 +172,7 @@ const Metting = () => {
                           selected={dates.startDate}
                           onChange={(date) => setDates({ ...dates, startDate: date })}
                           className="form-control date-picker"
+                          dateFormat="dd/MM/yyyy"
                         />
                       </div>
                     </div>
@@ -202,6 +203,7 @@ const Metting = () => {
                           selected={dates.endDate}
                           onChange={(date) => setDates({ ...dates, endDate: date })}
                           className="form-control date-picker"
+                          dateFormat="dd/MM/yyyy"
                         />
                       </div>
                     </div>

@@ -424,6 +424,7 @@ const AdviserList = () => {
                         selected={birthDate}
                         className="form-control"
                         onChange={(date) => setBirthDate(date)}
+                        dateFormat="dd/MM/yyyy"
                       />
                     </FormGroup>
                   </Col>
@@ -561,6 +562,7 @@ const AdviserList = () => {
                         className="form-control"
                         defaultValue={editData?.birthDate}
                         onChange={(date) => setEditBirthDate(date)}
+                        dateFormat="dd/MM/yyyy"
                       />
                     </FormGroup>
                   </Col>
