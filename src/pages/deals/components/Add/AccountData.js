@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Col, Button } from "../../../../components/Component";
 import CustomersServices from "../../../../services/CustomersServices";
 
-const AccountData = ({ setModal, editData, selectClient}) => {
+const AccountData = ({setGeneralStateForm, setModal, editData, selectClient}) => {
   // useForm
   const { register, handleSubmit } = useForm();
 
@@ -39,6 +39,14 @@ const AccountData = ({ setModal, editData, selectClient}) => {
             className="form-control"
             type="text"
             name="bankName"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,currentAccountData:{
+                  ...prev.currentAccountData,
+                  backName:e.target.value
+                }
+              }
+            })} 
             defaultValue={editData?.currentAccountData?.bankName}
             placeholder="Ingresa Nombre del banco"
             ref={register()}
@@ -52,6 +60,14 @@ const AccountData = ({ setModal, editData, selectClient}) => {
             className="form-control"
             type="text"
             name="accountType"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,currentAccountData:{
+                  ...prev.currentAccountData,
+                  accountType:e.target.value
+                }
+              }
+            })} 
             defaultValue={editData?.currentAccountData?.accountType}
             placeholder="Ingresa Tipo de cuenta"
             ref={register()}
@@ -65,6 +81,14 @@ const AccountData = ({ setModal, editData, selectClient}) => {
             className="form-control"
             type="text"
             name="sucursalAddress"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,currentAccountData:{
+                  ...prev.currentAccountData,
+                  sucursalAddress:e.target.value
+                }
+              }
+            })} 
             defaultValue={editData?.currentAccountData?.sucursalAddress}
             placeholder="Ingresa Direccion"
             ref={register()}
@@ -78,6 +102,14 @@ const AccountData = ({ setModal, editData, selectClient}) => {
             className="form-control"
             type="text"
             name="accountNumber"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,currentAccountData:{
+                  ...prev.currentAccountData,
+                  accountNumber:e.target.value
+                }
+              }
+            })} 
             defaultValue={editData?.currentAccountData?.accountNumber}
             placeholder="Ingresa Direccion"
             ref={register()}
@@ -91,6 +123,14 @@ const AccountData = ({ setModal, editData, selectClient}) => {
             className="form-control"
             type="date"
             name="accountOpeningDate"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,currentAccountData:{
+                  ...prev.currentAccountData,
+                  accountOpeningDate:e.target.value
+                }
+              }
+            })} 
             defaultValue={editData?.currentAccountData?.accountOpeningDate}
             placeholder="Ingresa Fecha de apertura"
             ref={register()}

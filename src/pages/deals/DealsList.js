@@ -164,8 +164,10 @@ const DealsList = () => {
   const [needDocument, setNeedDocument] = useState({});
   const [libraryClient, setLibraryClient] = useState([]);
   const { errors, register, setValue, handleSubmit } = useForm();
+
+  //State general de formual incluye todos los tabs
   const [generalStateForm, setGeneralStateForm] = useState({
-    name: "luis felipe"
+    beneficiaries:[]
   })
   const onSubmit = data => {
     console.log(generalStateForm);
@@ -395,7 +397,7 @@ const DealsList = () => {
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="2">
-                  <AddCustomerFile setModal={setModal} selectClient={selectClient}/>
+                  <AddCustomerFile  setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient}/>
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>

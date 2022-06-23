@@ -216,6 +216,12 @@ const CustomerFile = ({generalStateForm,setGeneralStateForm,registerState, handl
   };
   const onOptionsCurrenciesChange = (optionValue) => {
     setCurrenciesOptions(optionValue);
+    setGeneralStateForm( prev => {
+      return {
+        ...prev,currencyId:optionValue.value
+      }
+    })
+    
   };
 
   useEffect(() => {
@@ -237,6 +243,11 @@ const CustomerFile = ({generalStateForm,setGeneralStateForm,registerState, handl
   };
   const onOptionsPaymentsMethodsChange = (optionValue) => {
     setPaymentMethodsOptions(optionValue);
+    setGeneralStateForm( prev => {
+      return {
+        ...prev,paymentMethodId:optionValue.value
+      }
+    })
   };
   useEffect(() => {
     getPaymentMethods();
@@ -244,6 +255,11 @@ const CustomerFile = ({generalStateForm,setGeneralStateForm,registerState, handl
 
   const onOptionsAdvisorFeeChange = (optionValue) => {
     setAdvisorFeeOptions(optionValue);
+    setGeneralStateForm( prev => {
+      return {
+        ...prev,advisorFee:optionValue.value
+      }
+    })
   };
 
   // OnChange function to get the input data
@@ -328,9 +344,7 @@ const CustomerFile = ({generalStateForm,setGeneralStateForm,registerState, handl
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
       <Col md="12" className="mb-4">
         <FormGroup className="border-bottom pb-2">
-          <h6 onClick={ ()=> {
-   
-          }}>Datos del Cliente - Natural</h6>
+          <h6 >Datos del Cliente - Natural</h6>
         </FormGroup>
       </Col>
       <Col md="6" className="mb-4">
@@ -511,6 +525,15 @@ const CustomerFile = ({generalStateForm,setGeneralStateForm,registerState, handl
             type="number"
             className="form-control"
             name="period"
+            onChange={(e)=>{
+            
+             // onOptionsCompaniesChange(e)
+              setGeneralStateForm( prev => {
+                return {
+                  ...prev,yearsOfThePlan:e.target.value
+                }
+              })
+            }}
             ref={register({ required: "Este campo es obligatorio *" })}
             defaultValue={formData.period}
           />
@@ -529,6 +552,11 @@ const CustomerFile = ({generalStateForm,setGeneralStateForm,registerState, handl
             type="number"
             className="form-control"
             name="amount"
+            onChange={(e)=> setGeneralStateForm( prev => {
+              return {
+                ...prev,amountOfTheInvestment:e.target.value
+              }
+            })}
             ref={register({ required: "Este campo es obligatorio *" })}
             defaultValue={formData.amount}
           />
@@ -552,6 +580,11 @@ const CustomerFile = ({generalStateForm,setGeneralStateForm,registerState, handl
             type="number"
             className="form-control"
             name="amount"
+            onChange={(e) => setGeneralStateForm( prev => {
+              return {
+                ...prev,totalNetValueUSD:e.target.value
+              }
+            })}
             ref={register({ required: "Este campo es obligatorio *" })}
             defaultValue={formData.amount}
           />
@@ -575,6 +608,11 @@ const CustomerFile = ({generalStateForm,setGeneralStateForm,registerState, handl
             type="text"
             className="form-control"
             name="paymentMethodId"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,originsOfTheFunds:e.target.value
+              }
+            })}
             ref={register({ required: "Este campo es obligatorio *" })}
             defaultValue={formData.paymentMethodId}
             placeholder="Ej: Herencia, Patrimonio, etc"
@@ -601,6 +639,11 @@ const CustomerFile = ({generalStateForm,setGeneralStateForm,registerState, handl
               type="number"
               className="form-control"
               name="advisorFeeComission"
+              onChange={(e)=>setGeneralStateForm( prev => {
+                return {
+                  ...prev,percentage:e.target.value
+                }
+              })}
               defaultValue={formData.advisorFeeComission}
               placeholder="Ej: 1 - 5 - 10"
             />
