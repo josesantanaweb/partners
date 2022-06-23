@@ -165,7 +165,7 @@ const CustomerId = () => {
       formData.forEach((value, key) => (object[key] = value));
       var json = JSON.stringify(object);
       JSON.stringify(Object.fromEntries(formData));
-      // console.log(json);
+      console.log(json);
 
       await LibraryServices.addCustomerLibDoc(formData, customerId);
       setData([submittedData, customerId]);
@@ -219,6 +219,8 @@ const CustomerId = () => {
     const year = dateParse.getFullYear();
     return `${day}/${month}/${year}`;
   };
+
+  console.log(data);
 
   return (
     <React.Fragment>

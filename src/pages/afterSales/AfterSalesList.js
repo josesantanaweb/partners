@@ -21,9 +21,12 @@ import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
 import DocumentsServices from "../../services/DocumentsServices";
+import AfterSalesServices from "../../services/AfterSalesServices";
 
 const DocumentsList = () => {
   const [data, setData] = useState([]);
+  const [postDeals, setPostDeals] = useState([]);
+
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,6 +55,22 @@ const DocumentsList = () => {
     name: "",
     description: "",
   });
+
+  // function to get documents
+  const getPostDeals = async () => {
+    try {
+      const postDeals = await AfterSalesServices.getPostDealOperations();
+      const postDealData = await postDeals.data.map((data) => data);
+      console.log(`Post deals:`, postDealData);
+      setPostDeals(postDealData);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    getPostDeals();
+  }, []);
 
   // function to reset the form
   const resetForm = () => {
@@ -119,7 +138,9 @@ const DocumentsList = () => {
   // Get current list, pagination
   const indexOfLastItem = currentPage * itemPerPage;
   const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = postDeals.slice(indexOfFirstItem, indexOfLastItem);
+
+  console.log(`Current ITEMS:`, currentItems);
 
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -130,6 +151,14 @@ const DocumentsList = () => {
       return description.substring(0, 35) + "...";
     }
     return description;
+  };
+
+  const parseDate = (date) => {
+    const dateParse = new Date(date);
+    const day = dateParse.getDate();
+    const month = dateParse.getMonth() + 1;
+    const year = dateParse.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
   return (
@@ -143,7 +172,7 @@ const DocumentsList = () => {
                 Operaciones Post Venta
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} acciones</p>
+                <p>Total {currentItems?.length} acciones</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -183,40 +212,61 @@ const DocumentsList = () => {
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Tipo Post Venta</span>
+                  <span className="sub-text">N. de Operación</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Cliente</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">N. de Operación</span>
+                  <span className="sub-text">Operación Post Venta</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Asesor</span>
+                  <span className="sub-text">Operación Post Venta</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Plan/Producto</span>
+                  <span className="sub-text">Fecha ingresada</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Empresa</span>
+                  <span className="sub-text">Fecha estimada</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Fecha de Ingreso</span>
+                  <span className="sub-text">Fecha final</span>
                 </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Fecha Proceso</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Monto</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Moneda</span>
-                </DataTableRow>
+
                 <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
-              {/*Head*/}
+              {currentItems.length > 0
+                ? currentItems.map((item, index) => (
+                    <DataTableItem key={index}>
+                      <DataTableRow className="text-center">
+                        <span>{item?.dealId}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.createdByAdvisor?.name == null ? `No encontrado` : item?.customer?.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.action?.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span className="text-primary">{item?.ammount}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{parseDate(item?.dateOfEntry)}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{parseDate(item?.estimateDate)}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{parseDate(item?.realDate)}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>Accion</span>
+                      </DataTableRow>
+                    </DataTableItem>
+                  ))
+                : null}
             </div>
 
             <PreviewAltCard>
