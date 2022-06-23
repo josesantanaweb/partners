@@ -5,8 +5,10 @@ import { FormGroup, Form } from "reactstrap";
 import { Col, DataTableHead, DataTableRow, DataTableItem, Button, RSelect } from "../../../../components/Component";
 import CustomersServices from "../../../../services/CustomersServices";
 import DealsServices from "../../../../services/DealsServices";
+
+let customerDebounce = null;
 // Deals data
-const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) => {
+const CustomerFile = ({generalStateForm,setGeneralStateForm,registerState, handleSubmitGeneral, setValue ,setLibraryClient,setRequiredDocument, setSelectClient, setNeedDocument}) => {
   const [data, setData] = useState([]);
   const [dataCust, setCust] = useState([]);
   const [dataCustLegal, setCustLegal] = useState([]);
@@ -45,16 +47,16 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
   ];
 
   // get Natural customers
-  const getCustomers = async (search) => {
+  const getCustomers = async (query) => {
 
     try {
-      const customers = await CustomersServices.getCustomerNatural();
-      const customersData = await customers.data.map((data) => data);
-      const customers1 = await CustomersServices.getCustomerLegal();
-      const customersLegalData = await customers1.data.map((data) => data);
+      const customersNatural = await CustomersServices.getCustomerNatural(query);
+      const customersData = await customersNatural.data.map((data) => data);
+      const customersLegal = await CustomersServices.getCustomerLegal(query);
+      const customersLegalData = await customersLegal.data.map((data) => data);
       setCust([...customersData, ...customersLegalData]);
       setCustTable(customersData);
-      console.log(customersLegalData)
+
 
     } catch (error) {}
   };
@@ -67,10 +69,10 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
     } catch (error) {}
   };
 
-  useEffect(() => {
-    getCustomers();
-    getCustomersLegal();
-  }, []);
+  // useEffect(() => {
+  //   getCustomers();
+  //   getCustomersLegal();
+  // }, []);
 
   const [formData, setFormData] = useState({
     planId: "",
@@ -109,11 +111,7 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
     resetForm();
   };
 
-  console.log(`PlanId: `, plansOptions.value); // PlanId
-  console.log(`CompanyId: `, companiesOptions.value); // CompanyId
-  console.log(`CurrencyId: `, currenciesOptions.value); // CurrencyId
-  console.log(`PaymentMethodId: `, paymentMethodsOptions.value); // PaymentMethodId
-  console.log(`AdvisorFeeOptionSelect: `, advisorFeeOptionsSelect.value); // PaymentMethodId
+  
   // ! Solictar campo select advosorFee true false
   // ! POSTMAN /deals/selects
 
@@ -133,6 +131,7 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
       rut,
       names,
     } = submitData;
+
     let submittedData = {
       planId: plansOptions.value,
       companyId: companiesOptions.value,
@@ -170,7 +169,10 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
 
   const onOptionsPlansChange = async(optionValue) => {
     setPlansOptions(optionValue);
-    
+    setGeneralStateForm( prev => {
+      return {
+        ...prev,planId:optionValue.value }
+    })
   };
 
   useEffect(() => {
@@ -189,6 +191,11 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
   };
   const onOptionsCompaniesChange = (optionValue) => {
     setCompaniesOptions(optionValue);
+    setGeneralStateForm( prev => {
+      return {
+        ...prev,companyId:optionValue.value
+      }
+    })
   };
   useEffect(() => {
     getCompanies();
@@ -249,10 +256,24 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
   };
 
   // function to get customer names and rut from input search
+  
+
   const handleInputSearchChange = (ev) => {
-    setSearch(ev.target.value);
-    setSearchRut(ev.target.value);
-    filtrar(ev.target.value);
+  
+    const query = ev.target.value;
+    setSearch(query);
+    window.clearTimeout(customerDebounce);
+    
+
+    if (!query){
+      setCust([]);
+      return;
+    } ;
+
+    customerDebounce = setTimeout(() => {
+      getCustomers(query)
+    }, 1000)
+
   };
 
   // function to filter customer table by name fields
@@ -267,13 +288,15 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
 
   // function to get customer names from input search
   const handleClickedRegisterNames = (customerName) => {
-    dataCust.filter((customer) => customer.names === customerName && setSearch(customerName));
-  };
-
-  useEffect(() => {
-    getCustomers(search);
     
-  }, []);
+    dataCust.filter((customer) => customer.names === customerName && setSearch(customerName) || customerName === customer.companyName && setSearch(customerName));
+
+  };  
+
+  // useEffect(() => {
+  //   getCustomers(search);
+    
+  // }, []);
 
   // Function to set input rut value in input field
   const handleClickedRegisterRut = (customerRut) => {
@@ -292,11 +315,10 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
 
   //Peticion en base al tipo de client y el plan escogido
   const getDealsType = async (type = 1, planId = 1) => {
-    const dataTlf = await DealsServices.getDealsTypeForms(type, planId.value)
-    console.log("data! :",dataTlf.documents)
-    setRequiredDocument(dataTlf.customerSegments)
-    setNeeedDocument(dataTlf)
-    console.log('select',dataTlf)
+    const dataTlf = await DealsServices.getDealsTypeForms(type, planId.value);
+    
+    setRequiredDocument(dataTlf.customerSegments); // segmentos requeridos
+    setNeedDocument(dataTlf) // documentos requeridos
   } 
 
   
@@ -306,7 +328,9 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
       <Col md="12" className="mb-4">
         <FormGroup className="border-bottom pb-2">
-          <h6>Datos del Cliente - Natural</h6>
+          <h6 onClick={ ()=> {
+   
+          }}>Datos del Cliente - Natural</h6>
         </FormGroup>
       </Col>
       <Col md="6" className="mb-4">
@@ -332,7 +356,7 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
             type="text"
             name="rut"
             value={searchRut}
-            onChange={handleInputSearchChange}
+            disabled={true}
             ref={register()}
             readOnly
           />
@@ -362,7 +386,7 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
 
             {dataCust.length > 0
               ? dataCust.map((customer) => (
-                  <DataTableItem key={customer.id} handleClickedRegisterNames={handleClickedRegisterNames} handleClickedRegisterRut={handleClickedRegisterRut} customer={customer} useTypeClient={useTypeClient} setSelectClient={setSelectClient}>
+                  <DataTableItem generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setValue={setValue} registerState={registerState} handleSubmitGeneral={handleSubmitGeneral} setLibraryClient={setLibraryClient} key={customer.id} handleClickedRegisterNames={handleClickedRegisterNames} handleClickedRegisterRut={handleClickedRegisterRut} customer={customer} useTypeClient={useTypeClient} setSelectClient={setSelectClient}>
                     <DataTableRow className="text-center">
                       <span>{customer.names? customer.names:customer.companyName}</span>
                     </DataTableRow>
@@ -459,7 +483,7 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
             onChange={ (e) =>{ 
               getDealsType(typeClient,e);
               onOptionsPlansChange(e)
-          
+             
               }
             }
             defautlValue={formData.planId}
@@ -471,7 +495,12 @@ const CustomerFile = ({setRequiredDocument, setSelectClient, setNeeedDocument}) 
         <RSelect
           value={companiesOptions}
           options={companies}
-          onChange={onOptionsCompaniesChange}
+          onChange={(e)=>{
+            
+            onOptionsCompaniesChange(e)
+          
+          }
+          }
           defautlValue={formData.companyId}
         />
       </Col>

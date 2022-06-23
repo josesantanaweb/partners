@@ -41,6 +41,14 @@ const DealsServices = {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
+  },
+
+  getCustomerLibraryId: async(id) => {
+    console.log("Customer libray iD:", id)
+    const response  = await api.get(`/customer-library/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
   }
 };
 

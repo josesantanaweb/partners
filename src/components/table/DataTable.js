@@ -1,6 +1,8 @@
 import classNames from "classnames";
+import { set } from "lodash";
 import React from "react";
 import { Card } from "reactstrap";
+import DealsServices from "../../services/DealsServices";
 
 export const DataTable = ({ className, bodyClassName, title, ...props }) => {
   return (
@@ -46,17 +48,32 @@ export const DataTableRow = ({ className, size, ...props }) => {
   return <div className={rowClass}>{props.children}</div>;
 };
 
-export const DataTableItem = ({ className, handleClickedRegisterNames, handleClickedRegisterRut, customer,useTypeClient,setSelectClient,...props }) => {
+export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerState,setValue, handleSubmitGeneral ,className, handleClickedRegisterNames, handleClickedRegisterRut, customer,useTypeClient,setSelectClient,setLibraryClient,...props }) => {
+  
+
   
   return (
   <div 
     className={`nk-tb-item ${className ? className : ""}`}
-    onClick={ () => {
-      handleClickedRegisterNames(customer.names); 
+    onClick={ async() => {
+      console.log(customer)
+ 
+      setGeneralStateForm( prev => {
+ 
+
+        return {
+          ...prev,customerId:customer.id
+        }
+      })
+      
+      console.log(registerState)
+      customer.names? handleClickedRegisterNames(customer.names):handleClickedRegisterNames(customer.companyName)
       handleClickedRegisterRut(customer.rut);
       useTypeClient(customer.type.id);
       setSelectClient(customer)
-      console.log(customer)
+      const response = await DealsServices.getCustomerLibraryId(customer.id)
+      setLibraryClient(response.data)
+  
       }
     } 
   >

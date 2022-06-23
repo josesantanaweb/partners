@@ -33,6 +33,7 @@ import DocumentsServices from "../../services/DocumentsServices";
 
 // Desde acá
 import DealsServices from "../../services/DealsServices";
+import InvestorProfile from "./components/Add/InvestorProfile";
 
 const DealsList = () => {
   const [data, setData] = useState([]);
@@ -66,7 +67,6 @@ const DealsList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
   const [sm, updateSm] = useState(false);
-  const { errors, register, handleSubmit } = useForm();
 
   // function to reset the form
   // const resetForm = () => {
@@ -161,7 +161,16 @@ const DealsList = () => {
   //////////////////// llealg 1 //////////////////////////////////
   const [requiredDocument, setRequiredDocument] = useState([]);
   const [selectClient, setSelectClient] = useState({});
-  const [needDocument, setNeeedDocument] = useState({})
+  const [needDocument, setNeedDocument] = useState({});
+  const [libraryClient, setLibraryClient] = useState([]);
+  const { errors, register, setValue, handleSubmit } = useForm();
+  const [generalStateForm, setGeneralStateForm] = useState({
+    name: "luis felipe"
+  })
+  const onSubmit = data => {
+    console.log(generalStateForm);
+  };
+
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -315,13 +324,15 @@ const DealsList = () => {
           size="lg"
           style={{ maxWidth: "1092px" }}
         >
-          <ModalBody>
+        <form onSubmit={handleSubmit(onSubmit)}>
+        <ModalBody>
             <a
               href="#close"
               onClick={(ev) => {
                 ev.preventDefault();
                 onFormCancel();
-                setRequiredDocument([])
+                setRequiredDocument([]);
+                setNeedDocument([]);
               }}
               className="close"
             >
@@ -329,8 +340,11 @@ const DealsList = () => {
             </a>
             <div className="p-2 table-record">
               <h5 className="title" >Agregar Negocio</h5> <br/>
-              { requiredDocument.length ? <span style={{color:'red'}}>Requerido: </span>: ""}
-              { requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
+              <button type="submit">save</button>              { requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{color:'red'}}>Requerido: </span>: ""}
+              { requiredDocument.length != 0 && addActiveTab == 2 && requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
+
+              { needDocument.documents?.length && addActiveTab == 4? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
+              { needDocument.documents?.length > 0 && addActiveTab == 4 && needDocument.documents.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
               <Nav tabs>
                 <NavItem>
                   <NavLink
@@ -375,7 +389,7 @@ const DealsList = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation setModal={setModal} setNeeedDocument={setNeeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
+                  <AddMainInformation generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setValue={setValue} registerState={register} handleSubmitGeneral={handleSubmit} setLibraryClient={setLibraryClient} setModal={setModal} setNeedDocument={setNeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>
@@ -386,12 +400,19 @@ const DealsList = () => {
                 </TabPane>
               </TabContent>
               <TabContent activeTab={addActiveTab}>
+                <TabPane tabId="3">
+                  <InvestorProfile setModal={setModal} selectClient={selectClient}/>
+
+                </TabPane>
+              </TabContent>
+              <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="4">
-                  <DocumentRequired needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
+                  <DocumentRequired libraryClient={libraryClient} needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
                 </TabPane>
               </TabContent>
             </div>
           </ModalBody>
+        </form>
         </Modal>
 
         <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
