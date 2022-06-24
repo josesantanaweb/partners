@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Col, Button } from "../../../../../components/Component";
 import CustomersServices from "../../../../../services/CustomersServices";
 
-const PersonalReferences = ({ setGeneralStateForm ,setModal, editData }) => {
+const PersonalReferences = ({setAddActiveTab2, setGeneralStateForm ,setModal, editData }) => {
   // useForm
   const { register, handleSubmit } = useForm();
 
@@ -141,21 +141,9 @@ const PersonalReferences = ({ setGeneralStateForm ,setModal, editData }) => {
       <Col size="12">
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
           <li>
-            <Button color="primary" size="md" type="submit">
-              Guardar
+            <Button color="primary" size="md" type="button" onClick={()=>setAddActiveTab2('4')}>
+              Siguiente
             </Button>
-          </li>
-          <li>
-            <a
-              href="#cancel"
-              className="link link-light"
-              onClick={(ev) => {
-                ev.preventDefault();
-                onFormCancel();
-              }}
-            >
-              Cancelar
-            </a>
           </li>
         </ul>
       </Col>

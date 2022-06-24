@@ -321,7 +321,7 @@ const DealsList = () => {
         {/* Nuevo elemento Modal */}
         <Modal
           isOpen={modal.add}
-          toggle={() => setModal({ add: false })}
+       
           className="modal-dialog-centered "
           size="lg"
           style={{ maxWidth: "1092px" }}
@@ -341,8 +341,15 @@ const DealsList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2 table-record">
-              <h5 className="title" >Agregar Negocio</h5> <br/>
-              <button type="submit">save</button>              { requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{color:'red'}}>Requerido: </span>: ""}
+              <div className="d-flex justify-content-between align-items-center">
+                <h5 className="title" >Agregar Negocio</h5>
+                <Button color="primary" type="submit" >
+                    <Icon name="plus" className="mr-1"></Icon>
+                          Guardar Operacion
+                </Button>
+              </div>
+           
+              { requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{color:'red'}}>Requerido: </span>: ""}
               { requiredDocument.length != 0 && addActiveTab == 2 && requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
 
               { needDocument.documents?.length && addActiveTab == 4? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
@@ -391,13 +398,13 @@ const DealsList = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setValue={setValue} registerState={register} handleSubmitGeneral={handleSubmit} setLibraryClient={setLibraryClient} setModal={setModal} setNeedDocument={setNeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
+                  <AddMainInformation setAddActiveTab={setAddActiveTab} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setValue={setValue} registerState={register} handleSubmitGeneral={handleSubmit} setLibraryClient={setLibraryClient} setModal={setModal} setNeedDocument={setNeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="2">
-                  <AddCustomerFile  setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient}/>
+                  <AddCustomerFile setAddActiveTab1={setAddActiveTab} setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient}/>
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>

@@ -8,7 +8,7 @@ import DealsServices from "../../../../services/DealsServices";
 
 let customerDebounce = null;
 // Deals data
-const CustomerFile = ({generalStateForm,setGeneralStateForm,registerState, handleSubmitGeneral, setValue ,setLibraryClient,setRequiredDocument, setSelectClient, setNeedDocument}) => {
+const CustomerFile = ({setAddActiveTab, generalStateForm,setGeneralStateForm,registerState, handleSubmitGeneral, setValue ,setLibraryClient,setRequiredDocument, setSelectClient, setNeedDocument}) => {
   const [data, setData] = useState([]);
   const [dataCust, setCust] = useState([]);
   const [dataCustLegal, setCustLegal] = useState([]);
@@ -653,22 +653,11 @@ const CustomerFile = ({generalStateForm,setGeneralStateForm,registerState, handl
       <Col md="6" className="mt-4">
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
           <li>
-            <Button color="primary" size="md" type="submit">
+            <Button color="primary" type="button" size="md" onClick={()=>setAddActiveTab('2')}>
               Siguiente
             </Button>
           </li>
-          <li>
-            <a
-              href="#cancel"
-              onClick={(ev) => {
-                ev.preventDefault();
-                onFormCancel();
-              }}
-              className="link link-light"
-            >
-              Cancelar
-            </a>
-          </li>
+      
         </ul>
       </Col>
     </Form>
