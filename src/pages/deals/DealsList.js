@@ -173,6 +173,149 @@ const DealsList = () => {
     console.log(generalStateForm);
   };
 
+  const postDeals = (e)=> {
+    e.preventDefault();
+
+    const statePost = {
+      customerId: 3,
+      companyId: 1,
+      currencyId: 1,
+      paymentMethodId: 1,
+      planId: 1,
+      yearsOfThePlan: 5,
+      amountOfTheInvestment: 1,
+      totalNetValueUSD: 1,
+      originsOfTheFunds: "dfsafdf",
+      advisorFee: true,
+      percentage: 10,
+      customerInfo: {
+        companyQuestionnaire: {
+          mailCorrespondence: true,
+          receiveDocumentsByDocuSign: true,
+          depositOrWithdrawalOfThirdParties: false,
+          companyIsAnInvestmentFund: false,
+          businessWithCompaniesInTheUS: false,
+          otherAccountsInUS: false,
+          bearerSharesIssued: false,
+          isBankBranchOrARepresentationOfABank: false,
+          companyLocatedInUSCosideratedAMutualFunds: false,
+          isItABureauDeChange: false,
+          isAGovernmentEntity: false,
+          isAnInvestmentFundOrFinancialAdvisor: false
+        },
+        companyFinancialProfile: {
+          contractType: "tipo de contrato",
+          anualFee: "Fee anual",
+          needForLiquidity: "necesidad de liquidez",
+          annualIncomeUSD: "Ingreso anul USD",
+          liquidAssets: "Activos liquidos",
+          totalEquity: "Patrimonio total",
+          timeToWithdrawMoneyFromTheAccount: "Tiempo estimado (en años) en el que planea realizar retiros de la cuenta",
+          bankOfOriginOfFunds: "Banco origen de los fondos",
+          countryOfOriginOfFunds: "País origen de los fondos",
+          sourceOfFunds: "Origen de los fondos",
+          exactAmountOfInvestment: "Monto exacto de la inversión que planea en Stonex",
+          methodOfPayment: "Método de pago"
+        },
+        companyPartners: [
+          {
+            percentageOfParticipation: "Porcentaje de participación",
+            category: "Categoria",
+            names: "nombres",
+            lastName: "Apellido",
+            zipCode: "Codigo postal",
+            phone: "Teléfono",
+            email: "correo",
+            numberOfChildrens: "Número de hijos",
+            birthDate: "Fecha de nacimiento",
+            countryIssuingTheDocument: "País emisor del documento",
+            documentoType: "Tipo de documento",
+            documentNumber: "Número de documento",
+            documentIssuanceDate: "Fecha de emisión de documento",
+            documentExpirationDate: "Fecha de expiración de documento",
+            nationality: "Nacionalidad",
+            employmentSituation: "Situación Laboral",
+            gender: "genero",
+            profession: "Profesión",
+            civilStatus: "Estado Civil",
+            address: {
+              countryId: 1,
+              stateId: 1,
+              communne: "random commune",
+              residenceAddress: "Dirección de residencia",
+              addressOfCorrespondence: "Dirección de correspondencia"
+            }
+          }
+        ],
+        companyBanksItWorksWith: [
+          {
+            countryId: 1,
+            stateId: 1,
+            bank: "Banco",
+            bankBranch: "Sucursal del banco"
+          }
+        ],
+        address: {
+          countryId: 1,
+          stateId: 1,
+          communne: "random commune"
+        },
+        personalReferences: {
+          names: "nombres",
+          paternalLastName: "apellido paterno",
+          maternalLastName: "apellido materno",
+          email: "correo",
+          phone: "telefono de contacto",
+          address: "direccion"
+        },
+        customerKnowledge: {
+          timeKnowingTheCustomer: "Tiempo conociendo al cliente",
+          dateLastClientMeeting: "04/17/99",
+          locationOfLastCustomerMeeting: "ubicacion de la ultima reunion con el cliente"
+        }
+      },
+      investorProfile: [
+        {
+          number: 1,
+          answer: 4
+        },
+        {
+          number: 2,
+          answer: 3
+        },
+        {
+          number: 3,
+          answer: 4
+        },
+        {
+          number: 4,
+          answer: 1
+        },
+        {
+          number: 5,
+          answer: 2
+        },
+        {
+          number: 6,
+          answer: 2
+        },
+        {
+          number: 7,
+          answer: 3
+        },
+        {
+          number: 7,
+          answer: 4
+        }
+      ],
+      documents: [
+ 
+      ]
+    }
+
+    DealsServices.postDeals(statePost)
+  }
+
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -343,7 +486,7 @@ const DealsList = () => {
             <div className="p-2 table-record">
               <div className="d-flex justify-content-between align-items-center">
                 <h5 className="title" >Agregar Negocio</h5>
-                <Button color="primary" type="submit" >
+                <Button color="primary" type="submit" onClick={ e=> postDeals(e)}>
                     <Icon name="plus" className="mr-1"></Icon>
                           Guardar Operacion
                 </Button>

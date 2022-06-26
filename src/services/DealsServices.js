@@ -49,6 +49,14 @@ const DealsServices = {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
+  },
+
+  postDeals: async(deal) => {
+    console.log('Post de deal',deal);
+    const response = await api.post('/deals', deal, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data
   }
 };
 

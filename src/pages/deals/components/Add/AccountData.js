@@ -140,7 +140,7 @@ const AccountData = ({setAddActiveTab2 ,setGeneralStateForm, setModal, editData,
       <Col size="12">
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
           <li>
-            <Button color="primary" size="md" onClick={ ()=> setAddActiveTab2('2')}>
+            <Button color="primary" size="md" type="button" onClick={ ()=> setAddActiveTab2('2')}>
               Siguiente
             </Button>
           </li>

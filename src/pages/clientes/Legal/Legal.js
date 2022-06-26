@@ -33,7 +33,7 @@ import CustomersServices from "../../../services/CustomersServices";
 const Legal = () => {
   const { contextData } = useContext(LegalContext);
   const [data, setData] = contextData;
-
+  const [generalStateForm, setGeneralStateForm] = useState({})
   const [sm, updateSm] = useState(false);
   const [modal, setModal] = useState({ edit: false, add: false, document: false });
   const [editData, setEditData] = useState();
@@ -198,7 +198,7 @@ const Legal = () => {
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow>
-                        <span>{item.id}</span>
+                        <span>{}</span>
                       </DataTableRow>
                       <DataTableRow>
                         <div className="user-card">
@@ -315,7 +315,7 @@ const Legal = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation setModal={setModal} formData={formData} />
+                  <AddMainInformation setGeneralStateForm={setGeneralStateForm } setModal={setModal} formData={formData} />
                 </TabPane>
               </TabContent>
             </div>
@@ -356,7 +356,7 @@ const Legal = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  {editData && <EditMainInformation setModal={setModal} editData={editData} />}
+                  {editData && <EditMainInformation setGeneralStateForm={setGeneralStateForm } setModal={setModal} editData={editData} />}
                 </TabPane>
               </TabContent>
             </div>
@@ -427,7 +427,7 @@ const Legal = () => {
               </Nav>
               <TabContent activeTab={addActiveTabDocument}>
                 <TabPane tabId="1">
-                  {editData && <CompanyQuestionnaire setModal={setModal} editData={editData} />}
+                  {editData && <CompanyQuestionnaire  setModal={setModal} editData={editData} />}
                 </TabPane>
                 <TabPane tabId="2">
                   {editData && <CompanyFinancialProfile setModal={setModal} editData={editData} />}
@@ -435,7 +435,7 @@ const Legal = () => {
                 <TabPane tabId="3">
                   {editData && <CompanyBanksItWorksWith setModal={setModal} editData={editData} />}
                 </TabPane>
-                <TabPane tabId="4">{editData && <CompanyPartners setModal={setModal} editData={editData} />}</TabPane>
+                <TabPane tabId="4">{editData && <CompanyPartners setGeneralStateForm={setGeneralStateForm} setModal={setModal} editData={editData} />}</TabPane>
               </TabContent>
             </div>
           </ModalBody>

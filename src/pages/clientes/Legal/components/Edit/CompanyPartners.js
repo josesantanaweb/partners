@@ -14,7 +14,6 @@ const CompanyPartners = ({ setModal, editData }) => {
   const [countryId, setCountryId] = useState(1);
   const [cityId, setCityId] = useState(2);
   const [citiesOptions, setCitiesOptions] = useState([]);
-  const [editBirthDate, setEditBirthDate] = useState(new Date(editData?.companyPartners[0].birthDate));
 
   // useForm
   const { register, handleSubmit, control } = useForm();
@@ -191,7 +190,7 @@ const CompanyPartners = ({ setModal, editData }) => {
                 className="form-control"
                 type="text"
                 name={`editPartners[${i}].names`}
-                defaultValue={editData?.companyPartners[i].names}
+                defaultValue={editData?.companyPartners[i]?.names}
                 placeholder="Ingresa Nombres"
                 ref={register()}
               />

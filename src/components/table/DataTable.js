@@ -4,7 +4,7 @@ import React from "react";
 import { Card } from "reactstrap";
 import DealsServices from "../../services/DealsServices";
 
-export const DataTable = ({ className, bodyClassName, title, ...props }) => {
+export const DataTable = ({setGeneralStateForm , className, bodyClassName, title, ...props }) => {
   return (
     <Card className={`${className ? className : ""}`}>
       <div className="card-inner-group">{props.children}</div>
@@ -57,17 +57,18 @@ export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerSta
     className={`nk-tb-item ${className ? className : ""}`}
     onClick={ async() => {
       console.log(customer)
- 
+      
+      if(generalStateForm)
       setGeneralStateForm( prev => {
  
 
         return {
           ...prev,customerId:customer.id
         }
-      })
+      });
       
       console.log(registerState)
-      customer.names? handleClickedRegisterNames(customer.names):handleClickedRegisterNames(customer.companyName)
+      customer.names? handleClickedRegisterNames(customer?.names):handleClickedRegisterNames(customer?.companyName)
       handleClickedRegisterRut(customer.rut);
       useTypeClient(customer.type.id);
       setSelectClient(customer)
