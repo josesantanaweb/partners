@@ -18,7 +18,8 @@ import {
   TooltipComponent,
   PreviewAltCard,
 } from "../../components/Component";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
+import es from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
@@ -26,6 +27,7 @@ import { findUpper } from "../../utils/Utils";
 import { useForm } from "react-hook-form";
 import { AdviserContext } from "./AdviserContext";
 import AdvisersServices from "../../services/AdvisersServices";
+registerLocale("es", es);
 
 const AdviserList = () => {
   const { contextData } = useContext(AdviserContext);
@@ -425,6 +427,7 @@ const AdviserList = () => {
                         className="form-control"
                         onChange={(date) => setBirthDate(date)}
                         dateFormat="dd/MM/yyyy"
+                        locale="es"
                       />
                     </FormGroup>
                   </Col>
@@ -563,6 +566,7 @@ const AdviserList = () => {
                         defaultValue={editData?.birthDate}
                         onChange={(date) => setEditBirthDate(date)}
                         dateFormat="dd/MM/yyyy"
+                        locale="es"
                       />
                     </FormGroup>
                   </Col>

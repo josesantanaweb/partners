@@ -157,7 +157,7 @@ const Legal = () => {
                     <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>
                         <Icon name="plus" className="mr-1"></Icon>
-                        Agregar Cliente
+                        Agregar Cliente Legal
                       </Button>
                     </li>
                   </ul>
@@ -300,7 +300,7 @@ const Legal = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Agregar Cliente</h5>
+              <h5 className="title">Agregar Cliente Legal</h5>
               <Nav tabs>
                 <NavItem>
                   <NavLink
@@ -341,7 +341,7 @@ const Legal = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Editar Cliente</h5>
+              <h5 className="title">Editar Cliente Legal</h5>
               <Nav tabs>
                 <NavItem>
                   <NavLink
@@ -382,7 +382,7 @@ const Legal = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Editar Cliente</h5>
+              <h5 className="title">Editar Cliente Legal</h5>
               <Nav tabs>
                 <NavItem>
                   <NavLink
