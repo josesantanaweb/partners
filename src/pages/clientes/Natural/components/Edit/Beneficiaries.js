@@ -1,12 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { FormGroup, Form } from "reactstrap";
+import DatePicker, { registerLocale } from "react-datepicker";
+import es from "date-fns/locale/es";
+import "react-datepicker/dist/react-datepicker.css";
 import { useForm, useFieldArray } from "react-hook-form";
 import { Col, Button, Icon } from "../../../../../components/Component";
 import CustomersServices from "../../../../../services/CustomersServices";
+registerLocale("es", es);
 
 const Beneficiaries = ({ setModal, editData }) => {
   // useForm
   const { register, handleSubmit, control } = useForm();
+
+  const [rutIssueDate, setRutIssueDate] = useState(new Date());
+  const [rutExpirationDate, setRutExpirationDate] = useState(new Date());
 
   const {
     fields: beneficiariesFields,
@@ -27,6 +34,8 @@ const Beneficiaries = ({ setModal, editData }) => {
       email: "",
       percentage: "",
       birthDate: "",
+      rutIssueDate: new Date(),
+      rutExpirationDate: new Date(),
       kinship: "",
       address: "",
       rut: "",
@@ -36,34 +45,34 @@ const Beneficiaries = ({ setModal, editData }) => {
   // Editar cliente
   const onFormSubmit = async (submitData) => {
     const { addBeneficiaries, editBeneficiaries } = submitData;
-    if (editBeneficiaries && addBeneficiaries) {
-      let beneficiaries = {
-        beneficiaries: [...addBeneficiaries, ...editBeneficiaries],
-      };
-      try {
-        await CustomersServices.editCustomerNatural(editData.id, beneficiaries);
-        setModal({ edit: false }, { add: false }, { document: false });
-        window.location.reload();
-      } catch (error) {}
-    } else if (editBeneficiaries) {
-      let beneficiaries = {
-        beneficiaries: editBeneficiaries,
-      };
-      try {
-        await CustomersServices.editCustomerNatural(editData.id, beneficiaries);
-        setModal({ edit: false }, { add: false }, { document: false });
-        window.location.reload();
-      } catch (error) {}
-    } else {
-      let beneficiaries = {
-        beneficiaries: addBeneficiaries,
-      };
-      try {
-        await CustomersServices.editCustomerNatural(editData.id, beneficiaries);
-        setModal({ edit: false }, { add: false }, { document: false });
-        window.location.reload();
-      } catch (error) {}
-    }
+    // if (editBeneficiaries && addBeneficiaries) {
+    //   let beneficiaries = {
+    //     beneficiaries: [...addBeneficiaries, ...editBeneficiaries],
+    //   };
+    //   try {
+    //     await CustomersServices.editCustomerNatural(editData.id, beneficiaries);
+    //     setModal({ edit: false }, { add: false }, { document: false });
+    //     window.location.reload();
+    //   } catch (error) {}
+    // } else if (editBeneficiaries) {
+    //   let beneficiaries = {
+    //     beneficiaries: editBeneficiaries,
+    //   };
+    //   try {
+    //     await CustomersServices.editCustomerNatural(editData.id, beneficiaries);
+    //     setModal({ edit: false }, { add: false }, { document: false });
+    //     window.location.reload();
+    //   } catch (error) {}
+    // } else {
+    //   let beneficiaries = {
+    //     beneficiaries: addBeneficiaries,
+    //   };
+    //   try {
+    //     await CustomersServices.editCustomerNatural(editData.id, beneficiaries);
+    //     setModal({ edit: false }, { add: false }, { document: false });
+    //     window.location.reload();
+    //   } catch (error) {}
+    // }
   };
 
   return (
@@ -194,6 +203,30 @@ const Beneficiaries = ({ setModal, editData }) => {
               />
             </FormGroup>
           </div>
+          <div style={{ "max-width": "173px" }}>
+            <FormGroup>
+              <label className="form-label">Fecha de emisión</label>
+              <DatePicker
+                selected={rutIssueDate}
+                className="form-control"
+                onChange={(date) => setRutIssueDate(date)}
+                dateFormat="dd/MM/yyyy"
+                locale="es"
+              />
+            </FormGroup>
+          </div>
+          <div style={{ "max-width": "173px" }}>
+            <FormGroup>
+              <label className="form-label">Fecha de expiracion</label>
+              <DatePicker
+                selected={rutExpirationDate}
+                className="form-control"
+                onChange={(date) => setRutExpirationDate(date)}
+                dateFormat="dd/MM/yyyy"
+                locale="es"
+              />
+            </FormGroup>
+          </div>
         </span>
       ))}
 
@@ -304,6 +337,30 @@ const Beneficiaries = ({ setModal, editData }) => {
                 name={`addBeneficiaries[${i}].rut`}
                 placeholder="Ingresa RUT"
                 ref={register()}
+              />
+            </FormGroup>
+          </div>
+          <div style={{ "max-width": "173px" }}>
+            <FormGroup>
+              <label className="form-label">Fecha de emisión</label>
+              <DatePicker
+                selected={rutIssueDate}
+                className="form-control"
+                onChange={(date) => setRutIssueDate(date)}
+                dateFormat="dd/MM/yyyy"
+                locale="es"
+              />
+            </FormGroup>
+          </div>
+          <div style={{ "max-width": "173px" }}>
+            <FormGroup>
+              <label className="form-label">Fecha de expiracion</label>
+              <DatePicker
+                selected={rutExpirationDate}
+                className="form-control"
+                onChange={(date) => setRutExpirationDate(date)}
+                dateFormat="dd/MM/yyyy"
+                locale="es"
               />
             </FormGroup>
           </div>
