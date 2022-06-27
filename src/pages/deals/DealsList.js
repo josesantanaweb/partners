@@ -192,21 +192,31 @@ const DealsList = () => {
       percentage: parseInt(generalStateForm.percentage),
       customerInfo: {
         currentAccountData: {
-          ...generalStateForm.currentAccountData
+          ...generalStateForm.currentAccountData,
+          id: parseInt(generalStateForm.currentAccountData.id ) 
         },
         employmentHistory:{
-          ...generalStateForm.employmentHistory
+          ...generalStateForm.employmentHistory,
+          id: parseInt(generalStateForm.employmentHistory.id ) 
         },
         personalReferences:{
           ...generalStateForm.personalReferences
+          ,id: parseInt(generalStateForm.personalReferences.id ) 
         },
         investmentExperience: {
-          ...generalStateForm.investmentExperience
+          ...generalStateForm.investmentExperience,
+          id: parseInt(generalStateForm.investmentExperience.id ) 
         },
         spousalHistory:{
-          ...generalStateForm.spousalHistory
+          ...generalStateForm.spousalHistory,
+          id: parseInt(generalStateForm.spousalHistory.id ) 
         },
-        beneficiaries:[...generalStateForm.beneficiaries],
+      beneficiaries:[...generalStateForm.beneficiaries.map( act => {
+        return {
+          ...act,
+          id: parseInt(act.id)
+        }
+      })],
 
       },
       investorProfile: [
@@ -247,7 +257,7 @@ const DealsList = () => {
  
       ]
     }
-    console.log(statePost)
+    console.log('estado',statePost)
     DealsServices.postDeals(statePost).then( ()=>  window.location.reload())
   }
 

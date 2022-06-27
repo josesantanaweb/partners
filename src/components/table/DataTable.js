@@ -62,7 +62,6 @@ export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerSta
       setGeneralStateForm( prev => {
         return {
           ...prev,
-          
             customerId: parseInt(customer.id)  ,
             companyId:  customer.companyId,
             currencyId: customer.currencyId,
@@ -74,25 +73,25 @@ export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerSta
             originsOfTheFunds: customer.originsOfTheFunds,
             advisorFee: customer.advisorFee,
             percentage: parseInt(customer.percentage),
-            customerInfo: {
-              currentAccountData: {
-                ...customer.currentAccountData
-              },
-              employmentHistory:{
-                ...customer.employmentHistory
-              },
-              personalReferences:{
-                ...customer.personalReferences
-              },
-              investmentExperience: {
-                ...customer.investmentExperience
-              },
-              spousalHistory:{
-                ...customer.spousalHistory
-              },
+        
+              currentAccountData: 
+                customer.currentAccountData,
+          
+              employmentHistory:
+                customer.employmentHistory
+              ,
+              personalReferences:
+                customer.personalReferences
+              ,
+              investmentExperience: 
+                customer.investmentExperience
+              ,
+              spousalHistory:
+                customer.spousalHistory
+              ,
               beneficiaries:[...customer.beneficiaries],
       
-            },
+            
             investorProfile: [
               {
                 number: 1,
@@ -133,7 +132,7 @@ export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerSta
           
         }
       })
-      console.log(registerState)
+      console.log(generalStateForm)
       customer.names? handleClickedRegisterNames(customer.names):handleClickedRegisterNames(customer.companyName)
       handleClickedRegisterRut(customer.rut);
       useTypeClient(customer.type.id);
