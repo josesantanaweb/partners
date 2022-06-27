@@ -209,7 +209,7 @@ const Beneficiaries = ({setAddActiveTab1,setGeneralStateForm, setModal, editData
                   const aux = [...prev.beneficiaries]
                   aux[i] = {
                     ...aux[i],
-                    name: e.target.value
+                    names: e.target.value
                   }
                   return {
                     ...prev,beneficiaries:[...aux]

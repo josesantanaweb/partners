@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FormGroup, Modal, ModalBody, Form, Alert, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import classnames from "classnames";
 
@@ -13,20 +13,30 @@ import CompanyFinancialProfile from '../../../clientes/Legal/components/Edit/Com
 import CompanyBanksItWorksWith from '../../../clientes/Legal/components/Edit/CompanyBanksItWorksWith'
 import CompanyPartners from '../../../clientes/Legal/components/Edit/CompanyPartners'
 
-const CustomerFile = ({setAddActiveTab1,setGeneralStateForm,selectClient}) => {
-  const [addActiveTab, setAddActiveTab] = useState("1");
+const CustomerFile = ({setAddActiveTab1,setGeneralStateForm, generalStateForm,selectClient}) => {
+  const [addActiveTab, setAddActiveTab] = useState("0");
   const [addActiveTabDocument, setAddActiveTabDocument] = useState("1");
   const [modal, setModal] = useState({
     edit: false,
     add: false,
 
   });
+  
+
+    
+
+
+
+  
 
   return (
-    <React.Fragment>
+    <React.Fragment  className={selectClient?'':'d-none'}>
+ 
       {
+        selectClient?.type?
+    
         selectClient?.type?.id  == 1? <Nav tabs>
-        <NavItem>
+        <NavItem >
           <NavLink
             tag="a"
             href="#tab"
@@ -129,65 +139,66 @@ const CustomerFile = ({setAddActiveTab1,setGeneralStateForm,selectClient}) => {
         </NavLink>
       </NavItem>
     </Nav>
+    :<></>
       }
   
       <TabContent activeTab={addActiveTab}>
         <TabPane tabId="1">
-          <AddAccountData setAddActiveTab2={setAddActiveTab} setGeneralStateForm={setGeneralStateForm} setModal={setModal} editData={selectClient} selectClient={selectClient} />
+          <AddAccountData setAddActiveTab2={setAddActiveTab} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setModal={setModal} editData={selectClient} selectClient={selectClient} />
           {/* formData={formData} */}
         </TabPane>
       </TabContent>
       <TabContent activeTab={addActiveTab}>
         <TabPane tabId="2">
-          <AddEmploymentHistory setAddActiveTab2={setAddActiveTab} setGeneralStateForm={setGeneralStateForm} setModal={setModal}  editData={selectClient} selectClient={selectClient} />
+          <AddEmploymentHistory setAddActiveTab2={setAddActiveTab} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setModal={setModal}  editData={selectClient} selectClient={selectClient} />
           {/* formData={formData} */}
         </TabPane>
       </TabContent>
       <TabContent activeTab={addActiveTab}>
         <TabPane tabId="3">
-          <PersonalReferences setAddActiveTab2={setAddActiveTab} setGeneralStateForm={setGeneralStateForm} setModal={setModal}  editData={selectClient} selectClient={selectClient} />
+          <PersonalReferences setAddActiveTab2={setAddActiveTab} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setModal={setModal}  editData={selectClient} selectClient={selectClient} />
           {/* formData={formData} */}
         </TabPane>
       </TabContent>
       <TabContent activeTab={addActiveTab}>
         <TabPane tabId="4">
-          <InvestMentExpirence setAddActiveTab2={setAddActiveTab} setGeneralStateForm={setGeneralStateForm} setModal={setModal}  editData={selectClient} selectClient={selectClient} />
+          <InvestMentExpirence setAddActiveTab2={setAddActiveTab}generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setModal={setModal}  editData={selectClient} selectClient={selectClient} />
           {/* formData={formData} */}
         </TabPane>
       </TabContent>
       <TabContent activeTab={addActiveTab}>
         <TabPane tabId="5">
-          <SpousalHistory setAddActiveTab2={setAddActiveTab}  setGeneralStateForm={setGeneralStateForm} setModal={setModal}  editData={selectClient} selectClient={selectClient} />
+          <SpousalHistory setAddActiveTab2={setAddActiveTab} generalStateForm={generalStateForm}  setGeneralStateForm={setGeneralStateForm} setModal={setModal}  editData={selectClient} selectClient={selectClient} />
           {/* formData={formData} */}
         </TabPane>
       </TabContent>
       <TabContent activeTab={addActiveTab}>
         <TabPane tabId="6">
-          <Beneficiaries setAddActiveTab1={setAddActiveTab1}  setGeneralStateForm={setGeneralStateForm} setModal={setModal}  selectClient={selectClient} />
+          <Beneficiaries setAddActiveTab1={setAddActiveTab1} generalStateForm={generalStateForm}  setGeneralStateForm={setGeneralStateForm} setModal={setModal}  selectClient={selectClient} />
           {/* formData={formData} */}
         </TabPane>
       </TabContent>
       <TabContent activeTab={addActiveTab}>
         <TabPane tabId="7">
-          <CompanyQyestionnaire   setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient} />
+          <CompanyQyestionnaire   setGeneralStateForm={setGeneralStateForm}generalStateForm={generalStateForm} setModal={setModal} selectClient={selectClient} />
           {/* formData={formData} */}
         </TabPane>
       </TabContent>
       <TabContent activeTab={addActiveTab}>
         <TabPane tabId="8">
-          <CompanyFinancialProfile  setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient} />
+          <CompanyFinancialProfile generalStateForm={generalStateForm}  setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient} />
           {/* formData={formData} */}
         </TabPane>
       </TabContent>
       <TabContent activeTab={addActiveTab}>
         <TabPane tabId="9">
-          <CompanyBanksItWorksWith  setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient} />
+          <CompanyBanksItWorksWith generalStateForm={generalStateForm}  setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient} />
           {/* formData={formData} */}
         </TabPane>
       </TabContent>
       <TabContent activeTab={addActiveTab}>
         <TabPane tabId="10">
-          <CompanyPartners  setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient} />
+          <CompanyPartners generalStateForm={generalStateForm}  setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient} />
           {/* formData={formData} */}
         </TabPane>
       </TabContent>

@@ -4,7 +4,7 @@ import React from "react";
 import { Card } from "reactstrap";
 import DealsServices from "../../services/DealsServices";
 
-export const DataTable = ({setGeneralStateForm , className, bodyClassName, title, ...props }) => {
+export const DataTable = ({ className, bodyClassName, title, ...props }) => {
   return (
     <Card className={`${className ? className : ""}`}>
       <div className="card-inner-group">{props.children}</div>
@@ -57,18 +57,84 @@ export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerSta
     className={`nk-tb-item ${className ? className : ""}`}
     onClick={ async() => {
       console.log(customer)
-      
-      if(generalStateForm)
-      setGeneralStateForm( prev => {
- 
+      console.log('State final', generalStateForm)
 
+      setGeneralStateForm( prev => {
         return {
-          ...prev,customerId:customer.id
-        }
-      });
+          ...prev,
+          
+            customerId: parseInt(customer.id)  ,
+            companyId:  customer.companyId,
+            currencyId: customer.currencyId,
+            paymentMethodId: customer.paymentMethodId,
+            planId: customer.planId,
+            yearsOfThePlan: parseInt(customer.yearsOfThePlan) ,
+            amountOfTheInvestment: parseInt( customer.amountOfTheInvestment),
+            totalNetValueUSD: parseInt(customer.totalNetValueUSD) ,
+            originsOfTheFunds: customer.originsOfTheFunds,
+            advisorFee: customer.advisorFee,
+            percentage: parseInt(customer.percentage),
+            customerInfo: {
+              currentAccountData: {
+                ...customer.currentAccountData
+              },
+              employmentHistory:{
+                ...customer.employmentHistory
+              },
+              personalReferences:{
+                ...customer.personalReferences
+              },
+              investmentExperience: {
+                ...customer.investmentExperience
+              },
+              spousalHistory:{
+                ...customer.spousalHistory
+              },
+              beneficiaries:[...customer.beneficiaries],
       
+            },
+            investorProfile: [
+              {
+                number: 1,
+                answer: 4
+              },
+              {
+                number: 2,
+                answer: 3
+              },
+              {
+                number: 3,
+                answer: 4
+              },
+              {
+                number: 4,
+                answer: 1
+              },
+              {
+                number: 5,
+                answer: 2
+              },
+              {
+                number: 6,
+                answer: 2
+              },
+              {
+                number: 7,
+                answer: 3
+              },
+              {
+                number: 7,
+                answer: 4
+              }
+            ],
+            documents: [
+       
+            ]
+          
+        }
+      })
       console.log(registerState)
-      customer.names? handleClickedRegisterNames(customer?.names):handleClickedRegisterNames(customer?.companyName)
+      customer.names? handleClickedRegisterNames(customer.names):handleClickedRegisterNames(customer.companyName)
       handleClickedRegisterRut(customer.rut);
       useTypeClient(customer.type.id);
       setSelectClient(customer)

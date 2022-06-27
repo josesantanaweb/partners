@@ -497,7 +497,7 @@ const CustomerFile = ({setAddActiveTab, generalStateForm,setGeneralStateForm,reg
             onChange={ (e) =>{ 
               getDealsType(typeClient,e);
               onOptionsPlansChange(e)
-             
+            
               }
             }
             defautlValue={formData.planId}

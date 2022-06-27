@@ -152,6 +152,7 @@ const DealsList = () => {
     try {
       const deals = await DealsServices.getDeal();
       const dealsData = await deals.data.map((data) => data);
+      console.log(dealsData)
       setData(dealsData);
     } catch (error) {}
   };
@@ -175,104 +176,38 @@ const DealsList = () => {
 
   const postDeals = (e)=> {
     e.preventDefault();
+    console.log(generalStateForm)
 
     const statePost = {
-      customerId: 3,
-      companyId: 1,
-      currencyId: 1,
-      paymentMethodId: 1,
-      planId: 1,
-      yearsOfThePlan: 5,
-      amountOfTheInvestment: 1,
-      totalNetValueUSD: 1,
-      originsOfTheFunds: "dfsafdf",
-      advisorFee: true,
-      percentage: 10,
+      customerId: parseInt(generalStateForm.customerId) ,
+      companyId:  generalStateForm.companyId,
+      currencyId: generalStateForm.currencyId,
+      paymentMethodId: generalStateForm.paymentMethodId,
+      planId: generalStateForm.planId,
+      yearsOfThePlan: parseInt(generalStateForm.yearsOfThePlan) ,
+      amountOfTheInvestment: parseInt( generalStateForm.amountOfTheInvestment),
+      totalNetValueUSD: parseInt(generalStateForm.totalNetValueUSD) ,
+      originsOfTheFunds: generalStateForm.originsOfTheFunds,
+      advisorFee: generalStateForm.advisorFee,
+      percentage: parseInt(generalStateForm.percentage),
       customerInfo: {
-        companyQuestionnaire: {
-          mailCorrespondence: true,
-          receiveDocumentsByDocuSign: true,
-          depositOrWithdrawalOfThirdParties: false,
-          companyIsAnInvestmentFund: false,
-          businessWithCompaniesInTheUS: false,
-          otherAccountsInUS: false,
-          bearerSharesIssued: false,
-          isBankBranchOrARepresentationOfABank: false,
-          companyLocatedInUSCosideratedAMutualFunds: false,
-          isItABureauDeChange: false,
-          isAGovernmentEntity: false,
-          isAnInvestmentFundOrFinancialAdvisor: false
+        currentAccountData: {
+          ...generalStateForm.currentAccountData
         },
-        companyFinancialProfile: {
-          contractType: "tipo de contrato",
-          anualFee: "Fee anual",
-          needForLiquidity: "necesidad de liquidez",
-          annualIncomeUSD: "Ingreso anul USD",
-          liquidAssets: "Activos liquidos",
-          totalEquity: "Patrimonio total",
-          timeToWithdrawMoneyFromTheAccount: "Tiempo estimado (en años) en el que planea realizar retiros de la cuenta",
-          bankOfOriginOfFunds: "Banco origen de los fondos",
-          countryOfOriginOfFunds: "País origen de los fondos",
-          sourceOfFunds: "Origen de los fondos",
-          exactAmountOfInvestment: "Monto exacto de la inversión que planea en Stonex",
-          methodOfPayment: "Método de pago"
+        employmentHistory:{
+          ...generalStateForm.employmentHistory
         },
-        companyPartners: [
-          {
-            percentageOfParticipation: "Porcentaje de participación",
-            category: "Categoria",
-            names: "nombres",
-            lastName: "Apellido",
-            zipCode: "Codigo postal",
-            phone: "Teléfono",
-            email: "correo",
-            numberOfChildrens: "Número de hijos",
-            birthDate: "Fecha de nacimiento",
-            countryIssuingTheDocument: "País emisor del documento",
-            documentoType: "Tipo de documento",
-            documentNumber: "Número de documento",
-            documentIssuanceDate: "Fecha de emisión de documento",
-            documentExpirationDate: "Fecha de expiración de documento",
-            nationality: "Nacionalidad",
-            employmentSituation: "Situación Laboral",
-            gender: "genero",
-            profession: "Profesión",
-            civilStatus: "Estado Civil",
-            address: {
-              countryId: 1,
-              stateId: 1,
-              communne: "random commune",
-              residenceAddress: "Dirección de residencia",
-              addressOfCorrespondence: "Dirección de correspondencia"
-            }
-          }
-        ],
-        companyBanksItWorksWith: [
-          {
-            countryId: 1,
-            stateId: 1,
-            bank: "Banco",
-            bankBranch: "Sucursal del banco"
-          }
-        ],
-        address: {
-          countryId: 1,
-          stateId: 1,
-          communne: "random commune"
+        personalReferences:{
+          ...generalStateForm.personalReferences
         },
-        personalReferences: {
-          names: "nombres",
-          paternalLastName: "apellido paterno",
-          maternalLastName: "apellido materno",
-          email: "correo",
-          phone: "telefono de contacto",
-          address: "direccion"
+        investmentExperience: {
+          ...generalStateForm.investmentExperience
         },
-        customerKnowledge: {
-          timeKnowingTheCustomer: "Tiempo conociendo al cliente",
-          dateLastClientMeeting: "04/17/99",
-          locationOfLastCustomerMeeting: "ubicacion de la ultima reunion con el cliente"
-        }
+        spousalHistory:{
+          ...generalStateForm.spousalHistory
+        },
+        beneficiaries:[...generalStateForm.beneficiaries],
+
       },
       investorProfile: [
         {
@@ -312,8 +247,8 @@ const DealsList = () => {
  
       ]
     }
-
-    DealsServices.postDeals(statePost)
+    console.log(statePost)
+    DealsServices.postDeals(statePost).then( ()=>  window.location.reload())
   }
 
   return (
@@ -408,10 +343,40 @@ const DealsList = () => {
                         <span>{item.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.name}</span>
+                        <span>{item.customer.names}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        {/* <span>{handleDescriptionLength(item.description)}</span> */}
+                        <span>{item.customer.rut}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.customer.rut}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.product.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.company.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.yearsOfThePlan}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.yearsOfThePlan}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.currency.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.currency.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.paymentMethod.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.originsOfTheFunds}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.advisorFee}</span>
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
@@ -541,20 +506,19 @@ const DealsList = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation setAddActiveTab={setAddActiveTab} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setValue={setValue} registerState={register} handleSubmitGeneral={handleSubmit} setLibraryClient={setLibraryClient} setModal={setModal} setNeedDocument={setNeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
+                  <AddMainInformation  setAddActiveTab={setAddActiveTab} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setValue={setValue} registerState={register} handleSubmitGeneral={handleSubmit} setLibraryClient={setLibraryClient} setModal={setModal} setNeedDocument={setNeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="2">
-                  <AddCustomerFile setAddActiveTab1={setAddActiveTab} setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient}/>
+                  <AddCustomerFile setAddActiveTab1={setAddActiveTab} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient}/>
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="3">
                   <InvestorProfile setModal={setModal} selectClient={selectClient}/>
-
                 </TabPane>
               </TabContent>
               <TabContent activeTab={addActiveTab}>

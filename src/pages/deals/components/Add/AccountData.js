@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Col, Button } from "../../../../components/Component";
 import CustomersServices from "../../../../services/CustomersServices";
 
-const AccountData = ({setAddActiveTab2 ,setGeneralStateForm, setModal, editData, selectClient}) => {
+const AccountData = ({setAddActiveTab2 ,generalStateForm,setGeneralStateForm, setModal, editData, selectClient}) => {
   // useForm
   const { register, handleSubmit } = useForm();
 
@@ -43,7 +43,7 @@ const AccountData = ({setAddActiveTab2 ,setGeneralStateForm, setModal, editData,
               return {
                 ...prev,currentAccountData:{
                   ...prev.currentAccountData,
-                  backName:e.target.value
+                  bankName:e.target.value
                 }
               }
             })} 
