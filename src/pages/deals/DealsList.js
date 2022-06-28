@@ -68,7 +68,7 @@ const DealsList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
   const [sm, updateSm] = useState(false);
-
+  const [metaData, setMetaData] = useState({})
   // function to reset the form
   // const resetForm = () => {
   //   setFormData({
@@ -152,6 +152,7 @@ const DealsList = () => {
   const getDeals = async () => {
     try {
       const deals = await DealsServices.getDeal();
+      setMetaData(deals.meta)
       const dealsData = await deals.data.map((data) => data);
       console.log(dealsData)
       setData(dealsData);
@@ -166,12 +167,27 @@ const DealsList = () => {
   const [needDocument, setNeedDocument] = useState({});
   const [libraryClient, setLibraryClient] = useState([]);
   const { errors, register, setValue, handleSubmit } = useForm();
-
   //State general de formual incluye todos los tabs
   const [generalStateForm, setGeneralStateForm] = useState({ 
     investorProfile:[],
     beneficiaries:[]
   })
+
+  const paginateDeals = async ( service ) => {
+
+  
+      try {
+        const deals = await DealsServices.getDealsPaginate(service);
+        setMetaData(deals.meta)
+        console.log(deals.meta)
+        const dealsData = await deals.data.map((data) => data);
+        console.log(dealsData)
+        setData(dealsData);
+      } catch (error) {}
+  
+
+  }
+
   const onSubmit = data => {
     console.log(generalStateForm);
   };
@@ -179,8 +195,9 @@ const DealsList = () => {
   const postDeals = (e)=> {
     e.preventDefault();
     console.log(generalStateForm)
-
-    const statePost = {
+    let statePost = {};
+    if(selectClient.type.id == 1)
+      statePost = {
       customerId: parseInt(generalStateForm.customerId) ,
       companyId:  generalStateForm.companyId,
       currencyId: generalStateForm.currencyId,
@@ -213,7 +230,6 @@ const DealsList = () => {
       beneficiaries:[...generalStateForm.beneficiaries.map( act => {
         return {
           ...act,
-         
         }
       })],
 
@@ -224,6 +240,52 @@ const DealsList = () => {
       documents: [
  
       ]
+    }
+
+    if(selectClient.type.id == 2){
+      statePost = {
+        customerId: parseInt(generalStateForm.customerId) ,
+        companyId:  generalStateForm.companyId,
+        currencyId: generalStateForm.currencyId,
+        paymentMethodId: generalStateForm.paymentMethodId,
+        planId: generalStateForm.planId,
+        yearsOfThePlan: parseInt(generalStateForm.yearsOfThePlan) ,
+        amountOfTheInvestment: parseInt( generalStateForm.amountOfTheInvestment),
+        totalNetValueUSD: parseInt(generalStateForm.totalNetValueUSD) ,
+        originsOfTheFunds: generalStateForm.originsOfTheFunds,
+        advisorFee: generalStateForm.advisorFee,
+        percentage: parseInt(generalStateForm.percentage),
+        customerInfo: {
+          currentAccountData: {
+            ...generalStateForm.currentAccountData,
+  
+          },
+          employmentHistory:{
+            ...generalStateForm.employmentHistory,
+          },
+          personalReferences:{
+            ...generalStateForm.personalReferences,
+            
+          },
+          investmentExperience: {
+            ...generalStateForm.investmentExperience,
+          },
+          spousalHistory:{
+            ...generalStateForm.spousalHistory,
+          },
+        beneficiaries:[...generalStateForm.beneficiaries.map( act => {
+          return {
+            ...act,
+          }
+        })],
+  
+        },
+        investorProfile: [
+          ...generalStateForm.investorProfile
+        ],
+        documents: [
+        ]
+      }
     }
 
     if(statePost.customerInfo.currentAccountData.id){
@@ -408,8 +470,9 @@ const DealsList = () => {
               {currentItems.length > 0 ? (
                 <PaginationComponent
                   itemPerPage={itemPerPage}
-                  totalItems={data.length}
-                  paginate={paginate}
+                  totalItems={metaData.totalItems}
+                  paginate={()=>paginateDeals(metaData.nextPageUrl)}
+              
                   currentPage={currentPage}
                 />
               ) : (
@@ -427,7 +490,7 @@ const DealsList = () => {
        
           className="modal-dialog-centered "
           size="lg"
-          style={{ maxWidth: "1092px" }}
+          style={{ maxWidth: "1192px" }}
         >
         <form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>
