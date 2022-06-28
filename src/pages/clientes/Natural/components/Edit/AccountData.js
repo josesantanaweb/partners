@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { FormGroup, Form } from "reactstrap";
 import { useForm } from "react-hook-form";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
+import es from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
 import { Col, Button } from "../../../../../components/Component";
 import CustomersServices from "../../../../../services/CustomersServices";
+registerLocale("es", es);
 
 const AccountData = ({ setModal, editData }) => {
   const [accountOpeningDate, setAccountOpeningDate] = useState(new Date());
@@ -102,6 +104,7 @@ const AccountData = ({ setModal, editData }) => {
             className="form-control"
             onChange={(date) => setAccountOpeningDate(date)}
             dateFormat="dd/MM/yyyy"
+            locale="es"
           />
         </FormGroup>
       </Col>

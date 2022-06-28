@@ -18,19 +18,30 @@ import {
   RSelect,
 } from "../../components/Component";
 import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
+import es from "date-fns/locale/es";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
 import ValidDealsServices from "../../services/ValidDealsServices";
+import DealActionsServices from "../../services/DealActionsServices";
+import CurrenciesServices from "../../services/CurrenciesServices";
+import AfterSalesServices from "../../services/AfterSalesServices";
 
 const DocumentsList = () => {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
+
   const [dateOfEntry, setDateOfEntry] = useState(new Date());
   const [estimatedDate, setEstimatedDate] = useState(new Date());
   const [realDate, setRealDate] = useState(new Date());
+
+  const [actions, setActions] = useState([]);
+  const [actionsOptions, setActionsOptions] = useState(actions);
+
+  const [currencies, setCurrencies] = useState([]);
+  const [currenciesOptions, setCurrenciesOptions] = useState(currencies);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
@@ -41,13 +52,24 @@ const DocumentsList = () => {
     add: false,
   });
 
-  // Valid Deals
+  // Pruebas datePicker
+  const [startDate, setStartDate] = useState(new Date());
+
+  // setting spanish date picker format
+  registerLocale("es", es);
+
+  // filter deals by input search
+  // const [usuarios, setUsuarios] = useState([]);
+  const [tableDeals, setTableDeals] = useState([]);
+  const [search, setSearch] = useState("");
+
+  // function to get Valid Deals
   const getValidDeals = async () => {
     try {
       const validDeals = await ValidDealsServices.getValidDeals();
       const validDealsData = await validDeals.data.map((data) => data);
-      console.log(`Valid data`, validDealsData);
       setData(validDealsData);
+      setTableDeals(validDealsData);
     } catch (error) {}
   };
 
@@ -55,31 +77,73 @@ const DocumentsList = () => {
     getValidDeals();
   }, []);
 
+  // function to get valid deals post actions
+  const getDealsActions = async () => {
+    try {
+      const dealActions = await DealActionsServices.getDealAction();
+      const dealActionData = await dealActions.data.map((action) => ({
+        label: action?.name,
+        value: action?.id,
+        // description: action?.description,
+      }));
+
+      setActions(dealActionData);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getDealsActions();
+  }, []);
+
+  const onOptionsActionsChange = (optionValue) => {
+    setActionsOptions(optionValue);
+  };
+
+  // function to get valid deals post actions
+  const getCurrencies = async () => {
+    try {
+      const currencies = await CurrenciesServices.getCurrency();
+      const currencyData = await currencies.data.map((currency) => ({
+        label: currency?.name,
+        value: currency?.id,
+        // description: action?.description,
+      }));
+
+      setCurrencies(currencyData);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getCurrencies();
+  }, []);
+
+  const onOptionsCurrenciesChange = (optionValue) => {
+    setCurrenciesOptions(optionValue);
+  };
+
   // Valid Deals
   const [formData, setFormData] = useState({
-    // name: "",
-    // description: "",
-    customer: "",
-    company: "",
-    createdByAdvisor: "",
-    product: "",
-    createdAt: "",
-    amountOfTheInvestment: "",
-    currency: "",
+    operationTypeId: "",
+    dateOfEntry: "",
+    estimateDate: "",
+    realDate: "",
+    ammount: "",
+    currencyId: "",
+    file: "",
+    dealId: "",
   });
 
   // function to reset the form
   const resetForm = () => {
     setFormData({
-      // name: "",
-      // description: "",
-      customer: "",
-      company: "",
-      createdByAdvisor: "",
-      product: "",
-      createdAt: "",
-      amountOfTheInvestment: "",
-      currency: "",
+      operationTypeId: "",
+      dateOfEntry: "",
+      estimateDate: "",
+      realDate: "",
+      ammount: "",
+      currencyId: "",
+      file: "",
+      dealId: "",
     });
   };
 
@@ -91,37 +155,21 @@ const DocumentsList = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const {
-      // name,
-      // description,
-      customer,
-      company,
-      createdByAdvisor,
-      product,
-      createdAt,
-      amountOfTheInvestment,
-      currency,
-    } = submitData;
+    const { operationTypeId, dateOfEntry, estimateDate, realDate, ammount, currencyId, file, dealId } = submitData;
     let submittedData = {
-      // name: name,
-      // description: description,
-      customer: customer,
-      company: company,
-      createdByAdvisor: createdByAdvisor,
-      product: product,
-      createdAt: createdAt,
-      amountOfTheInvestment: amountOfTheInvestment,
-      currency: currency,
-
+      operationTypeId: actionsOptions?.value,
       dateOfEntry: dateOfEntry,
-      estimatedDate: estimatedDate,
+      estimateDate: estimateDate,
       realDate: realDate,
+      ammount,
+      currencyId: currenciesOptions?.value,
+      file: file[0],
+      dealId,
     };
+
     try {
       await ValidDealsServices.addValidDeal(submittedData);
       setData([submittedData, ...data]);
-      console.log(submittedData);
-
       resetForm();
       getValidDeals();
       setModal({ edit: false }, { add: false });
@@ -130,31 +178,45 @@ const DocumentsList = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const {
-      // name,
-      // description,
-      customer,
-      company,
-      createdByAdvisor,
-      product,
-      createdAt,
-      amountOfTheInvestment,
-      currency,
-    } = submitData;
-
+    const { operationTypeId, dateOfEntry, estimateDate, realDate, ammount, currencyId, file, dealId } = submitData;
     let submittedData = {
-      // name: name,
-      // description: description,
-      customer: customer,
-      company: company,
-      createdByAdvisor: createdByAdvisor,
-      product: product,
-      createdAt: createdAt,
-      amountOfTheInvestment: amountOfTheInvestment,
-      currency: currency,
+      operationTypeId: operationTypeId,
+      // operationTypeId: actionsOptions?.value,
+      dateOfEntry: dateOfEntry,
+      estimateDate: estimateDate,
+      realDate: realDate,
+      ammount: ammount,
+      currencyId: currencyId,
+      // currencyId: currenciesOptions?.value,
+      file: file[0],
+      dealId: dealId, //->customerId
     };
 
     try {
+      const formData = new FormData();
+      let object = {};
+
+      formData.append("operationTypeId", actionsOptions?.value);
+      formData.append("dateOfEntry", dateOfEntry);
+      formData.append("estimateDate", estimateDate);
+      formData.append("realDate", realDate);
+      formData.append("ammount", editData?.amountOfTheInvestment);
+      formData.append("currencyId", currenciesOptions?.value);
+      formData.append("file", file[0]);
+      formData.append("dealId", editData?.id);
+
+      formData.forEach((value, key) => (object[key] = value));
+      var json = JSON.stringify(object);
+      JSON.stringify(Object.fromEntries(formData));
+      console.log(json);
+
+      await AfterSalesServices.addPostDealOperations(formData);
+
+      setModal({ edit: false, add: false });
+      resetForm();
+      // getCustomerDocument(Number(customerId));
+      window.location.reload();
+
       await ValidDealsServices.editValidDeal(editData.id, submittedData);
       resetForm();
       getValidDeals();
@@ -191,18 +253,27 @@ const DocumentsList = () => {
     return dateString;
   };
 
-  const options = [
-    { value: "retiro", label: "Retiro" },
-    { value: "abono", label: "Abono" },
-    { value: "transfondos", label: "Transferencia de Fondos" },
-    { value: "fondomutuo", label: "Fondo Mutuo" },
-  ];
+  // function to handle search
+  const handleChange = (e) => {
+    setSearch(e.target.value);
+    filtredData(e.target.value);
+  };
 
-  const optionsCurrency = [
-    { value: "usd", label: "USD" },
-    { value: "eur", label: "EUR" },
-    { value: "clp", label: "CLP" },
-  ];
+  // filter by input search field
+  const filtredData = (term) => {
+    var res = tableDeals.filter((item) => {
+      if (
+        item?.ammount.toString().toLowerCase().includes(term.toLowerCase())
+        // item.createdByAdvisor.name.toString().toLowerCase().includes(term.toLowerCase())
+      ) {
+        return item;
+      }
+    });
+    setData(res);
+  };
+
+  //! Formato de fecha mes dia anio para el back
+  //! Agregar CAMPO NUMERO DE DOCUMENTO
 
   return (
     <React.Fragment>
@@ -235,8 +306,8 @@ const DocumentsList = () => {
                         </div>
                         <input
                           type="text"
-                          // value={search}
-                          // onChange={handleChange}
+                          value={search}
+                          onChange={handleChange}
                           className="form-control"
                           placeholder="Buscar por: Cliente, Asesor/a, Plan o Empresa"
                           style={{ minWidth: "25rem" }}
@@ -290,10 +361,10 @@ const DocumentsList = () => {
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow className="text-center">
-                        <span>{item?.customer?.name == null ? `No encontrado` : item?.customer?.name}</span>
+                        <span>{item?.customer?.names}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item?.createdByAdvisor?.name}</span>
+                        <span>{item?.createdByAdvisor?.name == null ? `No encontrado` : item?.customer?.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item?.product?.name}</span>
@@ -346,87 +417,7 @@ const DocumentsList = () => {
           </div>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
-          <ModalBody>
-            <a
-              href="#close"
-              onClick={(ev) => {
-                ev.preventDefault();
-                onFormCancel();
-              }}
-              className="close"
-            >
-              <Icon name="cross-sm"></Icon>
-            </a>
-            <div className="p-2">
-              <h5 className="title">Agregar Operación</h5>
-              {errorMessage !== "" && (
-                <div className="my-3">
-                  <Alert color="danger" className="alert-icon">
-                    <Icon name="alert-circle" />
-                    Producto ya existe
-                  </Alert>
-                </div>
-              )}
-              <div className="mt-4">
-                <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Nombre</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="name"
-                        defaultValue={formData.name}
-                        placeholder="Nombre documento"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.name && <span className="invalid">{errors.name.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Descripción</label>
-                      <textarea
-                        className="form-control"
-                        type="text"
-                        name="description"
-                        defaultValue={formData.description}
-                        placeholder="Descripción documento"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.description && <span className="invalid">{errors.description.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col size="12">
-                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
-                      <li>
-                        <Button color="primary" size="md" type="submit">
-                          Agregar Documento
-                        </Button>
-                      </li>
-                      <li>
-                        <a
-                          href="#cancel"
-                          onClick={(ev) => {
-                            ev.preventDefault();
-                            onFormCancel();
-                            setErrorMessage("");
-                          }}
-                          className="link link-light"
-                        >
-                          Cancelar
-                        </a>
-                      </li>
-                    </ul>
-                  </Col>
-                </Form>
-              </div>
-            </div>
-          </ModalBody>
-        </Modal>
+        {/* Modal Edit */}
 
         <Modal
           isOpen={modal.edit}
@@ -512,11 +503,10 @@ const DocumentsList = () => {
                     <FormGroup>
                       <label className="form-label">Tipo de Operación</label>
                       <RSelect
-                        // value={documentsOptions}
-                        // options={documents}
-                        // onChange={onOptionsDocumentsChange}
-                        // defautlValue={formData.documentTypeId}
-                        options={options}
+                        value={actionsOptions}
+                        options={actions}
+                        onChange={onOptionsActionsChange}
+                        defautlValue={formData.actionsTypeId}
                       />
                     </FormGroup>
                   </Col>
@@ -524,38 +514,82 @@ const DocumentsList = () => {
                   <Col md="4">
                     <FormGroup>
                       <label className="form-label">Fecha de Ingreso</label>
-                      <DatePicker
+                      <input
+                        className="form-control"
+                        type="date"
+                        name="dateOfEntry"
+                        defaultValue={formData.dateOfEntry}
+                        ref={register()}
+                      />
+                      {/* <DatePicker
                         selected={dateOfEntry}
                         className="form-control"
                         onChange={(date) => setDateOfEntry(date)}
-                        dateFormat="dd/MM/yyyy"
-                      />
+                        dateFormat="MM/dd/yyyy"
+                        locale="es"
+                      /> */}
                     </FormGroup>
                   </Col>
 
                   <Col md="4">
                     <FormGroup>
                       <label className="form-label">Fecha de Estimada</label>
-                      <DatePicker
+                      <input
+                        type="date"
+                        className="form-control"
+                        name="estimateDate"
+                        defaultValue={formData.estimateDate}
+                        ref={register()}
+                      />
+                      {/* <DatePicker
                         selected={estimatedDate}
                         className="form-control"
                         onChange={(date) => setEstimatedDate(date)}
-                        dateFormat="dd/MM/yyyy"
-                      />
+                        dateFormat="MM/dd/yyyy"
+                        locale="es"
+                      /> */}
                     </FormGroup>
                   </Col>
 
                   <Col md="4">
                     <FormGroup>
                       <label className="form-label">Fecha Real</label>
+                      <input
+                        className="form-control"
+                        type="date"
+                        name="realDate"
+                        defaultValue={formData.realDate}
+                        ref={register()}
+                      />
+                      {/* <DatePicker
+                        selected={realDate}
+                        className="form-control"
+                        onChange={(date) => setRealDate(date)}
+                        dateFormat="MM/dd/yyyy"
+                        locale="es"
+                      /> */}
+                    </FormGroup>
+                  </Col>
+                  {/* <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Fecha Prueba</label>
+                      <DatePicker
+                        className="form-control"
+                        selected={startDate}
+                        onChange={(date) => setStartDate(date)}
+                        dateFormat="MM/dd/yyyy"
+                        locale="es"
+                      />
+
                       <DatePicker
                         selected={realDate}
                         className="form-control"
                         onChange={(date) => setRealDate(date)}
-                        dateFormat="dd/MM/yyyy"
+                        dateFormat="MM/dd/yyyy"
+                        locale="es"
                       />
                     </FormGroup>
-                  </Col>
+                  </Col> */}
 
                   {/* <Col md="4">
                     <FormGroup>
@@ -598,15 +632,16 @@ const DocumentsList = () => {
 
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Monto</label>
+                      <label className="form-label">Monto</label>{" "}
                       <input
                         className="form-control"
                         type="text"
-                        name="amount"
-                        defaultValue={formData.amount}
+                        name="ammount"
+                        defaultValue={formData.ammount}
                         placeholder="Ingrese monto"
                         ref={register()}
                       />
+                      <small className="text-primary">Inversión actual: {editData?.amountOfTheInvestment}</small>{" "}
                     </FormGroup>
                   </Col>
 
@@ -614,11 +649,10 @@ const DocumentsList = () => {
                     <FormGroup>
                       <label className="form-label">Moneda</label>
                       <RSelect
-                        // value={documentsOptions}
-                        // options={documents}
-                        // onChange={onOptionsDocumentsChange}
-                        // defautlValue={formData.documentTypeId}
-                        options={optionsCurrency}
+                        value={currenciesOptions}
+                        options={currencies}
+                        onChange={onOptionsCurrenciesChange}
+                        defautlValue={formData.actionsTypeId}
                       />
                     </FormGroup>
                   </Col>
