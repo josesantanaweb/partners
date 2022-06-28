@@ -57,22 +57,170 @@ export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerSta
     className={`nk-tb-item ${className ? className : ""}`}
     onClick={ async() => {
       console.log(customer)
- 
-      setGeneralStateForm( prev => {
- 
-
-        return {
-          ...prev,customerId:customer.id
-        }
-      })
+      console.log('State final', generalStateForm)
       
-      console.log(registerState)
+      if(customer.type.id == 1){
+        
+        customer.beneficiaries = [...customer?.beneficiaries]
+        setGeneralStateForm( prev => {
+          return {
+            ...prev,beneficiaries: []
+          }
+        })
+
+        setGeneralStateForm( prev => {
+          return {
+            ...prev,
+              customerId: customer.id  ,
+              companyId:  customer.companyId,
+              currencyId: customer.currencyId,
+              paymentMethodId: customer.paymentMethodId,
+              planId: customer.planId,
+              yearsOfThePlan: parseInt(customer.yearsOfThePlan) ,
+              amountOfTheInvestment: parseInt( customer.amountOfTheInvestment),
+              totalNetValueUSD: parseInt(customer.totalNetValueUSD) ,
+              originsOfTheFunds: customer.originsOfTheFunds,
+              advisorFee: customer.advisorFee,
+              percentage: parseInt(customer.percentage),
+                currentAccountData: {
+                  ...customer.currentAccountData,
+                },
+                employmentHistory:{
+                  ...customer.employmentHistory,
+                }
+                ,
+                personalReferences:{
+                  ...customer.personalReferences,
+                },
+                investmentExperience: {
+                  ...customer.investmentExperience,
+          
+                },
+                spousalHistory:{
+                  ...customer.spousalHistory,
+                },
+                beneficiaries:[...customer?.beneficiaries],
+              investorProfile: [
+                {
+                  number: 1,
+                  answer: 4
+                },
+                {
+                  number: 2,
+                  answer: 3
+                },
+                {
+                  number: 3,
+                  answer: 4
+                },
+                {
+                  number: 4,
+                  answer: 1
+                },
+                {
+                  number: 5,
+                  answer: 2
+                },
+                {
+                  number: 6,
+                  answer: 2
+                },
+                {
+                  number: 7,
+                  answer: 3
+                },
+                {
+                  number: 7,
+                  answer: 4
+                }
+              ],
+              documents: [
+              ]
+            
+          }
+        })
+      }
+      
+      if(customer.type.ud == 2) {
+        setGeneralStateForm( prev => {
+          return {
+            ...prev,
+              customerId: customer.id  ,
+              companyId:  customer.companyId,
+              currencyId: customer.currencyId,
+              paymentMethodId: customer.paymentMethodId,
+              planId: customer.planId,
+              yearsOfThePlan: parseInt(customer.yearsOfThePlan) ,
+              amountOfTheInvestment: parseInt( customer.amountOfTheInvestment),
+              totalNetValueUSD: parseInt(customer.totalNetValueUSD) ,
+              originsOfTheFunds: customer.originsOfTheFunds,
+              advisorFee: customer.advisorFee,
+              percentage: parseInt(customer.percentage),
+              companyQuestionnaire: {
+                  ...customer.companyQuestionnaire,
+                },
+                companyFinancialProfile:{
+                  ...customer.companyFinancialProfile,
+                }
+                ,
+                companyPartners:[
+                  ...customer.companyPartners,
+                ],
+                spousalHistory:{
+                  ...customer.spousalHistory,
+                },
+              
+              investorProfile: [
+                {
+                  number: 1,
+                  answer: 4
+                },
+                {
+                  number: 2,
+                  answer: 3
+                },
+                {
+                  number: 3,
+                  answer: 4
+                },
+                {
+                  number: 4,
+                  answer: 1
+                },
+                {
+                  number: 5,
+                  answer: 2
+                },
+                {
+                  number: 6,
+                  answer: 2
+                },
+                {
+                  number: 7,
+                  answer: 3
+                },
+                {
+                  number: 7,
+                  answer: 4
+                }
+              ],
+              documents: [
+              ]
+            
+          }
+        })
+      }
+
+      
+      console.log(generalStateForm)
       customer.names? handleClickedRegisterNames(customer.names):handleClickedRegisterNames(customer.companyName)
       handleClickedRegisterRut(customer.rut);
       useTypeClient(customer.type.id);
       setSelectClient(customer)
       const response = await DealsServices.getCustomerLibraryId(customer.id)
+      console.log(response)
       setLibraryClient(response.data)
+      
   
       }
     } 

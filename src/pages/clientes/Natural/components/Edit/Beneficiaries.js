@@ -8,7 +8,7 @@ import { Col, Button, Icon } from "../../../../../components/Component";
 import CustomersServices from "../../../../../services/CustomersServices";
 registerLocale("es", es);
 
-const Beneficiaries = ({ setModal, editData }) => {
+const Beneficiaries = ({setAddActiveTab1,setGeneralStateForm, setModal, editData }) => {
   // useForm
   const { register, handleSubmit, control } = useForm();
 
@@ -238,6 +238,17 @@ const Beneficiaries = ({ setModal, editData }) => {
               <input
                 className="form-control"
                 type="text"
+                onChange={(e)=>setGeneralStateForm( prev => {
+                  const aux = [...prev.beneficiaries]
+                  aux[i] = {
+                    ...aux[i],
+                    names: e.target.value
+                  }
+                  return {
+                    ...prev,beneficiaries:[...aux]
+                  
+                  }
+                })} 
                 name={`addBeneficiaries[${i}].names`}
                 placeholder="Ingresa Nombre"
                 ref={register()}
@@ -251,6 +262,18 @@ const Beneficiaries = ({ setModal, editData }) => {
                 className="form-control"
                 type="text"
                 name={`addBeneficiaries[${i}].paternalLastName`}
+                onChange={(e)=>setGeneralStateForm( prev => {
+                  const aux = [...prev.beneficiaries]
+                  aux[i] = {
+                    ...aux[i],
+                    maternalLastName: e.target.value,
+                    paternalLastName: e.target.value
+                  }
+                  return {
+                    ...prev,beneficiaries:[...aux]
+                  
+                  }
+                })} 
                 placeholder="Ingresa Apellido"
                 ref={register()}
               />
@@ -263,7 +286,43 @@ const Beneficiaries = ({ setModal, editData }) => {
                 className="form-control"
                 type="email"
                 name={`addBeneficiaries[${i}].email`}
+                onChange={(e)=>setGeneralStateForm( prev => {
+                  const aux = [...prev.beneficiaries]
+                  aux[i] = {
+                    ...aux[i],
+                    email: e.target.value
+                  }
+                  return {
+                    ...prev,beneficiaries:[...aux]
+                  
+                  }
+                })} 
                 placeholder="Ingresa Email"
+                ref={register()}
+              />
+            </FormGroup>
+          </div>
+
+          <div> 
+            <FormGroup>
+              <label className="form-label">Fecha de Nacimiento</label>
+              <input
+                className="form-control"
+                type="date"
+                name={`addBeneficiaries[${i}].rutIssueDate`}
+                onChange={(e)=>setGeneralStateForm( prev => {
+                  const aux = [...prev.beneficiaries]
+                  aux[i] = {
+                    ...aux[i],
+                    birthDate: e.target.value
+                  }
+                  return {
+                    ...prev,beneficiaries:[...aux]
+                  
+                  }
+                })} 
+                defaultValue={editData?.currentAccountData?.accountOpeningDate}
+                placeholder="Ingresa Fecha de apertura"
                 ref={register()}
               />
             </FormGroup>
@@ -275,6 +334,17 @@ const Beneficiaries = ({ setModal, editData }) => {
                 className="form-control"
                 type="text"
                 name={`addBeneficiaries[${i}].percentage`}
+                onChange={(e)=>setGeneralStateForm( prev => {
+                  const aux = [...prev.beneficiaries]
+                  aux[i] = {
+                    ...aux[i],
+                    percentage: e.target.value
+                  }
+                  return {
+                    ...prev,beneficiaries:[...aux]
+                  
+                  }
+                })} 
                 placeholder="Ingresa Porcentange"
                 ref={register()}
               />
@@ -299,6 +369,17 @@ const Beneficiaries = ({ setModal, editData }) => {
                 className="form-control"
                 type="text"
                 name={`addBeneficiaries[${i}].kinship`}
+                onChange={(e)=>setGeneralStateForm( prev => {
+                  const aux = [...prev.beneficiaries]
+                  aux[i] = {
+                    ...aux[i],
+                    kinship: e.target.value
+                  }
+                  return {
+                    ...prev,beneficiaries:[...aux]
+                  
+                  }
+                })} 
                 placeholder="Ingresa Parentesco"
                 ref={register()}
               />
@@ -311,6 +392,17 @@ const Beneficiaries = ({ setModal, editData }) => {
                 className="form-control"
                 type="text"
                 name={`addBeneficiaries[${i}].phone`}
+                onChange={(e)=>setGeneralStateForm( prev => {
+                  const aux = [...prev.beneficiaries]
+                  aux[i] = {
+                    ...aux[i],
+                    phone: e.target.value
+                  }
+                  return {
+                    ...prev,beneficiaries:[...aux]
+                  
+                  }
+                })} 
                 placeholder="Ingresa Telefono"
                 ref={register()}
               />
@@ -323,6 +415,17 @@ const Beneficiaries = ({ setModal, editData }) => {
                 className="form-control"
                 type="text"
                 name={`addBeneficiaries[${i}].address`}
+                onChange={(e)=>setGeneralStateForm( prev => {
+                  const aux = [...prev.beneficiaries]
+                  aux[i] = {
+                    ...aux[i],
+                    address: e.target.value
+                  }
+                  return {
+                    ...prev,beneficiaries:[...aux]
+                  
+                  }
+                })} 
                 placeholder="Ingresa Direccion"
                 ref={register()}
               />
@@ -335,35 +438,72 @@ const Beneficiaries = ({ setModal, editData }) => {
                 className="form-control"
                 type="text"
                 name={`addBeneficiaries[${i}].rut`}
+                onChange={(e)=>setGeneralStateForm( prev => {
+                  const aux = [...prev.beneficiaries]
+                  aux[i] = {
+                    ...aux[i],
+                    rut: e.target.value
+                  }
+                  return {
+                    ...prev,beneficiaries:[...aux]
+                  
+                  }
+                })} 
                 placeholder="Ingresa RUT"
                 ref={register()}
               />
             </FormGroup>
           </div>
-          <div style={{ "max-width": "173px" }}>
+          <div> 
             <FormGroup>
-              <label className="form-label">Fecha de emisión</label>
-              <DatePicker
-                selected={rutIssueDate}
+              <label className="form-label">Fecha de apertura</label>
+              <input
                 className="form-control"
-                onChange={(date) => setRutIssueDate(date)}
-                dateFormat="dd/MM/yyyy"
-                locale="es"
+                type="date"
+                name={`addBeneficiaries[${i}].rutIssueDate`}
+                onChange={(e)=>setGeneralStateForm( prev => {
+                  const aux = [...prev.beneficiaries]
+                  aux[i] = {
+                    ...aux[i],
+                    rutIssueDate: e.target.value
+                  }
+                  return {
+                    ...prev,beneficiaries:[...aux]
+                  
+                  }
+                })} 
+                defaultValue={editData?.currentAccountData?.accountOpeningDate}
+                placeholder="Ingresa Fecha de apertura"
+                ref={register()}
               />
             </FormGroup>
           </div>
-          <div style={{ "max-width": "173px" }}>
+          
+          <div> 
             <FormGroup>
-              <label className="form-label">Fecha de expiracion</label>
-              <DatePicker
-                selected={rutExpirationDate}
+              <label className="form-label">Fecha de apertura</label>
+              <input
                 className="form-control"
-                onChange={(date) => setRutExpirationDate(date)}
-                dateFormat="dd/MM/yyyy"
-                locale="es"
+                type="date"
+                name={`addBeneficiaries[${i}].rutExpirationDate`}
+                onChange={(e)=>setGeneralStateForm( prev => {
+                  const aux = [...prev.beneficiaries]
+                  aux[i] = {
+                    ...aux[i],
+                    rutExpirationDate: e.target.value
+                  }
+                  return {
+                    ...prev,beneficiaries:[...aux]
+                  
+                  }
+                })} 
+                defaultValue={editData?.currentAccountData?.accountOpeningDate}
+                placeholder="Ingresa Fecha de expiracion"
+                ref={register()}
               />
             </FormGroup>
           </div>
+      
           <Button
             type="button"
             color="danger"
@@ -372,27 +512,16 @@ const Beneficiaries = ({ setModal, editData }) => {
           >
             <Icon name="minus"></Icon>
           </Button>
+  
         </span>
       ))}
 
       <Col size="12">
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
           <li>
-            <Button color="primary" size="md" type="submit">
-              Guardar
+            <Button color="primary" size="md" type="button" onClick={()=>setAddActiveTab1('3')}>
+              Siguiente
             </Button>
-          </li>
-          <li>
-            <a
-              href="#cancel"
-              className="link link-light"
-              onClick={(ev) => {
-                ev.preventDefault();
-                onFormCancel();
-              }}
-            >
-              Cancelar
-            </a>
           </li>
         </ul>
       </Col>

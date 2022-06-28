@@ -8,7 +8,7 @@ import { Col, Button } from "../../../../../components/Component";
 import CustomersServices from "../../../../../services/CustomersServices";
 registerLocale("es", es);
 
-const SpousalHistory = ({ setModal, editData }) => {
+const SpousalHistory = ({setAddActiveTab2, setGeneralStateForm,setModal, editData }) => {
   const [rutIssueDate, setRutIssueDate] = useState(new Date());
   const [rutExpirationDate, setRutExpirationDate] = useState(new Date());
   const [birthDate, setBirthDate] = useState(new Date());
@@ -78,6 +78,14 @@ const SpousalHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="completeName"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,spousalHistory:{
+                  ...prev.spousalHistory,
+                  completeName:e.target.value
+                }
+              }
+            })} 
             defaultValue={editData?.spousalHistory?.completeName}
             placeholder="Ingrese Nombres"
             ref={register()}
@@ -91,6 +99,14 @@ const SpousalHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="address"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,spousalHistory:{
+                  ...prev.spousalHistory,
+                  address:e.target.value
+                }
+              }
+            })} 
             defaultValue={editData?.spousalHistory?.address}
             placeholder="Ingresa Direccion"
             ref={register()}
@@ -104,6 +120,14 @@ const SpousalHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="phone"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,spousalHistory:{
+                  ...prev.spousalHistory,
+                  phone:e.target.value
+                }
+              }
+            })}
             defaultValue={editData?.spousalHistory?.phone}
             placeholder="Ingresa Telefono"
             ref={register()}
@@ -117,6 +141,14 @@ const SpousalHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="typeOfEmployee"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,spousalHistory:{
+                  ...prev.spousalHistory,
+                  typeOfEmployee:e.target.value
+                }
+              }
+            })}
             defaultValue={editData?.spousalHistory?.typeOfEmployee}
             placeholder="Ingresa Tipo de empleeado"
             ref={register()}
@@ -130,6 +162,14 @@ const SpousalHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="nameOfLastEmployer"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,spousalHistory:{
+                  ...prev.spousalHistory,
+                  nameOfLastEmployer:e.target.value
+                }
+              }
+            })}
             defaultValue={editData?.spousalHistory?.nameOfLastEmployer}
             placeholder="Ingresa Nombre del ultimo empleador"
             ref={register()}
@@ -143,6 +183,14 @@ const SpousalHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="positionLastEmployed"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,spousalHistory:{
+                  ...prev.spousalHistory,
+                  positionLastEmployed:e.target.value
+                }
+              }
+            })}
             defaultValue={editData?.spousalHistory?.positionLastEmployed}
             placeholder="Ingresa Cargo del ultimo empleador"
             ref={register()}
@@ -156,6 +204,14 @@ const SpousalHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="laborSeniority"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,spousalHistory:{
+                  ...prev.spousalHistory,
+                  laborSeniority:e.target.value
+                }
+              }
+            })}
             defaultValue={editData?.spousalHistory?.laborSeniority}
             placeholder="Ingresa Antiguedad laboral"
             ref={register()}
@@ -169,6 +225,15 @@ const SpousalHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="profession"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,spousalHistory:{
+                  ...prev.spousalHistory,
+                  profession:e.target.value
+                  
+                }
+              }
+            })}
             defaultValue={editData?.spousalHistory?.profession}
             placeholder="Ingresa Profesion"
             ref={register()}
@@ -182,6 +247,15 @@ const SpousalHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="rut"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,spousalHistory:{
+                  ...prev.spousalHistory,
+                  rut:e.target.value
+                  
+                }
+              }
+            })}
             defaultValue={editData?.spousalHistory?.rut}
             placeholder="Ingresa Rut"
             ref={register()}
@@ -194,7 +268,19 @@ const SpousalHistory = ({ setModal, editData }) => {
           <DatePicker
             selected={rutIssueDate}
             className="form-control"
-            onChange={(date) => setRutIssueDate(date)}
+            onChange={(date) => {
+              setRutIssueDate(date)
+              setGeneralStateForm( prev => {
+                return {
+                  ...prev,spousalHistory:{
+                    ...prev.spousalHistory,
+                    rutIssueDate:date
+                    
+                  }
+                }
+              })
+            
+            }}
             dateFormat="dd/MM/yyyy"
             locale="es"
           />
@@ -206,9 +292,42 @@ const SpousalHistory = ({ setModal, editData }) => {
           <DatePicker
             selected={rutExpirationDate}
             className="form-control"
-            onChange={(date) => setRutExpirationDate(date)}
+            onChange={(date) => {
+              setRutExpirationDate(date)
+              setGeneralStateForm( prev => {
+                return {
+                  ...prev,spousalHistory:{
+                    ...prev.spousalHistory,
+                    rutExpirationDate:date
+                    
+                  }
+                }
+              })
+            }}
             dateFormat="dd/MM/yyyy"
             locale="es"
+          />
+        </FormGroup>
+      </Col>
+      <Col md="3" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Nacionalidad de Nacimiento</label>
+          <input
+            className="form-control"
+            type="text"
+            name="countryOfBirth"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,spousalHistory:{
+                  ...prev.spousalHistory,
+                  countryOfBirth:e.target.value
+                  
+                }
+              }
+            })}
+            defaultValue={editData?.spousalHistory?.nationality}
+            placeholder="Ingresa Nacionalidad de Nacimiento"
+            ref={register()}
           />
         </FormGroup>
       </Col>
@@ -219,6 +338,15 @@ const SpousalHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="nationality"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,spousalHistory:{
+                  ...prev.spousalHistory,
+                  nationality:e.target.value
+                  
+                }
+              }
+            })}
             defaultValue={editData?.spousalHistory?.nationality}
             placeholder="Ingresa Nacionalidad"
             ref={register()}
@@ -231,7 +359,18 @@ const SpousalHistory = ({ setModal, editData }) => {
           <DatePicker
             selected={birthDate}
             className="form-control"
-            onChange={(date) => setBirthDate(date)}
+            onChange={(date) => {
+              setBirthDate(date)
+              setGeneralStateForm( prev => {
+                return {
+                  ...prev,spousalHistory:{
+                    ...prev.spousalHistory,
+                    birthDate:date
+                    
+                  }
+                }
+              })
+            }}
             dateFormat="dd/MM/yyyy"
             locale="es"
           />
@@ -240,21 +379,9 @@ const SpousalHistory = ({ setModal, editData }) => {
       <Col size="12">
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
           <li>
-            <Button color="primary" size="md" type="submit">
-              Guardar
+            <Button color="primary" size="md" type="button" onClick={()=>setAddActiveTab2('6')}>
+              Siguiente
             </Button>
-          </li>
-          <li>
-            <a
-              href="#cancel"
-              className="link link-light"
-              onClick={(ev) => {
-                ev.preventDefault();
-                onFormCancel();
-              }}
-            >
-              Cancelar
-            </a>
           </li>
         </ul>
       </Col>

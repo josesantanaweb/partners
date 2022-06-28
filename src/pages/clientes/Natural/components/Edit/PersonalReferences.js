@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Col, Button } from "../../../../../components/Component";
 import CustomersServices from "../../../../../services/CustomersServices";
 
-const PersonalReferences = ({ setModal, editData }) => {
+const PersonalReferences = ({setAddActiveTab2, setGeneralStateForm ,setModal, editData }) => {
   // useForm
   const { register, handleSubmit } = useForm();
 
@@ -39,6 +39,14 @@ const PersonalReferences = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="names"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,personalReferences:{
+                  ...prev.personalReferences,
+                  names:e.target.value
+                }
+              }
+            })} 
             defaultValue={editData?.personalReferences?.names}
             placeholder="Ingrese Nombres"
             ref={register()}
@@ -46,12 +54,21 @@ const PersonalReferences = ({ setModal, editData }) => {
         </FormGroup>
       </Col>
       <Col md="3" className="mb-4">
+        {/* Cambiar para tener un solor entre apellido materno y paterno */}
         <FormGroup>
           <label className="form-label">Apellidos</label>
           <input
             className="form-control"
             type="text"
             name="paternalLastName"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,personalReferences:{
+                  ...prev.personalReferences,
+                  paternalLastName:e.target.value
+                }
+              }
+            })} 
             defaultValue={editData?.personalReferences?.paternalLastName}
             placeholder="Ingresa Apellidos"
             ref={register()}
@@ -65,6 +82,14 @@ const PersonalReferences = ({ setModal, editData }) => {
             className="form-control"
             type="email"
             name="email"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,personalReferences:{
+                  ...prev.personalReferences,
+                  email:e.target.value
+                }
+              }
+            })} 
             defaultValue={editData?.personalReferences?.email}
             placeholder="Ingresa Email"
             ref={register()}
@@ -78,6 +103,14 @@ const PersonalReferences = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="phone"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,personalReferences:{
+                  ...prev.personalReferences,
+                  phone:e.target.value
+                }
+              }
+            })} 
             defaultValue={editData?.personalReferences?.phone}
             placeholder="Ingresa Telefono"
             ref={register()}
@@ -91,6 +124,14 @@ const PersonalReferences = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="address"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,personalReferences:{
+                  ...prev.personalReferences,
+                  address:e.target.value
+                }
+              }
+            })} 
             defaultValue={editData?.personalReferences?.address}
             placeholder="Ingresa Direccion"
             ref={register()}
@@ -100,21 +141,9 @@ const PersonalReferences = ({ setModal, editData }) => {
       <Col size="12">
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
           <li>
-            <Button color="primary" size="md" type="submit">
-              Guardar
+            <Button color="primary" size="md" type="button" onClick={()=>setAddActiveTab2('4')}>
+              Siguiente
             </Button>
-          </li>
-          <li>
-            <a
-              href="#cancel"
-              className="link link-light"
-              onClick={(ev) => {
-                ev.preventDefault();
-                onFormCancel();
-              }}
-            >
-              Cancelar
-            </a>
           </li>
         </ul>
       </Col>
