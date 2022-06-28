@@ -62,7 +62,7 @@ export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerSta
       setGeneralStateForm( prev => {
         return {
           ...prev,
-            customerId: parseInt(customer.id)  ,
+            customerId: customer.id  ,
             companyId:  customer.companyId,
             currencyId: customer.currencyId,
             paymentMethodId: customer.paymentMethodId,
@@ -73,25 +73,28 @@ export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerSta
             originsOfTheFunds: customer.originsOfTheFunds,
             advisorFee: customer.advisorFee,
             percentage: parseInt(customer.percentage),
+              currentAccountData: {
+                ...customer.currentAccountData,
+              },
+              employmentHistory:{
+                ...customer.employmentHistory,
+              }
+              ,
+              personalReferences:{
+                ...customer.personalReferences,
+              },
+              investmentExperience: {
+                ...customer.investmentExperience,
         
-              currentAccountData: 
-                customer.currentAccountData,
-          
-              employmentHistory:
-                customer.employmentHistory
-              ,
-              personalReferences:
-                customer.personalReferences
-              ,
-              investmentExperience: 
-                customer.investmentExperience
-              ,
-              spousalHistory:
-                customer.spousalHistory
-              ,
-              beneficiaries:[...customer.beneficiaries],
-      
-            
+              },
+              spousalHistory:{
+                ...customer.spousalHistory,
+              },
+              beneficiaries:[...customer?.beneficiaries.map( prev => {
+                return {
+                  ...prev, 
+                }
+              })],
             investorProfile: [
               {
                 number: 1,
@@ -127,11 +130,12 @@ export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerSta
               }
             ],
             documents: [
-       
             ]
           
         }
       })
+
+      
       console.log(generalStateForm)
       customer.names? handleClickedRegisterNames(customer.names):handleClickedRegisterNames(customer.companyName)
       handleClickedRegisterRut(customer.rut);

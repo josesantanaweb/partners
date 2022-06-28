@@ -284,11 +284,21 @@ const DocumentRequired = ({ libraryClient ,setModal, editData, selectClient, nee
                     .map( elem => (
                       <>
                         <DataTableItem> 
+                          <DataTableRow className="text-center d-flex justify-content-between">
+                          <span className="sub-text">{act.name}</span>
+                          </DataTableRow>
                           <DataTableRow className=" text-center border-bottom border ">{elem.documentType.name}</DataTableRow>
                           <DataTableRow className=" text-center border-bottom border ">Created: {elem.createdAt.split('T')[0]}</DataTableRow>
                           <DataTableRow className=" text-center border-bottom border ">Exp: {elem.expirationDate.split('T')[0]}</DataTableRow>
                           <DataTableRow className="p-0"><a target="blank" className="text-white" href={elem.url} ><Button color="primary" size="md">Ver</Button></a></DataTableRow>
                           <DataTableRow className=" "><a target="blank" className="text-white" href={elem.url} ><Button  color="primary" size="md">Vincular</Button></a></DataTableRow>
+                          <DataTableRow className="text-center d-flex justify-content-between">
+                            <span className="sub-text">{act.name}</span>
+                      
+                            <Button color="primary" size="md"  onClick={() => setModalDocument({ add: true })}>
+                              Subir
+                            </Button>
+                          </DataTableRow> 
                         </DataTableItem>
                       </>    
                     ))

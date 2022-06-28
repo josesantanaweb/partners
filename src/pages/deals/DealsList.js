@@ -34,6 +34,7 @@ import DocumentsServices from "../../services/DocumentsServices";
 // Desde acá
 import DealsServices from "../../services/DealsServices";
 import InvestorProfile from "./components/Add/InvestorProfile";
+import { preventContextMenu } from "@fullcalendar/core";
 
 const DealsList = () => {
   const [data, setData] = useState([]);
@@ -167,7 +168,8 @@ const DealsList = () => {
   const { errors, register, setValue, handleSubmit } = useForm();
 
   //State general de formual incluye todos los tabs
-  const [generalStateForm, setGeneralStateForm] = useState({
+  const [generalStateForm, setGeneralStateForm] = useState({ 
+    investorProfile:[],
     beneficiaries:[]
   })
   const onSubmit = data => {
@@ -193,70 +195,65 @@ const DealsList = () => {
       customerInfo: {
         currentAccountData: {
           ...generalStateForm.currentAccountData,
-          id: parseInt(generalStateForm.currentAccountData.id ) 
+
         },
         employmentHistory:{
           ...generalStateForm.employmentHistory,
-          id: parseInt(generalStateForm.employmentHistory.id ) 
         },
         personalReferences:{
-          ...generalStateForm.personalReferences
-          ,id: parseInt(generalStateForm.personalReferences.id ) 
+          ...generalStateForm.personalReferences,
+          
         },
         investmentExperience: {
           ...generalStateForm.investmentExperience,
-          id: parseInt(generalStateForm.investmentExperience.id ) 
         },
         spousalHistory:{
           ...generalStateForm.spousalHistory,
-          id: parseInt(generalStateForm.spousalHistory.id ) 
         },
       beneficiaries:[...generalStateForm.beneficiaries.map( act => {
         return {
           ...act,
-          id: parseInt(act.id)
+         
         }
       })],
 
       },
       investorProfile: [
-        {
-          number: 1,
-          answer: 4
-        },
-        {
-          number: 2,
-          answer: 3
-        },
-        {
-          number: 3,
-          answer: 4
-        },
-        {
-          number: 4,
-          answer: 1
-        },
-        {
-          number: 5,
-          answer: 2
-        },
-        {
-          number: 6,
-          answer: 2
-        },
-        {
-          number: 7,
-          answer: 3
-        },
-        {
-          number: 7,
-          answer: 4
-        }
+        ...generalStateForm.investorProfile
       ],
       documents: [
  
       ]
     }
+
+    if(statePost.customerInfo.currentAccountData.id){
+      statePost.customerInfo.currentAccountData.id = parseInt(statePost.customerInfo.currentAccountData.id)
+    }
+
+    if(statePost.customerInfo.employmentHistory.id){
+      statePost.customerInfo.employmentHistory.id = parseInt(statePost.customerInfo.employmentHistory.id)
+    }
+
+    if(statePost.customerInfo.personalReferences.id){
+      statePost.customerInfo.personalReferences.id = parseInt(statePost.customerInfo.personalReferences.id)
+    }
+
+    if(statePost.customerInfo.investmentExperience.id){
+      statePost.customerInfo.investmentExperience.id = parseInt(statePost.customerInfo.investmentExperience.id)
+    }
+
+    if(statePost.customerInfo. spousalHistory.id){
+      statePost.customerInfo. spousalHistory.id = parseInt(statePost.customerInfo. spousalHistory.id)
+    }
+
+    if(statePost.customerInfo.beneficiaries[0].id){
+      statePost.customerInfo.beneficiaries = statePost.customerInfo.beneficiaries.map( prev => {
+        return {
+          ...prev, id: parseInt(prev.id)
+        }
+      })
+    }
+
     console.log('estado',statePost)
     DealsServices.postDeals(statePost).then( ()=>  window.location.reload())
   }
@@ -336,12 +333,6 @@ const DealsList = () => {
                   <span className="sub-text">Método de Pago</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Origen de los Fondos</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Advisor-Fee</span> {/* % */}
-                </DataTableRow>
-                <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
@@ -381,12 +372,6 @@ const DealsList = () => {
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item.paymentMethod.name}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.originsOfTheFunds}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.advisorFee}</span>
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
@@ -528,7 +513,7 @@ const DealsList = () => {
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="3">
-                  <InvestorProfile setModal={setModal} selectClient={selectClient}/>
+                  <InvestorProfile setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient}/>
                 </TabPane>
               </TabContent>
               <TabContent activeTab={addActiveTab}>
