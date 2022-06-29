@@ -388,12 +388,8 @@ const DealsList = () => {
                 <DataTableRow className="text-center">
                   <span className="sub-text">Moneda</span>
                 </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Monto real</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Método de Pago</span>
-                </DataTableRow>
+          
+            
                 <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
@@ -412,7 +408,8 @@ const DealsList = () => {
                         <span>{item.customer.rut}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.customer.rut}</span>
+                        <span>{item?.createdByAdvisor?       item?.createdByAdvisor?.name +" " +item?.createdByAdvisor?.paternalLastName: 
+                        item?.createdByUser?.name +" " +item?.createdByUser?.lastName }</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item.product.name}</span>
@@ -424,17 +421,12 @@ const DealsList = () => {
                         <span>{item.yearsOfThePlan}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.yearsOfThePlan}</span>
+                        <span>{item.amountOfTheInvestment}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item.currency.name}</span>
                       </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.currency.name}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.paymentMethod.name}</span>
-                      </DataTableRow>
+                    
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
                           <li className="nk-tb-action-hidden">
