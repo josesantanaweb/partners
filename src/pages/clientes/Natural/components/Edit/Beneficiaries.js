@@ -45,34 +45,34 @@ const Beneficiaries = ({setAddActiveTab1,setGeneralStateForm, setModal, editData
   // Editar cliente
   const onFormSubmit = async (submitData) => {
     const { addBeneficiaries, editBeneficiaries } = submitData;
-    // if (editBeneficiaries && addBeneficiaries) {
-    //   let beneficiaries = {
-    //     beneficiaries: [...addBeneficiaries, ...editBeneficiaries],
-    //   };
-    //   try {
-    //     await CustomersServices.editCustomerNatural(editData.id, beneficiaries);
-    //     setModal({ edit: false }, { add: false }, { document: false });
-    //     window.location.reload();
-    //   } catch (error) {}
-    // } else if (editBeneficiaries) {
-    //   let beneficiaries = {
-    //     beneficiaries: editBeneficiaries,
-    //   };
-    //   try {
-    //     await CustomersServices.editCustomerNatural(editData.id, beneficiaries);
-    //     setModal({ edit: false }, { add: false }, { document: false });
-    //     window.location.reload();
-    //   } catch (error) {}
-    // } else {
-    //   let beneficiaries = {
-    //     beneficiaries: addBeneficiaries,
-    //   };
-    //   try {
-    //     await CustomersServices.editCustomerNatural(editData.id, beneficiaries);
-    //     setModal({ edit: false }, { add: false }, { document: false });
-    //     window.location.reload();
-    //   } catch (error) {}
-    // }
+    if (editBeneficiaries && addBeneficiaries) {
+      let beneficiaries = {
+        beneficiaries: [...addBeneficiaries, ...editBeneficiaries],
+      };
+      try {
+        await CustomersServices.editCustomerNatural(editData.id, beneficiaries);
+        setModal({ edit: false }, { add: false }, { document: false });
+        window.location.reload();
+      } catch (error) {}
+    } else if (editBeneficiaries) {
+      let beneficiaries = {
+        beneficiaries: editBeneficiaries,
+      };
+      try {
+        await CustomersServices.editCustomerNatural(editData.id, beneficiaries);
+        setModal({ edit: false }, { add: false }, { document: false });
+        window.location.reload();
+      } catch (error) {}
+    } else {
+      let beneficiaries = {
+        beneficiaries: addBeneficiaries,
+      };
+      try {
+        await CustomersServices.editCustomerNatural(editData.id, beneficiaries);
+        setModal({ edit: false }, { add: false }, { document: false });
+        window.location.reload();
+      } catch (error) {}
+    }
   };
 
   return (
