@@ -5,13 +5,21 @@ $scrollHoverTrack: #d4d4d4;
 $scrollTrack: #e1e1e1;
 
 .table-records {
+<<<<<<< HEAD
   height: 14rem;
+=======
+  height: 47rem;
+>>>>>>> 70cc5171a25b0a20484a27777bd4358f24109adc
   width: auto;
   overflow-y: scroll;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  margin-right: 0.45rem;
+  overflow-x: hidden;
 }
 .table-records {
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 9px;
     height: 8px;
   }
   &::-webkit-scrollbar-thumb {

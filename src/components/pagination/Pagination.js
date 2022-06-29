@@ -29,7 +29,7 @@ const PaginationComponent = ({ itemPerPage, totalItems, paginate, currentPage })
           href="#prev"
         >
           <Icon name="chevrons-left" />
-          <span>Prev</span>
+          <span>Atrás</span>
         </PaginationLink>
       </PaginationItem>
       {pageNumbers.map((item) => {
@@ -58,7 +58,7 @@ const PaginationComponent = ({ itemPerPage, totalItems, paginate, currentPage })
           }}
           href="#next"
         >
-          <span>Next</span>
+          <span>Sigte</span>
           <Icon name="chevrons-right" />
         </PaginationLink>
       </PaginationItem>
