@@ -14,6 +14,26 @@ const DealsPostServices = {
     });
     return response.data;
   },
+  deletePostDeal: async (id) => {
+    const response = await api.delete(`/deal-post-operation/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+  editPostDeal: async (postDealId, data) => {
+    const response = await api.patch(`/deal-post-operation/${postDealId}`, data, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+
+  // pagination
+  getPostDealOperationsPags: async (itemPerPage, currentPage) => {
+    const response = await api.get(`/deal-post-operation?limit=${itemPerPage}&page=${currentPage}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
 };
 
 export default DealsPostServices;

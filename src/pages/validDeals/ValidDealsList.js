@@ -17,7 +17,7 @@ import {
   PreviewAltCard,
   RSelect,
 } from "../../components/Component";
-import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
+import { FormGroup, Modal, ModalBody, Form } from "reactstrap";
 import DatePicker, { registerLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
 import Content from "../../layout/content/Content";
@@ -27,10 +27,10 @@ import ValidDealsServices from "../../services/ValidDealsServices";
 import DealActionsServices from "../../services/DealActionsServices";
 import CurrenciesServices from "../../services/CurrenciesServices";
 import AfterSalesServices from "../../services/AfterSalesServices";
+import NumberFormat from "react-number-format";
 
 const DocumentsList = () => {
   const [data, setData] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
 
   const [dateOfEntry, setDateOfEntry] = useState(new Date());
@@ -45,23 +45,32 @@ const DocumentsList = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
+
   const [sm, updateSm] = useState(false);
-  const { errors, register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm();
   const [modal, setModal] = useState({
     edit: false,
     add: false,
   });
 
-  // Pruebas datePicker
-  const [startDate, setStartDate] = useState(new Date());
-
   // setting spanish date picker format
   registerLocale("es", es);
 
   // filter deals by input search
-  // const [usuarios, setUsuarios] = useState([]);
   const [tableDeals, setTableDeals] = useState([]);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (editData?.dateOfEntry) {
+      setDateOfEntry(new Date(editData?.dateOfEntry));
+    }
+    if (editData?.estimatedDate) {
+      setEstimatedDate(new Date(editData?.estimatedDate));
+    }
+    if (editData?.realDate) {
+      setRealDate(new Date(editData?.realDate));
+    }
+  }, []);
 
   // function to get Valid Deals
   const getValidDeals = async () => {
@@ -84,7 +93,6 @@ const DocumentsList = () => {
       const dealActionData = await dealActions.data.map((action) => ({
         label: action?.name,
         value: action?.id,
-        // description: action?.description,
       }));
 
       setActions(dealActionData);
@@ -106,7 +114,6 @@ const DocumentsList = () => {
       const currencyData = await currencies.data.map((currency) => ({
         label: currency?.name,
         value: currency?.id,
-        // description: action?.description,
       }));
 
       setCurrencies(currencyData);
@@ -124,13 +131,15 @@ const DocumentsList = () => {
   // Valid Deals
   const [formData, setFormData] = useState({
     operationTypeId: "",
-    dateOfEntry: "",
-    estimateDate: "",
-    realDate: "",
+    dateOfEntry: dateOfEntry,
+    estimateDate: estimatedDate,
+    realDate: realDate,
     ammount: "",
     currencyId: "",
     file: "",
     dealId: "",
+    aprobatedBy: "",
+    file2: "",
   });
 
   // function to reset the form
@@ -144,6 +153,8 @@ const DocumentsList = () => {
       currencyId: "",
       file: "",
       dealId: "",
+      aprobatedBy: "",
+      file2: "",
     });
   };
 
@@ -153,43 +164,20 @@ const DocumentsList = () => {
     resetForm();
   };
 
-  // Submit function to add a new item
-  const onFormSubmit = async (submitData) => {
-    const { operationTypeId, dateOfEntry, estimateDate, realDate, ammount, currencyId, file, dealId } = submitData;
-    let submittedData = {
-      operationTypeId: actionsOptions?.value,
-      dateOfEntry: dateOfEntry,
-      estimateDate: estimateDate,
-      realDate: realDate,
-      ammount,
-      currencyId: currenciesOptions?.value,
-      file: file[0],
-      dealId,
-    };
-
-    try {
-      await ValidDealsServices.addValidDeal(submittedData);
-      setData([submittedData, ...data]);
-      resetForm();
-      getValidDeals();
-      setModal({ edit: false }, { add: false });
-    } catch (error) {}
-  };
-
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { operationTypeId, dateOfEntry, estimateDate, realDate, ammount, currencyId, file, dealId } = submitData;
+    const { operationTypeId, ammount, currencyId, file, dealId, aprobatedBy, file2 } = submitData;
     let submittedData = {
       operationTypeId: operationTypeId,
-      // operationTypeId: actionsOptions?.value,
       dateOfEntry: dateOfEntry,
-      estimateDate: estimateDate,
+      estimateDate: estimatedDate,
       realDate: realDate,
-      ammount: ammount,
+      ammount: Number(ammount),
       currencyId: currencyId,
-      // currencyId: currenciesOptions?.value,
-      file: file[0],
+      file: file[0].name,
       dealId: dealId, //->customerId
+      aprobatedBy: aprobatedBy,
+      file2: file2[0].name,
     };
 
     try {
@@ -198,23 +186,23 @@ const DocumentsList = () => {
 
       formData.append("operationTypeId", actionsOptions?.value);
       formData.append("dateOfEntry", dateOfEntry);
-      formData.append("estimateDate", estimateDate);
+      formData.append("estimateDate", estimatedDate);
       formData.append("realDate", realDate);
       formData.append("ammount", editData?.amountOfTheInvestment);
       formData.append("currencyId", currenciesOptions?.value);
-      formData.append("file", file[0]);
+      formData.append("file", file[0].name);
       formData.append("dealId", editData?.id);
+      formData.append("aprobatedBy", aprobatedBy);
+      formData.append("file2", file2[0].name);
 
       formData.forEach((value, key) => (object[key] = value));
       var json = JSON.stringify(object);
       JSON.stringify(Object.fromEntries(formData));
-      console.log(json);
 
       await AfterSalesServices.addPostDealOperations(formData);
 
       setModal({ edit: false, add: false });
       resetForm();
-      // getCustomerDocument(Number(customerId));
       window.location.reload();
 
       await ValidDealsServices.editValidDeal(editData.id, submittedData);
@@ -238,14 +226,6 @@ const DocumentsList = () => {
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // function to handle description doc length
-  // const handleDescriptionLength = (description) => {
-  //   if (description.length > 35) {
-  //     return description.substring(0, 35) + "...";
-  //   }
-  //   return description;
-  // };
-
   // function to parse date
   const parseDate = (date) => {
     const dateParse = new Date(date);
@@ -263,17 +243,16 @@ const DocumentsList = () => {
   const filtredData = (term) => {
     var res = tableDeals.filter((item) => {
       if (
-        item?.ammount.toString().toLowerCase().includes(term.toLowerCase())
-        // item.createdByAdvisor.name.toString().toLowerCase().includes(term.toLowerCase())
+        item?.id.toString().toLowerCase().includes(term.toLowerCase()) ||
+        item?.customer?.names.toString().toLowerCase().includes(term.toLowerCase()) ||
+        item?.product?.name.toString().toLowerCase().includes(term.toLowerCase()) ||
+        item?.company?.name.toString().toLowerCase().includes(term.toLowerCase())
       ) {
         return item;
       }
     });
     setData(res);
   };
-
-  //! Formato de fecha mes dia anio para el back
-  //! Agregar CAMPO NUMERO DE DOCUMENTO
 
   return (
     <React.Fragment>
@@ -299,7 +278,8 @@ const DocumentsList = () => {
                 </Button>
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
-                    <li className="nk-block-tools-opt">
+                    <li className="nk-block-tools-opt d-flex align-items-center">
+                      <span className="sub-text mr-3">Filtrar búsqueda:</span>
                       <div className="form-control-wrap">
                         <div className="form-icon form-icon-right">
                           <Icon name="search" />
@@ -309,17 +289,11 @@ const DocumentsList = () => {
                           value={search}
                           onChange={handleChange}
                           className="form-control"
-                          placeholder="Buscar por: Cliente, Asesor/a, Plan o Empresa"
+                          placeholder="Buscar por: Cliente, Plan/Producto o Empresa"
                           style={{ minWidth: "25rem" }}
                         />
                       </div>
                     </li>
-                    {/* <li className="nk-block-tools-opt">
-                      <Button color="primary" onClick={() => setModal({ add: true })}>
-                        <Icon name="plus" className="mr-1"></Icon>
-                        Agregar Documento
-                      </Button>
-                    </li> */}
                   </ul>
                 </div>
               </div>
@@ -331,6 +305,9 @@ const DocumentsList = () => {
           <div className="container-fluid overflow-auto scrollbar-fluid">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
+                <DataTableRow className="text-center">
+                  <span className="sub-text">N. de Operación</span>
+                </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Cliente</span>
                 </DataTableRow>
@@ -361,10 +338,15 @@ const DocumentsList = () => {
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow className="text-center">
-                        <span>{item?.customer?.names}</span>
+                        <span>{item?.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item?.createdByAdvisor?.name == null ? `No encontrado` : item?.customer?.name}</span>
+                        <span>{item?.customer?.names || item?.customer?.companyName}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>
+                          {item?.createdByAdvisor?.name || item?.createdByUser?.name + item?.createdByUser?.lastName}
+                        </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item?.product?.name}</span>
@@ -383,7 +365,7 @@ const DocumentsList = () => {
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1 d-flex justify-content-center">
-                          <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
+                          <li className="nk-tb-action text-primary" onClick={() => onEditClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
@@ -424,7 +406,7 @@ const DocumentsList = () => {
           toggle={() => setModal({ edit: false })}
           className="modal-dialog-centered"
           size="lg"
-          style={{ maxWidth: "1024px" }}
+          style={{ maxWidth: "768px" }}
         >
           <ModalBody>
             <a
@@ -438,7 +420,7 @@ const DocumentsList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
 
-            <div className="p-2">
+            <div className="p-2 table-records">
               <h5 className="title pb-4">Creación Movimientos Post Venta</h5>
               <Col md="12" className="mb-4">
                 <FormGroup className="border-bottom pb-2">
@@ -449,6 +431,9 @@ const DocumentsList = () => {
                 <div className="container-fluid overflow-auto scrollbar-fluid">
                   <div className="nk-tb-list is-separate is-medium">
                     <DataTableHead className="nk-tb-item">
+                      <DataTableRow className="text-center bg-light">
+                        <span className="sub-text">N. de Cuenta</span>
+                      </DataTableRow>
                       <DataTableRow className="text-center bg-light">
                         <span className="sub-text">Cliente</span>
                       </DataTableRow>
@@ -473,10 +458,19 @@ const DocumentsList = () => {
                     </DataTableHead>
                     <DataTableItem>
                       <DataTableRow className="text-center">
-                        <span>{editData?.customer?.name ? "Sin Nombre" : editData?.customer?.name}</span>
+                        <span>0</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{editData?.createdByAdvisor?.name}</span>
+                        <span>
+                          {editData?.createdByAdvisor?.name ||
+                            editData?.createdByUser?.name + editData?.createdByUser?.lastName}
+                        </span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>
+                          {editData?.createdByAdvisor?.name ||
+                            editData?.createdByUser?.name + editData?.createdByUser?.lastName}
+                        </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{editData?.product?.name}</span>
@@ -510,77 +504,33 @@ const DocumentsList = () => {
                       />
                     </FormGroup>
                   </Col>
-
                   <Col md="4">
                     <FormGroup>
                       <label className="form-label">Fecha de Ingreso</label>
-                      <input
-                        className="form-control"
-                        type="date"
-                        name="dateOfEntry"
-                        defaultValue={formData.dateOfEntry}
-                        ref={register()}
-                      />
-                      {/* <DatePicker
+                      <DatePicker
                         selected={dateOfEntry}
                         className="form-control"
                         onChange={(date) => setDateOfEntry(date)}
                         dateFormat="MM/dd/yyyy"
                         locale="es"
-                      /> */}
+                      />
                     </FormGroup>
                   </Col>
-
                   <Col md="4">
                     <FormGroup>
-                      <label className="form-label">Fecha de Estimada</label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        name="estimateDate"
-                        defaultValue={formData.estimateDate}
-                        ref={register()}
-                      />
-                      {/* <DatePicker
+                      <label className="form-label">Fecha Estimada</label>
+                      <DatePicker
                         selected={estimatedDate}
                         className="form-control"
                         onChange={(date) => setEstimatedDate(date)}
                         dateFormat="MM/dd/yyyy"
                         locale="es"
-                      /> */}
+                      />
                     </FormGroup>
                   </Col>
-
                   <Col md="4">
                     <FormGroup>
                       <label className="form-label">Fecha Real</label>
-                      <input
-                        className="form-control"
-                        type="date"
-                        name="realDate"
-                        defaultValue={formData.realDate}
-                        ref={register()}
-                      />
-                      {/* <DatePicker
-                        selected={realDate}
-                        className="form-control"
-                        onChange={(date) => setRealDate(date)}
-                        dateFormat="MM/dd/yyyy"
-                        locale="es"
-                      /> */}
-                    </FormGroup>
-                  </Col>
-                  {/* <Col md="4">
-                    <FormGroup>
-                      <label className="form-label">Fecha Prueba</label>
-                      <DatePicker
-                        className="form-control"
-                        selected={startDate}
-                        onChange={(date) => setStartDate(date)}
-                        dateFormat="MM/dd/yyyy"
-                        locale="es"
-                      />
-
                       <DatePicker
                         selected={realDate}
                         className="form-control"
@@ -589,62 +539,21 @@ const DocumentsList = () => {
                         locale="es"
                       />
                     </FormGroup>
-                  </Col> */}
-
-                  {/* <Col md="4">
-                    <FormGroup>
-                      <label className="form-label">Fecha de ingreso</label>
-                      <input
-                        className="form-control"
-                        type="date"
-                        name="issueDate"
-                        defaultValue={formData.issueDate}
-                        ref={register()}
-                      />
-                    </FormGroup>
                   </Col>
-
-                  <Col md="4">
-                    <FormGroup>
-                      <label className="form-label">Fecha estimada</label>
-                      <input
-                        className="form-control"
-                        type="date"
-                        name="issueDate"
-                        defaultValue={formData.issueDate}
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="4">
-                    <FormGroup>
-                      <label className="form-label">Fecha real</label>
-                      <input
-                        className="form-control"
-                        type="date"
-                        name="realDate"
-                        defaultValue={formData.realDate}
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col> */}
 
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Monto</label>{" "}
-                      <input
-                        className="form-control"
-                        type="text"
+                      <NumberFormat
                         name="ammount"
-                        defaultValue={formData.ammount}
+                        defaultValue={Number(formData.ammount)}
                         placeholder="Ingrese monto"
-                        ref={register()}
+                        className="form-control"
+                        thousandSeparator={true}
                       />
                       <small className="text-primary">Inversión actual: {editData?.amountOfTheInvestment}</small>{" "}
                     </FormGroup>
                   </Col>
-
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Moneda</label>
@@ -656,9 +565,27 @@ const DocumentsList = () => {
                       />
                     </FormGroup>
                   </Col>
-
+                  <Col md="12">
+                    <FormGroup className="border-bottom pb-2">
+                      <h6>Validación de Operación</h6>
+                    </FormGroup>
+                  </Col>
                   <Col md="12">
                     <FormGroup>
+                      <label className="form-label">Aprobado por:</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="aprobatedBy"
+                        defaultValue={formData.aprobatedBy}
+                        placeholder="Ingresa Nombre de asesor"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Subir archivo de respaldo (Administrador)</label>
                       <div className="file-input border rounded d-flex pt-3 align-items-center bg-light">
                         <label className="file-input__label" htmlFor="file-input">
                           <input
@@ -673,7 +600,23 @@ const DocumentsList = () => {
                       </div>
                     </FormGroup>
                   </Col>
-
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Subir correo de respaldo (Cliente)</label>
+                      <div className="file-input border rounded d-flex pt-3 align-items-center bg-light">
+                        <label className="file-input__label" htmlFor="file-input">
+                          <input
+                            type="file"
+                            className="bg-light border-0"
+                            name="file2"
+                            defaultValue={formData.file2}
+                            ref={register()}
+                            accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.jpg, .jpeg, .png, application/vnd.ms-excel"
+                          />
+                        </label>
+                      </div>
+                    </FormGroup>
+                  </Col>
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>

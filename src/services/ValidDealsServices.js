@@ -8,6 +8,14 @@ const ValidDealsServices = {
     });
     return response.data;
   },
+
+  // pagination
+  getValidDealsPags: async (itemPerPage, currentPage) => {
+    const response = await api.get(`/deal-post-operation?limit=${itemPerPage}&page=${currentPage}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
 };
 
 export default ValidDealsServices;
