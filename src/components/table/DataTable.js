@@ -59,7 +59,7 @@ export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerSta
       console.log(customer)
       console.log('State final', generalStateForm)
       
-      if(customer.type.id == 1){
+      if(customer?.type?.id == 1){
         
         customer.beneficiaries = [...customer?.beneficiaries]
         setGeneralStateForm( prev => {
@@ -71,7 +71,7 @@ export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerSta
         setGeneralStateForm( prev => {
           return {
             ...prev,
-              customerId: customer.id  ,
+              customerId: customer?.id  ,
               companyId:  customer.companyId,
               currencyId: customer.currencyId,
               paymentMethodId: customer.paymentMethodId,
@@ -141,11 +141,11 @@ export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerSta
         })
       }
       
-      if(customer.type.ud == 2) {
+      if(customer?.type?.id == 2) {
         setGeneralStateForm( prev => {
           return {
             ...prev,
-              customerId: customer.id  ,
+              customerId: customer?.id  ,
               companyId:  customer.companyId,
               currencyId: customer.currencyId,
               paymentMethodId: customer.paymentMethodId,
