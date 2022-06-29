@@ -308,7 +308,7 @@ const DealsList = () => {
       statePost.customerInfo. spousalHistory.id = parseInt(statePost.customerInfo. spousalHistory.id)
     }
 
-    if(statePost.customerInfo.beneficiaries[0].id){
+    if(statePost?.customerInfo?.beneficiaries[0]?.id){
       statePost.customerInfo.beneficiaries = statePost.customerInfo.beneficiaries.map( prev => {
         return {
           ...prev, id: parseInt(prev.id)
