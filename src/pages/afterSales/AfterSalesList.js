@@ -27,6 +27,7 @@ import Head from "../../layout/head/Head";
 import AfterSalesServices from "../../services/AfterSalesServices";
 import DealActionsServices from "../../services/DealActionsServices";
 import CurrenciesServices from "../../services/CurrenciesServices";
+import NumberFormat from "react-number-format";
 
 const DocumentsList = () => {
   const { errors, register, handleSubmit } = useForm();
@@ -45,7 +46,8 @@ const DocumentsList = () => {
   const [realDate, setRealDate] = useState(new Date());
 
   const [actions, setActions] = useState([]);
-  const [setActionsOptions] = useState(actions);
+  const [actionsOptions, setActionsOptions] = useState(actions);
+
   const [currencies, setCurrencies] = useState([]);
   const [currenciesOptions, setCurrenciesOptions] = useState(currencies);
 
@@ -58,6 +60,7 @@ const DocumentsList = () => {
     dateOfEntry: dateOfEntry,
     estimateDate: estimatedDate,
     realDate: realDate,
+    actionsOptions: "",
   });
 
   // function to reset the form
@@ -68,6 +71,7 @@ const DocumentsList = () => {
       dateOfEntry: "",
       estimateDate: "",
       realDate: "",
+      actionsOptions: "",
     });
   };
 
@@ -154,7 +158,7 @@ const DocumentsList = () => {
 
     let submittedData = {
       operationTypeId: operationTypeId,
-      ateOfEntry: dateOfEntry,
+      dateOfEntry: dateOfEntry,
       estimateDate: estimatedDate,
       realDate: realDate,
       ammount: Number(ammount),
@@ -163,6 +167,7 @@ const DocumentsList = () => {
       dealId: dealId, //->customerId
       aprobatedBy: aprobatedBy,
       file2: file2[0].name,
+      actionsOptions: actionsOptions,
     };
 
     try {
@@ -234,6 +239,9 @@ const DocumentsList = () => {
     }
     if (editData?.realDate) {
       setRealDate(new Date(editData?.realDate));
+    }
+    if (editData?.actionsOptions) {
+      setActionsOptions(new Date(editData?.actionsOptions));
     }
   }, []);
 
@@ -396,17 +404,23 @@ const DocumentsList = () => {
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="12">
-                    <FormGroup>
+                    {/* <FormGroup>
                       <label className="form-label">Tipo de Operación</label>
                       <RSelect
-                        value={editData?.operationTypeId}
+                        // value={editData?.actionsOptions}
                         options={actions}
                         onChange={onOptionsActionsChange}
-                        defautlValue={formData.actionsTypeId}
-                        name="operationTypeId"
+                        // defautlValue={formData.actionsTypeId}
+                        defautlValue={editData?.actionsTypeId}
+
+                        // value={editData?.operationTypeId}
+                        // options={actions}
+                        // onChange={onOptionsActionsChange}
+                        // defautlValue={formData.actionsTypeId}
+                        // name="operationTypeId"
                       />
                       {errors.operationTypeId && <span className="invalid">{errors.operationTypeId.message}</span>}
-                    </FormGroup>
+                    </FormGroup> */}
                   </Col>
 
                   <Col md="4">
@@ -451,15 +465,17 @@ const DocumentsList = () => {
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Monto</label>{" "}
-                      <input
+                      <NumberFormat
                         className="form-control"
                         type="text"
                         name="ammount"
-                        defaultValue={editData?.ammount}
+                        defaultValue={Number(editData?.ammount)}
                         placeholder="Ingrese monto"
+                        thousandSeparator={true}
                         ref={register()}
                       />
-                      <small className="text-primary">Inversión actual: {editData?.amountOfTheInvestment}</small>{" "}
+                      <small className="text-primary">Inversión actual: {editData?.ammount}</small>
+                      {/* <small className="text-primary">Inversión actual: {editData?.amountOfTheInvestment}</small>{" "} */}
                     </FormGroup>
                   </Col>
 

@@ -546,6 +546,7 @@ const DocumentsList = () => {
                       <label className="form-label">Monto</label>{" "}
                       <NumberFormat
                         name="ammount"
+                        type="text"
                         defaultValue={Number(formData.ammount)}
                         placeholder="Ingrese monto"
                         className="form-control"
