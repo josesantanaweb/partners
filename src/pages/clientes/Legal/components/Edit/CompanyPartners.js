@@ -300,13 +300,13 @@ const CompanyPartners = ({ setModal, editData }) => {
           </div>
           <div>
             <FormGroup>
-              <label className="form-label">Numero de documento</label>
+              <label className="form-label">RUT</label>
               <input
                 className="form-control"
                 type="text"
                 name={`editPartners[${i}].documentNumber`}
                 defaultValue={editData?.companyPartners[i].documentNumber}
-                placeholder="Ingresa Numero de documento"
+                placeholder="Ingresa RUT"
                 ref={register()}
               />
             </FormGroup>
@@ -578,12 +578,12 @@ const CompanyPartners = ({ setModal, editData }) => {
           </div>
           <div>
             <FormGroup>
-              <label className="form-label">Numero de documento</label>
+              <label className="form-label">RUT</label>
               <input
                 className="form-control"
                 type="text"
                 name={`addPartners[${i}].documentNumber`}
-                placeholder="Ingresa Numero de documento"
+                placeholder="Ingresa RUT"
                 ref={register()}
               />
             </FormGroup>
