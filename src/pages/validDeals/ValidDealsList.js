@@ -134,7 +134,7 @@ const DocumentsList = () => {
     dateOfEntry: dateOfEntry,
     estimateDate: estimatedDate,
     realDate: realDate,
-    ammount: "",
+    ammount: Number(""),
     currencyId: "",
     file: "",
     dealId: "",
@@ -149,7 +149,7 @@ const DocumentsList = () => {
       dateOfEntry: "",
       estimateDate: "",
       realDate: "",
-      ammount: "",
+      ammount: Number(""),
       currencyId: "",
       file: "",
       dealId: "",
@@ -198,6 +198,8 @@ const DocumentsList = () => {
       formData.forEach((value, key) => (object[key] = value));
       var json = JSON.stringify(object);
       JSON.stringify(Object.fromEntries(formData));
+
+      console.log(json);
 
       await AfterSalesServices.addPostDealOperations(formData);
 
@@ -253,6 +255,8 @@ const DocumentsList = () => {
     });
     setData(res);
   };
+
+  console.log(typeof formData.ammount);
 
   return (
     <React.Fragment>
@@ -547,10 +551,13 @@ const DocumentsList = () => {
                       <NumberFormat
                         name="ammount"
                         type="text"
-                        defaultValue={Number(formData.ammount)}
+                        defaultValue={formData.ammount}
                         placeholder="Ingrese monto"
                         className="form-control"
-                        thousandSeparator={true}
+                        allowNegative={false}
+                        decimalSeparator={","}
+                        decimalPrecision={2}
+                        thousandSeparator={"."}
                       />
                       <small className="text-primary">Inversión actual: {editData?.amountOfTheInvestment}</small>{" "}
                     </FormGroup>
