@@ -24,6 +24,7 @@ import { ProductsContext } from "./ProductsContext";
 import ProductsServices from "../../services/ProductsServices";
 import DocumentsServices from "../../services/DocumentsServices";
 import SegmentsServices from "../../services/SegmentsServices";
+import swal from "sweetalert";
 
 const ProductsList = () => {
   const { contextData } = useContext(ProductsContext);
@@ -173,10 +174,35 @@ const ProductsList = () => {
 
   // Function to change to delete property for an item
   const deleteUser = async (id) => {
+    // await ProductsServices.deleteProduct(id);
+    // getProducts();
     try {
-      await ProductsServices.deleteProduct(id);
-      getProducts();
-    } catch (error) {}
+      await swal({
+        title: "¿Estás seguro?",
+        text: "Se eliminará el Plan seleccionado!",
+        icon: "warning",
+        dangerMode: true,
+        buttons: {
+          confirm: { text: "Aceptar", className: "bg-primary" },
+          cancel: "Cancelar",
+        },
+      }).then((resDelete) => {
+        if (resDelete) {
+          getProducts();
+          swal("Listo! Plan eliminado exitosamente!", {
+            icon: "success",
+            timer: "2000",
+            buttons: {
+              confirm: { text: "Listo", className: "bg-primary" },
+            },
+          });
+          ProductsServices.deleteProduct(id);
+          getProducts();
+        }
+      });
+    } catch (error) {
+      throw new Error("Error deleting record!");
+    }
   };
 
   // Get current list, pagination
@@ -256,24 +282,24 @@ const ProductsList = () => {
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
-                          <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                          <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"edit" + 1}
                               icon="edit-alt-fill"
                               direction="top"
-                              text="Edit"
+                              text="Editar"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
+                          <li className="nk-tb-action" onClick={() => deleteUser(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"delete" + 1}
                               icon="trash-fill"
                               direction="top"
-                              text="Delete"
+                              text="Eliminar"
                             />
                           </li>
                         </ul>
@@ -282,25 +308,24 @@ const ProductsList = () => {
                   ))
                 : null}
             </div>
-
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
-                  itemPerPage={itemPerPage}
-                  totalItems={data.length}
-                  paginate={paginate}
-                  currentPage={currentPage}
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">Sin Registros</span>
-                </div>
-              )}
-            </PreviewAltCard>
           </div>
+          <PreviewAltCard>
+            {currentItems.length > 0 ? (
+              <PaginationComponent
+                itemPerPage={itemPerPage}
+                totalItems={data.length}
+                paginate={paginate}
+                currentPage={currentPage}
+              />
+            ) : (
+              <div className="text-center">
+                <span className="text-silent">Sin Registros</span>
+              </div>
+            )}
+          </PreviewAltCard>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#close"
@@ -478,7 +503,7 @@ const ProductsList = () => {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#cancel"

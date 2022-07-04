@@ -68,7 +68,7 @@ const menu = [
 
   {
     icon: "building-fill",
-    text: "Empresas",
+    text: "Socios Estratégicos",
     link: "/company",
   },
   {

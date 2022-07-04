@@ -26,6 +26,7 @@ import { findUpper } from "../../utils/Utils";
 import { useForm } from "react-hook-form";
 import { AdviserContext } from "./AdviserContext";
 import AdvisersServices from "../../services/AdvisersServices";
+import swal from "sweetalert";
 
 const AdviserList = () => {
   const { contextData } = useContext(AdviserContext);
@@ -142,9 +143,29 @@ const AdviserList = () => {
   // Function to change to delete property for an item
   const deleteUser = async (id) => {
     try {
-      await AdvisersServices.deleteAdviser(id);
-      getAdvisers();
-    } catch (error) {}
+      // await AdvisersServices.deleteAdviser(id);
+      // getAdvisers();
+      await swal({
+        title: "Estás seguro?",
+        text: "Una vez borrado el registro, no podrá recuperar esta información!",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      }).then((resDelete) => {
+        if (resDelete) {
+          getAdvisers();
+          swal("Listo! Asesor eliminado exitosamente!", {
+            icon: "success",
+          });
+          AdvisersServices.deleteAdviser(id);
+          getAdvisers();
+        } else {
+          swal("El registro se encuentra seguro!");
+        }
+      });
+    } catch (error) {
+      throw new Error("Error deleting record!");
+    }
   };
 
   // Get current list, pagination
@@ -256,7 +277,7 @@ const AdviserList = () => {
                     </DataTableRow>
                     <DataTableRow className="nk-tb-col-tools">
                       <ul className="nk-tb-actions gx-1">
-                        <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                        <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
                           <TooltipComponent
                             tag="a"
                             containerClassName="btn btn-trigger btn-icon"
@@ -266,7 +287,7 @@ const AdviserList = () => {
                             text="Edit"
                           />
                         </li>
-                        <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
+                        <li className="nk-tb-action" onClick={() => deleteUser(item.id)}>
                           <TooltipComponent
                             tag="a"
                             containerClassName="btn btn-trigger btn-icon"
@@ -299,7 +320,7 @@ const AdviserList = () => {
           </PreviewAltCard>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#close"
@@ -471,7 +492,7 @@ const AdviserList = () => {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#cancel"

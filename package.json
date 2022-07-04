@@ -46,6 +46,7 @@
     "sass": "1.32",
     "simplebar-react": "^2.3.5",
     "slick-carousel": "^1.8.1",
+    "sweetalert": "^2.1.2",
     "web-vitals": "^1.1.2"
   },
   "scripts": {

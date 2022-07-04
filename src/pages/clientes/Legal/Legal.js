@@ -283,7 +283,7 @@ const Legal = () => {
 
         <Modal
           isOpen={modal.add}
-          toggle={() => setModal({ add: false })}
+          toggle={() => setModal({ add: true })}
           className="modal-dialog-centered"
           size="lg"
           style={{ maxWidth: "1200px" }}
@@ -324,7 +324,7 @@ const Legal = () => {
 
         <Modal
           isOpen={modal.edit}
-          toggle={() => setModal({ edit: false })}
+          toggle={() => setModal({ edit: true })}
           className="modal-dialog-centered"
           size="lg"
           style={{ maxWidth: "1200px" }}
