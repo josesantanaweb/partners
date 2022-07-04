@@ -404,14 +404,14 @@ const DocumentsList = () => {
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="12">
-                    {/* <FormGroup>
+                    <FormGroup>
                       <label className="form-label">Tipo de Operación</label>
                       <RSelect
                         // value={editData?.actionsOptions}
                         options={actions}
                         onChange={onOptionsActionsChange}
-                        // defautlValue={formData.actionsTypeId}
-                        defautlValue={editData?.actionsTypeId}
+                        defautlValue={formData.actionsTypeId}
+                        // defautlValue={editData?.actionsTypeId}
 
                         // value={editData?.operationTypeId}
                         // options={actions}
@@ -420,7 +420,7 @@ const DocumentsList = () => {
                         // name="operationTypeId"
                       />
                       {errors.operationTypeId && <span className="invalid">{errors.operationTypeId.message}</span>}
-                    </FormGroup> */}
+                    </FormGroup>
                   </Col>
 
                   <Col md="4">
@@ -471,7 +471,10 @@ const DocumentsList = () => {
                         name="ammount"
                         defaultValue={Number(editData?.ammount)}
                         placeholder="Ingrese monto"
-                        thousandSeparator={true}
+                        allowNegative={false}
+                        decimalSeparator={","}
+                        decimalPrecision={2}
+                        thousandSeparator={"."}
                         ref={register()}
                       />
                       <small className="text-primary">Inversión actual: {editData?.ammount}</small>
