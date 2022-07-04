@@ -26,6 +26,7 @@ import { useForm } from "react-hook-form";
 import { UserContext } from "./UserContext";
 import UsersServices from "../../services/UsersServices";
 import RolesServices from "../../services/RolesServices";
+import swal from "sweetalert";
 
 const UserListDefaultPage = () => {
   const { contextData } = useContext(UserContext);
@@ -153,10 +154,35 @@ const UserListDefaultPage = () => {
 
   // Function to change to delete property for an item
   const deleteUser = async (id) => {
+    // await UsersServices.deleteUser(id);
+    // getUser();
     try {
-      await UsersServices.deleteUser(id);
-      getUser();
-    } catch (error) {}
+      await swal({
+        title: "¿Estás seguro?",
+        text: "Se eliminará el Usuario seleccionado!",
+        icon: "warning",
+        dangerMode: true,
+        buttons: {
+          confirm: { text: "Aceptar", className: "bg-primary" },
+          cancel: "Cancelar",
+        },
+      }).then((resDelete) => {
+        if (resDelete) {
+          getUser();
+          swal("Listo! Usuario eliminado exitosamente!", {
+            icon: "success",
+            timer: "2000",
+            buttons: {
+              confirm: { text: "Listo", className: "bg-primary" },
+            },
+          });
+          UsersServices.deleteUser(id);
+          getUser();
+        }
+      });
+    } catch (error) {
+      throw new Error("Error deleting record!");
+    }
   };
 
   // Get current list, pagination
@@ -313,7 +339,7 @@ const UserListDefaultPage = () => {
           </div>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#close"
@@ -443,7 +469,7 @@ const UserListDefaultPage = () => {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#cancel"

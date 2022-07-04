@@ -28,6 +28,8 @@ import AfterSalesServices from "../../services/AfterSalesServices";
 import DealActionsServices from "../../services/DealActionsServices";
 import CurrenciesServices from "../../services/CurrenciesServices";
 import NumberFormat from "react-number-format";
+import swal from "sweetalert";
+// import swal from '@sweetalert/with-react'
 
 const DocumentsList = () => {
   const { errors, register, handleSubmit } = useForm();
@@ -122,9 +124,32 @@ const DocumentsList = () => {
   // Function to change to delete property for an item
   const deletePostDeal = async (id) => {
     try {
-      await AfterSalesServices.deletePostDeal(id);
-      getPostDeals();
-    } catch (error) {}
+      await swal({
+        title: "¿Estás seguro?",
+        text: "Se eliminará la acción Post Venta seleccionada!",
+        icon: "warning",
+        dangerMode: true,
+        buttons: {
+          confirm: { text: "Aceptar", className: "bg-primary" },
+          cancel: "Cancelar",
+        },
+      }).then((resDelete) => {
+        if (resDelete) {
+          getPostDeals();
+          swal("Listo! Post Venta eliminada exitosamente!", {
+            icon: "success",
+            timer: "2000",
+            buttons: {
+              confirm: { text: "Listo", className: "bg-primary" },
+            },
+          });
+          AfterSalesServices.deletePostDeal(id);
+          getPostDeals();
+        }
+      });
+    } catch (error) {
+      throw new Error("Error deleting record!");
+    }
   };
 
   // function to filter post deal results (N. de Operación, Cliente y Operación Post Venta)
@@ -214,7 +239,7 @@ const DocumentsList = () => {
     try {
       const currencies = await CurrenciesServices.getCurrency();
       const currencyData = await currencies.data.map((currency) => ({
-        label: currency?.name,
+        label: currency?.isoCode,
         value: currency?.id,
       }));
 
@@ -280,8 +305,8 @@ const DocumentsList = () => {
                           value={search}
                           onChange={handleInputSearchChange}
                           className="form-control"
-                          placeholder="Buscar por: N. de Operación, Operación Post Venta o Inversión"
-                          style={{ minWidth: "27rem" }}
+                          placeholder="Operación, Operación Post Venta o Inversión"
+                          style={{ minWidth: "21rem" }}
                         />
                       </div>
                     </li>
@@ -297,7 +322,7 @@ const DocumentsList = () => {
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
-                  <span className="sub-text">N. de Operación</span>
+                  <span className="sub-text">Operación</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Operación Post Venta</span>
@@ -328,8 +353,8 @@ const DocumentsList = () => {
                         <span>{item?.action?.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span className="text-primary">
-                          {item?.ammount} - {item.currency?.name}
+                        <span>
+                          {item?.ammount} {item.currency?.isoCode}
                         </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
@@ -353,7 +378,12 @@ const DocumentsList = () => {
                               text="Editar"
                             />
                           </li>
-                          <li className="nk-tb-action" onClick={() => deletePostDeal(item.id)}>
+                          <li
+                            className="nk-tb-action"
+                            onClick={() => {
+                              deletePostDeal(item.id);
+                            }}
+                          >
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
@@ -369,25 +399,24 @@ const DocumentsList = () => {
                   ))
                 : null}
             </div>
-
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
-                  itemPerPage={itemPerPage}
-                  totalItems={postDeals.length}
-                  paginate={paginate}
-                  currentPage={currentPage}
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">No se encontraron registros</span>
-                </div>
-              )}
-            </PreviewAltCard>
           </div>
+          <PreviewAltCard>
+            {currentItems.length > 0 ? (
+              <PaginationComponent
+                itemPerPage={itemPerPage}
+                totalItems={postDeals.length}
+                paginate={paginate}
+                currentPage={currentPage}
+              />
+            ) : (
+              <div className="text-center">
+                <span className="text-silent">No se encontraron registros</span>
+              </div>
+            )}
+          </PreviewAltCard>
         </Block>
 
-        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#cancel"

@@ -302,7 +302,7 @@ const Natural = () => {
           </div>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#close"
@@ -339,7 +339,7 @@ const Natural = () => {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#close"
@@ -378,7 +378,7 @@ const Natural = () => {
 
         <Modal
           isOpen={modal.document}
-          toggle={() => setModal({ document: false })}
+          toggle={() => setModal({ document: true })}
           className="modal-dialog-centered"
           size="lg"
           style={{ maxWidth: "1200px" }}

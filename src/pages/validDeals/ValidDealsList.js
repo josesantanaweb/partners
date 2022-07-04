@@ -112,7 +112,7 @@ const DocumentsList = () => {
     try {
       const currencies = await CurrenciesServices.getCurrency();
       const currencyData = await currencies.data.map((currency) => ({
-        label: currency?.name,
+        label: currency?.isoCode,
         value: currency?.id,
       }));
 
@@ -293,8 +293,8 @@ const DocumentsList = () => {
                           value={search}
                           onChange={handleChange}
                           className="form-control"
-                          placeholder="Buscar por: Cliente, Plan/Producto o Empresa"
-                          style={{ minWidth: "25rem" }}
+                          placeholder="Cliente, Plan/Producto o Empresa"
+                          style={{ minWidth: "18rem" }}
                         />
                       </div>
                     </li>
@@ -310,7 +310,7 @@ const DocumentsList = () => {
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
-                  <span className="sub-text">N. de Operación</span>
+                  <span className="sub-text">Operación</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Cliente</span>
@@ -329,9 +329,6 @@ const DocumentsList = () => {
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Monto</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Moneda</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
@@ -362,10 +359,9 @@ const DocumentsList = () => {
                         <span>{parseDate(item?.createdAt)}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item?.amountOfTheInvestment}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item?.currency?.name}</span>
+                        <span>
+                          {item?.amountOfTheInvestment} {item?.currency?.isoCode}
+                        </span>
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1 d-flex justify-content-center">
@@ -385,32 +381,30 @@ const DocumentsList = () => {
                   ))
                 : null}
             </div>
-
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
-                  itemPerPage={itemPerPage}
-                  totalItems={data.length}
-                  paginate={paginate}
-                  currentPage={currentPage}
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">Sin Registros</span>
-                </div>
-              )}
-            </PreviewAltCard>
           </div>
+          <PreviewAltCard>
+            {currentItems.length > 0 ? (
+              <PaginationComponent
+                itemPerPage={itemPerPage}
+                totalItems={data.length}
+                paginate={paginate}
+                currentPage={currentPage}
+              />
+            ) : (
+              <div className="text-center">
+                <span className="text-silent">Sin Registros</span>
+              </div>
+            )}
+          </PreviewAltCard>
         </Block>
 
         {/* Modal Edit */}
-
         <Modal
           isOpen={modal.edit}
-          toggle={() => setModal({ edit: false })}
+          toggle={() => setModal({ edit: true })}
           className="modal-dialog-centered"
           size="lg"
-          style={{ maxWidth: "768px" }}
+          style={{ maxWidth: "768px", maxHeight: "85vh" }}
         >
           <ModalBody>
             <a
@@ -456,9 +450,6 @@ const DocumentsList = () => {
                       <DataTableRow className="text-center bg-light">
                         <span className="sub-text">Monto</span>
                       </DataTableRow>
-                      <DataTableRow className="text-center bg-light">
-                        <span className="sub-text">Moneda</span>
-                      </DataTableRow>
                     </DataTableHead>
                     <DataTableItem>
                       <DataTableRow className="text-center">
@@ -486,10 +477,9 @@ const DocumentsList = () => {
                         <span>{parseDate(editData?.createdAt)}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{editData?.amountOfTheInvestment}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{editData?.currency?.name}</span>
+                        <span>
+                          {editData?.amountOfTheInvestment} {editData?.currency?.isoCode}
+                        </span>
                       </DataTableRow>
                     </DataTableItem>
                   </div>

@@ -284,7 +284,7 @@ const LibraryList = () => {
                       value={search}
                       onChange={handleChange}
                       className="form-control"
-                      placeholder="Buscar por: Cliente, Rut, Email, Teléfono fijo o celular"
+                      placeholder="Cliente, Rut, Email, Teléfono fijo o celular"
                       style={{ minWidth: "25rem" }}
                     />
                   </div>
@@ -399,7 +399,7 @@ const LibraryList = () => {
                       value={searchLegal}
                       onChange={handleChangeLegal}
                       className="form-control"
-                      placeholder="Buscar por: Empresa, Categoria, Email o Teléfono"
+                      placeholder="Empresa, Categoria, Email o Teléfono"
                       style={{ minWidth: "25rem" }}
                     />
                   </div>
