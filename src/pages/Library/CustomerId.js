@@ -379,7 +379,7 @@ const CustomerId = () => {
           </div>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#close"
@@ -484,6 +484,7 @@ const CustomerId = () => {
 
                   <Col md="12" className="mb-4">
                     <FormGroup>
+                      <label className="form-label">Subir documento</label>
                       <div className="file-input border rounded d-flex pt-3 align-items-center bg-light">
                         <label className="file-input__label" htmlFor="file-input">
                           <input

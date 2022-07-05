@@ -19,8 +19,6 @@ import {
 
 import { useForm } from "react-hook-form";
 import DatePicker, { registerLocale } from "react-datepicker";
-import es from "date-fns/locale/es";
-
 import { FormGroup, Modal, ModalBody, Form, Col } from "reactstrap";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
@@ -28,8 +26,8 @@ import AfterSalesServices from "../../services/AfterSalesServices";
 import DealActionsServices from "../../services/DealActionsServices";
 import CurrenciesServices from "../../services/CurrenciesServices";
 import NumberFormat from "react-number-format";
-import swal from "sweetalert";
-// import swal from '@sweetalert/with-react'
+import es from "date-fns/locale/es";
+import Swal from "sweetalert2";
 
 const DocumentsList = () => {
   const { errors, register, handleSubmit } = useForm();
@@ -123,32 +121,34 @@ const DocumentsList = () => {
     resetForm();
   };
 
-  // Function to change to delete property for an item
-  const deletePostDeal = async (id) => {
+  const deletePostDeal = (id) => {
     try {
-      await swal({
-        title: "¿Estás seguro?",
-        text: "Se eliminará la acción Post Venta seleccionada!",
-        icon: "warning",
-        dangerMode: true,
-        buttons: {
-          confirm: { text: "Aceptar", className: "bg-primary" },
-          cancel: "Cancelar",
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
         },
-      }).then((resDelete) => {
-        if (resDelete) {
-          getPostDeals();
-          swal("Listo! Post Venta eliminada exitosamente!", {
-            icon: "success",
-            timer: "2000",
-            buttons: {
-              confirm: { text: "Listo", className: "bg-primary" },
-            },
-          });
-          AfterSalesServices.deletePostDeal(id);
-          getPostDeals();
-        }
+        buttonsStyling: false,
       });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getPostDeals();
+          if (result.isConfirmed) {
+            AfterSalesServices.deletePostDeal(id);
+            getPostDeals();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
     } catch (error) {
       throw new Error("Error deleting record!");
     }
@@ -425,12 +425,7 @@ const DocumentsList = () => {
                               text="Editar"
                             />
                           </li>
-                          <li
-                            className="nk-tb-action"
-                            onClick={() => {
-                              deletePostDeal(item.id);
-                            }}
-                          >
+                          <li className="nk-tb-action" onClick={() => deletePostDeal(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"

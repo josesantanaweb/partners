@@ -24,7 +24,7 @@ import { useForm } from "react-hook-form";
 import { CompanyContext } from "./CompanyContext";
 import CompanyServices from "../../services/CompanyServices";
 import CountriesServices from "../../services/CountriesServices";
-import swal from "sweetalert";
+import Swal from "sweetalert2";
 
 const CompanyList = () => {
   const { contextData } = useContext(CompanyContext);
@@ -238,33 +238,44 @@ const CompanyList = () => {
   };
 
   // Function to change to delete property for an item
-  const deleteUser = async (id) => {
-    // await CompanyServices.deleteCompany(id);
-    // getCompany();
+  // const deleteUser = async (id) => {
+  //   try {
+  //     await CompanyServices.deleteCompany(id);
+  //     getCompany();
+  //   } catch (error) {
+  //     throw new Error("Error deleting record!");
+  //   }
+  // };
+
+  // Function to change to delete property for an item
+  const deleteCompany = (id) => {
     try {
-      await swal({
-        title: "¿Estás seguro?",
-        text: "Se eliminará el Socio Estrategico seleccionado!",
-        icon: "warning",
-        dangerMode: true,
-        buttons: {
-          confirm: { text: "Aceptar", className: "bg-primary" },
-          cancel: "Cancelar",
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
         },
-      }).then((resDelete) => {
-        if (resDelete) {
-          getCompany();
-          swal("Listo! Socio Estratégico eliminado exitosamente!", {
-            icon: "success",
-            timer: "2000",
-            buttons: {
-              confirm: { text: "Listo", className: "bg-primary" },
-            },
-          });
-          CompanyServices.deleteCompany(id);
-          getCompany();
-        }
+        buttonsStyling: false,
       });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getCompany();
+          if (result.isConfirmed) {
+            CompanyServices.deleteCompany(id);
+            getCompany();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
     } catch (error) {
       throw new Error("Error deleting record!");
     }
@@ -380,7 +391,7 @@ const CompanyList = () => {
                               text="Editar"
                             />
                           </li>
-                          <li className="nk-tb-action" onClick={() => deleteUser(item.id)}>
+                          <li className="nk-tb-action" onClick={() => deleteCompany(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"

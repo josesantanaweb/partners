@@ -24,7 +24,7 @@ import { ProductsContext } from "./ProductsContext";
 import ProductsServices from "../../services/ProductsServices";
 import DocumentsServices from "../../services/DocumentsServices";
 import SegmentsServices from "../../services/SegmentsServices";
-import swal from "sweetalert";
+import Swal from "sweetalert2";
 
 const ProductsList = () => {
   const { contextData } = useContext(ProductsContext);
@@ -173,33 +173,43 @@ const ProductsList = () => {
   };
 
   // Function to change to delete property for an item
-  const deleteUser = async (id) => {
-    // await ProductsServices.deleteProduct(id);
-    // getProducts();
+  // const deletePlan = async (id) => {
+  //   try {
+  //     await ProductsServices.deleteProduct(id);
+  //     getProducts();
+  //   } catch (error) {
+  //     throw new Error("Error deleting record!");
+  //   }
+  // };
+
+  const deleteProduct = (id) => {
     try {
-      await swal({
-        title: "¿Estás seguro?",
-        text: "Se eliminará el Plan seleccionado!",
-        icon: "warning",
-        dangerMode: true,
-        buttons: {
-          confirm: { text: "Aceptar", className: "bg-primary" },
-          cancel: "Cancelar",
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
         },
-      }).then((resDelete) => {
-        if (resDelete) {
-          getProducts();
-          swal("Listo! Plan eliminado exitosamente!", {
-            icon: "success",
-            timer: "2000",
-            buttons: {
-              confirm: { text: "Listo", className: "bg-primary" },
-            },
-          });
-          ProductsServices.deleteProduct(id);
-          getProducts();
-        }
+        buttonsStyling: false,
       });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getProducts();
+          if (result.isConfirmed) {
+            ProductsServices.deleteProduct(id);
+            getProducts();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
     } catch (error) {
       throw new Error("Error deleting record!");
     }
@@ -292,7 +302,7 @@ const ProductsList = () => {
                               text="Editar"
                             />
                           </li>
-                          <li className="nk-tb-action" onClick={() => deleteUser(item.id)}>
+                          <li className="nk-tb-action" onClick={() => deleteProduct(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"

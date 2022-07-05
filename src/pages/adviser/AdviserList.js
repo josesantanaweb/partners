@@ -28,7 +28,7 @@ import { findUpper } from "../../utils/Utils";
 import { useForm } from "react-hook-form";
 import { AdviserContext } from "./AdviserContext";
 import AdvisersServices from "../../services/AdvisersServices";
-import swal from "sweetalert";
+import Swal from "sweetalert2";
 registerLocale("es", es);
 
 const AdviserList = () => {
@@ -148,28 +148,44 @@ const AdviserList = () => {
   };
 
   // Function to change to delete property for an item
-  const deleteUser = async (id) => {
+  // const deleteUser = async (id) => {
+  //   try {
+  //     await AdvisersServices.deleteAdviser(id);
+  //     getAdvisers();
+  //   } catch (error) {
+  //     throw new Error("Error deleting record!");
+  //   }
+  // };
+
+  // Function to change to delete property for an item
+  const deleteUser = (id) => {
     try {
-      // await AdvisersServices.deleteAdviser(id);
-      // getAdvisers();
-      await swal({
-        title: "Estás seguro?",
-        text: "Una vez borrado el registro, no podrá recuperar esta información!",
-        icon: "warning",
-        buttons: true,
-        dangerMode: true,
-      }).then((resDelete) => {
-        if (resDelete) {
-          getAdvisers();
-          swal("Listo! Asesor eliminado exitosamente!", {
-            icon: "success",
-          });
-          AdvisersServices.deleteAdviser(id);
-          getAdvisers();
-        } else {
-          swal("El registro se encuentra seguro!");
-        }
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
+        },
+        buttonsStyling: false,
       });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getAdvisers();
+          if (result.isConfirmed) {
+            AdvisersServices.deleteAdviser(id);
+            getAdvisers();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
     } catch (error) {
       throw new Error("Error deleting record!");
     }
@@ -242,31 +258,31 @@ const AdviserList = () => {
         <Block>
           <div className="nk-tb-list is-separate is-medium mb-3">
             <DataTableHead className="nk-tb-item">
-              <DataTableRow>
+              <DataTableRow className="text-center">
                 <span className="sub-text">#</span>
               </DataTableRow>
-              <DataTableRow size="xs">
+              <DataTableRow className="text-center">
                 <span className="sub-text">Asesor</span>
               </DataTableRow>
-              <DataTableRow>
+              <DataTableRow className="text-center">
                 <span className="sub-text">Telefono</span>
               </DataTableRow>
-              <DataTableRow>
+              <DataTableRow className="text-center">
                 <span className="sub-text">Estado</span>
               </DataTableRow>
-              <DataTableRow>
-                <span className="sub-text"></span>
+              <DataTableRow className="text-center">
+                <span className="sub-text">Acción</span>
               </DataTableRow>
             </DataTableHead>
             {/*Head*/}
             {currentItems.length > 0
               ? currentItems.map((item) => (
                   <DataTableItem key={item.id}>
-                    <DataTableRow>
+                    <DataTableRow className="text-center">
                       <span>{item.id}</span>
                     </DataTableRow>
-                    <DataTableRow size="xs">
-                      <div className="user-card">
+                    <DataTableRow className="text-center">
+                      <div className="user-card pl-5">
                         <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
                         <div className="user-info">
                           <span className="tb-lead">
@@ -276,10 +292,10 @@ const AdviserList = () => {
                         </div>
                       </div>
                     </DataTableRow>
-                    <DataTableRow>
-                      <span>{item.mobilePhone}</span>
+                    <DataTableRow className="text-center">
+                      <span>{item.mobilePhone || "9 99999999"}</span>
                     </DataTableRow>
-                    <DataTableRow>
+                    <DataTableRow className="text-center">
                       <span className={`tb-status text-success`}>{item.status.name}</span>
                     </DataTableRow>
                     <DataTableRow className="nk-tb-col-tools">
@@ -291,7 +307,7 @@ const AdviserList = () => {
                             id={"edit" + 1}
                             icon="edit-alt-fill"
                             direction="top"
-                            text="Edit"
+                            text="Editar"
                           />
                         </li>
                         <li className="nk-tb-action" onClick={() => deleteUser(item.id)}>
@@ -301,7 +317,7 @@ const AdviserList = () => {
                             id={"delete" + 1}
                             icon="trash-fill"
                             direction="top"
-                            text="Delete"
+                            text="Eliminar"
                           />
                         </li>
                       </ul>
@@ -310,7 +326,6 @@ const AdviserList = () => {
                 ))
               : null}
           </div>
-
           <PreviewAltCard>
             {currentItems.length > 0 ? (
               <PaginationComponent

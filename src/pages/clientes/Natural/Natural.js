@@ -31,6 +31,7 @@ import InvestmentExperience from "./components/Edit/InvestmentExperience";
 import SpousalHistory from "./components/Edit/SpousalHistory";
 import CustomersServices from "../../../services/CustomersServices";
 import Beneficiaries from "./components/Edit/Beneficiaries";
+import Swal from "sweetalert2";
 
 const Natural = () => {
   const { contextData } = useContext(NaturalContext);
@@ -118,11 +119,44 @@ const Natural = () => {
   };
 
   // Delete
-  const onDeleteClick = async (id) => {
+  // const onDeleteClick = async (id) => {
+  //   try {
+  //     await CustomersServices.deleteCustomerNatural(id);
+  //     getCustomers();
+  //   } catch (error) {}
+  // };
+
+  const onDeleteClick = (id) => {
     try {
-      await CustomersServices.deleteCustomerNatural(id);
-      getCustomers();
-    } catch (error) {}
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
+        },
+        buttonsStyling: false,
+      });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getCustomers();
+          if (result.isConfirmed) {
+            CustomersServices.deleteCustomerNatural(id);
+            getCustomers();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
+    } catch (error) {
+      throw new Error("Error deleting record!");
+    }
   };
 
   // Get current list, pagination
@@ -193,36 +227,36 @@ const Natural = () => {
           <div className="container-fluid overflow-auto scrollbar-fluid">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
-                <DataTableRow>
-                  <span className="sub-text">#</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">N. de Cliente</span>
                 </DataTableRow>
-                <DataTableRow size="xs">
+                <DataTableRow className="text-center">
                   <span className="sub-text">Cliente</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Telefono Fijo</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Teléfono Fijo</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Telefono Celular</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Teléfono Celular</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Profesion</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Profesión</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Direccion</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Dirección</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text"></span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
 
               {currentItems.length > 0
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id}>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.id}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <div className="user-card">
                           {item?.names && <UserAvatar theme="purple" text={findUpper(item?.names)}></UserAvatar>}
                           <div className="user-info">
@@ -234,22 +268,21 @@ const Natural = () => {
                           </div>
                         </div>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span className="text-info">{item?.phone}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span className="text-info">{item?.mobilePhone}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item?.profession}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item?.address?.detailedAddress?.address}</span>
                       </DataTableRow>
-
-                      <DataTableRow className="nk-tb-col-tools">
+                      <DataTableRow className="text-center">
                         <ul className="nk-tb-actions gx-1">
-                          <li className="nk-tb-action-hidden" onClick={() => onDocumentClick(item.id, item)}>
+                          <li className="nk-tb-action" onClick={() => onDocumentClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
@@ -259,7 +292,7 @@ const Natural = () => {
                               text="Ficha"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                          <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
@@ -269,14 +302,14 @@ const Natural = () => {
                               text="Datos Personales"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden" onClick={() => onDeleteClick(item.id)}>
+                          <li className="nk-tb-action" onClick={() => onDeleteClick(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"delete" + 1}
                               icon="trash-fill"
                               direction="top"
-                              text="Borrar"
+                              text="Eliminar"
                             />
                           </li>
                         </ul>
@@ -285,21 +318,21 @@ const Natural = () => {
                   ))
                 : null}
             </div>
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
-                  itemPerPage={itemPerPage}
-                  totalItems={data.length}
-                  paginate={paginate}
-                  currentPage={currentPage}
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">Sin registros</span>
-                </div>
-              )}
-            </PreviewAltCard>
           </div>
+          <PreviewAltCard>
+            {currentItems.length > 0 ? (
+              <PaginationComponent
+                itemPerPage={itemPerPage}
+                totalItems={data.length}
+                paginate={paginate}
+                currentPage={currentPage}
+              />
+            ) : (
+              <div className="text-center">
+                <span className="text-silent">Sin registros</span>
+              </div>
+            )}
+          </PreviewAltCard>
         </Block>
 
         <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
