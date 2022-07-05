@@ -159,9 +159,8 @@ const DealsList = () => {
     getDeals();
   }, []);
   //////////////////// llealg 1 //////////////////////////////////
-  const [requiredDocument, setRequiredDocument] = useState([])
+  const [requiredDocument, setRequiredDocument] = useState([]);
 
-  
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -170,7 +169,7 @@ const DealsList = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Negocios
+                Lista de Operaciones
               </BlockTitle>
               <BlockDes className="text-soft">
                 <p>Total {currentItems.length} negocios</p>
@@ -261,7 +260,7 @@ const DealsList = () => {
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
-                          <li className="nk-tb-action-hidden">
+                          <li className="nk-tb-action">
                             {/* onClick={() => onEditClick(item.id, item)} */}
                             <TooltipComponent
                               tag="a"
@@ -272,7 +271,7 @@ const DealsList = () => {
                               text="Editar"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden">
+                          <li className="nk-tb-action">
                             {/* onClick={() => deleteDocument(item.id)} */}
                             <TooltipComponent
                               tag="a"
@@ -321,16 +320,18 @@ const DealsList = () => {
               onClick={(ev) => {
                 ev.preventDefault();
                 onFormCancel();
-                setRequiredDocument([])
+                setRequiredDocument([]);
               }}
               className="close"
             >
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2 table-record">
-              <h5 className="title" >Agregar Negocio</h5> <br/>
-              { requiredDocument.length ? <span style={{color:'red'}}>Requerido: </span>: ""}
-              { requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
+              <h5 className="title">Agregar Negocio</h5> <br />
+              {requiredDocument.length ? <span style={{ color: "red" }}>Requerido: </span> : ""}
+              {requiredDocument.map((act, i) => (
+                <span>{i + 1 + ")" + " " + act.name}. </span>
+              ))}
               <Nav tabs>
                 <NavItem>
                   <NavLink
@@ -386,9 +387,7 @@ const DealsList = () => {
                 </TabPane>
               </TabContent>
               <TabContent activeTab={addActiveTab}>
-                <TabPane tabId="4">
-                  
-                </TabPane>
+                <TabPane tabId="4"></TabPane>
               </TabContent>
             </div>
           </ModalBody>

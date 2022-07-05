@@ -22,12 +22,17 @@ import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
 import DocumentsServices from "../../services/DocumentsServices";
 import swal from "sweetalert";
+import { Link } from "react-router-dom";
 
 const DocumentsList = () => {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [pagData, setPagData] = useState([]);
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
+  const [itemPerPage] = useState(5);
+
   const [sm, updateSm] = useState(false);
   const { errors, register, handleSubmit } = useForm();
   const [editData, setEditData] = useState();
@@ -158,6 +163,17 @@ const DocumentsList = () => {
     return description;
   };
 
+  // function to get documents
+  const getPaginationDocuments = async (limit, page) => {
+    const documentsPag = await DocumentsServices.getPaginationDocuments(limit, page);
+    const documentsData = await documentsPag.data.map((data) => data);
+    setData(documentsData);
+  };
+
+  const firstPageUrl = () => getPaginationDocuments(itemPerPage, 1);
+  const nextPageUrl = () => getPaginationDocuments(itemPerPage, 2);
+  const lastPageUrl = () => getPaginationDocuments(itemPerPage, 3);
+
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -169,7 +185,7 @@ const DocumentsList = () => {
                 Lista de Documentos
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} documentos</p>
+                <p>Total {currentItems.length} documentos</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -256,12 +272,43 @@ const DocumentsList = () => {
           </div>
           <PreviewAltCard>
             {currentItems.length > 0 ? (
-              <PaginationComponent
-                itemPerPage={itemPerPage}
-                totalItems={currentItems.length}
-                paginate={paginate}
-                currentPage={currentPage}
-              />
+              <React.Fragment>
+                {/* <PaginationComponent
+                  itemPerPage={itemPerPage}
+                  totalItems={currentItems.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                /> */}
+                <ul className="pagination border p-1">
+                  <li className="active page-item border">
+                    <a
+                      className="page-link border border-white btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => firstPageUrl(itemPerPage, 1)}
+                    >
+                      1
+                    </a>
+                  </li>
+                  <li className="active page-item border">
+                    <a
+                      className="page-link border border-white btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => nextPageUrl(itemPerPage, 2)}
+                    >
+                      2
+                    </a>
+                  </li>
+                  <li className="active page-item border">
+                    <a
+                      className="page-link border border-white btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => lastPageUrl(itemPerPage, 3)}
+                    >
+                      3
+                    </a>
+                  </li>
+                </ul>
+              </React.Fragment>
             ) : (
               <div className="text-center">
                 <span className="text-silent">Sin Registros</span>
