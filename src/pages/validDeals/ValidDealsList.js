@@ -44,7 +44,7 @@ const DocumentsList = () => {
   const [currenciesOptions, setCurrenciesOptions] = useState(currencies);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
+  const [itemPerPage] = useState(5);
 
   const [sm, updateSm] = useState(false);
   const { register, handleSubmit } = useForm();
@@ -256,7 +256,16 @@ const DocumentsList = () => {
     setData(res);
   };
 
-  console.log(typeof formData.ammount);
+  // function to get documents
+  const getPaginationValidDeals = async (limit, page) => {
+    const deals = await ValidDealsServices.getPaginationValidDeals(limit, page);
+    const dealsData = await deals.data.map((data) => data);
+    setData(dealsData);
+  };
+
+  const firstPageUrl = () => getPaginationValidDeals(itemPerPage, 1);
+  const nextPageUrl = () => getPaginationValidDeals(itemPerPage, 2);
+  const lastPageUrl = () => getPaginationValidDeals(itemPerPage, 3);
 
   return (
     <React.Fragment>
@@ -384,12 +393,43 @@ const DocumentsList = () => {
           </div>
           <PreviewAltCard>
             {currentItems.length > 0 ? (
-              <PaginationComponent
-                itemPerPage={itemPerPage}
-                totalItems={data.length}
-                paginate={paginate}
-                currentPage={currentPage}
-              />
+              <React.Fragment>
+                {/* <PaginationComponent
+                  itemPerPage={itemPerPage}
+                  totalItems={data.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                /> */}
+                <ul className="pagination border p-1">
+                  <li className="active page-item border">
+                    <a
+                      className="page-link border border-white btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => firstPageUrl(itemPerPage, 1)}
+                    >
+                      1
+                    </a>
+                  </li>
+                  <li className="active page-item border">
+                    <a
+                      className="page-link border border-white btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => nextPageUrl(itemPerPage, 2)}
+                    >
+                      2
+                    </a>
+                  </li>
+                  <li className="active page-item border">
+                    <a
+                      className="page-link border border-white btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => lastPageUrl(itemPerPage, 3)}
+                    >
+                      3
+                    </a>
+                  </li>
+                </ul>
+              </React.Fragment>
             ) : (
               <div className="text-center">
                 <span className="text-silent">Sin Registros</span>
@@ -399,13 +439,7 @@ const DocumentsList = () => {
         </Block>
 
         {/* Modal Edit */}
-        <Modal
-          isOpen={modal.edit}
-          toggle={() => setModal({ edit: true })}
-          className="modal-dialog-centered"
-          size="lg"
-          style={{ maxWidth: "768px", maxHeight: "85vh" }}
-        >
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#cancel"
@@ -418,7 +452,7 @@ const DocumentsList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
 
-            <div className="p-2 table-records">
+            <div className="p-2 table-records modal-scroll">
               <h5 className="title pb-4">Creación Movimientos Post Venta</h5>
               <Col md="12" className="mb-4">
                 <FormGroup className="border-bottom pb-2">

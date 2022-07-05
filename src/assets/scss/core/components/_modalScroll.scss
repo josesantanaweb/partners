@@ -5,7 +5,7 @@ $scrollHoverTrack: #d4d4d4;
 $scrollTrack: #e1e1e1;
 
 .modal-scroll {
-  height: auto;
+  height: 80vh !important;
   width: auto;
   overflow-y: scroll;
 }

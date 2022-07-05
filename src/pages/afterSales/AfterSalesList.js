@@ -63,6 +63,7 @@ const DocumentsList = () => {
     estimateDate: estimatedDate,
     realDate: realDate,
     actionsOptions: "",
+    ammount: Number(""),
   });
 
   // function to reset the form
@@ -74,11 +75,12 @@ const DocumentsList = () => {
       estimateDate: "",
       realDate: "",
       actionsOptions: "",
+      ammount: Number(""),
     });
   };
 
   const [currentPage, setCurrentPage] = useState(1); //-> 1 o 2 o 3
-  const [itemPerPage] = useState(10); //->limit
+  const [itemPerPage] = useState(5); //->limit
 
   // Get current list, pagination
   const indexOfLastItem = currentPage * itemPerPage;
@@ -186,7 +188,7 @@ const DocumentsList = () => {
       dateOfEntry: dateOfEntry,
       estimateDate: estimatedDate,
       realDate: realDate,
-      ammount: Number(ammount),
+      ammount: ammount,
       currencyId: currencyId,
       file: file[0].name,
       dealId: dealId, //->customerId
@@ -196,10 +198,45 @@ const DocumentsList = () => {
     };
 
     try {
+      // !
+
+      const formData = new FormData();
+      let object = {};
+
+      formData.append("operationTypeId", actionsOptions?.value);
+      formData.append("dateOfEntry", dateOfEntry);
+      formData.append("estimateDate", estimatedDate);
+      formData.append("realDate", realDate);
+      formData.append("ammount", ammount);
+      formData.append("currencyId", currenciesOptions?.value);
+      formData.append("file", file[0].name);
+      formData.append("dealId", editData?.id);
+      formData.append("aprobatedBy", aprobatedBy);
+      formData.append("file2", file2[0].name);
+
+      formData.forEach((value, key) => (object[key] = value));
+      var json = JSON.stringify(object);
+      JSON.stringify(Object.fromEntries(formData));
+
+      console.log(json);
+
+      // await AfterSalesServices.addPostDealOperations(formData);
+
+      setModal({ edit: false, add: false });
+      resetForm();
+      window.location.reload();
+
       await AfterSalesServices.editPostDeal(editData.id, submittedData);
       resetForm();
       getPostDeals();
       setModal({ edit: false }, { add: false });
+
+      // !
+
+      // await AfterSalesServices.editPostDeal(editData.id, submittedData);
+      // resetForm();
+      // getPostDeals();
+      // setModal({ edit: false }, { add: false });
     } catch (error) {}
   };
 
@@ -270,6 +307,16 @@ const DocumentsList = () => {
     }
   }, []);
 
+  const getPaginationPostDeals = async (limit, page) => {
+    const postDeals = await AfterSalesServices.getPostDealOperationsPags(limit, page);
+    const postDealsData = await postDeals.data.map((data) => data);
+    setPostDeals(postDealsData);
+  };
+
+  const firstPageUrl = () => getPaginationPostDeals(itemPerPage, 1);
+  const nextPageUrl = () => getPaginationPostDeals(itemPerPage, 2);
+  const lastPageUrl = () => getPaginationPostDeals(itemPerPage, 3);
+
   return (
     <React.Fragment>
       <Head title="Acciones Post Venta"></Head>
@@ -306,7 +353,7 @@ const DocumentsList = () => {
                           onChange={handleInputSearchChange}
                           className="form-control"
                           placeholder="Operación, Operación Post Venta o Inversión"
-                          style={{ minWidth: "21rem" }}
+                          style={{ minWidth: "20rem" }}
                         />
                       </div>
                     </li>
@@ -401,18 +448,47 @@ const DocumentsList = () => {
             </div>
           </div>
           <PreviewAltCard>
-            {currentItems.length > 0 ? (
+            <React.Fragment>
+              {/* {currentItems.length > 0 ? (
               <PaginationComponent
                 itemPerPage={itemPerPage}
                 totalItems={postDeals.length}
                 paginate={paginate}
                 currentPage={currentPage}
-              />
-            ) : (
-              <div className="text-center">
-                <span className="text-silent">No se encontraron registros</span>
-              </div>
-            )}
+              /> */}
+              <ul className="pagination border p-1">
+                <li className="active page-item border">
+                  <a
+                    className="page-link border border-white btn btn-primary"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => firstPageUrl(itemPerPage, 1)}
+                  >
+                    1
+                  </a>
+                </li>
+                <li className="active page-item border">
+                  <a
+                    className="page-link border border-white btn btn-primary"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => nextPageUrl(itemPerPage, 2)}
+                  >
+                    2
+                  </a>
+                </li>
+                <li className="active page-item border">
+                  <a
+                    className="page-link border border-white btn btn-primary"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => lastPageUrl(itemPerPage, 3)}
+                  >
+                    3
+                  </a>
+                </li>
+              </ul>
+            </React.Fragment>
+            <div className="text-center">
+              <span className="text-silent">No se encontraron registros</span>
+            </div>
           </PreviewAltCard>
         </Block>
 
@@ -493,12 +569,11 @@ const DocumentsList = () => {
 
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Monto</label>{" "}
+                      <label className="form-label">Monto</label>
                       <NumberFormat
                         className="form-control"
-                        type="text"
                         name="ammount"
-                        defaultValue={Number(editData?.ammount)}
+                        defaultValue={editData?.ammount}
                         placeholder="Ingrese monto"
                         allowNegative={false}
                         decimalSeparator={","}

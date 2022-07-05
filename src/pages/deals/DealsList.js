@@ -320,6 +320,7 @@ const DealsList = () => {
     DealsServices.postDeals(statePost).then( ()=>  window.location.reload()).catch( err => console.log(err))
   }
 
+
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -328,7 +329,7 @@ const DealsList = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Negocios
+                Lista de Operaciones
               </BlockTitle>
               <BlockDes className="text-soft">
                 <p>Total {currentItems.length} negocios</p>
@@ -435,7 +436,7 @@ const DealsList = () => {
                     
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
-                          <li className="nk-tb-action-hidden">
+                          <li className="nk-tb-action">
                             {/* onClick={() => onEditClick(item.id, item)} */}
                             <TooltipComponent
                               tag="a"
@@ -446,7 +447,7 @@ const DealsList = () => {
                               text="Editar"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden">
+                          <li className="nk-tb-action">
                             {/* onClick={() => deleteDocument(item.id)} */}
                             <TooltipComponent
                               tag="a"
@@ -518,6 +519,11 @@ const DealsList = () => {
 
               { needDocument.documents?.length && addActiveTab == 4? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
               { needDocument.documents?.length > 0 && addActiveTab == 4 && needDocument.documents.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
+              <h5 className="title">Agregar Negocio</h5> <br />
+              {requiredDocument.length ? <span style={{ color: "red" }}>Requerido: </span> : ""}
+              {requiredDocument.map((act, i) => (
+                <span>{i + 1 + ")" + " " + act.name}. </span>
+              ))}
               <Nav tabs>
                 <NavItem>
                   <NavLink
@@ -581,6 +587,7 @@ const DealsList = () => {
                 <TabPane tabId="4">
                   <DocumentRequired libraryClient={libraryClient} needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
                 </TabPane>
+                <TabPane tabId="4"></TabPane>
               </TabContent>
             </div>
           </ModalBody>
