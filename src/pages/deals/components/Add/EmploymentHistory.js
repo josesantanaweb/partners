@@ -1,10 +1,10 @@
 import React from "react";
 import { FormGroup, Form } from "reactstrap";
 import { useForm } from "react-hook-form";
-import { Col, Button } from "../../../../../components/Component";
-import CustomersServices from "../../../../../services/CustomersServices";
+import { Col, Button } from "../../../../components/Component";
+import CustomersServices from "../../../../services/CustomersServices";
 
-const EmploymentHistory = ({ setModal, editData }) => {
+const EmploymentHistory = ({setAddActiveTab2,setGeneralStateForm, setModal, editData,selectClient }) => {
   // useForm
   const { register, handleSubmit } = useForm();
 
@@ -54,7 +54,15 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="typeOfEmployee"
-            defaultValue={editData?.employmentHistory?.typeOfEmployee}
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,employmentHistory:{
+                  ...prev.employmentHistory,
+                  typeOfEmployee:e.target.value
+                }
+              }
+            })} 
+            defaultValue={selectClient?.employmentHistory?.typeOfEmployee}
             placeholder="Ingresa Tipo de empleo"
             ref={register()}
           />
@@ -67,7 +75,15 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="companyName"
-            defaultValue={editData?.employmentHistory?.companyName}
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,employmentHistory:{
+                  ...prev.employmentHistory,
+                  companyName:e.target.value
+                }
+              }
+            })} 
+            defaultValue={selectClient?.employmentHistory?.companyName}
             placeholder="Ingresa Nombre de empresa"
             ref={register()}
           />
@@ -80,7 +96,15 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="address"
-            defaultValue={editData?.employmentHistory?.address}
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,employmentHistory:{
+                  ...prev.employmentHistory,
+                  address:e.target.value
+                }
+              }
+            })} 
+            defaultValue={selectClient?.employmentHistory?.address}
             placeholder="Ingresa Direccion"
             ref={register()}
           />
@@ -93,7 +117,15 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="industry"
-            defaultValue={editData?.employmentHistory?.industry}
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,employmentHistory:{
+                  ...prev.employmentHistory,
+                  industry:e.target.value
+                }
+              }
+            })} 
+            defaultValue={selectClient?.employmentHistory?.industry}
             placeholder="Ingresa Industria"
             ref={register()}
           />
@@ -106,7 +138,15 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="laborSeniority"
-            defaultValue={editData?.employmentHistory?.laborSeniority}
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,employmentHistory:{
+                  ...prev.employmentHistory,
+                  laborSeniority:e.target.value
+                }
+              }
+            })} 
+            defaultValue={selectClient?.employmentHistory?.laborSeniority}
             placeholder="Ingresa Antoguedad laboral"
             ref={register()}
           />
@@ -119,7 +159,15 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="charge"
-            defaultValue={editData?.employmentHistory?.charge}
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,employmentHistory:{
+                  ...prev.employmentHistory,
+                  charge:e.target.value
+                }
+              }
+            })} 
+            defaultValue={selectClient?.employmentHistory?.charge}
             placeholder="Ingresa Cargo"
             ref={register()}
           />
@@ -132,7 +180,15 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="businessPhone"
-            defaultValue={editData?.employmentHistory?.businessPhone}
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,employmentHistory:{
+                  ...prev.employmentHistory,
+                  businessPhone:e.target.value
+                }
+              }
+            })} 
+            defaultValue={selectClient?.employmentHistory?.businessPhone}
             placeholder="Ingresa Telefono"
             ref={register()}
           />
@@ -145,7 +201,15 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="email"
-            defaultValue={editData?.employmentHistory?.email}
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,employmentHistory:{
+                  ...prev.employmentHistory,
+                  email:e.target.value
+                }
+              }
+            })} 
+            defaultValue={selectClient?.employmentHistory?.email}
             placeholder="Ingresa Emal"
             ref={register()}
           />
@@ -158,7 +222,15 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="rut"
-            defaultValue={editData?.employmentHistory?.rut}
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,employmentHistory:{
+                  ...prev.employmentHistory,
+                  rut:e.target.value
+                }
+              }
+            })} 
+            defaultValue={selectClient?.employmentHistory?.rut}
             placeholder="Ingresa RUT"
             ref={register()}
           />
@@ -171,7 +243,15 @@ const EmploymentHistory = ({ setModal, editData }) => {
             className="form-control"
             type="text"
             name="zipCode"
-            defaultValue={editData?.employmentHistory?.zipCode}
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,employmentHistory:{
+                  ...prev.employmentHistory,
+                  zipCode:e.target.value
+                }
+              }
+            })} 
+            defaultValue={selectClient?.employmentHistory?.zipCode}
             placeholder="Ingresa Codigo Postal"
             ref={register()}
           />
@@ -180,22 +260,11 @@ const EmploymentHistory = ({ setModal, editData }) => {
       <Col size="12">
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
           <li>
-            <Button color="primary" size="md" type="submit">
-              Guardar
+            <Button color="primary" type="button" size="md" onClick={()=>setAddActiveTab2('3')}>
+              Siguiente
             </Button>
           </li>
-          <li>
-            <a
-              href="#cancel"
-              className="link link-light"
-              onClick={(ev) => {
-                ev.preventDefault();
-                onFormCancel();
-              }}
-            >
-              Cancelar
-            </a>
-          </li>
+       
         </ul>
       </Col>
     </Form>

@@ -1,3 +1,4 @@
+import axios from "axios";
 import api from "../config/api";
 const token = localStorage.getItem("access_token");
 
@@ -38,6 +39,29 @@ const DealsServices = {
   getDealsTypeForms: async(type, idPlan) => {
     console.log("Pasando:! ",type,idPlan)
     const response = await api.get(`/deal-product/${idPlan}?customerTypeId=${type}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+
+  getCustomerLibraryId: async(id) => {
+    console.log("Customer libray iD:", id)
+    const response  = await api.get(`/customer-library/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+
+  postDeals: async(deal) => {
+    console.log('Post de deal',deal);
+    const response = await api.post('/deals', deal, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data
+  },
+
+  getDealsPaginate: async(service)=> {
+    const response = await axios.get(`${service}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;

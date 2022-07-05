@@ -21,7 +21,7 @@ import classnames from "classnames";
 import AddMainInformation from "./components/Add/MainInformation";
 import AddCustomerFile from "./components/Add/CustomerFile";
 import AddAccountData from "./components/Add/AccountData";
-
+import DocumentRequired from "./components/Add/DocumentRequired";
 import EditMainInformation from "./components/Edit/MainInformation";
 import AccountData from "../clientes/Natural/components/Edit/AccountData";
 import EmploymentHistory from "../clientes/Natural/components/Edit/EmploymentHistory";
@@ -33,6 +33,8 @@ import DocumentsServices from "../../services/DocumentsServices";
 
 // Desde acá
 import DealsServices from "../../services/DealsServices";
+import InvestorProfile from "./components/Add/InvestorProfile";
+import { preventContextMenu } from "@fullcalendar/core";
 
 const DealsList = () => {
   const [data, setData] = useState([]);
@@ -66,8 +68,7 @@ const DealsList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
   const [sm, updateSm] = useState(false);
-  const { errors, register, handleSubmit } = useForm();
-
+  const [metaData, setMetaData] = useState({})
   // function to reset the form
   // const resetForm = () => {
   //   setFormData({
@@ -151,7 +152,9 @@ const DealsList = () => {
   const getDeals = async () => {
     try {
       const deals = await DealsServices.getDeal();
+      setMetaData(deals.meta)
       const dealsData = await deals.data.map((data) => data);
+      console.log(dealsData)
       setData(dealsData);
     } catch (error) {}
   };
@@ -160,6 +163,163 @@ const DealsList = () => {
   }, []);
   //////////////////// llealg 1 //////////////////////////////////
   const [requiredDocument, setRequiredDocument] = useState([]);
+
+  const [selectClient, setSelectClient] = useState({});
+  const [needDocument, setNeedDocument] = useState({});
+  const [libraryClient, setLibraryClient] = useState([]);
+  const { errors, register, setValue, handleSubmit } = useForm();
+  //State general de formual incluye todos los tabs
+  const [generalStateForm, setGeneralStateForm] = useState({ 
+    investorProfile:[],
+    beneficiaries:[]
+  })
+
+  const paginateDeals = async ( service ) => {
+
+  
+      try {
+        const deals = await DealsServices.getDealsPaginate(service);
+        setMetaData(deals.meta)
+        console.log(deals.meta)
+        const dealsData = await deals.data.map((data) => data);
+        console.log(dealsData)
+        setData(dealsData);
+      } catch (error) {}
+  
+
+  }
+
+  const onSubmit = data => {
+    console.log(generalStateForm);
+  };
+
+  const postDeals = (e)=> {
+    e.preventDefault();
+    console.log(generalStateForm)
+    let statePost = {};
+    if(selectClient.type.id == 1)
+      statePost = {
+      customerId: parseInt(generalStateForm.customerId) ,
+      companyId:  generalStateForm.companyId,
+      currencyId: generalStateForm.currencyId,
+      paymentMethodId: generalStateForm.paymentMethodId,
+      planId: generalStateForm.planId,
+      yearsOfThePlan: parseInt(generalStateForm.yearsOfThePlan) ,
+      amountOfTheInvestment: parseInt( generalStateForm.amountOfTheInvestment),
+      totalNetValueUSD: parseInt(generalStateForm.totalNetValueUSD) ,
+      originsOfTheFunds: generalStateForm.originsOfTheFunds,
+      advisorFee: generalStateForm.advisorFee,
+      percentage: parseInt(generalStateForm.percentage),
+      customerInfo: {
+        currentAccountData: {
+          ...generalStateForm.currentAccountData,
+
+        },
+        employmentHistory:{
+          ...generalStateForm.employmentHistory,
+        },
+        personalReferences:{
+          ...generalStateForm.personalReferences,
+          
+        },
+        investmentExperience: {
+          ...generalStateForm.investmentExperience,
+        },
+        spousalHistory:{
+          ...generalStateForm.spousalHistory,
+        },
+      beneficiaries:[...generalStateForm.beneficiaries.map( act => {
+        return {
+          ...act,
+        }
+      })],
+
+      },
+      investorProfile: [
+        ...generalStateForm.investorProfile
+      ],
+      documents: [
+ 
+      ]
+    }
+
+    if(selectClient.type.id == 2){
+      statePost = {
+        customerId: parseInt(generalStateForm.customerId) ,
+        companyId:  generalStateForm.companyId,
+        currencyId: generalStateForm.currencyId,
+        paymentMethodId: generalStateForm.paymentMethodId,
+        planId: generalStateForm.planId,
+        yearsOfThePlan: parseInt(generalStateForm.yearsOfThePlan) ,
+        amountOfTheInvestment: parseInt( generalStateForm.amountOfTheInvestment),
+        totalNetValueUSD: parseInt(generalStateForm.totalNetValueUSD) ,
+        originsOfTheFunds: generalStateForm.originsOfTheFunds,
+        advisorFee: generalStateForm.advisorFee,
+        percentage: parseInt(generalStateForm.percentage),
+        customerInfo: {
+          currentAccountData: {
+            ...generalStateForm.currentAccountData,
+  
+          },
+          employmentHistory:{
+            ...generalStateForm.employmentHistory,
+          },
+          personalReferences:{
+            ...generalStateForm.personalReferences,
+            
+          },
+          investmentExperience: {
+            ...generalStateForm.investmentExperience,
+          },
+          spousalHistory:{
+            ...generalStateForm.spousalHistory,
+          },
+        beneficiaries:[...generalStateForm.beneficiaries.map( act => {
+          return {
+            ...act,
+          }
+        })],
+  
+        },
+        investorProfile: [
+          ...generalStateForm.investorProfile
+        ],
+        documents: [
+        ]
+      }
+    }
+
+    if(statePost.customerInfo.currentAccountData.id){
+      statePost.customerInfo.currentAccountData.id = parseInt(statePost.customerInfo.currentAccountData.id)
+    }
+
+    if(statePost.customerInfo.employmentHistory.id){
+      statePost.customerInfo.employmentHistory.id = parseInt(statePost.customerInfo.employmentHistory.id)
+    }
+
+    if(statePost.customerInfo.personalReferences.id){
+      statePost.customerInfo.personalReferences.id = parseInt(statePost.customerInfo.personalReferences.id)
+    }
+
+    if(statePost.customerInfo.investmentExperience.id){
+      statePost.customerInfo.investmentExperience.id = parseInt(statePost.customerInfo.investmentExperience.id)
+    }
+
+    if(statePost.customerInfo. spousalHistory.id){
+      statePost.customerInfo. spousalHistory.id = parseInt(statePost.customerInfo. spousalHistory.id)
+    }
+
+    if(statePost?.customerInfo?.beneficiaries[0]?.id){
+      statePost.customerInfo.beneficiaries = statePost.customerInfo.beneficiaries.map( prev => {
+        return {
+          ...prev, id: parseInt(prev.id)
+        }
+      })
+    }
+
+    console.log('estado',statePost)
+    DealsServices.postDeals(statePost).then( ()=>  window.location.reload())
+  }
 
   return (
     <React.Fragment>
@@ -229,18 +389,8 @@ const DealsList = () => {
                 <DataTableRow className="text-center">
                   <span className="sub-text">Moneda</span>
                 </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Monto real</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Método de Pago</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Origen de los Fondos</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Advisor-Fee</span> {/* % */}
-                </DataTableRow>
+          
+            
                 <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
@@ -253,11 +403,31 @@ const DealsList = () => {
                         <span>{item.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.name}</span>
+                        <span>{item.customer.names}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        {/* <span>{handleDescriptionLength(item.description)}</span> */}
+                        <span>{item.customer.rut}</span>
                       </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.createdByAdvisor?       item?.createdByAdvisor?.name +" " +item?.createdByAdvisor?.paternalLastName: 
+                        item?.createdByUser?.name +" " +item?.createdByUser?.lastName }</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.product.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.company.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.yearsOfThePlan}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.amountOfTheInvestment}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.currency.name}</span>
+                      </DataTableRow>
+                    
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
                           <li className="nk-tb-action">
@@ -293,8 +463,9 @@ const DealsList = () => {
               {currentItems.length > 0 ? (
                 <PaginationComponent
                   itemPerPage={itemPerPage}
-                  totalItems={data.length}
-                  paginate={paginate}
+                  totalItems={metaData.totalItems}
+                  paginate={()=>paginateDeals(metaData.nextPageUrl)}
+              
                   currentPage={currentPage}
                 />
               ) : (
@@ -309,29 +480,50 @@ const DealsList = () => {
         {/* Nuevo elemento Modal */}
         <Modal
           isOpen={modal.add}
-          toggle={() => setModal({ add: false })}
+       
           className="modal-dialog-centered "
           size="lg"
-          style={{ maxWidth: "1092px" }}
+          style={{ maxWidth: "1192px" }}
         >
-          <ModalBody>
+        <form onSubmit={handleSubmit(onSubmit)}>
+        <ModalBody>
             <a
               href="#close"
               onClick={(ev) => {
                 ev.preventDefault();
                 onFormCancel();
                 setRequiredDocument([]);
+<<<<<<< HEAD
+=======
+                setNeedDocument([]);
+>>>>>>> 35ad2b822fdda63e2aa68f8ce6f94524c04d2044
               }}
               className="close"
             >
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2 table-record">
+<<<<<<< HEAD
               <h5 className="title">Agregar Negocio</h5> <br />
               {requiredDocument.length ? <span style={{ color: "red" }}>Requerido: </span> : ""}
               {requiredDocument.map((act, i) => (
                 <span>{i + 1 + ")" + " " + act.name}. </span>
               ))}
+=======
+              <div className="d-flex justify-content-between align-items-center">
+                <h5 className="title" >Agregar Negocio</h5>
+                <Button color="primary" type="submit" onClick={ e=> postDeals(e)}>
+                    <Icon name="plus" className="mr-1"></Icon>
+                          Guardar Operacion
+                </Button>
+              </div>
+           
+              { requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{color:'red'}}>Requerido: </span>: ""}
+              { requiredDocument.length != 0 && addActiveTab == 2 && requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
+
+              { needDocument.documents?.length && addActiveTab == 4? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
+              { needDocument.documents?.length > 0 && addActiveTab == 4 && needDocument.documents.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
+>>>>>>> 35ad2b822fdda63e2aa68f8ce6f94524c04d2044
               <Nav tabs>
                 <NavItem>
                   <NavLink
@@ -376,21 +568,33 @@ const DealsList = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation setModal={setModal} setRequiredDocument={setRequiredDocument} />
+                  <AddMainInformation  setAddActiveTab={setAddActiveTab} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setValue={setValue} registerState={register} handleSubmitGeneral={handleSubmit} setLibraryClient={setLibraryClient} setModal={setModal} setNeedDocument={setNeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="2">
-                  <AddCustomerFile setModal={setModal} />
+                  <AddCustomerFile setAddActiveTab1={setAddActiveTab} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient}/>
                   {/* formData={formData} */}
                 </TabPane>
               </TabContent>
               <TabContent activeTab={addActiveTab}>
+<<<<<<< HEAD
                 <TabPane tabId="4"></TabPane>
+=======
+                <TabPane tabId="3">
+                  <InvestorProfile setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient}/>
+                </TabPane>
+              </TabContent>
+              <TabContent activeTab={addActiveTab}>
+                <TabPane tabId="4">
+                  <DocumentRequired libraryClient={libraryClient} needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
+                </TabPane>
+>>>>>>> 35ad2b822fdda63e2aa68f8ce6f94524c04d2044
               </TabContent>
             </div>
           </ModalBody>
+        </form>
         </Modal>
 
         <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">

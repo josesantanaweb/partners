@@ -5,8 +5,10 @@ import { FormGroup, Form } from "reactstrap";
 import { Col, DataTableHead, DataTableRow, DataTableItem, Button, RSelect } from "../../../../components/Component";
 import CustomersServices from "../../../../services/CustomersServices";
 import DealsServices from "../../../../services/DealsServices";
+
+let customerDebounce = null;
 // Deals data
-const CustomerFile = ({setRequiredDocument}) => {
+const CustomerFile = ({setAddActiveTab, generalStateForm,setGeneralStateForm,registerState, handleSubmitGeneral, setValue ,setLibraryClient,setRequiredDocument, setSelectClient, setNeedDocument}) => {
   const [data, setData] = useState([]);
   const [dataCust, setCust] = useState([]);
   const [dataCustLegal, setCustLegal] = useState([]);
@@ -45,15 +47,16 @@ const CustomerFile = ({setRequiredDocument}) => {
   ];
 
   // get Natural customers
-  const getCustomers = async (search) => {
+  const getCustomers = async (query) => {
 
     try {
-      const customers = await CustomersServices.getCustomerNatural();
-      const customersData = await customers.data.map((data) => data);
-      const customers1 = await CustomersServices.getCustomerLegal();
-      const customersLegalData = await customers1.data.map((data) => data);
+      const customersNatural = await CustomersServices.getCustomerNatural(query);
+      const customersData = await customersNatural.data.map((data) => data);
+      const customersLegal = await CustomersServices.getCustomerLegal(query);
+      const customersLegalData = await customersLegal.data.map((data) => data);
       setCust([...customersData, ...customersLegalData]);
       setCustTable(customersData);
+
 
     } catch (error) {}
   };
@@ -66,10 +69,10 @@ const CustomerFile = ({setRequiredDocument}) => {
     } catch (error) {}
   };
 
-  useEffect(() => {
-    getCustomers();
-    getCustomersLegal();
-  }, []);
+  // useEffect(() => {
+  //   getCustomers();
+  //   getCustomersLegal();
+  // }, []);
 
   const [formData, setFormData] = useState({
     planId: "",
@@ -108,11 +111,7 @@ const CustomerFile = ({setRequiredDocument}) => {
     resetForm();
   };
 
-  console.log(`PlanId: `, plansOptions.value); // PlanId
-  console.log(`CompanyId: `, companiesOptions.value); // CompanyId
-  console.log(`CurrencyId: `, currenciesOptions.value); // CurrencyId
-  console.log(`PaymentMethodId: `, paymentMethodsOptions.value); // PaymentMethodId
-  console.log(`AdvisorFeeOptionSelect: `, advisorFeeOptionsSelect.value); // PaymentMethodId
+  
   // ! Solictar campo select advosorFee true false
   // ! POSTMAN /deals/selects
 
@@ -132,6 +131,7 @@ const CustomerFile = ({setRequiredDocument}) => {
       rut,
       names,
     } = submitData;
+
     let submittedData = {
       planId: plansOptions.value,
       companyId: companiesOptions.value,
@@ -162,7 +162,6 @@ const CustomerFile = ({setRequiredDocument}) => {
       const selectsData = await DealsServices.getDealSelects();
       const plansData = await selectsData.plans.map((plan) => ({ label: plan.name, value: plan.id }));
       setPlans(plansData);
-      console.log(plansData)
     } catch (error) {
       throw error;
     }
@@ -170,6 +169,10 @@ const CustomerFile = ({setRequiredDocument}) => {
 
   const onOptionsPlansChange = async(optionValue) => {
     setPlansOptions(optionValue);
+    setGeneralStateForm( prev => {
+      return {
+        ...prev,planId:optionValue.value }
+    })
   };
 
   useEffect(() => {
@@ -188,6 +191,11 @@ const CustomerFile = ({setRequiredDocument}) => {
   };
   const onOptionsCompaniesChange = (optionValue) => {
     setCompaniesOptions(optionValue);
+    setGeneralStateForm( prev => {
+      return {
+        ...prev,companyId:optionValue.value
+      }
+    })
   };
   useEffect(() => {
     getCompanies();
@@ -208,6 +216,12 @@ const CustomerFile = ({setRequiredDocument}) => {
   };
   const onOptionsCurrenciesChange = (optionValue) => {
     setCurrenciesOptions(optionValue);
+    setGeneralStateForm( prev => {
+      return {
+        ...prev,currencyId:optionValue.value
+      }
+    })
+    
   };
 
   useEffect(() => {
@@ -229,6 +243,11 @@ const CustomerFile = ({setRequiredDocument}) => {
   };
   const onOptionsPaymentsMethodsChange = (optionValue) => {
     setPaymentMethodsOptions(optionValue);
+    setGeneralStateForm( prev => {
+      return {
+        ...prev,paymentMethodId:optionValue.value
+      }
+    })
   };
   useEffect(() => {
     getPaymentMethods();
@@ -236,6 +255,11 @@ const CustomerFile = ({setRequiredDocument}) => {
 
   const onOptionsAdvisorFeeChange = (optionValue) => {
     setAdvisorFeeOptions(optionValue);
+    setGeneralStateForm( prev => {
+      return {
+        ...prev,advisorFee:optionValue.value
+      }
+    })
   };
 
   // OnChange function to get the input data
@@ -248,10 +272,24 @@ const CustomerFile = ({setRequiredDocument}) => {
   };
 
   // function to get customer names and rut from input search
+  
+
   const handleInputSearchChange = (ev) => {
-    setSearch(ev.target.value);
-    setSearchRut(ev.target.value);
-    filtrar(ev.target.value);
+  
+    const query = ev.target.value;
+    setSearch(query);
+    window.clearTimeout(customerDebounce);
+    
+
+    if (!query){
+      setCust([]);
+      return;
+    } ;
+
+    customerDebounce = setTimeout(() => {
+      getCustomers(query)
+    }, 1000)
+
   };
 
   // function to filter customer table by name fields
@@ -266,13 +304,15 @@ const CustomerFile = ({setRequiredDocument}) => {
 
   // function to get customer names from input search
   const handleClickedRegisterNames = (customerName) => {
-    dataCust.filter((customer) => customer.names === customerName && setSearch(customerName));
-  };
-
-  useEffect(() => {
-    getCustomers(search);
     
-  }, []);
+    dataCust.filter((customer) => customer.names === customerName && setSearch(customerName) || customerName === customer.companyName && setSearch(customerName));
+
+  };  
+
+  // useEffect(() => {
+  //   getCustomers(search);
+    
+  // }, []);
 
   // Function to set input rut value in input field
   const handleClickedRegisterRut = (customerRut) => {
@@ -288,19 +328,23 @@ const CustomerFile = ({setRequiredDocument}) => {
 
   //Guardo el tipo de cliente natural o jurdico
   const [typeClient, useTypeClient] = useState(1); 
+
   //Peticion en base al tipo de client y el plan escogido
   const getDealsType = async (type = 1, planId = 1) => {
-    const dataTlf = await DealsServices.getDealsTypeForms(type, planId.value)
-    setRequiredDocument(dataTlf.customerSegments)
-      
-  }
+    const dataTlf = await DealsServices.getDealsTypeForms(type, planId.value);
+    
+    setRequiredDocument(dataTlf.customerSegments); // segmentos requeridos
+    setNeedDocument(dataTlf) // documentos requeridos
+  } 
+
+  
 
 
   return (
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
       <Col md="12" className="mb-4">
         <FormGroup className="border-bottom pb-2">
-          <h6>Datos del Cliente - Natural</h6>
+          <h6 >Datos del Cliente - Natural</h6>
         </FormGroup>
       </Col>
       <Col md="6" className="mb-4">
@@ -326,7 +370,7 @@ const CustomerFile = ({setRequiredDocument}) => {
             type="text"
             name="rut"
             value={searchRut}
-            onChange={handleInputSearchChange}
+            disabled={true}
             ref={register()}
             readOnly
           />
@@ -356,12 +400,12 @@ const CustomerFile = ({setRequiredDocument}) => {
 
             {dataCust.length > 0
               ? dataCust.map((customer) => (
-                  <DataTableItem key={customer.id} handleClickedRegisterNames={handleClickedRegisterNames} handleClickedRegisterRut={handleClickedRegisterRut} customer={customer} useTypeClient={useTypeClient}>
+                  <DataTableItem generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setValue={setValue} registerState={registerState} handleSubmitGeneral={handleSubmitGeneral} setLibraryClient={setLibraryClient} key={customer.id} handleClickedRegisterNames={handleClickedRegisterNames} handleClickedRegisterRut={handleClickedRegisterRut} customer={customer} useTypeClient={useTypeClient} setSelectClient={setSelectClient}>
                     <DataTableRow className="text-center">
-                      <span>{customer.names}</span>
+                      <span>{customer.names? customer.names:customer.companyName}</span>
                     </DataTableRow>
                     <DataTableRow className="text-center">
-                      <span>{customer.rut}</span>
+                      <span>{customer.rut? customer.rut : ""}</span>
                     </DataTableRow>
                     <DataTableRow className="text-center">
                       <span>{customer.type.name}</span>
@@ -370,7 +414,7 @@ const CustomerFile = ({setRequiredDocument}) => {
                       <span>{customer.email}</span>
                     </DataTableRow>
                     <DataTableRow className="text-center">
-                      <span>{customer.mobilePhone}</span>
+                      <span>{customer.mobilePhone? customer.mobilePhone:customer.phone}</span>
                     </DataTableRow>
                   </DataTableItem>
                 ))
@@ -453,7 +497,7 @@ const CustomerFile = ({setRequiredDocument}) => {
             onChange={ (e) =>{ 
               getDealsType(typeClient,e);
               onOptionsPlansChange(e)
-          
+            
               }
             }
             defautlValue={formData.planId}
@@ -465,7 +509,12 @@ const CustomerFile = ({setRequiredDocument}) => {
         <RSelect
           value={companiesOptions}
           options={companies}
-          onChange={onOptionsCompaniesChange}
+          onChange={(e)=>{
+            
+            onOptionsCompaniesChange(e)
+          
+          }
+          }
           defautlValue={formData.companyId}
         />
       </Col>
@@ -476,6 +525,15 @@ const CustomerFile = ({setRequiredDocument}) => {
             type="number"
             className="form-control"
             name="period"
+            onChange={(e)=>{
+            
+             // onOptionsCompaniesChange(e)
+              setGeneralStateForm( prev => {
+                return {
+                  ...prev,yearsOfThePlan:e.target.value
+                }
+              })
+            }}
             ref={register({ required: "Este campo es obligatorio *" })}
             defaultValue={formData.period}
           />
@@ -494,6 +552,11 @@ const CustomerFile = ({setRequiredDocument}) => {
             type="number"
             className="form-control"
             name="amount"
+            onChange={(e)=> setGeneralStateForm( prev => {
+              return {
+                ...prev,amountOfTheInvestment:e.target.value
+              }
+            })}
             ref={register({ required: "Este campo es obligatorio *" })}
             defaultValue={formData.amount}
           />
@@ -517,6 +580,11 @@ const CustomerFile = ({setRequiredDocument}) => {
             type="number"
             className="form-control"
             name="amount"
+            onChange={(e) => setGeneralStateForm( prev => {
+              return {
+                ...prev,totalNetValueUSD:e.target.value
+              }
+            })}
             ref={register({ required: "Este campo es obligatorio *" })}
             defaultValue={formData.amount}
           />
@@ -540,6 +608,11 @@ const CustomerFile = ({setRequiredDocument}) => {
             type="text"
             className="form-control"
             name="paymentMethodId"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,originsOfTheFunds:e.target.value
+              }
+            })}
             ref={register({ required: "Este campo es obligatorio *" })}
             defaultValue={formData.paymentMethodId}
             placeholder="Ej: Herencia, Patrimonio, etc"
@@ -566,6 +639,11 @@ const CustomerFile = ({setRequiredDocument}) => {
               type="number"
               className="form-control"
               name="advisorFeeComission"
+              onChange={(e)=>setGeneralStateForm( prev => {
+                return {
+                  ...prev,percentage:e.target.value
+                }
+              })}
               defaultValue={formData.advisorFeeComission}
               placeholder="Ej: 1 - 5 - 10"
             />
@@ -575,22 +653,11 @@ const CustomerFile = ({setRequiredDocument}) => {
       <Col md="6" className="mt-4">
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
           <li>
-            <Button color="primary" size="md" type="submit">
+            <Button color="primary" type="button" size="md" onClick={()=>setAddActiveTab('2')}>
               Siguiente
             </Button>
           </li>
-          <li>
-            <a
-              href="#cancel"
-              onClick={(ev) => {
-                ev.preventDefault();
-                onFormCancel();
-              }}
-              className="link link-light"
-            >
-              Cancelar
-            </a>
-          </li>
+      
         </ul>
       </Col>
     </Form>

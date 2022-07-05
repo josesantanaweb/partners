@@ -4,13 +4,15 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import bootstrapPlugin from "@fullcalendar/bootstrap";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
+import es from "date-fns/locale/es";
 import { Popover, PopoverHeader, PopoverBody, ModalHeader, Modal, ModalBody, FormGroup, Button } from "reactstrap";
 import { useForm } from "react-hook-form";
 import { Col, Row, RSelect } from "../../Component";
 import { setDateForPicker } from "../../../utils/Utils";
 import moment from "moment";
 import "moment/locale/es";
+registerLocale("es", es);
 
 const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions }) => {
   const [modalState, updateModal] = useState(false);
@@ -91,11 +93,11 @@ const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions }) => {
           <Row className="gy-3 py-1">
             <Col sm="6">
               <h6 className="overline-title">Inicio</h6>
-              <p id="preview-event-start">{event && moment(event.start).format("MMMM Do YYYY")}</p>
+              <p id="preview-event-start">{event && moment(event.start).format("Do MMMM YYYY")}</p>
             </Col>
             <Col sm="6" id="preview-event-end-check">
               <h6 className="overline-title">Final</h6>
-              <p id="preview-event-end">{event && moment(event.end).format("MMMM Do YYYY")}</p>
+              <p id="preview-event-end">{event && moment(event.end).format("Do MMMM YYYY")}</p>
             </Col>
             <Col sm="10" id="preview-event-description-check">
               <h6 className="overline-title">Descripcion</h6>
@@ -161,6 +163,8 @@ const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions }) => {
                           selected={new Date(event.start)}
                           onChange={(date) => updateEvent({ ...event, start: setDateForPicker(date) })}
                           className="form-control date-picker"
+                          dateFormat="dd/MM/yyyy"
+                          locale="es"
                         />
                       </div>
                     </div>
@@ -175,6 +179,7 @@ const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions }) => {
                           timeCaption="Time"
                           dateFormat="h:mm aa"
                           className="form-control date-picker"
+                          locale="es"
                         />
                       </div>
                     </div>
@@ -191,6 +196,8 @@ const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions }) => {
                           selected={new Date(event.end)}
                           onChange={(date) => updateEvent({ ...event, end: setDateForPicker(date) })}
                           className="form-control date-picker"
+                          dateFormat="dd/MM/yyyy"
+                          locale="es"
                         />
                       </div>
                     </div>
@@ -205,6 +212,7 @@ const CalenderApp = ({ events, onDelete, onEdit, categoriesOptions }) => {
                           timeCaption="Time"
                           dateFormat="h:mm aa"
                           className="form-control date-picker"
+                          locale="es"
                         />
                       </div>
                     </div>
