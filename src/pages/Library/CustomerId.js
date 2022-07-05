@@ -166,13 +166,13 @@ const CustomerId = () => {
       var json = JSON.stringify(object);
       JSON.stringify(Object.fromEntries(formData));
       console.log(json);
-
+      console.log(formData)
       await LibraryServices.addCustomerLibDoc(formData, customerId);
       setData([submittedData, customerId]);
       setModal({ edit: false, add: false });
       resetForm();
       getCustomerDocument(Number(customerId));
-      window.location.reload();
+      //window.location.reload();
     } catch (error) {
       throw error;
     }
