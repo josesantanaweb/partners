@@ -74,6 +74,6 @@
     ]
   },
   "devDependencies": {
-    "sweetalert2": "^11.4.19"
+    "sweetalert2": "^11.4.20"
   }
 }

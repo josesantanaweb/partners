@@ -68,7 +68,7 @@ const DealsList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
   const [sm, updateSm] = useState(false);
-  const [metaData, setMetaData] = useState({})
+  const [metaData, setMetaData] = useState({});
   // function to reset the form
   // const resetForm = () => {
   //   setFormData({
@@ -152,168 +152,156 @@ const DealsList = () => {
   const getDeals = async () => {
     try {
       const deals = await DealsServices.getDeal();
-      setMetaData(deals.meta)
+      setMetaData(deals.meta);
       const dealsData = await deals.data.map((data) => data);
-      console.log(dealsData)
+      console.log(dealsData);
       setData(dealsData);
     } catch (error) {}
   };
   useEffect(() => {
     getDeals();
   }, []);
-  //////////////////// llealg 1 //////////////////////////////////
+
   const [requiredDocument, setRequiredDocument] = useState([]);
   const [selectClient, setSelectClient] = useState({});
   const [needDocument, setNeedDocument] = useState({});
   const [libraryClient, setLibraryClient] = useState([]);
   const { errors, register, setValue, handleSubmit } = useForm();
   //State general de formual incluye todos los tabs
-  const [generalStateForm, setGeneralStateForm] = useState({ 
-    investorProfile:[],
-    beneficiaries:[]
-  })
+  const [generalStateForm, setGeneralStateForm] = useState({
+    investorProfile: [],
+    beneficiaries: [],
+  });
 
-  const paginateDeals = async ( service ) => {
+  const paginateDeals = async (service) => {
+    try {
+      const deals = await DealsServices.getDealsPaginate(service);
+      setMetaData(deals.meta);
+      console.log(deals.meta);
+      const dealsData = await deals.data.map((data) => data);
+      console.log(dealsData);
+      setData(dealsData);
+    } catch (error) {}
+  };
 
-  
-      try {
-        const deals = await DealsServices.getDealsPaginate(service);
-        setMetaData(deals.meta)
-        console.log(deals.meta)
-        const dealsData = await deals.data.map((data) => data);
-        console.log(dealsData)
-        setData(dealsData);
-      } catch (error) {}
-  
-
-  }
-
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     console.log(generalStateForm);
   };
 
-  const postDeals = (e)=> {
+  const postDeals = (e) => {
     e.preventDefault();
-    console.log(generalStateForm)
+    console.log(generalStateForm);
     let statePost = {};
-    if(selectClient.type.id == 1)
+    if (selectClient.type.id == 1)
       statePost = {
-      customerId: parseInt(generalStateForm.customerId) ,
-      companyId:  generalStateForm.companyId,
-      currencyId: generalStateForm.currencyId,
-      paymentMethodId: generalStateForm.paymentMethodId,
-      planId: generalStateForm.planId,
-      yearsOfThePlan: parseInt(generalStateForm.yearsOfThePlan) ,
-      amountOfTheInvestment: parseInt( generalStateForm.amountOfTheInvestment),
-      totalNetValueUSD: parseInt(generalStateForm.totalNetValueUSD) ,
-      originsOfTheFunds: generalStateForm.originsOfTheFunds,
-      advisorFee: generalStateForm.advisorFee,
-      percentage: parseInt(generalStateForm.percentage),
-      customerInfo: {
-        currentAccountData: {
-          ...generalStateForm.currentAccountData,
-
-        },
-        employmentHistory:{
-          ...generalStateForm.employmentHistory,
-        },
-        personalReferences:{
-          ...generalStateForm.personalReferences,
-          
-        },
-        investmentExperience: {
-          ...generalStateForm.investmentExperience,
-        },
-        spousalHistory:{
-          ...generalStateForm.spousalHistory,
-        },
-      beneficiaries:[...generalStateForm.beneficiaries.map( act => {
-        return {
-          ...act,
-        }
-      })],
-
-      },
-      investorProfile: [
-        ...generalStateForm.investorProfile
-      ],
-      documents: [
- 
-      ]
-    }
-
-    if(selectClient.type.id == 2){
-      statePost = {
-        customerId: parseInt(generalStateForm.customerId) ,
-        companyId:  generalStateForm.companyId,
+        customerId: parseInt(generalStateForm.customerId),
+        companyId: generalStateForm.companyId,
         currencyId: generalStateForm.currencyId,
         paymentMethodId: generalStateForm.paymentMethodId,
         planId: generalStateForm.planId,
-        yearsOfThePlan: parseInt(generalStateForm.yearsOfThePlan) ,
-        amountOfTheInvestment: parseInt( generalStateForm.amountOfTheInvestment),
-        totalNetValueUSD: parseInt(generalStateForm.totalNetValueUSD) ,
+        yearsOfThePlan: parseInt(generalStateForm.yearsOfThePlan),
+        amountOfTheInvestment: parseInt(generalStateForm.amountOfTheInvestment),
+        totalNetValueUSD: parseInt(generalStateForm.totalNetValueUSD),
         originsOfTheFunds: generalStateForm.originsOfTheFunds,
         advisorFee: generalStateForm.advisorFee,
         percentage: parseInt(generalStateForm.percentage),
         customerInfo: {
           currentAccountData: {
             ...generalStateForm.currentAccountData,
-  
           },
-          employmentHistory:{
+          employmentHistory: {
             ...generalStateForm.employmentHistory,
           },
-          personalReferences:{
+          personalReferences: {
             ...generalStateForm.personalReferences,
-            
           },
           investmentExperience: {
             ...generalStateForm.investmentExperience,
           },
-          spousalHistory:{
+          spousalHistory: {
             ...generalStateForm.spousalHistory,
           },
-        beneficiaries:[...generalStateForm.beneficiaries.map( act => {
-          return {
-            ...act,
-          }
-        })],
-  
+          beneficiaries: [
+            ...generalStateForm.beneficiaries.map((act) => {
+              return {
+                ...act,
+              };
+            }),
+          ],
         },
-        investorProfile: [
-          ...generalStateForm.investorProfile
-        ],
-        documents: [
-        ]
-      }
+        investorProfile: [...generalStateForm.investorProfile],
+        documents: [],
+      };
+
+    if (selectClient.type.id == 2) {
+      statePost = {
+        customerId: parseInt(generalStateForm.customerId),
+        companyId: generalStateForm.companyId,
+        currencyId: generalStateForm.currencyId,
+        paymentMethodId: generalStateForm.paymentMethodId,
+        planId: generalStateForm.planId,
+        yearsOfThePlan: parseInt(generalStateForm.yearsOfThePlan),
+        amountOfTheInvestment: parseInt(generalStateForm.amountOfTheInvestment),
+        totalNetValueUSD: parseInt(generalStateForm.totalNetValueUSD),
+        originsOfTheFunds: generalStateForm.originsOfTheFunds,
+        advisorFee: generalStateForm.advisorFee,
+        percentage: parseInt(generalStateForm.percentage),
+        customerInfo: {
+          currentAccountData: {
+            ...generalStateForm.currentAccountData,
+          },
+          employmentHistory: {
+            ...generalStateForm.employmentHistory,
+          },
+          personalReferences: {
+            ...generalStateForm.personalReferences,
+          },
+          investmentExperience: {
+            ...generalStateForm.investmentExperience,
+          },
+          spousalHistory: {
+            ...generalStateForm.spousalHistory,
+          },
+          beneficiaries: [
+            ...generalStateForm.beneficiaries.map((act) => {
+              return {
+                ...act,
+              };
+            }),
+          ],
+        },
+        investorProfile: [...generalStateForm.investorProfile],
+        documents: [],
+      };
     }
 
-    if(statePost.customerInfo.currentAccountData.id){
-      statePost.customerInfo.currentAccountData.id = parseInt(statePost.customerInfo.currentAccountData.id)
+    if (statePost.customerInfo.currentAccountData.id) {
+      statePost.customerInfo.currentAccountData.id = parseInt(statePost.customerInfo.currentAccountData.id);
     }
 
-    if(statePost.customerInfo.employmentHistory.id){
-      statePost.customerInfo.employmentHistory.id = parseInt(statePost.customerInfo.employmentHistory.id)
+    if (statePost.customerInfo.employmentHistory.id) {
+      statePost.customerInfo.employmentHistory.id = parseInt(statePost.customerInfo.employmentHistory.id);
     }
 
-    if(statePost.customerInfo.personalReferences.id){
-      statePost.customerInfo.personalReferences.id = parseInt(statePost.customerInfo.personalReferences.id)
+    if (statePost.customerInfo.personalReferences.id) {
+      statePost.customerInfo.personalReferences.id = parseInt(statePost.customerInfo.personalReferences.id);
     }
 
-    if(statePost.customerInfo.investmentExperience.id){
-      statePost.customerInfo.investmentExperience.id = parseInt(statePost.customerInfo.investmentExperience.id)
+    if (statePost.customerInfo.investmentExperience.id) {
+      statePost.customerInfo.investmentExperience.id = parseInt(statePost.customerInfo.investmentExperience.id);
     }
 
-    if(statePost.customerInfo. spousalHistory.id){
-      statePost.customerInfo. spousalHistory.id = parseInt(statePost.customerInfo. spousalHistory.id)
+    if (statePost.customerInfo.spousalHistory.id) {
+      statePost.customerInfo.spousalHistory.id = parseInt(statePost.customerInfo.spousalHistory.id);
     }
 
-    if(statePost?.customerInfo?.beneficiaries[0]?.id){
-      statePost.customerInfo.beneficiaries = statePost.customerInfo.beneficiaries.map( prev => {
+    if (statePost?.customerInfo?.beneficiaries[0]?.id) {
+      statePost.customerInfo.beneficiaries = statePost.customerInfo.beneficiaries.map((prev) => {
         return {
-          ...prev, id: parseInt(prev.id)
-        }
-      })
+          ...prev,
+          id: parseInt(prev.id),
+        };
+      });
     }
 
     console.log('estado',statePost)
@@ -363,7 +351,7 @@ const DealsList = () => {
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
-                  <span className="sub-text">N. Negocio</span>
+                  <span className="sub-text">N. de Operación</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Cliente</span>
@@ -394,6 +382,7 @@ const DealsList = () => {
                 </DataTableRow>
           
             
+
                 <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
@@ -412,8 +401,11 @@ const DealsList = () => {
                         <span>{item.customer.rut}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item?.createdByAdvisor?       item?.createdByAdvisor?.name +" " +item?.createdByAdvisor?.paternalLastName: 
-                        item?.createdByUser?.name +" " +item?.createdByUser?.lastName }</span>
+                        <span>
+                          {item?.createdByAdvisor
+                            ? item?.createdByAdvisor?.name + " " + item?.createdByAdvisor?.paternalLastName
+                            : item?.createdByUser?.name + " " + item?.createdByUser?.lastName}
+                        </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item.product.name}</span>
@@ -434,6 +426,7 @@ const DealsList = () => {
                         <span>{item.currency.name}</span>
                       </DataTableRow>
                     
+
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
                           <li className="nk-tb-action">
@@ -464,23 +457,21 @@ const DealsList = () => {
                   ))
                 : null}
             </div>
-
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
-                  itemPerPage={itemPerPage}
-                  totalItems={metaData.totalItems}
-                  paginate={()=>paginateDeals(metaData.nextPageUrl)}
-              
-                  currentPage={currentPage}
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">Sin Registros</span>
-                </div>
-              )}
-            </PreviewAltCard>
           </div>
+          <PreviewAltCard>
+            {currentItems.length > 0 ? (
+              <PaginationComponent
+                itemPerPage={itemPerPage}
+                totalItems={metaData.totalItems}
+                paginate={() => paginateDeals(metaData.nextPageUrl)}
+                currentPage={currentPage}
+              />
+            ) : (
+              <div className="text-center">
+                <span className="text-silent">Sin Registros</span>
+              </div>
+            )}
+          </PreviewAltCard>
         </Block>
 
         {/* Nuevo elemento Modal */}

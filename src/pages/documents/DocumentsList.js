@@ -21,18 +21,13 @@ import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
 import DocumentsServices from "../../services/DocumentsServices";
-import swal from "sweetalert";
-import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const DocumentsList = () => {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-
-  const [pagData, setPagData] = useState([]);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(5);
-
   const [sm, updateSm] = useState(false);
   const { errors, register, handleSubmit } = useForm();
   const [editData, setEditData] = useState();
@@ -115,33 +110,34 @@ const DocumentsList = () => {
   };
 
   // Function to change to delete property for an item
-  const deleteDocument = async (id) => {
-    // await DocumentsServices.deleteDocument(id);
-    // getDocuments();
+  const deleteDocument = (id) => {
     try {
-      await swal({
-        title: "¿Estás seguro?",
-        text: "Se eliminará el Documento seleccionado!",
-        icon: "warning",
-        dangerMode: true,
-        buttons: {
-          confirm: { text: "Aceptar", className: "bg-primary" },
-          cancel: "Cancelar",
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
         },
-      }).then((resDelete) => {
-        if (resDelete) {
-          getDocuments();
-          swal("Listo! Documento eliminado exitosamente!", {
-            icon: "success",
-            timer: "2000",
-            buttons: {
-              confirm: { text: "Listo", className: "bg-primary" },
-            },
-          });
-          DocumentsServices.deleteDocument(id);
-          getDocuments();
-        }
+        buttonsStyling: false,
       });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getDocuments();
+          if (result.isConfirmed) {
+            DocumentsServices.deleteDocument(id);
+            getDocuments();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
     } catch (error) {
       throw new Error("Error deleting record!");
     }
