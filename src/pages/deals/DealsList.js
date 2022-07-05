@@ -258,7 +258,7 @@ const DealsList = () => {
       ]
     }
     console.log('estado',statePost)
-    DealsServices.postDeals(statePost).then( ()=>  window.location.reload())
+    DealsServices.postDeals(statePost).then( ()=>  window.location.reload()).catch( err => console.log(err))
   }
 
   return (
@@ -330,16 +330,7 @@ const DealsList = () => {
                   <span className="sub-text">Moneda</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Monto real</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Método de Pago</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
                   <span className="sub-text">Origen de los Fondos</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Advisor-Fee</span> {/* % */}
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
@@ -378,15 +369,6 @@ const DealsList = () => {
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item.currency.name}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.paymentMethod.name}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.originsOfTheFunds}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.advisorFee}</span>
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
