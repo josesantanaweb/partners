@@ -34,6 +34,7 @@ import DocumentsServices from "../../services/DocumentsServices";
 // Desde acá
 import DealsServices from "../../services/DealsServices";
 import InvestorProfile from "./components/Add/InvestorProfile";
+import { preventContextMenu } from "@fullcalendar/core";
 
 const DealsList = () => {
   const [data, setData] = useState([]);
@@ -67,7 +68,7 @@ const DealsList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
   const [sm, updateSm] = useState(false);
-
+  const [metaData, setMetaData] = useState({})
   // function to reset the form
   // const resetForm = () => {
   //   setFormData({
@@ -151,6 +152,7 @@ const DealsList = () => {
   const getDeals = async () => {
     try {
       const deals = await DealsServices.getDeal();
+      setMetaData(deals.meta)
       const dealsData = await deals.data.map((data) => data);
       console.log(dealsData)
       setData(dealsData);
@@ -165,11 +167,27 @@ const DealsList = () => {
   const [needDocument, setNeedDocument] = useState({});
   const [libraryClient, setLibraryClient] = useState([]);
   const { errors, register, setValue, handleSubmit } = useForm();
-
   //State general de formual incluye todos los tabs
-  const [generalStateForm, setGeneralStateForm] = useState({
+  const [generalStateForm, setGeneralStateForm] = useState({ 
+    investorProfile:[],
     beneficiaries:[]
   })
+
+  const paginateDeals = async ( service ) => {
+
+  
+      try {
+        const deals = await DealsServices.getDealsPaginate(service);
+        setMetaData(deals.meta)
+        console.log(deals.meta)
+        const dealsData = await deals.data.map((data) => data);
+        console.log(dealsData)
+        setData(dealsData);
+      } catch (error) {}
+  
+
+  }
+
   const onSubmit = data => {
     console.log(generalStateForm);
   };
@@ -177,8 +195,9 @@ const DealsList = () => {
   const postDeals = (e)=> {
     e.preventDefault();
     console.log(generalStateForm)
-
-    const statePost = {
+    let statePost = {};
+    if(selectClient.type.id == 1)
+      statePost = {
       customerId: parseInt(generalStateForm.customerId) ,
       companyId:  generalStateForm.companyId,
       currencyId: generalStateForm.currencyId,
@@ -193,70 +212,110 @@ const DealsList = () => {
       customerInfo: {
         currentAccountData: {
           ...generalStateForm.currentAccountData,
-          id: parseInt(generalStateForm.currentAccountData.id ) 
+
         },
         employmentHistory:{
           ...generalStateForm.employmentHistory,
-          id: parseInt(generalStateForm.employmentHistory.id ) 
         },
         personalReferences:{
-          ...generalStateForm.personalReferences
-          ,id: parseInt(generalStateForm.personalReferences.id ) 
+          ...generalStateForm.personalReferences,
+          
         },
         investmentExperience: {
           ...generalStateForm.investmentExperience,
-          id: parseInt(generalStateForm.investmentExperience.id ) 
         },
         spousalHistory:{
           ...generalStateForm.spousalHistory,
-          id: parseInt(generalStateForm.spousalHistory.id ) 
         },
       beneficiaries:[...generalStateForm.beneficiaries.map( act => {
         return {
           ...act,
-          id: parseInt(act.id)
         }
       })],
 
       },
       investorProfile: [
-        {
-          number: 1,
-          answer: 4
-        },
-        {
-          number: 2,
-          answer: 3
-        },
-        {
-          number: 3,
-          answer: 4
-        },
-        {
-          number: 4,
-          answer: 1
-        },
-        {
-          number: 5,
-          answer: 2
-        },
-        {
-          number: 6,
-          answer: 2
-        },
-        {
-          number: 7,
-          answer: 3
-        },
-        {
-          number: 7,
-          answer: 4
-        }
+        ...generalStateForm.investorProfile
       ],
       documents: [
  
       ]
     }
+
+    if(selectClient.type.id == 2){
+      statePost = {
+        customerId: parseInt(generalStateForm.customerId) ,
+        companyId:  generalStateForm.companyId,
+        currencyId: generalStateForm.currencyId,
+        paymentMethodId: generalStateForm.paymentMethodId,
+        planId: generalStateForm.planId,
+        yearsOfThePlan: parseInt(generalStateForm.yearsOfThePlan) ,
+        amountOfTheInvestment: parseInt( generalStateForm.amountOfTheInvestment),
+        totalNetValueUSD: parseInt(generalStateForm.totalNetValueUSD) ,
+        originsOfTheFunds: generalStateForm.originsOfTheFunds,
+        advisorFee: generalStateForm.advisorFee,
+        percentage: parseInt(generalStateForm.percentage),
+        customerInfo: {
+          currentAccountData: {
+            ...generalStateForm.currentAccountData,
+  
+          },
+          employmentHistory:{
+            ...generalStateForm.employmentHistory,
+          },
+          personalReferences:{
+            ...generalStateForm.personalReferences,
+            
+          },
+          investmentExperience: {
+            ...generalStateForm.investmentExperience,
+          },
+          spousalHistory:{
+            ...generalStateForm.spousalHistory,
+          },
+        beneficiaries:[...generalStateForm.beneficiaries.map( act => {
+          return {
+            ...act,
+          }
+        })],
+  
+        },
+        investorProfile: [
+          ...generalStateForm.investorProfile
+        ],
+        documents: [
+        ]
+      }
+    }
+
+    if(statePost.customerInfo.currentAccountData.id){
+      statePost.customerInfo.currentAccountData.id = parseInt(statePost.customerInfo.currentAccountData.id)
+    }
+
+    if(statePost.customerInfo.employmentHistory.id){
+      statePost.customerInfo.employmentHistory.id = parseInt(statePost.customerInfo.employmentHistory.id)
+    }
+
+    if(statePost.customerInfo.personalReferences.id){
+      statePost.customerInfo.personalReferences.id = parseInt(statePost.customerInfo.personalReferences.id)
+    }
+
+    if(statePost.customerInfo.investmentExperience.id){
+      statePost.customerInfo.investmentExperience.id = parseInt(statePost.customerInfo.investmentExperience.id)
+    }
+
+    if(statePost.customerInfo. spousalHistory.id){
+      statePost.customerInfo. spousalHistory.id = parseInt(statePost.customerInfo. spousalHistory.id)
+    }
+
+    if(statePost?.customerInfo?.beneficiaries[0]?.id){
+      statePost.customerInfo.beneficiaries = statePost.customerInfo.beneficiaries.map( prev => {
+        return {
+          ...prev, id: parseInt(prev.id)
+        }
+      })
+    }
+
     console.log('estado',statePost)
     DealsServices.postDeals(statePost).then( ()=>  window.location.reload()).catch( err => console.log(err))
   }
@@ -332,6 +391,8 @@ const DealsList = () => {
                 <DataTableRow className="text-center">
                   <span className="sub-text">Origen de los Fondos</span>
                 </DataTableRow>
+          
+            
                 <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
@@ -350,7 +411,8 @@ const DealsList = () => {
                         <span>{item.customer.rut}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.customer.rut}</span>
+                        <span>{item?.createdByAdvisor?       item?.createdByAdvisor?.name +" " +item?.createdByAdvisor?.paternalLastName: 
+                        item?.createdByUser?.name +" " +item?.createdByUser?.lastName }</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item.product.name}</span>
@@ -362,7 +424,7 @@ const DealsList = () => {
                         <span>{item.yearsOfThePlan}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.yearsOfThePlan}</span>
+                        <span>{item.amountOfTheInvestment}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item.currency.name}</span>
@@ -370,6 +432,7 @@ const DealsList = () => {
                       <DataTableRow className="text-center">
                         <span>{item.currency.name}</span>
                       </DataTableRow>
+                    
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
                           <li className="nk-tb-action-hidden">
@@ -405,8 +468,9 @@ const DealsList = () => {
               {currentItems.length > 0 ? (
                 <PaginationComponent
                   itemPerPage={itemPerPage}
-                  totalItems={data.length}
-                  paginate={paginate}
+                  totalItems={metaData.totalItems}
+                  paginate={()=>paginateDeals(metaData.nextPageUrl)}
+              
                   currentPage={currentPage}
                 />
               ) : (
@@ -424,7 +488,7 @@ const DealsList = () => {
        
           className="modal-dialog-centered "
           size="lg"
-          style={{ maxWidth: "1092px" }}
+          style={{ maxWidth: "1192px" }}
         >
         <form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>
@@ -510,7 +574,7 @@ const DealsList = () => {
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="3">
-                  <InvestorProfile setModal={setModal} selectClient={selectClient}/>
+                  <InvestorProfile setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient}/>
                 </TabPane>
               </TabContent>
               <TabContent activeTab={addActiveTab}>

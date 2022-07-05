@@ -1,3 +1,4 @@
+import axios from "axios";
 import api from "../config/api";
 const token = localStorage.getItem("access_token");
 
@@ -57,6 +58,13 @@ const DealsServices = {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data
+  },
+
+  getDealsPaginate: async(service)=> {
+    const response = await axios.get(`${service}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
   }
 };
 

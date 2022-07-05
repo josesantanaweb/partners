@@ -1,13 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { FormGroup, Form } from "reactstrap";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
+import es from "date-fns/locale/es";
 import { useForm, Controller } from "react-hook-form";
 import { Col, Button, RSelect } from "../../../../../components/Component";
 import CountriesServices from "../../../../../services/CountriesServices";
 import CustomersServices from "../../../../../services/CustomersServices";
 import moment from "moment";
 import "moment/locale/es";
+registerLocale("es", es);
 
 const MainInformation = ({ setModal, editData }) => {
   const [countries, setCountries] = useState();
@@ -171,6 +173,7 @@ const MainInformation = ({ setModal, editData }) => {
             className="form-control"
             onChange={(date) => setRutIssueDate(date)}
             dateFormat="dd/MM/yyyy"
+            locale="es"
           />
         </FormGroup>
       </Col>
@@ -182,6 +185,7 @@ const MainInformation = ({ setModal, editData }) => {
             className="form-control"
             onChange={(date) => setRutExpirationDate(date)}
             dateFormat="dd/MM/yyyy"
+            locale="es"
           />
         </FormGroup>
       </Col>
@@ -206,6 +210,7 @@ const MainInformation = ({ setModal, editData }) => {
             className="form-control"
             onChange={(date) => setBirthDate(date)}
             dateFormat="dd/MM/yyyy"
+            locale="es"
           />
         </FormGroup>
       </Col>
@@ -364,6 +369,7 @@ const MainInformation = ({ setModal, editData }) => {
             className="form-control"
             onChange={(date) => setDateOfMarriage(date)}
             dateFormat="dd/MM/yyyy"
+            locale="es"
           />
         </FormGroup>
       </Col>

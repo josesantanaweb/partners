@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Content from "../../../layout/content/Content";
 import Head from "../../../layout/head/Head";
 import CalenderApp from "../../../components/partials/calender/Calender";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
+import es from "date-fns/locale/es";
 import { Modal, ModalBody, FormGroup, ModalHeader, Button } from "reactstrap";
 import {
   Block,
@@ -20,6 +21,7 @@ import { events } from "../../../components/partials/calender/CalenderData";
 import { useForm } from "react-hook-form";
 import { setDateForPicker } from "../../../utils/Utils";
 import MettingServices from "../../../services/MettingServices";
+registerLocale("es", es);
 
 const Metting = () => {
   const [modal, setModal] = useState(false);
@@ -173,6 +175,7 @@ const Metting = () => {
                           onChange={(date) => setDates({ ...dates, startDate: date })}
                           className="form-control date-picker"
                           dateFormat="dd/MM/yyyy"
+                          locale="es"
                         />
                       </div>
                     </div>
@@ -187,6 +190,7 @@ const Metting = () => {
                           timeCaption="Time"
                           dateFormat="h:mm aa"
                           className="form-control date-picker"
+                          locale="es"
                         />
                       </div>
                     </div>
@@ -204,6 +208,7 @@ const Metting = () => {
                           onChange={(date) => setDates({ ...dates, endDate: date })}
                           className="form-control date-picker"
                           dateFormat="dd/MM/yyyy"
+                          locale="es"
                         />
                       </div>
                     </div>
@@ -218,6 +223,7 @@ const Metting = () => {
                           timeCaption="Time"
                           dateFormat="h:mm aa"
                           className="form-control date-picker"
+                          locale="es"
                         />
                       </div>
                     </div>

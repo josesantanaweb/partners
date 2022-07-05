@@ -7,50 +7,60 @@ import {
   BlockHeadContent,
   BlockTitle,
   Icon,
-  Col,
   PaginationComponent,
   Button,
   DataTableHead,
   DataTableRow,
   DataTableItem,
-  TooltipComponent,
   PreviewAltCard,
+  TooltipComponent,
+  RSelect,
 } from "../../components/Component";
-import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
+
+import { useForm } from "react-hook-form";
+import DatePicker, { registerLocale } from "react-datepicker";
+import es from "date-fns/locale/es";
+
+import { FormGroup, Modal, ModalBody, Form, Col } from "reactstrap";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
-import { useForm } from "react-hook-form";
-import DocumentsServices from "../../services/DocumentsServices";
+import AfterSalesServices from "../../services/AfterSalesServices";
+import DealActionsServices from "../../services/DealActionsServices";
+import CurrenciesServices from "../../services/CurrenciesServices";
+import NumberFormat from "react-number-format";
 
 const DocumentsList = () => {
-  const [data, setData] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [editData, setEditData] = useState();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
-  const [sm, updateSm] = useState(false);
   const { errors, register, handleSubmit } = useForm();
+  const [postDeals, setPostDeals] = useState([]);
+  const [tablePostDeals, setTablePostDeals] = useState([]);
+  const [search, setSearch] = useState("");
+  const [sm, updateSm] = useState(false);
+  const [editData, setEditData] = useState();
   const [modal, setModal] = useState({
     edit: false,
     add: false,
   });
 
-  // function to get documents
-  const getDocuments = async () => {
-    try {
-      const documents = await DocumentsServices.getDocuments();
-      const documentsData = await documents.data.map((data) => data);
-      setData(documentsData);
-    } catch (error) {}
-  };
+  const [dateOfEntry, setDateOfEntry] = useState(new Date());
+  const [estimatedDate, setEstimatedDate] = useState(new Date());
+  const [realDate, setRealDate] = useState(new Date());
 
-  useEffect(() => {
-    getDocuments();
-  }, []);
+  const [actions, setActions] = useState([]);
+  const [actionsOptions, setActionsOptions] = useState(actions);
+
+  const [currencies, setCurrencies] = useState([]);
+  const [currenciesOptions, setCurrenciesOptions] = useState(currencies);
+
+  // setting spanish date picker format
+  registerLocale("es", es);
 
   const [formData, setFormData] = useState({
     name: "",
     description: "",
+    dateOfEntry: dateOfEntry,
+    estimateDate: estimatedDate,
+    realDate: realDate,
+    actionsOptions: "",
   });
 
   // function to reset the form
@@ -58,48 +68,43 @@ const DocumentsList = () => {
     setFormData({
       name: "",
       description: "",
+      dateOfEntry: "",
+      estimateDate: "",
+      realDate: "",
+      actionsOptions: "",
     });
   };
 
-  // function to close the form modal
-  const onFormCancel = () => {
-    setModal({ edit: false, add: false });
-    resetForm();
-  };
+  const [currentPage, setCurrentPage] = useState(1); //-> 1 o 2 o 3
+  const [itemPerPage] = useState(10); //->limit
 
-  // Submit function to add a new item
-  const onFormSubmit = async (submitData) => {
-    const { name, description } = submitData;
-    let submittedData = {
-      name: name,
-      description: description,
-    };
+  // Get current list, pagination
+  const indexOfLastItem = currentPage * itemPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemPerPage;
+  const currentItems = postDeals.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Change Page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // function to get post deals
+  const getPostDeals = async () => {
     try {
-      await DocumentsServices.addDocument(submittedData);
-      setData([submittedData, ...data]);
-      console.log(submittedData);
-
-      resetForm();
-      getDocuments();
-      setModal({ edit: false }, { add: false });
-    } catch (error) {}
+      const postDeals = await AfterSalesServices.getPostDealOperations();
+      const postDealData = await postDeals.data.map((data) => data);
+      setPostDeals(postDealData);
+      setTablePostDeals(postDealData);
+    } catch (error) {
+      throw error;
+    }
   };
+  useEffect(() => {
+    getPostDeals();
+  }, []);
 
-  // submit function to update a new item
-  const onEditSubmit = async (submitData) => {
-    const { name, description } = submitData;
-
-    let submittedData = {
-      name: name,
-      description: description,
-    };
-
-    try {
-      await DocumentsServices.editDocument(editData.id, submittedData);
-      resetForm();
-      getDocuments();
-      setModal({ edit: false }, { add: false });
-    } catch (error) {}
+  // function to handle input search
+  const handleInputSearchChange = (ev) => {
+    setSearch(ev.target.value);
+    filterSearch(ev.target.value);
   };
 
   // function that loads the want to editted data
@@ -108,33 +113,141 @@ const DocumentsList = () => {
     setEditData(data);
   };
 
+  // function to close the form modal
+  const onFormCancel = () => {
+    setModal({ edit: false, add: false });
+    resetForm();
+  };
+
   // Function to change to delete property for an item
-  const deleteDocument = async (id) => {
+  const deletePostDeal = async (id) => {
     try {
-      await DocumentsServices.deleteDocument(id);
-      getDocuments();
+      await AfterSalesServices.deletePostDeal(id);
+      getPostDeals();
     } catch (error) {}
   };
 
-  // Get current list, pagination
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Change Page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // function to handle description doc length
-  const handleDescriptionLength = (description) => {
-    if (description.length > 35) {
-      return description.substring(0, 35) + "...";
-    }
-    return description;
+  // function to filter post deal results (N. de Operación, Cliente y Operación Post Venta)
+  const filterSearch = (input) => {
+    const searchResult = tablePostDeals.filter((postDeal) => {
+      if (
+        postDeal?.id.toString().toLowerCase().includes(input.toLowerCase()) ||
+        postDeal?.deal?.id.toString().toLowerCase().includes(input.toLowerCase()) ||
+        postDeal?.action?.name.toString().toLowerCase().includes(input.toLowerCase()) ||
+        postDeal?.ammount.toString().toLowerCase().includes(input.toLowerCase())
+      )
+        return postDeal;
+    });
+    setPostDeals(searchResult);
   };
+
+  // submit function to update a new item
+  const onEditSubmit = async (submitData) => {
+    const {
+      operationTypeId,
+      // dateOfEntry,
+      // estimateDate,
+      // realDate,
+      ammount,
+      currencyId,
+      file,
+      dealId,
+      aprobatedBy,
+      file2,
+    } = submitData;
+
+    let submittedData = {
+      operationTypeId: operationTypeId,
+      dateOfEntry: dateOfEntry,
+      estimateDate: estimatedDate,
+      realDate: realDate,
+      ammount: Number(ammount),
+      currencyId: currencyId,
+      file: file[0].name,
+      dealId: dealId, //->customerId
+      aprobatedBy: aprobatedBy,
+      file2: file2[0].name,
+      actionsOptions: actionsOptions,
+    };
+
+    try {
+      await AfterSalesServices.editPostDeal(editData.id, submittedData);
+      resetForm();
+      getPostDeals();
+      setModal({ edit: false }, { add: false });
+    } catch (error) {}
+  };
+
+  // function to parse date
+  const parseDate = (date) => {
+    const dateParse = new Date(date);
+    const day = dateParse.getDate();
+    const month = dateParse.getMonth() + 1;
+    const year = dateParse.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  // Edit Selects
+  // function to get valid deals post actions
+  const getDealsActions = async () => {
+    try {
+      const dealActions = await DealActionsServices.getDealAction();
+      const dealActionData = await dealActions.data.map((action) => ({
+        label: action?.name,
+        value: action?.id,
+      }));
+
+      setActions(dealActionData);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getDealsActions();
+  }, []);
+
+  const onOptionsActionsChange = (optionValue) => {
+    setActionsOptions(optionValue);
+  };
+
+  // function to get valid deals post actions
+  const getCurrencies = async () => {
+    try {
+      const currencies = await CurrenciesServices.getCurrency();
+      const currencyData = await currencies.data.map((currency) => ({
+        label: currency?.name,
+        value: currency?.id,
+      }));
+
+      setCurrencies(currencyData);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getCurrencies();
+  }, []);
+
+  const onOptionsCurrenciesChange = (optionValue) => {
+    setCurrenciesOptions(optionValue);
+  };
+
+  useEffect(() => {
+    if (editData?.dateOfEntry) {
+      setDateOfEntry(new Date(editData?.dateOfEntry));
+    }
+    if (editData?.estimatedDate) {
+      setEstimatedDate(new Date(editData?.estimatedDate));
+    }
+    if (editData?.realDate) {
+      setRealDate(new Date(editData?.realDate));
+    }
+    if (editData?.actionsOptions) {
+      setActionsOptions(new Date(editData?.actionsOptions));
+    }
+  }, []);
 
   return (
     <React.Fragment>
-      <Head title="Products"></Head>
+      <Head title="Acciones Post Venta"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
@@ -143,7 +256,7 @@ const DocumentsList = () => {
                 Operaciones Post Venta
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} acciones</p>
+                <p>Total {currentItems?.length} acciones</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -156,18 +269,19 @@ const DocumentsList = () => {
                 </Button>
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
-                    <li className="nk-block-tools-opt">
+                    <li className="nk-block-tools-opt d-flex align-items-center">
+                      <span className="sub-text mr-3">Filtrar búsqueda:</span>
                       <div className="form-control-wrap">
                         <div className="form-icon form-icon-right">
                           <Icon name="search" />
                         </div>
                         <input
                           type="text"
-                          // value={search}
-                          // onChange={handleChange}
+                          value={search}
+                          onChange={handleInputSearchChange}
                           className="form-control"
-                          placeholder="Buscar por: Cliente, Asesor/a, Plan o Empresa"
-                          style={{ minWidth: "25rem" }}
+                          placeholder="Buscar por: N. de Operación, Operación Post Venta o Inversión"
+                          style={{ minWidth: "27rem" }}
                         />
                       </div>
                     </li>
@@ -183,140 +297,95 @@ const DocumentsList = () => {
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Tipo Post Venta</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Cliente</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
                   <span className="sub-text">N. de Operación</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Asesor</span>
+                  <span className="sub-text">Operación Post Venta</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Plan/Producto</span>
+                  <span className="sub-text">Inversión</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Empresa</span>
+                  <span className="sub-text">Fecha ingresada</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Fecha de Ingreso</span>
+                  <span className="sub-text">Fecha estimada</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Fecha Proceso</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Monto</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Moneda</span>
+                  <span className="sub-text">Fecha final</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
-              {/*Head*/}
+              {currentItems.length > 0
+                ? currentItems.map((item, index) => (
+                    <DataTableItem key={index}>
+                      <DataTableRow className="text-center">
+                        <span>{item?.deal?.id}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.action?.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span className="text-primary">
+                          {item?.ammount} - {item.currency?.name}
+                        </span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{parseDate(item?.dateOfEntry)}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{parseDate(item?.estimateDate)}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{parseDate(item?.realDate)}</span>
+                      </DataTableRow>
+                      <DataTableRow className="nk-tb-col-tools">
+                        <ul className="nk-tb-actions gx-1 d-flex justify-content-center">
+                          <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
+                            <TooltipComponent
+                              tag="a"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"edit" + 1}
+                              icon="edit-alt-fill"
+                              direction="top"
+                              text="Editar"
+                            />
+                          </li>
+                          <li className="nk-tb-action" onClick={() => deletePostDeal(item.id)}>
+                            <TooltipComponent
+                              tag="a"
+                              containerClassName="btn btn-trigger btn-icon"
+                              id={"delete" + 1}
+                              icon="trash-fill"
+                              direction="top"
+                              text="Eliminar"
+                            />
+                          </li>
+                        </ul>
+                      </DataTableRow>
+                    </DataTableItem>
+                  ))
+                : null}
             </div>
 
             <PreviewAltCard>
               {currentItems.length > 0 ? (
                 <PaginationComponent
                   itemPerPage={itemPerPage}
-                  totalItems={data.length}
+                  totalItems={postDeals.length}
                   paginate={paginate}
                   currentPage={currentPage}
                 />
               ) : (
                 <div className="text-center">
-                  <span className="text-silent">Sin Registros</span>
+                  <span className="text-silent">No se encontraron registros</span>
                 </div>
               )}
             </PreviewAltCard>
           </div>
         </Block>
-
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
-          <ModalBody>
-            <a
-              href="#close"
-              onClick={(ev) => {
-                ev.preventDefault();
-                onFormCancel();
-              }}
-              className="close"
-            >
-              <Icon name="cross-sm"></Icon>
-            </a>
-            <div className="p-2">
-              <h5 className="title">Agregar Documento</h5>
-              {errorMessage !== "" && (
-                <div className="my-3">
-                  <Alert color="danger" className="alert-icon">
-                    <Icon name="alert-circle" />
-                    Producto ya existe
-                  </Alert>
-                </div>
-              )}
-              <div className="mt-4">
-                <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Nombre</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="name"
-                        defaultValue={formData.name}
-                        placeholder="Nombre documento"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.name && <span className="invalid">{errors.name.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Descripción</label>
-                      <textarea
-                        className="form-control"
-                        type="text"
-                        name="description"
-                        defaultValue={formData.description}
-                        placeholder="Descripción documento"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.description && <span className="invalid">{errors.description.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col size="12">
-                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
-                      <li>
-                        <Button color="primary" size="md" type="submit">
-                          Agregar Documento
-                        </Button>
-                      </li>
-                      <li>
-                        <a
-                          href="#cancel"
-                          onClick={(ev) => {
-                            ev.preventDefault();
-                            onFormCancel();
-                            setErrorMessage("");
-                          }}
-                          className="link link-light"
-                        >
-                          Cancelar
-                        </a>
-                      </li>
-                    </ul>
-                  </Col>
-                </Form>
-              </div>
-            </div>
-          </ModalBody>
-        </Modal>
 
         <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
           <ModalBody>
@@ -331,25 +400,152 @@ const DocumentsList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">Actualizar Documento</h5>
+              <h5 className="title">Actualizar Post Venta</h5>
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="12">
+                    {/* <FormGroup>
+                      <label className="form-label">Tipo de Operación</label>
+                      <RSelect
+                        // value={editData?.actionsOptions}
+                        options={actions}
+                        onChange={onOptionsActionsChange}
+                        // defautlValue={formData.actionsTypeId}
+                        defautlValue={editData?.actionsTypeId}
+
+                        // value={editData?.operationTypeId}
+                        // options={actions}
+                        // onChange={onOptionsActionsChange}
+                        // defautlValue={formData.actionsTypeId}
+                        // name="operationTypeId"
+                      />
+                      {errors.operationTypeId && <span className="invalid">{errors.operationTypeId.message}</span>}
+                    </FormGroup> */}
+                  </Col>
+
+                  <Col md="4">
                     <FormGroup>
-                      <label className="form-label">Nombre</label>
-                      <input
+                      <label className="form-label">Fecha de Ingreso</label>
+                      <DatePicker
+                        selected={dateOfEntry}
+                        className="form-control"
+                        onChange={(date) => setDateOfEntry(date)}
+                        dateFormat="MM/dd/yyyy"
+                        locale="es"
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Fecha Estimada</label>
+                      <DatePicker
+                        selected={estimatedDate}
+                        className="form-control"
+                        onChange={(date) => setEstimatedDate(date)}
+                        dateFormat="MM/dd/yyyy"
+                        locale="es"
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="4">
+                    <FormGroup>
+                      <label className="form-label">Fecha Real</label>
+                      <DatePicker
+                        selected={realDate}
+                        className="form-control"
+                        onChange={(date) => setRealDate(date)}
+                        dateFormat="MM/dd/yyyy"
+                        locale="es"
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Monto</label>{" "}
+                      <NumberFormat
                         className="form-control"
                         type="text"
-                        name="name"
-                        defaultValue={editData?.name}
-                        placeholder="Ingresa nombre"
-                        ref={register({ required: "Este campo es requerido" })}
+                        name="ammount"
+                        defaultValue={Number(editData?.ammount)}
+                        placeholder="Ingrese monto"
+                        thousandSeparator={true}
+                        ref={register()}
                       />
-                      {errors.name && <span className="invalid">{errors.name.message}</span>}
+                      <small className="text-primary">Inversión actual: {editData?.ammount}</small>
+                      {/* <small className="text-primary">Inversión actual: {editData?.amountOfTheInvestment}</small>{" "} */}
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Moneda</label>
+                      <RSelect
+                        value={currenciesOptions}
+                        options={currencies}
+                        onChange={onOptionsCurrenciesChange}
+                        defautlValue={formData.actionsTypeId}
+                      />
                     </FormGroup>
                   </Col>
 
                   <Col md="12">
+                    <FormGroup className="border-bottom pb-2">
+                      <h6>Validación de Operación</h6>
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Aprobado por:</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="aprobatedBy"
+                        defaultValue={editData?.aprobatedBy}
+                        placeholder="Ingresa Nombre de asesor"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Subir archivo de respaldo (Administrador)</label>
+                      <div className="file-input border rounded d-flex pt-3 align-items-center bg-light">
+                        <label className="file-input__label" htmlFor="file-input">
+                          <input
+                            type="file"
+                            className="bg-light border-0"
+                            name="file"
+                            defaultValue={editData?.file}
+                            ref={register()}
+                            accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.jpg, .jpeg, .png, application/vnd.ms-excel"
+                          />
+                        </label>
+                      </div>
+                    </FormGroup>
+                  </Col>
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Subir correo de respaldo (Cliente)</label>
+                      <div className="file-input border rounded d-flex pt-3 align-items-center bg-light">
+                        <label className="file-input__label" htmlFor="file-input">
+                          <input
+                            type="file"
+                            className="bg-light border-0"
+                            name="file2"
+                            defaultValue={editData?.file2}
+                            ref={register()}
+                            accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.jpg, .jpeg, .png, application/vnd.ms-excel"
+                          />
+                        </label>
+                      </div>
+                    </FormGroup>
+                  </Col>
+
+                  {/* <Col md="12">
                     <FormGroup>
                       <label className="form-label">Descripción</label>
                       <textarea
@@ -362,13 +558,13 @@ const DocumentsList = () => {
                       />
                       {errors.description && <span className="invalid">{errors.description.message}</span>}
                     </FormGroup>
-                  </Col>
+                  </Col> */}
 
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Actualizar Documento
+                          Actualizar Post Venta
                         </Button>
                       </li>
                       <li>

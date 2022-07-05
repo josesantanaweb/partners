@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
+import { FormGroup, Modal, ModalBody, Form, Alert, NavItem, NavLink, TabContent, TabPane, Nav } from "reactstrap";
 import {
   Block,
   BlockBetween,
@@ -18,7 +18,9 @@ import {
   TooltipComponent,
   PreviewAltCard,
 } from "../../components/Component";
-import DatePicker from "react-datepicker";
+import classnames from "classnames";
+import DatePicker, { registerLocale } from "react-datepicker";
+import es from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
@@ -26,14 +28,19 @@ import { findUpper } from "../../utils/Utils";
 import { useForm } from "react-hook-form";
 import { AdviserContext } from "./AdviserContext";
 import AdvisersServices from "../../services/AdvisersServices";
+registerLocale("es", es);
 
 const AdviserList = () => {
   const { contextData } = useContext(AdviserContext);
   const [data, setData] = contextData;
   const [errorMessage, setErrorMessage] = useState("");
+  const [addActiveTab, setAddActiveTab] = useState("1");
   const [editData, setEditData] = useState();
   const [birthDate, setBirthDate] = useState(new Date());
   const [editBirthDate, setEditBirthDate] = useState(new Date());
+
+  const [rutIssueDate, setRutIssueDate] = useState(new Date());
+  const [rutExpirationDate, setRutExpirationDate] = useState(new Date());
 
   const [modal, setModal] = useState({
     edit: false,
@@ -321,153 +328,407 @@ const AdviserList = () => {
                   </Alert>
                 </div>
               )}
-              <div className="mt-4">
-                <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Nombre</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="name"
-                        defaultValue={formData.name}
-                        placeholder="Ingresa nombre"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.name && <span className="invalid">{errors.name.message}</span>}
-                    </FormGroup>
-                  </Col>
+              <Nav tabs>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={classnames({ active: addActiveTab === "1" })}
+                    onClick={() => setAddActiveTab("1")}
+                  >
+                    Informacion Principal
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={classnames({ active: addActiveTab === "2" })}
+                    onClick={() => setAddActiveTab("2")}
+                  >
+                    Documentos
+                  </NavLink>
+                </NavItem>
+              </Nav>
+              <TabContent activeTab={addActiveTab}>
+                <TabPane tabId="1">
+                  <div className="mt-4">
+                    <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Nombre</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="name"
+                            defaultValue={formData.name}
+                            placeholder="Ingresa nombre"
+                            ref={register({ required: "Este campo es requerido" })}
+                          />
+                          {errors.name && <span className="invalid">{errors.name.message}</span>}
+                        </FormGroup>
+                      </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Apellido</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="paternalLastName"
-                        defaultValue={formData.paternalLastName}
-                        placeholder="Ingresa apellido"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.paternalLastName && <span className="invalid">{errors.paternalLastName.message}</span>}
-                    </FormGroup>
-                  </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Apellido</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="paternalLastName"
+                            defaultValue={formData.paternalLastName}
+                            placeholder="Ingresa apellido"
+                            ref={register({ required: "Este campo es requerido" })}
+                          />
+                          {errors.paternalLastName && (
+                            <span className="invalid">{errors.paternalLastName.message}</span>
+                          )}
+                        </FormGroup>
+                      </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Correo electronico</label>
-                      <input
-                        className="form-control"
-                        type="email"
-                        name="email"
-                        defaultValue={formData.email}
-                        placeholder="Ingresa apellido"
-                        ref={register({
-                          required: "Este campo es requerido",
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "invalid email address",
-                          },
-                        })}
-                      />
-                      {errors.email && <span className="invalid">{errors.email.message}</span>}
-                    </FormGroup>
-                  </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Correo electronico</label>
+                          <input
+                            className="form-control"
+                            type="email"
+                            name="email"
+                            defaultValue={formData.email}
+                            placeholder="Ingresa apellido"
+                            ref={register({
+                              required: "Este campo es requerido",
+                              pattern: {
+                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                message: "invalid email address",
+                              },
+                            })}
+                          />
+                          {errors.email && <span className="invalid">{errors.email.message}</span>}
+                        </FormGroup>
+                      </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Contrasena</label>
-                      <input
-                        className="form-control"
-                        type="password"
-                        name="password"
-                        defaultValue={formData.email}
-                        placeholder="Ingresa contrasena"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.password && <span className="invalid">{errors.password.message}</span>}
-                    </FormGroup>
-                  </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Contrasena</label>
+                          <input
+                            className="form-control"
+                            type="password"
+                            name="password"
+                            defaultValue={formData.email}
+                            placeholder="Ingresa contrasena"
+                            ref={register({ required: "Este campo es requerido" })}
+                          />
+                          {errors.password && <span className="invalid">{errors.password.message}</span>}
+                        </FormGroup>
+                      </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Telefono</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="mobilePhone"
-                        defaultValue={formData.mobilePhone}
-                        placeholder="Ingresa telefono"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Telefono</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="mobilePhone"
+                            defaultValue={formData.mobilePhone}
+                            placeholder="Ingresa telefono"
+                            ref={register()}
+                          />
+                        </FormGroup>
+                      </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Telefono 2</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="landlinePhone"
-                        defaultValue={formData.landlinePhone}
-                        placeholder="Ingresa telefono"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Telefono 2</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="landlinePhone"
+                            defaultValue={formData.landlinePhone}
+                            placeholder="Ingresa telefono"
+                            ref={register()}
+                          />
+                        </FormGroup>
+                      </Col>
 
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Fecha de nacimiento</label>
-                      <DatePicker
-                        selected={birthDate}
-                        className="form-control"
-                        onChange={(date) => setBirthDate(date)}
-                        dateFormat="dd/MM/yyyy"
-                      />
-                    </FormGroup>
-                  </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Fecha de nacimiento</label>
+                          <DatePicker
+                            selected={birthDate}
+                            className="form-control"
+                            onChange={(date) => setBirthDate(date)}
+                            dateFormat="dd/MM/yyyy"
+                            locale="es"
+                          />
+                        </FormGroup>
+                      </Col>
 
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Observacion</label>
-                      <textarea
-                        className="form-control"
-                        name="observation"
-                        placeholder="Ingresa Observacion"
-                        cols="30"
-                        rows="10"
-                        defaultValue={formData.observation}
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
+                      <Col md="12">
+                        <FormGroup>
+                          <label className="form-label">Observacion</label>
+                          <textarea
+                            className="form-control"
+                            name="observation"
+                            placeholder="Ingresa Observacion"
+                            cols="30"
+                            rows="10"
+                            defaultValue={formData.observation}
+                            ref={register()}
+                          />
+                        </FormGroup>
+                      </Col>
 
-                  <Col size="12">
-                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
-                      <li>
-                        <Button color="primary" size="md" type="submit">
-                          Agregar Usuario
-                        </Button>
-                      </li>
-                      <li>
-                        <a
-                          href="#cancel"
-                          onClick={(ev) => {
-                            ev.preventDefault();
-                            onFormCancel();
-                            setErrorMessage("");
-                          }}
-                          className="link link-light"
-                        >
-                          Cancelar
-                        </a>
-                      </li>
-                    </ul>
-                  </Col>
-                </Form>
-              </div>
+                      <Col size="12">
+                        <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                          <li>
+                            <Button color="primary" size="md" type="submit">
+                              Agregar Usuario
+                            </Button>
+                          </li>
+                          <li>
+                            <a
+                              href="#cancel"
+                              onClick={(ev) => {
+                                ev.preventDefault();
+                                onFormCancel();
+                                setErrorMessage("");
+                              }}
+                              className="link link-light"
+                            >
+                              Cancelar
+                            </a>
+                          </li>
+                        </ul>
+                      </Col>
+                    </Form>
+                  </div>
+                </TabPane>
+                <TabPane tabId="2">
+                  <div className="mt-4 table-scroll">
+                    <Form className="row gy-4">
+                      <Col md="4">
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="menuItems"
+                            className="custom-control-input form-control"
+                            id="certificado"
+                          />
+                          <label className="custom-control-label" htmlFor="certificado">
+                            ¿Tiene Certificado?
+                          </label>
+                        </div>
+                      </Col>
+                      <Col md="6">
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            name="menuItems"
+                            className="custom-control-input form-control"
+                            id="certificado"
+                          />
+                          <label className="custom-control-label" htmlFor="certificado">
+                            ¿Tiene Titulo de Estudios?
+                          </label>
+                        </div>
+                      </Col>
+
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Indique la Carrera de Estudio</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="description"
+                            placeholder="Ingresa carrera de estudio"
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Duracion en Semestres</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="description"
+                            placeholder="Ingresa duracion en semestres"
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Contacto de Urgencia</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="description"
+                            placeholder="Ingresa contacto de urgencia"
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Clinica o hospital para Urgencias</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="description"
+                            placeholder="Ingresa clinica o hospital para urgencias"
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="12">
+                        <h6>Subir Documentos</h6>
+                      </Col>
+
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Cedula Frontal</label>
+                          <input className="form-control" type="file" name="description" />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Cedula Posterior</label>
+                          <input className="form-control" type="file" name="description" />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6" className="mb-4">
+                        <FormGroup>
+                          <label className="form-label">Fecha de emisión</label>
+                          <DatePicker
+                            selected={rutIssueDate}
+                            className="form-control"
+                            onChange={(date) => {
+                              setRutIssueDate(date);
+                            }}
+                            dateFormat="dd/MM/yyyy"
+                            locale="es"
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6" className="mb-4">
+                        <FormGroup>
+                          <label className="form-label">Fecha de expiracion</label>
+                          <DatePicker
+                            selected={rutExpirationDate}
+                            className="form-control"
+                            onChange={(date) => {
+                              setRutExpirationDate(date);
+                            }}
+                            dateFormat="dd/MM/yyyy"
+                            locale="es"
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="12">
+                        <FormGroup>
+                          <label className="form-label">Certificado CAMV</label>
+                          <input className="form-control" type="file" name="description" />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6" className="mb-4">
+                        <FormGroup>
+                          <label className="form-label">Fecha de Ingreso</label>
+                          <DatePicker
+                            selected={rutIssueDate}
+                            className="form-control"
+                            onChange={(date) => {
+                              setRutIssueDate(date);
+                            }}
+                            dateFormat="dd/MM/yyyy"
+                            locale="es"
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6" className="mb-4">
+                        <FormGroup>
+                          <label className="form-label">Fecha de expiracion</label>
+                          <DatePicker
+                            selected={rutExpirationDate}
+                            className="form-control"
+                            onChange={(date) => {
+                              setRutExpirationDate(date);
+                            }}
+                            dateFormat="dd/MM/yyyy"
+                            locale="es"
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="12">
+                        <FormGroup>
+                          <label className="form-label">Cerficado de Estudios</label>
+                          <input className="form-control" type="file" name="description" />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6" className="mb-4">
+                        <FormGroup>
+                          <label className="form-label">Fecha de Ingreso</label>
+                          <DatePicker
+                            selected={rutIssueDate}
+                            className="form-control"
+                            onChange={(date) => {
+                              setRutIssueDate(date);
+                            }}
+                            dateFormat="dd/MM/yyyy"
+                            locale="es"
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6" className="mb-4">
+                        <FormGroup>
+                          <label className="form-label">Fecha de expiracion</label>
+                          <DatePicker
+                            selected={rutExpirationDate}
+                            className="form-control"
+                            onChange={(date) => {
+                              setRutExpirationDate(date);
+                            }}
+                            dateFormat="dd/MM/yyyy"
+                            locale="es"
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col size="12">
+                        <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                          <li>
+                            <Button color="primary" size="md" type="submit">
+                              Agregar Usuario
+                            </Button>
+                          </li>
+                          <li>
+                            <a
+                              href="#cancel"
+                              onClick={(ev) => {
+                                ev.preventDefault();
+                                onFormCancel();
+                                setErrorMessage("");
+                              }}
+                              className="link link-light"
+                            >
+                              Cancelar
+                            </a>
+                          </li>
+                        </ul>
+                      </Col>
+                    </Form>
+                  </div>
+                </TabPane>
+              </TabContent>
             </div>
           </ModalBody>
         </Modal>
@@ -563,6 +824,7 @@ const AdviserList = () => {
                         defaultValue={editData?.birthDate}
                         onChange={(date) => setEditBirthDate(date)}
                         dateFormat="dd/MM/yyyy"
+                        locale="es"
                       />
                     </FormGroup>
                   </Col>

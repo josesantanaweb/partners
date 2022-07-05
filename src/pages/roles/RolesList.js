@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
+import Swal from "sweetalert2";
 import {
   Block,
   BlockBetween,
@@ -129,10 +130,22 @@ const RolesList = () => {
 
   // Function to change to delete property for an item
   const deleteUser = async (id) => {
-    try {
-      await RolesServices.deleteRole(id);
-      getRoles();
-    } catch (error) {}
+    Swal.fire({
+      title: "Atencion!",
+      text: "¿Esta Seguro que desea borrar el rol?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ffb344",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Aceptar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        RolesServices.deleteRole(id);
+        Swal.fire("Eliminado!", "Rol Eliminado Correctamente", "success");
+      }
+      window.location.reload();
+    });
   };
 
   // Get current list, pagination

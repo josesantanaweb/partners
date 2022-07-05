@@ -25,11 +25,11 @@ import DocumentsServices from "../../services/DocumentsServices";
 const DocumentsList = () => {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [editData, setEditData] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
   const [sm, updateSm] = useState(false);
   const { errors, register, handleSubmit } = useForm();
+  const [editData, setEditData] = useState();
   const [modal, setModal] = useState({
     edit: false,
     add: false,
@@ -232,7 +232,7 @@ const DocumentsList = () => {
               {currentItems.length > 0 ? (
                 <PaginationComponent
                   itemPerPage={itemPerPage}
-                  totalItems={data.length}
+                  totalItems={currentItems.length}
                   paginate={paginate}
                   currentPage={currentPage}
                 />

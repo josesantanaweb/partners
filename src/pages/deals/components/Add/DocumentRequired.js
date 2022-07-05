@@ -261,41 +261,42 @@ const DocumentRequired = ({ libraryClient ,setModal, editData, selectClient, nee
       <Col md="12">
         <div className="scrollbar-fluid overflow-auto mb-3 table-records">
           <div className="nk-tb-list is-separate is-medium">
+            <h6 className="text-center">Documentos Requeridos:</h6>
           <DataTableHead className="nk-tb-item scrollbar-fluid overflow-auto">
-              <DataTableRow   className="text-center border-bottom border bg-light">
-                <span className="sub-text">Documentos Requeridos</span>
-              </DataTableRow>
+         
           </DataTableHead>
           {
             needDocument.documents
             ? needDocument.documents.map(act => 
-              <>
-              <DataTableItem className=" text-center border-bottom border bg-light">
-                <DataTableRow className="text-center d-flex justify-content-between">
-                  <span className="sub-text">{act.name}</span>
-            
-                  <Button color="primary" size="md"  onClick={() => setModalDocument({ add: true })}>
-                    Subir
-                  </Button>
-                </DataTableRow> 
-                <DataTableRow className="text-center d-flex justify-content-between">
+              
+              <DataTableItem key={act.id} className=" text-center border-bottom border bg-light">
+               
+               <DataTableRow className=" text-center border-bottom border ">{act.name}</DataTableRow>
                   {
-                    libraryClient.filter( e=> e.documentType.id == act.id )
-                    .map( elem => (
-                      <>
-                        <DataTableItem> 
-                          <DataTableRow className=" text-center border-bottom border ">{elem.documentType.name}</DataTableRow>
+                    libraryClient?
+                    libraryClient.map( elem => {
+                      if(elem.documentType.id == act.id){
+                        return   <>
                           <DataTableRow className=" text-center border-bottom border ">Created: {elem.createdAt.split('T')[0]}</DataTableRow>
                           <DataTableRow className=" text-center border-bottom border ">Exp: {elem.expirationDate.split('T')[0]}</DataTableRow>
                           <DataTableRow className="p-0"><a target="blank" className="text-white" href={elem.url} ><Button color="primary" size="md">Ver</Button></a></DataTableRow>
-                          <DataTableRow className=" "><a target="blank" className="text-white" href={elem.url} ><Button  color="primary" size="md">Vincular</Button></a></DataTableRow>
-                        </DataTableItem>
-                      </>    
-                    ))
+                          <DataTableRow className="p-0 m-0"><a target="blank" className="text-white" href={elem.url} ><Button  color="primary" size="md">Vincular</Button></a></DataTableRow>
+                          </>
+                     
+                      }
+                      return <></>
+                    }):<></>
                   }
-                </DataTableRow> 
+                  <DataTableRow className=" ">
+                  <Button color="primary" size="md"  onClick={() => setModalDocument({ add: true })}>
+                    Subir
+                  </Button>
+                  </DataTableRow>
+           
+     
+
               </DataTableItem>
-              </>
+              
               )
             :<>
             </>
