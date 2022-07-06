@@ -47,10 +47,10 @@ const DocumentRequired = ({ libraryClient ,setModal, editData, selectClient, nee
                     libraryClient.map( elem => {
                       if(elem.documentType.id == act.id){
                         return   <>
-                          <DataTableRow className=" text-center border-bottom border ">Created: {elem.createdAt.split('T')[0]}</DataTableRow>
-                          <DataTableRow className=" text-center border-bottom border ">Exp: {elem.expirationDate.split('T')[0]}</DataTableRow>
-                          <DataTableRow className="p-0"><Button color="primary" size="md"><a target="blank" className="text-white" href={elem.url} >Ver</a></Button></DataTableRow>
-                          <DataTableRow className="p-0 m-0"><a target="blank" className="text-white" href={elem.url} ><Button  color="primary" size="md">Vincular</Button></a></DataTableRow>
+                          <DataTableRow className=" text-center border-bottom border ">Created: {elem?.createdAt?.split('T')[0]}</DataTableRow>
+                          <DataTableRow className=" text-center border-bottom border ">Exp: {elem?.expirationDate?.split('T')[0]}</DataTableRow>
+                          <DataTableRow className="p-0"><Button color="primary" size="md"><a target="blank" className="text-white" href={elem?.url} >Ver</a></Button></DataTableRow>
+                          <DataTableRow className="p-0 m-0"><a target="blank" className="text-white" href={elem?.url} ><Button  color="primary" size="md">Vincular</Button></a></DataTableRow>
                           </>
                      
                       }
