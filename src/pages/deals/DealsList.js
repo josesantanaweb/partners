@@ -317,7 +317,7 @@ const DealsList = () => {
     }
 
     console.log('estado',statePost)
-    DealsServices.postDeals(statePost).then( ()=>  window.location.reload())
+    DealsServices.postDeals(statePost).then( ()=>  window.location.reload()).catch( err => console.log(err))
   }
 
   return (
@@ -388,6 +388,9 @@ const DealsList = () => {
                 <DataTableRow className="text-center">
                   <span className="sub-text">Moneda</span>
                 </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Origen de los Fondos</span>
+                </DataTableRow>
           
             
                 <DataTableRow className="text-center">
@@ -422,6 +425,9 @@ const DealsList = () => {
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item.amountOfTheInvestment}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item.currency.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item.currency.name}</span>

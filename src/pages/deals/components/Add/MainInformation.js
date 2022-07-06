@@ -489,7 +489,7 @@ const CustomerFile = ({setAddActiveTab, generalStateForm,setGeneralStateForm,reg
           <h6>Plan</h6>
         </FormGroup>
       </Col>
-      <Col md="12" className="mb-4">
+      <Col md="6" className="mb-4">
         <FormGroup>
           <RSelect
             value={plansOptions}
