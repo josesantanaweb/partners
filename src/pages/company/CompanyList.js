@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form";
 import { CompanyContext } from "./CompanyContext";
 import CompanyServices from "../../services/CompanyServices";
 import CountriesServices from "../../services/CountriesServices";
+import Swal from "sweetalert2";
 
 const CompanyList = () => {
   const { contextData } = useContext(CompanyContext);
@@ -237,11 +238,47 @@ const CompanyList = () => {
   };
 
   // Function to change to delete property for an item
-  const deleteUser = async (id) => {
+  // const deleteUser = async (id) => {
+  //   try {
+  //     await CompanyServices.deleteCompany(id);
+  //     getCompany();
+  //   } catch (error) {
+  //     throw new Error("Error deleting record!");
+  //   }
+  // };
+
+  // Function to change to delete property for an item
+  const deleteCompany = (id) => {
     try {
-      await CompanyServices.deleteCompany(id);
-      getCompany();
-    } catch (error) {}
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
+        },
+        buttonsStyling: false,
+      });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getCompany();
+          if (result.isConfirmed) {
+            CompanyServices.deleteCompany(id);
+            getCompany();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
+    } catch (error) {
+      throw new Error("Error deleting record!");
+    }
   };
 
   // Get current list, pagination
@@ -268,10 +305,10 @@ const CompanyList = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Lista de Empresa
+                Lista de Socios Estratégicos
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} Empresa</p>
+                <p>Total {data.length} Socios Estratégicos</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -290,7 +327,7 @@ const CompanyList = () => {
                     <li className="nk-block-tools-opt">
                       <Button color="primary" onClick={() => setModal({ add: true })}>
                         <Icon name="plus" className="mr-1"></Icon>
-                        Agregar Empresa
+                        Agregar Socio Estratégico
                       </Button>
                     </li>
                   </ul>
@@ -304,64 +341,64 @@ const CompanyList = () => {
           <div className="container-fluid overflow-auto scrollbar-fluid">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
-                <DataTableRow>
-                  <span className="sub-text">#</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">N. de S. Estrat.</span>
                 </DataTableRow>
-                <DataTableRow size="xs">
+                <DataTableRow className="text-center">
                   <span className="sub-text">Nombre</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">Email</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">RUT</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Telefono</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Teléfono</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text"></span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
               {/*Head*/}
               {currentItems.length > 0
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id}>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.id}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.name}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.email}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.rut}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.businessPhone}</span>
                       </DataTableRow>
-                      <DataTableRow className="nk-tb-col-tools">
-                        <ul className="nk-tb-actions gx-1">
-                          <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                      <DataTableRow className="text-center">
+                        <ul className="nk-tb-actions gx-1 d-flex justify-content-center">
+                          <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"edit" + 1}
                               icon="edit-alt-fill"
                               direction="top"
-                              text="Edit"
+                              text="Editar"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
+                          <li className="nk-tb-action" onClick={() => deleteCompany(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"delete" + 1}
                               icon="trash-fill"
                               direction="top"
-                              text="Delete"
+                              text="Eliminar"
                             />
                           </li>
                         </ul>
@@ -370,25 +407,24 @@ const CompanyList = () => {
                   ))
                 : null}
             </div>
-
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
-                  itemPerPage={itemPerPage}
-                  totalItems={data.length}
-                  paginate={paginate}
-                  currentPage={currentPage}
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">Sin Registros</span>
-                </div>
-              )}
-            </PreviewAltCard>
           </div>
+          <PreviewAltCard>
+            {currentItems.length > 0 ? (
+              <PaginationComponent
+                itemPerPage={itemPerPage}
+                totalItems={data.length}
+                paginate={paginate}
+                currentPage={currentPage}
+              />
+            ) : (
+              <div className="text-center">
+                <span className="text-silent">Sin Registros</span>
+              </div>
+            )}
+          </PreviewAltCard>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#close"
@@ -400,8 +436,8 @@ const CompanyList = () => {
             >
               <Icon name="cross-sm"></Icon>
             </a>
-            <div className="p-2">
-              <h5 className="title">Agregar Empresa</h5>
+            <div className="p-2 table-records modal-scroll">
+              <h5 className="title">Agregar Socio Estratégico</h5>
               {errorMessage !== "" && (
                 <div className="my-3">
                   <Alert color="danger" className="alert-icon">
@@ -410,7 +446,7 @@ const CompanyList = () => {
                   </Alert>
                 </div>
               )}
-              <div className="table-scroll">
+              <div>
                 <div className="mt-4">
                   <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
                     <Col md="6">
@@ -585,7 +621,7 @@ const CompanyList = () => {
                       <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                         <li>
                           <Button color="primary" size="md" type="submit">
-                            Agregar Empresa
+                            Agregar Socio Estratégico
                           </Button>
                         </li>
                         <li>
@@ -610,7 +646,7 @@ const CompanyList = () => {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#cancel"
@@ -622,8 +658,8 @@ const CompanyList = () => {
             >
               <Icon name="cross-sm"></Icon>
             </a>
-            <div className="p-2">
-              <h5 className="title">Actualizar Empresa</h5>
+            <div className="p-2 table-records modal-scroll">
+              <h5 className="title">Actualizar Socio Estratégico</h5>
               {errorMessage !== "" && (
                 <div className="my-3">
                   <Alert color="danger" className="alert-icon">
@@ -632,7 +668,7 @@ const CompanyList = () => {
                   </Alert>
                 </div>
               )}
-              <div className="table-scroll">
+              <div>
                 <div className="mt-4">
                   <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                     <Col md="6">
@@ -806,7 +842,7 @@ const CompanyList = () => {
                       <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                         <li>
                           <Button color="primary" size="md" type="submit">
-                            Actualizar Empresa
+                            Actualizar Socio Estratégico
                           </Button>
                         </li>
                         <li>

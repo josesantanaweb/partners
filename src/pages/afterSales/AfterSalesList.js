@@ -19,8 +19,6 @@ import {
 
 import { useForm } from "react-hook-form";
 import DatePicker, { registerLocale } from "react-datepicker";
-import es from "date-fns/locale/es";
-
 import { FormGroup, Modal, ModalBody, Form, Col } from "reactstrap";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
@@ -28,6 +26,8 @@ import AfterSalesServices from "../../services/AfterSalesServices";
 import DealActionsServices from "../../services/DealActionsServices";
 import CurrenciesServices from "../../services/CurrenciesServices";
 import NumberFormat from "react-number-format";
+import es from "date-fns/locale/es";
+import Swal from "sweetalert2";
 
 const DocumentsList = () => {
   const { errors, register, handleSubmit } = useForm();
@@ -61,6 +61,7 @@ const DocumentsList = () => {
     estimateDate: estimatedDate,
     realDate: realDate,
     actionsOptions: "",
+    ammount: Number(""),
   });
 
   // function to reset the form
@@ -72,11 +73,12 @@ const DocumentsList = () => {
       estimateDate: "",
       realDate: "",
       actionsOptions: "",
+      ammount: Number(""),
     });
   };
 
   const [currentPage, setCurrentPage] = useState(1); //-> 1 o 2 o 3
-  const [itemPerPage] = useState(10); //->limit
+  const [itemPerPage] = useState(5); //->limit
 
   // Get current list, pagination
   const indexOfLastItem = currentPage * itemPerPage;
@@ -119,12 +121,37 @@ const DocumentsList = () => {
     resetForm();
   };
 
-  // Function to change to delete property for an item
-  const deletePostDeal = async (id) => {
+  const deletePostDeal = (id) => {
     try {
-      await AfterSalesServices.deletePostDeal(id);
-      getPostDeals();
-    } catch (error) {}
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
+        },
+        buttonsStyling: false,
+      });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getPostDeals();
+          if (result.isConfirmed) {
+            AfterSalesServices.deletePostDeal(id);
+            getPostDeals();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
+    } catch (error) {
+      throw new Error("Error deleting record!");
+    }
   };
 
   // function to filter post deal results (N. de Operación, Cliente y Operación Post Venta)
@@ -161,7 +188,7 @@ const DocumentsList = () => {
       dateOfEntry: dateOfEntry,
       estimateDate: estimatedDate,
       realDate: realDate,
-      ammount: Number(ammount),
+      ammount: ammount,
       currencyId: currencyId,
       file: file[0].name,
       dealId: dealId, //->customerId
@@ -171,10 +198,45 @@ const DocumentsList = () => {
     };
 
     try {
+      // !
+
+      const formData = new FormData();
+      let object = {};
+
+      formData.append("operationTypeId", actionsOptions?.value);
+      formData.append("dateOfEntry", dateOfEntry);
+      formData.append("estimateDate", estimatedDate);
+      formData.append("realDate", realDate);
+      formData.append("ammount", ammount);
+      formData.append("currencyId", currenciesOptions?.value);
+      formData.append("file", file[0].name);
+      formData.append("dealId", editData?.id);
+      formData.append("aprobatedBy", aprobatedBy);
+      formData.append("file2", file2[0].name);
+
+      formData.forEach((value, key) => (object[key] = value));
+      var json = JSON.stringify(object);
+      JSON.stringify(Object.fromEntries(formData));
+
+      console.log(json);
+
+      // await AfterSalesServices.addPostDealOperations(formData);
+
+      setModal({ edit: false, add: false });
+      resetForm();
+      window.location.reload();
+
       await AfterSalesServices.editPostDeal(editData.id, submittedData);
       resetForm();
       getPostDeals();
       setModal({ edit: false }, { add: false });
+
+      // !
+
+      // await AfterSalesServices.editPostDeal(editData.id, submittedData);
+      // resetForm();
+      // getPostDeals();
+      // setModal({ edit: false }, { add: false });
     } catch (error) {}
   };
 
@@ -214,7 +276,7 @@ const DocumentsList = () => {
     try {
       const currencies = await CurrenciesServices.getCurrency();
       const currencyData = await currencies.data.map((currency) => ({
-        label: currency?.name,
+        label: currency?.isoCode,
         value: currency?.id,
       }));
 
@@ -244,6 +306,46 @@ const DocumentsList = () => {
       setActionsOptions(new Date(editData?.actionsOptions));
     }
   }, []);
+
+  const getPaginationPostDeals = async (limit, page) => {
+    const postDeals = await AfterSalesServices.getPostDealOperationsPags(limit, page);
+    const postDealsData = await postDeals.data.map((data) => data);
+    setPostDeals(postDealsData);
+  };
+
+  const firstPageUrl = () => getPaginationPostDeals(itemPerPage, 1);
+  const nextPageUrl = () => getPaginationPostDeals(itemPerPage, 2);
+  const lastPageUrl = () => getPaginationPostDeals(itemPerPage, 3);
+
+  // Formting decimal numbers
+  function formatNumber(number, decimals, dec_point, thousands_point) {
+    if (number == null || !isFinite(number)) {
+      throw new TypeError("Número no válido");
+    }
+
+    if (!decimals) {
+      var len = number.toString().split(".").length;
+      decimals = len > 1 ? len : 0;
+    }
+
+    if (!dec_point) {
+      dec_point = ".";
+    }
+
+    if (!thousands_point) {
+      thousands_point = ",";
+    }
+
+    number = parseFloat(number).toFixed(decimals);
+
+    number = number.replace(".", dec_point);
+
+    var splitNum = number.split(dec_point);
+    splitNum[0] = splitNum[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands_point);
+    number = splitNum.join(dec_point);
+
+    return number;
+  }
 
   return (
     <React.Fragment>
@@ -280,8 +382,8 @@ const DocumentsList = () => {
                           value={search}
                           onChange={handleInputSearchChange}
                           className="form-control"
-                          placeholder="Buscar por: N. de Operación, Operación Post Venta o Inversión"
-                          style={{ minWidth: "27rem" }}
+                          placeholder="Operación, Operación Post Venta o Inversión"
+                          style={{ minWidth: "20rem" }}
                         />
                       </div>
                     </li>
@@ -328,8 +430,8 @@ const DocumentsList = () => {
                         <span>{item?.action?.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span className="text-primary">
-                          {item?.ammount} - {item.currency?.name}
+                        <span>
+                          {formatNumber(item?.ammount, 0, ",", ".")} {item.currency?.isoCode}
                         </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
@@ -369,25 +471,53 @@ const DocumentsList = () => {
                   ))
                 : null}
             </div>
-
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
-                  itemPerPage={itemPerPage}
-                  totalItems={postDeals.length}
-                  paginate={paginate}
-                  currentPage={currentPage}
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">No se encontraron registros</span>
-                </div>
-              )}
-            </PreviewAltCard>
           </div>
+          <PreviewAltCard>
+            <React.Fragment>
+              {/* {currentItems.length > 0 ? (
+              <PaginationComponent
+                itemPerPage={itemPerPage}
+                totalItems={postDeals.length}
+                paginate={paginate}
+                currentPage={currentPage}
+              /> */}
+              <ul className="pagination border p-1">
+                <li className="active page-item border">
+                  <a
+                    className="page-link border border-white btn btn-primary"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => firstPageUrl(itemPerPage, 1)}
+                  >
+                    1
+                  </a>
+                </li>
+                <li className="active page-item border">
+                  <a
+                    className="page-link border border-white btn btn-primary"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => nextPageUrl(itemPerPage, 2)}
+                  >
+                    2
+                  </a>
+                </li>
+                <li className="active page-item border">
+                  <a
+                    className="page-link border border-white btn btn-primary"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => lastPageUrl(itemPerPage, 3)}
+                  >
+                    3
+                  </a>
+                </li>
+              </ul>
+            </React.Fragment>
+            <div className="text-center">
+              <span className="text-silent">No se encontraron registros</span>
+            </div>
+          </PreviewAltCard>
         </Block>
 
-        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#cancel"
@@ -404,15 +534,14 @@ const DocumentsList = () => {
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="12">
-                    {/* <FormGroup>
+                    <FormGroup>
                       <label className="form-label">Tipo de Operación</label>
                       <RSelect
                         // value={editData?.actionsOptions}
                         options={actions}
                         onChange={onOptionsActionsChange}
-                        // defautlValue={formData.actionsTypeId}
-                        defautlValue={editData?.actionsTypeId}
-
+                        defautlValue={formData.actionsTypeId}
+                        // defautlValue={editData?.actionsTypeId}
                         // value={editData?.operationTypeId}
                         // options={actions}
                         // onChange={onOptionsActionsChange}
@@ -420,7 +549,7 @@ const DocumentsList = () => {
                         // name="operationTypeId"
                       />
                       {errors.operationTypeId && <span className="invalid">{errors.operationTypeId.message}</span>}
-                    </FormGroup> */}
+                    </FormGroup>
                   </Col>
 
                   <Col md="4">
@@ -430,7 +559,7 @@ const DocumentsList = () => {
                         selected={dateOfEntry}
                         className="form-control"
                         onChange={(date) => setDateOfEntry(date)}
-                        dateFormat="MM/dd/yyyy"
+                        dateFormat="dd/MM/yyyy"
                         locale="es"
                       />
                     </FormGroup>
@@ -443,7 +572,7 @@ const DocumentsList = () => {
                         selected={estimatedDate}
                         className="form-control"
                         onChange={(date) => setEstimatedDate(date)}
-                        dateFormat="MM/dd/yyyy"
+                        dateFormat="dd/MM/yyyy"
                         locale="es"
                       />
                     </FormGroup>
@@ -456,7 +585,7 @@ const DocumentsList = () => {
                         selected={realDate}
                         className="form-control"
                         onChange={(date) => setRealDate(date)}
-                        dateFormat="MM/dd/yyyy"
+                        dateFormat="dd/MM/yyyy"
                         locale="es"
                       />
                     </FormGroup>
@@ -464,14 +593,16 @@ const DocumentsList = () => {
 
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Monto</label>{" "}
+                      <label className="form-label">Monto</label>
                       <NumberFormat
                         className="form-control"
-                        type="text"
                         name="ammount"
-                        defaultValue={Number(editData?.ammount)}
+                        defaultValue={editData?.ammount}
                         placeholder="Ingrese monto"
-                        thousandSeparator={true}
+                        allowNegative={false}
+                        decimalSeparator={","}
+                        decimalPrecision={2}
+                        thousandSeparator={"."}
                         ref={register()}
                       />
                       <small className="text-primary">Inversión actual: {editData?.ammount}</small>

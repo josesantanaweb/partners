@@ -101,13 +101,13 @@ const EmploymentHistory = ({ setModal, editData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Antoguedad laboral</label>
+          <label className="form-label">Antiguedad laboral</label>
           <input
             className="form-control"
             type="text"
             name="laborSeniority"
             defaultValue={editData?.employmentHistory?.laborSeniority}
-            placeholder="Ingresa Antoguedad laboral"
+            placeholder="Ingresa Antiguedad laboral"
             ref={register()}
           />
         </FormGroup>

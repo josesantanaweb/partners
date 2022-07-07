@@ -65,7 +65,7 @@ const NewsUsers = () => {
       {newUserData.map((item, idx) => {
         return (
           <div className="card-inner card-inner-md" key={idx}>
-            <div className="user-card">
+            <div className="user-card text-center d-flex align-items-center justify-content-center">
               <UserAvatar theme={item.theme} text={item.initial}></UserAvatar>
               <div className="user-info">
                 <span className="lead-text">{item.name}</span>

@@ -17,7 +17,8 @@ import {
   PreviewAltCard,
   PaginationComponent,
 } from "../../components/Component";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
+import es from "date-fns/locale/es";
 import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import { useForm } from "react-hook-form";
 import Content from "../../layout/content/Content";
@@ -31,9 +32,11 @@ const CustomerId = () => {
   const [documents, setDocuments] = useState([]);
   const [documentsOptions, setDocumentsOptions] = useState(documents);
   const [customer, setCustomer] = useState([]);
+  const [editData, setEditData] = useState();
+
   const [customerLegal, setCustomerLegal] = useState([]);
-  const [issueDate, setIssueDate] = useState(new Date());
-  const [expirationDate, setExpirationDate] = useState(new Date());
+  const [issuedDate, setIssuedDate] = useState(new Date());
+  const [expiratedDate, setExpiratedDate] = useState(new Date());
 
   const [sm, updateSm] = useState(false);
   const { register, handleSubmit } = useForm();
@@ -48,10 +51,13 @@ const CustomerId = () => {
     documentTypeId: "",
     // description: filterDocumentType?.description,
     observation: "",
-    // issueDate: "",
-    expirationDate: "",
+    issueDate: issuedDate,
+    expirationDate: expiratedDate,
     file: "",
   });
+
+  // setting spanish date picker format
+  registerLocale("es", es);
 
   // Filter customers input search bar
   const [documentsfiltred, setDocumentsfiltred] = useState([]); //usuarios/setUsuarios
@@ -148,8 +154,8 @@ const CustomerId = () => {
       documentTypeId: documentsOptions?.value,
       // description: documentsOptions?.value,
       observation: observation,
-      issueDate,
-      expirationDate,
+      issueDate: issuedDate,
+      expirationDate: expiratedDate,
       file: file[0],
     };
     try {
@@ -158,21 +164,21 @@ const CustomerId = () => {
 
       formData.append("file", file[0]);
       formData.append("documentTypeId", documentsOptions.value);
-      formData.append("expirationDate", expirationDate);
-      formData.append("issueDate", issueDate);
+      formData.append("expirationDate", expiratedDate);
+      formData.append("issueDate", issuedDate);
       formData.append("observation", observation);
 
       formData.forEach((value, key) => (object[key] = value));
       var json = JSON.stringify(object);
       JSON.stringify(Object.fromEntries(formData));
       console.log(json);
-      console.log(formData)
+
       await LibraryServices.addCustomerLibDoc(formData, customerId);
       setData([submittedData, customerId]);
       setModal({ edit: false, add: false });
       resetForm();
       getCustomerDocument(Number(customerId));
-      //window.location.reload();
+      window.location.reload();
     } catch (error) {
       throw error;
     }
@@ -214,13 +220,18 @@ const CustomerId = () => {
   // parse date
   const parseDate = (date) => {
     const dateParse = new Date(date);
-    const day = dateParse.getDate();
-    const month = dateParse.getMonth() + 1;
-    const year = dateParse.getFullYear();
-    return `${day}/${month}/${year}`;
+    const dateString = dateParse.toLocaleDateString();
+    return dateString;
   };
 
-  console.log(data);
+  useEffect(() => {
+    if (editData?.dateOfEntry) {
+      setIssuedDate(new Date(editData?.issuedDate));
+    }
+    if (editData?.estimatedDate) {
+      setExpiratedDate(new Date(editData?.expiratedDate));
+    }
+  }, []);
 
   return (
     <React.Fragment>
@@ -256,10 +267,17 @@ const CustomerId = () => {
               </div>
             </BlockHeadContent>
             <BlockHeadContent>
-              <div className="d-flex flex-row">
-                <div className="mr-4">
+              <div className="toggle-wrap nk-block-tools-toggle">
+                <Button
+                  className={`btn-icon btn-trigger toggle-expand mr-n1 ${sm ? "active" : ""}`}
+                  onClick={() => updateSm(!sm)}
+                >
+                  <Icon name="menu-alt-r"></Icon>
+                </Button>
+                <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
-                    <li>
+                    <li className="nk-block-tools-opt d-flex align-items-center">
+                      <span className="sub-text mr-3">Filtrar búsqueda:</span>
                       <div className="form-control-wrap">
                         <div className="form-icon form-icon-right">
                           <Icon name="search" />
@@ -269,30 +287,12 @@ const CustomerId = () => {
                           value={search}
                           onChange={handleChange}
                           className="form-control"
-                          placeholder="Buscar por: Documento, Descripción, Fecha de emisión o caducidad"
-                          style={{ minWidth: "30rem" }}
+                          placeholder="Tipo de Documento"
+                          style={{ minWidth: "20rem" }}
                         />
                       </div>
                     </li>
                   </ul>
-                </div>
-                <div className="toggle-wrap nk-block-tools-toggle">
-                  <Button
-                    className={`btn-icon btn-trigger toggle-expand mr-n1 ${sm ? "active" : ""}`}
-                    onClick={() => updateSm(!sm)}
-                  >
-                    <Icon name="menu-alt-r"></Icon>
-                  </Button>
-                  <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
-                    <ul className="nk-block-tools g-3">
-                      <li className="nk-block-tools-opt">
-                        <Button color="primary" onClick={() => setModal({ add: true })}>
-                          <Icon name="plus" className="mr-1"></Icon>
-                          Agregar Documento
-                        </Button>
-                      </li>
-                    </ul>
-                  </div>
                 </div>
               </div>
             </BlockHeadContent>
@@ -328,7 +328,7 @@ const CustomerId = () => {
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id} className="rounded-0 text-center">
                       <DataTableRow className="text-center ">
-                        <div className="user-card text-center d-flex align-items-center justify-content-center">
+                        <div className="user-card d-flex align-items-center justify-content-center">
                           <div className="user-info text-center">
                             <span className="tb-lead">
                               {customer?.names || customerLegal?.companyName}
@@ -379,7 +379,7 @@ const CustomerId = () => {
           </div>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#close"
@@ -448,42 +448,41 @@ const CustomerId = () => {
                   <Col md="6" className="mb-4">
                     <FormGroup>
                       <label className="form-label">Fecha de emisión</label>
-                      <input
+                      {/* <input
                         className="form-control"
                         type="date"
                         name="issueDate"
                         defaultValue={formData.issueDate}
                         ref={register()}
-                      />
-                      {/* aca */}
-                      {/* <DatePicker
-                        selected={issueDate}
-                        className="form-control"
-                        onChange={(date) => setIssueDate(date)}
                       /> */}
+                      {/* aca */}
+                      <DatePicker
+                        selected={issuedDate}
+                        className="form-control"
+                        onChange={(date) => setIssuedDate(date)}
+                        dateFormat="MM/dd/yyyy"
+                        locale="es"
+                      />
                     </FormGroup>
                   </Col>
 
                   <Col md="6" className="mb-4">
                     <FormGroup>
                       <label className="form-label">Fecha de expiración</label>
-                      <input
+
+                      <DatePicker
+                        selected={expiratedDate}
                         className="form-control"
-                        type="date"
-                        name="expirationDate"
-                        defaultValue={formData.expirationDate}
-                        ref={register()}
+                        onChange={(date) => setExpiratedDate(date)}
+                        dateFormat="MM/dd/yyyy"
+                        locale="es"
                       />
-                      {/* <DatePicker
-                        selected={expirationDate}
-                        className="form-control"
-                        onChange={(date) => setExpirationDate(date)}
-                      /> */}
                     </FormGroup>
                   </Col>
 
                   <Col md="12" className="mb-4">
                     <FormGroup>
+                      <label className="form-label">Subir documento</label>
                       <div className="file-input border rounded d-flex pt-3 align-items-center bg-light">
                         <label className="file-input__label" htmlFor="file-input">
                           <input

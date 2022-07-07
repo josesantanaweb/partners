@@ -44,7 +44,7 @@ const DocumentsList = () => {
   const [currenciesOptions, setCurrenciesOptions] = useState(currencies);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
+  const [itemPerPage] = useState(5);
 
   const [sm, updateSm] = useState(false);
   const { register, handleSubmit } = useForm();
@@ -112,7 +112,7 @@ const DocumentsList = () => {
     try {
       const currencies = await CurrenciesServices.getCurrency();
       const currencyData = await currencies.data.map((currency) => ({
-        label: currency?.name,
+        label: currency?.isoCode,
         value: currency?.id,
       }));
 
@@ -134,7 +134,7 @@ const DocumentsList = () => {
     dateOfEntry: dateOfEntry,
     estimateDate: estimatedDate,
     realDate: realDate,
-    ammount: "",
+    ammount: Number(""),
     currencyId: "",
     file: "",
     dealId: "",
@@ -149,7 +149,7 @@ const DocumentsList = () => {
       dateOfEntry: "",
       estimateDate: "",
       realDate: "",
-      ammount: "",
+      ammount: Number(""),
       currencyId: "",
       file: "",
       dealId: "",
@@ -198,6 +198,8 @@ const DocumentsList = () => {
       formData.forEach((value, key) => (object[key] = value));
       var json = JSON.stringify(object);
       JSON.stringify(Object.fromEntries(formData));
+
+      console.log(json);
 
       await AfterSalesServices.addPostDealOperations(formData);
 
@@ -254,6 +256,47 @@ const DocumentsList = () => {
     setData(res);
   };
 
+  // function to get documents
+  const getPaginationValidDeals = async (limit, page) => {
+    const deals = await ValidDealsServices.getPaginationValidDeals(limit, page);
+    const dealsData = await deals.data.map((data) => data);
+    setData(dealsData);
+  };
+
+  const firstPageUrl = () => getPaginationValidDeals(itemPerPage, 1);
+  const nextPageUrl = () => getPaginationValidDeals(itemPerPage, 2);
+  const lastPageUrl = () => getPaginationValidDeals(itemPerPage, 3);
+
+  // Formting decimal numbers
+  function formatNumber(number, decimals, dec_point, thousands_point) {
+    if (number == null || !isFinite(number)) {
+      throw new TypeError("Número no válido");
+    }
+
+    if (!decimals) {
+      var len = number.toString().split(".").length;
+      decimals = len > 1 ? len : 0;
+    }
+
+    if (!dec_point) {
+      dec_point = ".";
+    }
+
+    if (!thousands_point) {
+      thousands_point = ",";
+    }
+
+    number = parseFloat(number).toFixed(decimals);
+
+    number = number.replace(".", dec_point);
+
+    var splitNum = number.split(dec_point);
+    splitNum[0] = splitNum[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands_point);
+    number = splitNum.join(dec_point);
+
+    return number;
+  }
+
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -289,8 +332,8 @@ const DocumentsList = () => {
                           value={search}
                           onChange={handleChange}
                           className="form-control"
-                          placeholder="Buscar por: Cliente, Plan/Producto o Empresa"
-                          style={{ minWidth: "25rem" }}
+                          placeholder="Cliente, Plan/Producto o Socio Estratégico"
+                          style={{ minWidth: "20rem" }}
                         />
                       </div>
                     </li>
@@ -309,7 +352,13 @@ const DocumentsList = () => {
                   <span className="sub-text">N. de Operación</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
+                  <span className="sub-text text-primary">N. de Cuenta</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">Cliente</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Rut</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Asesor/a</span>
@@ -318,16 +367,16 @@ const DocumentsList = () => {
                   <span className="sub-text">Plan/Producto</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Empresa</span>
+                  <span className="sub-text">Socio Estratégico</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Años del Plan</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Inversión</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Fecha</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Monto</span>
-                </DataTableRow>
-                <DataTableRow className="text-center">
-                  <span className="sub-text">Moneda</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
@@ -341,7 +390,13 @@ const DocumentsList = () => {
                         <span>{item?.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
+                        <span>A001XXX</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item?.customer?.names || item?.customer?.companyName}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.customer?.rut}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>
@@ -355,13 +410,15 @@ const DocumentsList = () => {
                         <span>{item?.company?.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
+                        <span>{item?.yearsOfThePlan}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>
+                          {formatNumber(item?.amountOfTheInvestment, 0, ",", ".")} {item?.currency?.isoCode}
+                        </span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{parseDate(item?.createdAt)}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item?.amountOfTheInvestment}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item?.currency?.name}</span>
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1 d-flex justify-content-center">
@@ -381,32 +438,61 @@ const DocumentsList = () => {
                   ))
                 : null}
             </div>
-
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
+          </div>
+          <PreviewAltCard>
+            {currentItems.length > 0 ? (
+              <React.Fragment>
+                {/* <PaginationComponent
                   itemPerPage={itemPerPage}
                   totalItems={data.length}
                   paginate={paginate}
                   currentPage={currentPage}
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">Sin Registros</span>
-                </div>
-              )}
-            </PreviewAltCard>
-          </div>
+                /> */}
+                <ul className="pagination border p-1">
+                  <li className="active page-item border">
+                    <a
+                      className="page-link border border-white btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => firstPageUrl(itemPerPage, 1)}
+                    >
+                      1
+                    </a>
+                  </li>
+                  <li className="active page-item border">
+                    <a
+                      className="page-link border border-white btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => nextPageUrl(itemPerPage, 2)}
+                    >
+                      2
+                    </a>
+                  </li>
+                  <li className="active page-item border">
+                    <a
+                      className="page-link border border-white btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => lastPageUrl(itemPerPage, 3)}
+                    >
+                      3
+                    </a>
+                  </li>
+                </ul>
+              </React.Fragment>
+            ) : (
+              <div className="text-center">
+                <span className="text-silent">Sin Registros</span>
+              </div>
+            )}
+          </PreviewAltCard>
         </Block>
 
         {/* Modal Edit */}
-
         <Modal
           isOpen={modal.edit}
-          toggle={() => setModal({ edit: false })}
+          toggle={() => setModal({ edit: true })}
           className="modal-dialog-centered"
-          size="lg"
-          style={{ maxWidth: "768px" }}
+          // size="lg"
+          style={{ maxWidth: "992px" }}
         >
           <ModalBody>
             <a
@@ -420,7 +506,7 @@ const DocumentsList = () => {
               <Icon name="cross-sm"></Icon>
             </a>
 
-            <div className="p-2 table-records">
+            <div className="p-2 table-records modal-scroll">
               <h5 className="title pb-4">Creación Movimientos Post Venta</h5>
               <Col md="12" className="mb-4">
                 <FormGroup className="border-bottom pb-2">
@@ -452,9 +538,6 @@ const DocumentsList = () => {
                       <DataTableRow className="text-center bg-light">
                         <span className="sub-text">Monto</span>
                       </DataTableRow>
-                      <DataTableRow className="text-center bg-light">
-                        <span className="sub-text">Moneda</span>
-                      </DataTableRow>
                     </DataTableHead>
                     <DataTableItem>
                       <DataTableRow className="text-center">
@@ -482,10 +565,9 @@ const DocumentsList = () => {
                         <span>{parseDate(editData?.createdAt)}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{editData?.amountOfTheInvestment}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{editData?.currency?.name}</span>
+                        <span>
+                          {editData?.amountOfTheInvestment} {editData?.currency?.isoCode}
+                        </span>
                       </DataTableRow>
                     </DataTableItem>
                   </div>
@@ -511,7 +593,8 @@ const DocumentsList = () => {
                         selected={dateOfEntry}
                         className="form-control"
                         onChange={(date) => setDateOfEntry(date)}
-                        dateFormat="MM/dd/yyyy"
+                        // dateFormat="MM/dd/yyyy"
+                        dateFormat="dd/MM/yyyy"
                         locale="es"
                       />
                     </FormGroup>
@@ -523,7 +606,7 @@ const DocumentsList = () => {
                         selected={estimatedDate}
                         className="form-control"
                         onChange={(date) => setEstimatedDate(date)}
-                        dateFormat="MM/dd/yyyy"
+                        dateFormat="dd/MM/yyyy"
                         locale="es"
                       />
                     </FormGroup>
@@ -535,7 +618,7 @@ const DocumentsList = () => {
                         selected={realDate}
                         className="form-control"
                         onChange={(date) => setRealDate(date)}
-                        dateFormat="MM/dd/yyyy"
+                        dateFormat="dd/MM/yyyy"
                         locale="es"
                       />
                     </FormGroup>
@@ -547,10 +630,13 @@ const DocumentsList = () => {
                       <NumberFormat
                         name="ammount"
                         type="text"
-                        defaultValue={Number(formData.ammount)}
+                        defaultValue={formData.ammount}
                         placeholder="Ingrese monto"
                         className="form-control"
-                        thousandSeparator={true}
+                        allowNegative={false}
+                        decimalSeparator={","}
+                        decimalPrecision={2}
+                        thousandSeparator={"."}
                       />
                       <small className="text-primary">Inversión actual: {editData?.amountOfTheInvestment}</small>{" "}
                     </FormGroup>

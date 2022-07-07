@@ -24,6 +24,7 @@ import { ProductsContext } from "./ProductsContext";
 import ProductsServices from "../../services/ProductsServices";
 import DocumentsServices from "../../services/DocumentsServices";
 import SegmentsServices from "../../services/SegmentsServices";
+import Swal from "sweetalert2";
 
 const ProductsList = () => {
   const { contextData } = useContext(ProductsContext);
@@ -172,11 +173,46 @@ const ProductsList = () => {
   };
 
   // Function to change to delete property for an item
-  const deleteUser = async (id) => {
+  // const deletePlan = async (id) => {
+  //   try {
+  //     await ProductsServices.deleteProduct(id);
+  //     getProducts();
+  //   } catch (error) {
+  //     throw new Error("Error deleting record!");
+  //   }
+  // };
+
+  const deleteProduct = (id) => {
     try {
-      await ProductsServices.deleteProduct(id);
-      getProducts();
-    } catch (error) {}
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
+        },
+        buttonsStyling: false,
+      });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getProducts();
+          if (result.isConfirmed) {
+            ProductsServices.deleteProduct(id);
+            getProducts();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
+    } catch (error) {
+      throw new Error("Error deleting record!");
+    }
   };
 
   // Get current list, pagination
@@ -228,52 +264,52 @@ const ProductsList = () => {
           <div className="container-fluid overflow-auto scrollbar-fluid">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
-                <DataTableRow>
-                  <span className="sub-text">#</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">N. de Plan</span>
                 </DataTableRow>
-                <DataTableRow size="xs">
+                <DataTableRow className="text-center">
                   <span className="sub-text">Nombre</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Descripcion</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Descripción</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text"></span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
               {/*Head*/}
               {currentItems.length > 0
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id}>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.id}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.name}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.description}</span>
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
-                        <ul className="nk-tb-actions gx-1">
-                          <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                        <ul className="nk-tb-actions gx-1 d-flex justify-content-center">
+                          <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"edit" + 1}
                               icon="edit-alt-fill"
                               direction="top"
-                              text="Edit"
+                              text="Editar"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
+                          <li className="nk-tb-action" onClick={() => deleteProduct(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"delete" + 1}
                               icon="trash-fill"
                               direction="top"
-                              text="Delete"
+                              text="Eliminar"
                             />
                           </li>
                         </ul>
@@ -282,25 +318,24 @@ const ProductsList = () => {
                   ))
                 : null}
             </div>
-
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
-                  itemPerPage={itemPerPage}
-                  totalItems={data.length}
-                  paginate={paginate}
-                  currentPage={currentPage}
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">Sin Registros</span>
-                </div>
-              )}
-            </PreviewAltCard>
           </div>
+          <PreviewAltCard>
+            {currentItems.length > 0 ? (
+              <PaginationComponent
+                itemPerPage={itemPerPage}
+                totalItems={data.length}
+                paginate={paginate}
+                currentPage={currentPage}
+              />
+            ) : (
+              <div className="text-center">
+                <span className="text-silent">Sin Registros</span>
+              </div>
+            )}
+          </PreviewAltCard>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#close"
@@ -312,7 +347,7 @@ const ProductsList = () => {
             >
               <Icon name="cross-sm"></Icon>
             </a>
-            <div className="p-2">
+            <div className="p-2 table-records modal-scroll">
               <h5 className="title">Agregar Plan</h5>
               {errorMessage !== "" && (
                 <div className="my-3">
@@ -324,7 +359,7 @@ const ProductsList = () => {
               )}
 
               <div className="mt-4">
-                <div className="table-scroll">
+                <div>
                   <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
                     <Col md="12">
                       <div className="custom-tab">
@@ -478,7 +513,7 @@ const ProductsList = () => {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#cancel"

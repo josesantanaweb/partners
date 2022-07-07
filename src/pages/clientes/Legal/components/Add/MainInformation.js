@@ -112,7 +112,7 @@ const MainInformation = ({ setModal, formData }) => {
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Nombre de empresa</label>
+          <label className="form-label">Nombre de Socio Estratégico</label>
           <input
             className="form-control"
             type="text"
@@ -190,7 +190,7 @@ const MainInformation = ({ setModal, formData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Descripcion de las Inversiones</label>
+          <label className="form-label">Descripción de las Inversiones</label>
           <input
             className="form-control"
             type="text"
@@ -203,7 +203,7 @@ const MainInformation = ({ setModal, formData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Descripcion de las Inversiones</label>
+          <label className="form-label">Descripción de las Inversiones</label>
           <input
             className="form-control"
             type="text"

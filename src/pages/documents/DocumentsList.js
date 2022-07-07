@@ -21,12 +21,13 @@ import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
 import DocumentsServices from "../../services/DocumentsServices";
+import Swal from "sweetalert2";
 
 const DocumentsList = () => {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
+  const [itemPerPage] = useState(5);
   const [sm, updateSm] = useState(false);
   const { errors, register, handleSubmit } = useForm();
   const [editData, setEditData] = useState();
@@ -109,11 +110,37 @@ const DocumentsList = () => {
   };
 
   // Function to change to delete property for an item
-  const deleteDocument = async (id) => {
+  const deleteDocument = (id) => {
     try {
-      await DocumentsServices.deleteDocument(id);
-      getDocuments();
-    } catch (error) {}
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
+        },
+        buttonsStyling: false,
+      });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getDocuments();
+          if (result.isConfirmed) {
+            DocumentsServices.deleteDocument(id);
+            getDocuments();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
+    } catch (error) {
+      throw new Error("Error deleting record!");
+    }
   };
 
   // Get current list, pagination
@@ -132,6 +159,17 @@ const DocumentsList = () => {
     return description;
   };
 
+  // function to get documents
+  const getPaginationDocuments = async (limit, page) => {
+    const documentsPag = await DocumentsServices.getPaginationDocuments(limit, page);
+    const documentsData = await documentsPag.data.map((data) => data);
+    setData(documentsData);
+  };
+
+  const firstPageUrl = () => getPaginationDocuments(itemPerPage, 1);
+  const nextPageUrl = () => getPaginationDocuments(itemPerPage, 2);
+  const lastPageUrl = () => getPaginationDocuments(itemPerPage, 3);
+
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -143,7 +181,7 @@ const DocumentsList = () => {
                 Lista de Documentos
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} documentos</p>
+                <p>Total {currentItems.length} documentos</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -174,7 +212,7 @@ const DocumentsList = () => {
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
-                  <span className="sub-text">N. Documento</span>
+                  <span className="sub-text">Documento</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Nombre</span>
@@ -227,25 +265,55 @@ const DocumentsList = () => {
                   ))
                 : null}
             </div>
-
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
+          </div>
+          <PreviewAltCard>
+            {currentItems.length > 0 ? (
+              <React.Fragment>
+                {/* <PaginationComponent
                   itemPerPage={itemPerPage}
                   totalItems={currentItems.length}
                   paginate={paginate}
                   currentPage={currentPage}
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">Sin Registros</span>
-                </div>
-              )}
-            </PreviewAltCard>
-          </div>
+                /> */}
+                <ul className="pagination border p-1">
+                  <li className="active page-item border">
+                    <a
+                      className="page-link border border-white btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => firstPageUrl(itemPerPage, 1)}
+                    >
+                      1
+                    </a>
+                  </li>
+                  <li className="active page-item border">
+                    <a
+                      className="page-link border border-white btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => nextPageUrl(itemPerPage, 2)}
+                    >
+                      2
+                    </a>
+                  </li>
+                  <li className="active page-item border">
+                    <a
+                      className="page-link border border-white btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => lastPageUrl(itemPerPage, 3)}
+                    >
+                      3
+                    </a>
+                  </li>
+                </ul>
+              </React.Fragment>
+            ) : (
+              <div className="text-center">
+                <span className="text-silent">Sin Registros</span>
+              </div>
+            )}
+          </PreviewAltCard>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#close"
@@ -327,7 +395,7 @@ const DocumentsList = () => {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#cancel"

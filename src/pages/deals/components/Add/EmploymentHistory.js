@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Col, Button } from "../../../../components/Component";
 import CustomersServices from "../../../../services/CustomersServices";
 
-const EmploymentHistory = ({setAddActiveTab2,setGeneralStateForm, setModal, editData,selectClient }) => {
+const EmploymentHistory = ({ setAddActiveTab2, setGeneralStateForm, setModal, editData, selectClient }) => {
   // useForm
   const { register, handleSubmit } = useForm();
 
@@ -54,14 +54,17 @@ const EmploymentHistory = ({setAddActiveTab2,setGeneralStateForm, setModal, edit
             className="form-control"
             type="text"
             name="typeOfEmployee"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,employmentHistory:{
-                  ...prev.employmentHistory,
-                  typeOfEmployee:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  employmentHistory: {
+                    ...prev.employmentHistory,
+                    typeOfEmployee: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={selectClient?.employmentHistory?.typeOfEmployee}
             placeholder="Ingresa Tipo de empleo"
             ref={register()}
@@ -75,14 +78,17 @@ const EmploymentHistory = ({setAddActiveTab2,setGeneralStateForm, setModal, edit
             className="form-control"
             type="text"
             name="companyName"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,employmentHistory:{
-                  ...prev.employmentHistory,
-                  companyName:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  employmentHistory: {
+                    ...prev.employmentHistory,
+                    companyName: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={selectClient?.employmentHistory?.companyName}
             placeholder="Ingresa Nombre de empresa"
             ref={register()}
@@ -96,14 +102,17 @@ const EmploymentHistory = ({setAddActiveTab2,setGeneralStateForm, setModal, edit
             className="form-control"
             type="text"
             name="address"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,employmentHistory:{
-                  ...prev.employmentHistory,
-                  address:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  employmentHistory: {
+                    ...prev.employmentHistory,
+                    address: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={selectClient?.employmentHistory?.address}
             placeholder="Ingresa Direccion"
             ref={register()}
@@ -117,14 +126,17 @@ const EmploymentHistory = ({setAddActiveTab2,setGeneralStateForm, setModal, edit
             className="form-control"
             type="text"
             name="industry"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,employmentHistory:{
-                  ...prev.employmentHistory,
-                  industry:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  employmentHistory: {
+                    ...prev.employmentHistory,
+                    industry: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={selectClient?.employmentHistory?.industry}
             placeholder="Ingresa Industria"
             ref={register()}
@@ -133,21 +145,24 @@ const EmploymentHistory = ({setAddActiveTab2,setGeneralStateForm, setModal, edit
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Antoguedad laboral</label>
+          <label className="form-label">Antiguedad laboral</label>
           <input
             className="form-control"
             type="text"
             name="laborSeniority"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,employmentHistory:{
-                  ...prev.employmentHistory,
-                  laborSeniority:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  employmentHistory: {
+                    ...prev.employmentHistory,
+                    laborSeniority: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={selectClient?.employmentHistory?.laborSeniority}
-            placeholder="Ingresa Antoguedad laboral"
+            placeholder="Ingresa Antiguedad laboral"
             ref={register()}
           />
         </FormGroup>
@@ -159,14 +174,17 @@ const EmploymentHistory = ({setAddActiveTab2,setGeneralStateForm, setModal, edit
             className="form-control"
             type="text"
             name="charge"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,employmentHistory:{
-                  ...prev.employmentHistory,
-                  charge:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  employmentHistory: {
+                    ...prev.employmentHistory,
+                    charge: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={selectClient?.employmentHistory?.charge}
             placeholder="Ingresa Cargo"
             ref={register()}
@@ -180,14 +198,17 @@ const EmploymentHistory = ({setAddActiveTab2,setGeneralStateForm, setModal, edit
             className="form-control"
             type="text"
             name="businessPhone"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,employmentHistory:{
-                  ...prev.employmentHistory,
-                  businessPhone:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  employmentHistory: {
+                    ...prev.employmentHistory,
+                    businessPhone: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={selectClient?.employmentHistory?.businessPhone}
             placeholder="Ingresa Telefono"
             ref={register()}
@@ -201,14 +222,17 @@ const EmploymentHistory = ({setAddActiveTab2,setGeneralStateForm, setModal, edit
             className="form-control"
             type="text"
             name="email"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,employmentHistory:{
-                  ...prev.employmentHistory,
-                  email:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  employmentHistory: {
+                    ...prev.employmentHistory,
+                    email: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={selectClient?.employmentHistory?.email}
             placeholder="Ingresa Emal"
             ref={register()}
@@ -222,14 +246,17 @@ const EmploymentHistory = ({setAddActiveTab2,setGeneralStateForm, setModal, edit
             className="form-control"
             type="text"
             name="rut"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,employmentHistory:{
-                  ...prev.employmentHistory,
-                  rut:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  employmentHistory: {
+                    ...prev.employmentHistory,
+                    rut: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={selectClient?.employmentHistory?.rut}
             placeholder="Ingresa RUT"
             ref={register()}
@@ -243,14 +270,17 @@ const EmploymentHistory = ({setAddActiveTab2,setGeneralStateForm, setModal, edit
             className="form-control"
             type="text"
             name="zipCode"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,employmentHistory:{
-                  ...prev.employmentHistory,
-                  zipCode:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  employmentHistory: {
+                    ...prev.employmentHistory,
+                    zipCode: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={selectClient?.employmentHistory?.zipCode}
             placeholder="Ingresa Codigo Postal"
             ref={register()}
@@ -260,11 +290,10 @@ const EmploymentHistory = ({setAddActiveTab2,setGeneralStateForm, setModal, edit
       <Col size="12">
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
           <li>
-            <Button color="primary" type="button" size="md" onClick={()=>setAddActiveTab2('3')}>
+            <Button color="primary" type="button" size="md" onClick={() => setAddActiveTab2("3")}>
               Siguiente
             </Button>
           </li>
-       
         </ul>
       </Col>
     </Form>

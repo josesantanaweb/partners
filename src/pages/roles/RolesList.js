@@ -129,23 +129,56 @@ const RolesList = () => {
   };
 
   // Function to change to delete property for an item
+  // const deleteUser = async (id) => {
+  //   Swal.fire({
+  //     title: "Atencion!",
+  //     text: "¿Esta Seguro que desea borrar el rol?",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#ffb344",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Aceptar",
+  //     cancelButtonText: "Cancelar",
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       RolesServices.deleteRole(id);
+  //       Swal.fire("Eliminado!", "Rol Eliminado Correctamente", "success");
+  //     }
+  //     window.location.reload();
+  //   });
+  // };
+
   const deleteUser = async (id) => {
-    Swal.fire({
-      title: "Atencion!",
-      text: "¿Esta Seguro que desea borrar el rol?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#ffb344",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Aceptar",
-      cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        RolesServices.deleteRole(id);
-        Swal.fire("Eliminado!", "Rol Eliminado Correctamente", "success");
-      }
-      window.location.reload();
-    });
+    try {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
+        },
+        buttonsStyling: false,
+      });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getRoles();
+          if (result.isConfirmed) {
+            RolesServices.deleteRole(id);
+            getRoles();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
+    } catch (error) {
+      throw new Error("Error deleting record!");
+    }
   };
 
   // Get current list, pagination
@@ -197,52 +230,52 @@ const RolesList = () => {
           <div className="container-fluid overflow-auto scrollbar-fluid">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
-                <DataTableRow>
-                  <span className="sub-text">#</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">N. de Rol</span>
                 </DataTableRow>
-                <DataTableRow size="xs">
+                <DataTableRow className="text-center">
                   <span className="sub-text">Nombre</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Descripcion</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Descripción</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text"></span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
               {/*Head*/}
               {currentItems.length > 0
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id}>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.id}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.name}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.description}</span>
                       </DataTableRow>
-                      <DataTableRow className="nk-tb-col-tools">
-                        <ul className="nk-tb-actions gx-1">
-                          <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                      <DataTableRow className="nk-tb-col-tools text-center">
+                        <ul className="nk-tb-actions gx-1 d-flex justify-content-center">
+                          <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"edit" + 1}
                               icon="edit-alt-fill"
                               direction="top"
-                              text="Edit"
+                              text="Editar"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
+                          <li className="nk-tb-action" onClick={() => deleteUser(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"delete" + 1}
                               icon="trash-fill"
                               direction="top"
-                              text="Delete"
+                              text="Eliminar"
                             />
                           </li>
                         </ul>
@@ -251,25 +284,24 @@ const RolesList = () => {
                   ))
                 : null}
             </div>
-
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
-                  itemPerPage={itemPerPage}
-                  totalItems={data.length}
-                  paginate={paginate}
-                  currentPage={currentPage}
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">Sin Registros</span>
-                </div>
-              )}
-            </PreviewAltCard>
           </div>
+          <PreviewAltCard>
+            {currentItems.length > 0 ? (
+              <PaginationComponent
+                itemPerPage={itemPerPage}
+                totalItems={data.length}
+                paginate={paginate}
+                currentPage={currentPage}
+              />
+            ) : (
+              <div className="text-center">
+                <span className="text-silent">Sin Registros</span>
+              </div>
+            )}
+          </PreviewAltCard>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#close"
@@ -310,7 +342,7 @@ const RolesList = () => {
 
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Descripcion del rol</label>
+                      <label className="form-label">Descripción del rol</label>
                       <input
                         className="form-control"
                         type="text"
@@ -370,7 +402,7 @@ const RolesList = () => {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#cancel"

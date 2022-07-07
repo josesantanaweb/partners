@@ -29,11 +29,12 @@ import CompanyFinancialProfile from "./components/Edit/CompanyFinancialProfile";
 import CompanyBanksItWorksWith from "./components/Edit/CompanyBanksItWorksWith";
 import CompanyPartners from "./components/Edit/CompanyPartners";
 import CustomersServices from "../../../services/CustomersServices";
+import Swal from "sweetalert2";
 
 const Legal = () => {
   const { contextData } = useContext(LegalContext);
   const [data, setData] = contextData;
-  const [generalStateForm, setGeneralStateForm] = useState({})
+  const [generalStateForm, setGeneralStateForm] = useState({});
   const [sm, updateSm] = useState(false);
   const [modal, setModal] = useState({ edit: false, add: false, document: false });
   const [editData, setEditData] = useState();
@@ -96,11 +97,44 @@ const Legal = () => {
   };
 
   // Delete
-  const onDeleteClick = async (id) => {
+  // const onDeleteClick = async (id) => {
+  //   try {
+  //     await CustomersServices.deleteCustomerLegal(id);
+  //     getCustomers();
+  //   } catch (error) {}
+  // };
+
+  const onDeleteClick = (id) => {
     try {
-      await CustomersServices.deleteCustomerLegal(id);
-      getCustomers();
-    } catch (error) {}
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
+        },
+        buttonsStyling: false,
+      });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getCustomers();
+          if (result.isConfirmed) {
+            CustomersServices.deleteCustomerLegal(id);
+            getCustomers();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
+    } catch (error) {
+      throw new Error("Error deleting record!");
+    }
   };
 
   // Get current list, pagination
@@ -171,37 +205,37 @@ const Legal = () => {
           <div className="container-fluid overflow-auto scrollbar-fluid">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
-                <DataTableRow>
-                  <span className="sub-text">#</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">N. de Cliente</span>
                 </DataTableRow>
-                <DataTableRow size="xs">
+                <DataTableRow className="text-center">
                   <span className="sub-text">Cliente</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Telefono Fijo</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Teléfono Fijo</span>
                 </DataTableRow>
-                <DataTableRow size="xs">
+                <DataTableRow className="text-center">
                   <span className="sub-text">Categoria</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Numero de identificacion</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Número de identificación</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text">Direccion</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Dirección</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text"></span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
 
               {currentItems.length > 0
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id}>
-                      <DataTableRow>
-                        <span>{}</span>
+                      <DataTableRow className="text-center">
+                        <span>{item?.id}</span>
                       </DataTableRow>
-                      <DataTableRow>
-                        <div className="user-card">
+                      <DataTableRow className="text-center">
+                        <div className="user-card d-flex align-items-center justify-content-center">
                           {item?.companyName && (
                             <UserAvatar theme="purple" text={findUpper(item?.companyName)}></UserAvatar>
                           )}
@@ -214,21 +248,21 @@ const Legal = () => {
                           </div>
                         </div>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span className="text-info">{item?.phone}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item?.companyCategory}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item?.taxIdentificationNumber}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item?.address?.detailedAddress?.address}</span>
                       </DataTableRow>
-                      <DataTableRow className="nk-tb-col-tools">
+                      <DataTableRow className="text-center">
                         <ul className="nk-tb-actions gx-1">
-                          <li className="nk-tb-action-hidden" onClick={() => onDocumentClick(item.id, item)}>
+                          <li className="nk-tb-action" onClick={() => onDocumentClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
@@ -238,7 +272,7 @@ const Legal = () => {
                               text="Ficha"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                          <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
@@ -248,14 +282,14 @@ const Legal = () => {
                               text="Datos de la empresa"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden" onClick={() => onDeleteClick(item.id)}>
+                          <li className="nk-tb-action" onClick={() => onDeleteClick(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"delete" + 1}
                               icon="trash-fill"
                               direction="top"
-                              text="Borrar"
+                              text="Eliminar"
                             />
                           </li>
                         </ul>
@@ -264,26 +298,26 @@ const Legal = () => {
                   ))
                 : null}
             </div>
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
-                  itemPerPage={itemPerPage}
-                  totalItems={data.length}
-                  paginate={paginate}
-                  currentPage={currentPage}
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">Sin registros</span>
-                </div>
-              )}
-            </PreviewAltCard>
           </div>
+          <PreviewAltCard>
+            {currentItems.length > 0 ? (
+              <PaginationComponent
+                itemPerPage={itemPerPage}
+                totalItems={data.length}
+                paginate={paginate}
+                currentPage={currentPage}
+              />
+            ) : (
+              <div className="text-center">
+                <span className="text-silent">Sin registros</span>
+              </div>
+            )}
+          </PreviewAltCard>
         </Block>
 
         <Modal
           isOpen={modal.add}
-          toggle={() => setModal({ add: false })}
+          toggle={() => setModal({ add: true })}
           className="modal-dialog-centered"
           size="lg"
           style={{ maxWidth: "1200px" }}
@@ -315,7 +349,11 @@ const Legal = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <AddMainInformation setGeneralStateForm={setGeneralStateForm } setModal={setModal} formData={formData} />
+                  <AddMainInformation
+                    setGeneralStateForm={setGeneralStateForm}
+                    setModal={setModal}
+                    formData={formData}
+                  />
                 </TabPane>
               </TabContent>
             </div>
@@ -324,7 +362,7 @@ const Legal = () => {
 
         <Modal
           isOpen={modal.edit}
-          toggle={() => setModal({ edit: false })}
+          toggle={() => setModal({ edit: true })}
           className="modal-dialog-centered"
           size="lg"
           style={{ maxWidth: "1200px" }}
@@ -356,7 +394,13 @@ const Legal = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  {editData && <EditMainInformation setGeneralStateForm={setGeneralStateForm } setModal={setModal} editData={editData} />}
+                  {editData && (
+                    <EditMainInformation
+                      setGeneralStateForm={setGeneralStateForm}
+                      setModal={setModal}
+                      editData={editData}
+                    />
+                  )}
                 </TabPane>
               </TabContent>
             </div>
@@ -365,7 +409,7 @@ const Legal = () => {
 
         <Modal
           isOpen={modal.document}
-          toggle={() => setModal({ document: false })}
+          toggle={() => setModal({ document: true })}
           className="modal-dialog-centered"
           size="lg"
           style={{ maxWidth: "1200px" }}
@@ -427,7 +471,7 @@ const Legal = () => {
               </Nav>
               <TabContent activeTab={addActiveTabDocument}>
                 <TabPane tabId="1">
-                  {editData && <CompanyQuestionnaire  setModal={setModal} editData={editData} />}
+                  {editData && <CompanyQuestionnaire setModal={setModal} editData={editData} />}
                 </TabPane>
                 <TabPane tabId="2">
                   {editData && <CompanyFinancialProfile setModal={setModal} editData={editData} />}
@@ -435,7 +479,15 @@ const Legal = () => {
                 <TabPane tabId="3">
                   {editData && <CompanyBanksItWorksWith setModal={setModal} editData={editData} />}
                 </TabPane>
-                <TabPane tabId="4">{editData && <CompanyPartners setGeneralStateForm={setGeneralStateForm} setModal={setModal} editData={editData} />}</TabPane>
+                <TabPane tabId="4">
+                  {editData && (
+                    <CompanyPartners
+                      setGeneralStateForm={setGeneralStateForm}
+                      setModal={setModal}
+                      editData={editData}
+                    />
+                  )}
+                </TabPane>
               </TabContent>
             </div>
           </ModalBody>

@@ -26,6 +26,7 @@ import { useForm } from "react-hook-form";
 import { UserContext } from "./UserContext";
 import UsersServices from "../../services/UsersServices";
 import RolesServices from "../../services/RolesServices";
+import Swal from "sweetalert2";
 
 const UserListDefaultPage = () => {
   const { contextData } = useContext(UserContext);
@@ -152,11 +153,47 @@ const UserListDefaultPage = () => {
   };
 
   // Function to change to delete property for an item
-  const deleteUser = async (id) => {
+  // const deleteUser = async (id) => {
+  //   try {
+  //     await UsersServices.deleteUser(id);
+  //     getUser();
+  //   } catch (error) {
+  //     throw new Error("Error deleting record!");
+  //   }
+  // };
+
+  // Function to change to delete property for an item
+  const deleteUser = (id) => {
     try {
-      await UsersServices.deleteUser(id);
-      getUser();
-    } catch (error) {}
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
+        },
+        buttonsStyling: false,
+      });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getUser();
+          if (result.isConfirmed) {
+            UsersServices.deleteUser(id);
+            getUser();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
+    } catch (error) {
+      throw new Error("Error deleting record!");
+    }
   };
 
   // Get current list, pagination
@@ -227,31 +264,31 @@ const UserListDefaultPage = () => {
           <div className="container-fluid overflow-auto scrollbar-fluid">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
-                <DataTableRow>
-                  <span className="sub-text">#</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">N. de Usuario</span>
                 </DataTableRow>
-                <DataTableRow size="xs">
+                <DataTableRow className="text-center">
                   <span className="sub-text">Usuario</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">Rol</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">Estado</span>
                 </DataTableRow>
-                <DataTableRow>
-                  <span className="sub-text"></span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
               {/*Head*/}
               {currentItems.length > 0
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id}>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.id}</span>
                       </DataTableRow>
-                      <DataTableRow size="xs">
-                        <div className="user-card">
+                      <DataTableRow className="text-center">
+                        <div className="user-card text-center pl-5">
                           <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
                           <div className="user-info">
                             <span className="tb-lead">
@@ -261,32 +298,32 @@ const UserListDefaultPage = () => {
                           </div>
                         </div>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.rol.name}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span className={`tb-status text-success`}>{item.status.name}</span>
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
-                        <ul className="nk-tb-actions gx-1">
-                          <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id, item)}>
+                        <ul className="nk-tb-actions gx-1 d-flex justify-content-center">
+                          <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"edit" + 1}
                               icon="edit-alt-fill"
                               direction="top"
-                              text="Edit"
+                              text="Editar"
                             />
                           </li>
-                          <li className="nk-tb-action-hidden" onClick={() => deleteUser(item.id)}>
+                          <li className="nk-tb-action" onClick={() => deleteUser(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"delete" + 1}
                               icon="trash-fill"
                               direction="top"
-                              text="Delete"
+                              text="Eliminar"
                             />
                           </li>
                         </ul>
@@ -295,25 +332,24 @@ const UserListDefaultPage = () => {
                   ))
                 : null}
             </div>
-
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
-                  itemPerPage={itemPerPage}
-                  totalItems={data.length}
-                  paginate={paginate}
-                  currentPage={currentPage}
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">Sin Registros</span>
-                </div>
-              )}
-            </PreviewAltCard>
           </div>
+          <PreviewAltCard>
+            {currentItems.length > 0 ? (
+              <PaginationComponent
+                itemPerPage={itemPerPage}
+                totalItems={data.length}
+                paginate={paginate}
+                currentPage={currentPage}
+              />
+            ) : (
+              <div className="text-center">
+                <span className="text-silent">Sin Registros</span>
+              </div>
+            )}
+          </PreviewAltCard>
         </Block>
 
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#close"
@@ -443,7 +479,7 @@ const UserListDefaultPage = () => {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#cancel"
