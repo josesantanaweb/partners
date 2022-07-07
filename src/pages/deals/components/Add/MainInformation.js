@@ -567,7 +567,6 @@ const CustomerFile = ({setAddActiveTab, generalStateForm,setGeneralStateForm,reg
             decimalSeparator={","}
             decimalPrecision={2}
             thousandSeparator={"."}
-            ref={register({ required: "Este campo es obligatorio *" })}
           />
         </FormGroup>
       </Col>
