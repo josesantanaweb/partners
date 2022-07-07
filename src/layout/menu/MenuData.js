@@ -35,7 +35,7 @@ const menu = [
     link: "/adviser",
   },
   {
-    icon: "books-fill",
+    icon: "book-fill",
     text: "Libreria de Asesores",
     link: "/advisors-library",
   },
@@ -49,13 +49,11 @@ const menu = [
     text: "Biblioteca de Clientes",
     link: "/customer-library",
   },
-
   {
     icon: "file-plus-fill",
     text: "Documentos",
     link: "/documents",
   },
-
   {
     icon: "file-plus-fill",
     text: "Post Ventas",
