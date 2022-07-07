@@ -75,7 +75,7 @@ const EmploymentHistory = ({ setModal, editData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Direccion</label>
+          <label className="form-label">Dirección</label>
           <input
             className="form-control"
             type="text"
@@ -101,13 +101,13 @@ const EmploymentHistory = ({ setModal, editData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Antoguedad laboral</label>
+          <label className="form-label">Antiguedad laboral</label>
           <input
             className="form-control"
             type="text"
             name="laborSeniority"
             defaultValue={editData?.employmentHistory?.laborSeniority}
-            placeholder="Ingresa Antoguedad laboral"
+            placeholder="Ingresa Antiguedad laboral"
             ref={register()}
           />
         </FormGroup>
@@ -127,7 +127,7 @@ const EmploymentHistory = ({ setModal, editData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Telefono</label>
+          <label className="form-label">Teléfono</label>
           <input
             className="form-control"
             type="text"
@@ -166,7 +166,7 @@ const EmploymentHistory = ({ setModal, editData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Codigo Postal</label>
+          <label className="form-label">Código Postal</label>
           <input
             className="form-control"
             type="text"
