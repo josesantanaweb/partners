@@ -38,7 +38,7 @@ var month = [
 
 export const returnDate = (date) => {
   if (date !== undefined) {
-    const dateSection = date.split("-");
+    const dateSection = date?.split("-");
     let newDate = dateSection[2] + " " + month[Number(dateSection[1]) - 1] + " " + dateSection[0];
     return newDate;
   }
