@@ -500,12 +500,7 @@ const CustomerFile = ({setAddActiveTab, generalStateForm,setGeneralStateForm,reg
         />
       </Col>
       <Col md="6" className="mb-4">
-        <label className="form-label">Número de cuenta</label>
-        <input 
-                className="form-control"
-          readOnly
-          disabled
-        />
+    
       </Col>
       <Col md="8" className="mb-4">
 
