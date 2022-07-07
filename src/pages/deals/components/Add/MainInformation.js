@@ -5,6 +5,8 @@ import { FormGroup, Form } from "reactstrap";
 import { Col, DataTableHead, DataTableRow, DataTableItem, Button, RSelect } from "../../../../components/Component";
 import CustomersServices from "../../../../services/CustomersServices";
 import DealsServices from "../../../../services/DealsServices";
+import NumberFormat from "react-number-format";
+
 
 let customerDebounce = null;
 // Deals data
@@ -483,13 +485,33 @@ const CustomerFile = ({setAddActiveTab, generalStateForm,setGeneralStateForm,reg
           </div>
         </div>
       </Col> */}
-
-      <Col md="12" className="mb-4">
-        <FormGroup className="border-bottom pb-2">
-          <h6>Plan</h6>
-        </FormGroup>
+          <Col md="6" className="mb-4">
+        <label className="form-label">Socio Estratégico</label>
+        <RSelect
+          value={companiesOptions}
+          options={companies}
+          onChange={(e)=>{
+            
+            onOptionsCompaniesChange(e)
+          
+          }
+          }
+          defautlValue={formData.companyId}
+        />
       </Col>
       <Col md="6" className="mb-4">
+        <label className="form-label">Número de cuenta</label>
+        <input 
+                className="form-control"
+          readOnly
+          disabled
+        />
+      </Col>
+      <Col md="8" className="mb-4">
+
+      </Col>
+      <Col md="6" className="mb-4">
+      <label className="form-label">Plan</label>
         <FormGroup>
           <RSelect
             value={plansOptions}
@@ -504,20 +526,7 @@ const CustomerFile = ({setAddActiveTab, generalStateForm,setGeneralStateForm,reg
           />
         </FormGroup>
       </Col>
-      <Col md="8" className="mb-4">
-        <label className="form-label">Institución</label>
-        <RSelect
-          value={companiesOptions}
-          options={companies}
-          onChange={(e)=>{
-            
-            onOptionsCompaniesChange(e)
-          
-          }
-          }
-          defautlValue={formData.companyId}
-        />
-      </Col>
+  
       <Col md="4" className="mb-4">
         <FormGroup>
           <label className="form-label">Años del Plan</label>
@@ -548,17 +557,22 @@ const CustomerFile = ({setAddActiveTab, generalStateForm,setGeneralStateForm,reg
       <Col md="4" className="mb-4">
         <FormGroup>
           <label className="form-label">Monto de Inversión</label>
-          <input
-            type="number"
+          <NumberFormat
+            name="ammount"
+            type="text"
+            defaultValue={formData.ammount}
+            placeholder="Ingrese monto"
             className="form-control"
-            name="amount"
             onChange={(e)=> setGeneralStateForm( prev => {
               return {
                 ...prev,amountOfTheInvestment:e.target.value
               }
             })}
+            allowNegative={false}
+            decimalSeparator={","}
+            decimalPrecision={2}
+            thousandSeparator={"."}
             ref={register({ required: "Este campo es obligatorio *" })}
-            defaultValue={formData.amount}
           />
         </FormGroup>
       </Col>
