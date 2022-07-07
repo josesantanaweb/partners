@@ -423,7 +423,7 @@ const DealsList = () => {
                         <span>{item.currency.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.currency.name}</span>
+                        <span>{item.originsOfTheFunds}</span>
                       </DataTableRow>
                     
 
