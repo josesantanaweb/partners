@@ -806,14 +806,14 @@ const sortedDataFunc = (array) => {
   chatData.sort(function (a, b) {
     return a.name === b.name ? 0 : a.name < b.name ? -1 : 1;
   });
-  return chatData.filter((item) => array.includes(item.name.split("")[0].toUpperCase()) && !item.group);
+  return chatData.filter((item) => array.includes(item.name?.split("")[0].toUpperCase()) && !item.group);
 };
 
 const sortedDataNotFavFunc = (array) => {
   chatData.sort(function (a, b) {
     return a.name === b.name ? 0 : a.name < b.name ? -1 : 1;
   });
-  return chatData.filter((item) => array.includes(item.name.split("")[0].toUpperCase()) && item.fav === false);
+  return chatData.filter((item) => array.includes(item.name?.split("")[0].toUpperCase()) && item.fav === false);
 };
 
 export const contacts = [

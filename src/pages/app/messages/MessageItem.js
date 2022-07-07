@@ -68,7 +68,7 @@ const MessageItem = ({ id, onClosed, mobileView, setMobileView, data }) => {
     let defaultObject = item;
     var htmlMarkup = [];
     if (textInput.trim() !== "") {
-      var text = textInput.replace(/\r/g, "").split(/\n/);
+      var text = textInput.replace(/\r/g, "")?.split(/\n/);
       text.forEach((item) => {
         htmlMarkup.push(item);
       });

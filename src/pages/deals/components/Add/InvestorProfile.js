@@ -14,7 +14,7 @@ import imgGrafica from "../../../../assets/images/grafica1.png"
 import imgGrafica2 from "../../../../assets/images/grafica2.png"
 
 
-const InvestorProfile = ({setGeneralStateForm, setModal, editData, selectClient, needDocument,requiredDocument}) => {
+const InvestorProfile = ({setGeneralStateForm, setAddActiveTab, setModal, editData, selectClient, needDocument,requiredDocument}) => {
 
   return(
     <>
@@ -348,6 +348,9 @@ const InvestorProfile = ({setGeneralStateForm, setModal, editData, selectClient,
             </div>
           </FormGroup>
         </Form>
+        <Button color="primary" className="mt-5" type="button" size="md" onClick={()=>setAddActiveTab('4')}>
+              Siguiente
+            </Button>
       </Col>
     </>
   )

@@ -46,7 +46,7 @@ const Sidebar = ({ fixed, theme, className, sidebarToggle, mobileView, ...props 
       </div>
       <div className="nk-sidebar-content" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <SimpleBar className="nk-sidebar-menu">
-          {window.location.pathname.split("/")[2] === "ecommerce" ? (
+          {window.location.pathname?.split("/")[2] === "ecommerce" ? (
             <EcommerceMenu sidebarToggle={sidebarToggle} mobileView={mobileView} />
           ) : (
             <Menu sidebarToggle={sidebarToggle} mobileView={mobileView} />

@@ -423,7 +423,7 @@ const DealsList = () => {
                         <span>{item.currency.name}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <span>{item.currency.name}</span>
+                        <span>{item.originsOfTheFundsll }</span>
                       </DataTableRow>
                     
 
@@ -498,10 +498,10 @@ const DealsList = () => {
             </a>
             <div className="p-2 table-record">
               <div className="d-flex justify-content-between align-items-center">
-                <h5 className="title" >Agregar Negocio</h5>
+                <h5 className="title" >Crear Operación</h5>
                 <Button color="primary" type="submit" onClick={ e=> postDeals(e)}>
                     <Icon name="plus" className="mr-1"></Icon>
-                          Guardar Operacion
+                          Guardar Operación
                 </Button>
               </div>
            
@@ -510,7 +510,6 @@ const DealsList = () => {
 
               { needDocument.documents?.length && addActiveTab == 4? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
               { needDocument.documents?.length > 0 && addActiveTab == 4 && needDocument.documents.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
-              <h5 className="title">Agregar Negocio</h5> <br />
               {requiredDocument.length ? <span style={{ color: "red" }}>Requerido: </span> : ""}
               {requiredDocument.map((act, i) => (
                 <span>{i + 1 + ")" + " " + act.name}. </span>
@@ -571,12 +570,12 @@ const DealsList = () => {
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="3">
-                  <InvestorProfile setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient}/>
+                  <InvestorProfile setAddActiveTab={setAddActiveTab} setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient}/>
                 </TabPane>
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="4">
-                  <DocumentRequired libraryClient={libraryClient} needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
+                  <DocumentRequired  libraryClient={libraryClient} needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
                 </TabPane>
                 <TabPane tabId="4"></TabPane>
               </TabContent>

@@ -10,9 +10,9 @@ const OrderActivity = () => {
   useEffect(() => {
     let data;
     if (orderActivity === "Buy") {
-      data = orderActivityData.filter((item) => item.desc.split(" ")[0] === "Buy");
+      data = orderActivityData.filter((item) => item.desc?.split(" ")[0] === "Buy");
     } else if (orderActivity === "Sell") {
-      data = orderActivityData.filter((item) => item.desc.split(" ")[0] === "Sell");
+      data = orderActivityData.filter((item) => item.desc?.split(" ")[0] === "Sell");
     } else {
       data = orderActivityData;
     }

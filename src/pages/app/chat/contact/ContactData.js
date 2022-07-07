@@ -7,7 +7,7 @@ const sortedDataFunc = (array) => {
   chatData.sort(function (a, b) {
     return a.name === b.name ? 0 : a.name < b.name ? -1 : 1;
   });
-  return chatData.filter((item) => array.includes(item.name.split("")[0].toUpperCase()) && !item.group);
+  return chatData.filter((item) => array.includes(item.name?.split("")[0].toUpperCase()) && !item.group);
 };
 
 export const contacts = [

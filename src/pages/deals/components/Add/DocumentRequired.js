@@ -252,7 +252,7 @@ const ModalUploadDocument = ({modalDocument, setModalDocument,selectClient = {},
                     onChange={(e) => {
                       setPostData( prev => {
                         let aux = e.target.value
-                        aux = aux.split('-')
+                        aux = aux?.split('-')
                         aux = aux[2]+'-'+aux[1]+'-'+aux[0]
                         return {
                           ...prev,
@@ -280,7 +280,7 @@ const ModalUploadDocument = ({modalDocument, setModalDocument,selectClient = {},
                     onChange={(e) => {
                       setPostData( prev => {
                         let aux = e.target.value
-                        aux = aux.split('-')
+                        aux = aux?.split('-')
                         aux = aux[2]+'-'+aux[1]+'-'+aux[0]
                         return {
                           ...prev,
