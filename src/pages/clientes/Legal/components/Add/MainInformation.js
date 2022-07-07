@@ -138,7 +138,7 @@ const MainInformation = ({ setModal, formData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Numero de Identificacion</label>
+          <label className="form-label">Número de Identificación</label>
           <input
             className="form-control"
             type="text"
@@ -151,7 +151,7 @@ const MainInformation = ({ setModal, formData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Codigo postal</label>
+          <label className="form-label">Código postal</label>
           <input
             className="form-control"
             type="text"
@@ -177,7 +177,7 @@ const MainInformation = ({ setModal, formData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Telefono</label>
+          <label className="form-label">Teléfono</label>
           <input
             className="form-control"
             type="text"
@@ -190,7 +190,7 @@ const MainInformation = ({ setModal, formData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Descripcion de las Inversiones</label>
+          <label className="form-label">Descripción de las Inversiones</label>
           <input
             className="form-control"
             type="text"
@@ -203,7 +203,7 @@ const MainInformation = ({ setModal, formData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Descripcion de las Inversiones</label>
+          <label className="form-label">Descripción de las Inversiones</label>
           <input
             className="form-control"
             type="text"
@@ -217,7 +217,7 @@ const MainInformation = ({ setModal, formData }) => {
 
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Pais</label>
+          <label className="form-label">País</label>
           <RSelect
             isSearchable={false}
             options={countriesOptions}
@@ -247,7 +247,7 @@ const MainInformation = ({ setModal, formData }) => {
       </Col>
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Direccion</label>
+          <label className="form-label">Dirección</label>
           <input
             className="form-control"
             type="text"
