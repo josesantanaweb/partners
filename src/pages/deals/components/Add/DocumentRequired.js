@@ -270,8 +270,7 @@ const DocumentRequired = ({ libraryClient ,setModal, editData, selectClient, nee
             ? needDocument.documents.map(act => 
               
               <DataTableItem key={act.id} className=" text-center border-bottom border bg-light">
-               
-               <DataTableRow className=" text-center border-bottom border ">{act.name}</DataTableRow>
+                <DataTableRow className=" text-center border-bottom border ">{act.name}</DataTableRow>
                   {
                     libraryClient?
                     libraryClient.map( elem => {
@@ -282,7 +281,6 @@ const DocumentRequired = ({ libraryClient ,setModal, editData, selectClient, nee
                           <DataTableRow className="p-0"><a target="blank" className="text-white" href={elem.url} ><Button color="primary" size="md">Ver</Button></a></DataTableRow>
                           <DataTableRow className="p-0 m-0"><a target="blank" className="text-white" href={elem.url} ><Button  color="primary" size="md">Vincular</Button></a></DataTableRow>
                           </>
-                     
                       }
                       return <></>
                     }):<></>
@@ -291,10 +289,7 @@ const DocumentRequired = ({ libraryClient ,setModal, editData, selectClient, nee
                   <Button color="primary" size="md"  onClick={() => setModalDocument({ add: true })}>
                     Subir
                   </Button>
-                  </DataTableRow>
-           
-     
-
+                </DataTableRow>
               </DataTableItem>
               
               )
