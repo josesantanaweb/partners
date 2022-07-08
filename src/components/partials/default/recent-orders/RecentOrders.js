@@ -41,7 +41,7 @@ const RecentOrders = () => {
               </span>
             </DataTableRow>
             <DataTableRow size="sm">
-              <div className="user-card">
+              <div className="user-card text-center d-flex align-items-center justify-content-center">
                 <UserAvatar className="sm" theme={item.theme} text={item.initial} image={item.img}></UserAvatar>
                 <div className="user-name">
                   <span className="tb-lead">{item.name}</span>

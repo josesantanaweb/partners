@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useEffect, useContext, useState, useRef } from "react";
 import { FormGroup, Modal, ModalBody, Form, Alert, NavItem, NavLink, TabContent, TabPane, Nav } from "reactstrap";
 import {
   Block,
@@ -17,6 +17,7 @@ import {
   DataTableItem,
   TooltipComponent,
   PreviewAltCard,
+  RSelect,
 } from "../../components/Component";
 import classnames from "classnames";
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -28,9 +29,11 @@ import { findUpper } from "../../utils/Utils";
 import { useForm } from "react-hook-form";
 import { AdviserContext } from "./AdviserContext";
 import AdvisersServices from "../../services/AdvisersServices";
+import CountriesServices from "../../services/CountriesServices";
+
 import Swal from "sweetalert2";
 registerLocale("es", es);
-import swal from "sweetalert";
+
 
 const AdviserList = () => {
   const { contextData } = useContext(AdviserContext);
@@ -38,50 +41,169 @@ const AdviserList = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [addActiveTab, setAddActiveTab] = useState("1");
   const [editData, setEditData] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
+  const [sm, updateSm] = useState(false);
+  const { errors, register, handleSubmit } = useForm();
+
   const [birthDate, setBirthDate] = useState(new Date());
   const [editBirthDate, setEditBirthDate] = useState(new Date());
+  const [identificationDocumentIssueDate, setIdentificationDocumentIssueDate] = useState(new Date());
+  const [identificationDocumentExpirationDate, setIdentificationDocumentExpirationDate] = useState(new Date());
+  const [CAMVCertificateIssueDate, setCAMVCertificateIssueDate] = useState(new Date());
+  const [CAMVCertificateExpirationDate, setCAMVCertificateExpirationDate] = useState(new Date());
+  const [studyCertificateIssueDate, setStudyCertificateIssueDate] = useState(new Date());
+  const [studyCertificateExpirationDate, setStudyCertificateExpirationDate] = useState(new Date());
 
-  const [rutIssueDate, setRutIssueDate] = useState(new Date());
-  const [rutExpirationDate, setRutExpirationDate] = useState(new Date());
+  const [countries, setCountries] = useState([]);
+  const [countriesOptions, setCountriesOptions] = useState(countries);
+  const [cities, setCities] = useState([]);
+  const [citiesOptions, setCitiesOptions] = useState(cities);
 
   const [modal, setModal] = useState({
     edit: false,
     add: false,
   });
 
+  const getCountries = async () => {
+    try {
+      const countries = await CountriesServices.getCountries();
+      const countriesData = await countries.data.map((country) => ({
+        label: country?.name,
+        value: country?.id,
+      }));
+      setCountries(countriesData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsCountriesChange = (optionValue) => {
+    setCountriesOptions(optionValue);
+  };
+
+  countries.find((item) => item.id == countriesOptions.value);
+
+  useEffect(() => {
+    getCountries();
+    if (countriesOptions.value) {
+      return countries.find((item) => item.value == countriesOptions.value);
+    }
+  }, [countriesOptions.value]);
+
+  const getCities = async () => {
+    try {
+      const cities = await CountriesServices.getCities();
+      const citiesData = await cities.data.map((city) => ({
+        label: city?.name,
+        value: city?.id,
+      }));
+      setCities(citiesData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsCitiesChange = (optionValue) => {
+    setCitiesOptions(optionValue);
+  };
+  // function to find document type
+  cities.find((item) => item.id == citiesOptions.value);
+
+  useEffect(() => {
+    getCountries();
+    if (citiesOptions.value) {
+      return cities.find((item) => item.value == citiesOptions.value);
+    }
+  }, [citiesOptions.value]);
+
   const getAdvisers = async (filter) => {
     try {
       const advisers = await AdvisersServices.getAdvisers(filter);
-      setData(advisers.data);
+      const advisersData = advisers.data((adviser) => adviser);
+      setData(advisersData);
     } catch (error) {}
+  };
+
+  useEffect(() => {
+    getAdvisers();
+  }, []);
+
+  useEffect(() => {
+    getCountries();
+  }, []);
+
+  useEffect(() => {
+    getCities();
+  }, []);
+
+  const citiesOptionsData = () => {
+    const citiesOptionsData = cities?.map((item) => ({ name: item.name, value: item.id }));
+    setCitiesOptions(citiesOptionsData);
   };
 
   const [formData, setFormData] = useState({
     name: "",
-    lastName: "",
-    email: "",
-    password: "",
+    paternalLastName: "",
+    sex: "",
     mobilePhone: "",
     landlinePhone: "",
+    birthDate: birthDate,
     observation: "",
+    email: "",
+    password: "",
+    countryId: "",
+    stateId: "",
+    detailedAddress: "",
+    haveCertificate: true,
+    hasAnEducationalDegree: true,
+    courseOfStudy: "",
+    durationInSemesters: "",
+    emergencyContact: "",
+    clinicForEmergency: "",
+    frontIdentificationDocumentFile: "",
+    backSideIdentificationDocumentFile: "",
+    identificationDocumentIssueDate: identificationDocumentIssueDate,
+    identificationDocumentExpirationDate: identificationDocumentExpirationDate,
+    CAMVCertificate: "",
+    CAMVCertificateIssueDate: CAMVCertificateIssueDate,
+    CAMVCertificateExpirationDate: CAMVCertificateExpirationDate,
+    studyCertificate: "",
+    studyCertificateIssueDate: studyCertificateIssueDate,
+    studyCertificateExpirationDate: studyCertificateIssueDate,
+    rut: "",
   });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
-
-  const [sm, updateSm] = useState(false);
-
-  const { errors, register, handleSubmit } = useForm();
 
   // Function to reset the form
   const resetForm = () => {
     setFormData({
       name: "",
-      lastName: "",
-      email: "",
-      password: "",
+      paternalLastName: "",
+      sex: "",
       mobilePhone: "",
       landlinePhone: "",
+      birthDate: "",
       observation: "",
+      email: "",
+      password: "",
+      countryId: "",
+      stateId: "",
+      detailedAddress: "",
+      haveCertificate: true,
+      hasAnEducationalDegree: true,
+      courseOfStudy: "",
+      durationInSemesters: "",
+      emergencyContact: "",
+      clinicForEmergency: "",
+      frontIdentificationDocumentFile: "",
+      backSideIdentificationDocumentFile: "",
+      identificationDocumentIssueDate: "",
+      identificationDocumentExpirationDate: "",
+      CAMVCertificate: "",
+      CAMVCertificateIssueDate: "",
+      CAMVCertificateExpirationDate: "",
+      studyCertificate: "",
+      studyCertificateIssueDate: "",
+      studyCertificateExpirationDate: "",
+      rut: "",
     });
   };
 
@@ -91,19 +213,100 @@ const AdviserList = () => {
     resetForm();
   };
 
-  // Submit function to add a new item
+  // Submit funcion to add a new item
   const onFormSubmit = async (submitData) => {
-    const { name, paternalLastName, email, password, mobilePhone, observation } = submitData;
+    const {
+      name,
+      paternalLastName,
+      sex,
+      mobilePhone,
+      landlinePhone,
+      observation,
+      email,
+      password,
+      detailedAddress,
+      haveCertificate,
+      hasAnEducationalDegree,
+      courseOfStudy,
+      durationInSemesters,
+      emergencyContact,
+      clinicForEmergency,
+      frontIdentificationDocumentFile,
+      backSideIdentificationDocumentFile,
+      CAMVCertificate,
+      studyCertificate,
+      rut,
+    } = submitData;
     let submittedData = {
       name: name,
       paternalLastName: paternalLastName,
+      sex: sex,
+      mobilePhone: mobilePhone,
+      landlinePhone: landlinePhone,
+      birthDate: birthDate,
+      observation: observation,
       email: email,
       password: password,
-      observation: observation,
-      mobilePhone: mobilePhone,
-      birthDate: birthDate,
+      countryId: countriesOptions?.value,
+      stateId: citiesOptions?.value,
+      detailedAddress: detailedAddress,
+      haveCertificate: false,
+      hasAnEducationalDegree: false,
+      courseOfStudy: courseOfStudy,
+      durationInSemesters: durationInSemesters,
+      emergencyContact: emergencyContact,
+      clinicForEmergency: clinicForEmergency,
+      frontIdentificationDocumentFile: frontIdentificationDocumentFile,
+      backSideIdentificationDocumentFile: backSideIdentificationDocumentFile,
+      identificationDocumentIssueDate: identificationDocumentIssueDate,
+      identificationDocumentExpirationDate: identificationDocumentExpirationDate,
+      CAMVCertificate: CAMVCertificate,
+      CAMVCertificateIssueDate: CAMVCertificateIssueDate,
+      CAMVCertificateExpirationDate: CAMVCertificateExpirationDate,
+      studyCertificate: studyCertificate,
+      studyCertificateIssueDate: studyCertificateIssueDate,
+      studyCertificateExpirationDate: studyCertificateExpirationDate,
+      rut: rut,
     };
     try {
+      const formData = new FormData();
+      let object = {};
+
+      formData.append("name", name); //✅
+      formData.append("paternalLastName", paternalLastName); //✅
+      formData.append("sex", sex); //✅
+      formData.append("mobilePhone", mobilePhone); //✅
+      formData.append("landlinePhone", landlinePhone); //✅
+      formData.append("birthDate", birthDate); //✅
+      formData.append("observation", observation); //✅
+      formData.append("email", email); //✅
+      formData.append("password", password); //✅
+      formData.append("countryId", countriesOptions?.value); //✅
+      formData.append("stateId", citiesOptions?.value); //✅
+      formData.append("detailedAddress", detailedAddress); //✅
+      formData.append("haveCertificate", false); //✅
+      formData.append("hasAnEducationalDegree", false); //✅
+      formData.append("courseOfStudy", courseOfStudy); //✅
+      formData.append("durationInSemesters", durationInSemesters); //✅
+      formData.append("emergencyContact", emergencyContact); //✅
+      formData.append("clinicForEmergency", clinicForEmergency); //✅
+      formData.append("frontIdentificationDocumentFile", frontIdentificationDocumentFile[0].name); //✅
+      formData.append("backSideIdentificationDocumentFile", backSideIdentificationDocumentFile[0].name); //✅
+      formData.append("identificationDocumentIssueDate", identificationDocumentIssueDate); //✅
+      formData.append("identificationDocumentExpirationDate", identificationDocumentExpirationDate); //✅
+      formData.append("CAMVCertificate", CAMVCertificate[0].name); //✅
+      formData.append("CAMVCertificateIssueDate", CAMVCertificateIssueDate); //✅
+      formData.append("CAMVCertificateExpirationDate", CAMVCertificateExpirationDate); //✅
+      formData.append("studyCertificate", studyCertificate[0].name); //✅
+      formData.append("studyCertificateIssueDate", studyCertificateIssueDate); //✅
+      formData.append("studyCertificateExpirationDate", studyCertificateExpirationDate); //✅
+      formData.append("rut", rut); //✅
+
+      formData.forEach((value, key) => (object[key] = value));
+      var json = JSON.stringify(object);
+      JSON.stringify(Object.fromEntries(formData));
+      console.log(json);
+
       await AdvisersServices.addAdviser(submittedData);
       resetForm();
       getAdvisers();
@@ -147,17 +350,6 @@ const AdviserList = () => {
     setEditData(data);
     setEditBirthDate(new Date(data.birthDate));
   };
-
-  // Function to change to delete property for an item
-  // const deleteUser = async (id) => {
-  //   try {
-  //     await AdvisersServices.deleteAdviser(id);
-  //     getAdvisers();
-  //   } catch (error) {
-  //     throw new Error("Error deleting record!");
-  //   }
-  // };
-
   // Function to change to delete property for an item
   const deleteUser = (id) => {
     try {
@@ -282,8 +474,8 @@ const AdviserList = () => {
                     <DataTableRow className="text-center">
                       <span>{item.id}</span>
                     </DataTableRow>
-                    <DataTableRow className="text-center">
-                      <div className="user-card pl-5">
+                    <DataTableRow>
+                      <div className="user-card d-flex align-items-center justify-content-center">
                         <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
                         <div className="user-info">
                           <span className="tb-lead">
@@ -355,7 +547,7 @@ const AdviserList = () => {
             >
               <Icon name="cross-sm"></Icon>
             </a>
-            <div className="p-2">
+            <div className="p-2 table-records modal-scroll">
               <h5 className="title">Agregar Asesor</h5>
               {errorMessage !== "" && (
                 <div className="my-3">
@@ -391,6 +583,26 @@ const AdviserList = () => {
                 <TabPane tabId="1">
                   <div className="mt-4">
                     <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
+                      <Col md="12">
+                        <FormGroup className="border-bottom pb-1">
+                          <h6>Información básica</h6>
+                        </FormGroup>
+                      </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Rut</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="rut"
+                            defaultValue={formData?.rut}
+                            placeholder="Ingresa rut"
+                            ref={register({ required: "Este campo es requerido" })}
+                          />
+                          {errors.name && <span className="invalid">{errors.name.message}</span>}
+                          <small className="text-primary">Sin puntos ni guón</small>
+                        </FormGroup>
+                      </Col>
                       <Col md="6">
                         <FormGroup>
                           <label className="form-label">Nombre</label>
@@ -425,7 +637,7 @@ const AdviserList = () => {
 
                       <Col md="6">
                         <FormGroup>
-                          <label className="form-label">Correo electronico</label>
+                          <label className="form-label">Correo electrónico</label>
                           <input
                             className="form-control"
                             type="email"
@@ -446,13 +658,13 @@ const AdviserList = () => {
 
                       <Col md="6">
                         <FormGroup>
-                          <label className="form-label">Contrasena</label>
+                          <label className="form-label">Contraseña</label>
                           <input
                             className="form-control"
                             type="password"
                             name="password"
                             defaultValue={formData.email}
-                            placeholder="Ingresa contrasena"
+                            placeholder="Ingresa contraseña"
                             ref={register({ required: "Este campo es requerido" })}
                           />
                           {errors.password && <span className="invalid">{errors.password.message}</span>}
@@ -461,7 +673,7 @@ const AdviserList = () => {
 
                       <Col md="6">
                         <FormGroup>
-                          <label className="form-label">Telefono</label>
+                          <label className="form-label">Teléfono</label>
                           <input
                             className="form-control"
                             type="text"
@@ -475,7 +687,7 @@ const AdviserList = () => {
 
                       <Col md="6">
                         <FormGroup>
-                          <label className="form-label">Telefono 2</label>
+                          <label className="form-label">Teléfono 2</label>
                           <input
                             className="form-control"
                             type="text"
@@ -490,12 +702,78 @@ const AdviserList = () => {
                       <Col md="6">
                         <FormGroup>
                           <label className="form-label">Fecha de nacimiento</label>
-                          <DatePicker
+                          {/* <DatePicker
                             selected={birthDate}
                             className="form-control"
                             onChange={(date) => setBirthDate(date)}
                             dateFormat="dd/MM/yyyy"
                             locale="es"
+                          /> */}
+                          <input
+                            className="form-control"
+                            type="date"
+                            name="accountOpeningDate"
+                            defaultValue={formData?.birthDate}
+                            ref={register()}
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Sexo</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="sex"
+                            defaultValue={formData.sex}
+                            placeholder="Ingresa letra"
+                            ref={register({ required: "Este campo es requerido" })}
+                          />
+                          {errors.sex && <span className="invalid">{errors.sex.message}</span>}
+                          <small className="text-primary">Ingresa (M): Masculino, (F): Femenino, (O): Otro</small>
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="12">
+                        <FormGroup className="border-bottom pb-1">
+                          <h6>Información residencial</h6>
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">País</label>
+                          <RSelect
+                            value={countriesOptions}
+                            options={countries}
+                            onChange={onOptionsCountriesChange}
+                            defautlValue={formData?.countryId}
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Ciudad</label>
+                          <RSelect
+                            value={citiesOptions}
+                            options={cities}
+                            onChange={onOptionsCitiesChange}
+                            defautlValue={formData?.stateId}
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="12">
+                        <FormGroup>
+                          <label className="form-label">Dirección</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="detailedAddress"
+                            defaultValue={formData.detailedAddress}
+                            placeholder="Ingresa address"
+                            ref={register()}
                           />
                         </FormGroup>
                       </Col>
@@ -518,9 +796,18 @@ const AdviserList = () => {
                       <Col size="12">
                         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                           <li>
-                            <Button color="primary" size="md" type="submit">
-                              Agregar Usuario
-                            </Button>
+                            <NavItem className="bg-primary rounded">
+                              <NavLink
+                                style={{ color: "white", fontWeight: "bold" }}
+                                tag="a"
+                                href="#tab"
+                                // tabId="2"
+                                className={classnames({ active: addActiveTab === "2" })}
+                                onClick={() => setAddActiveTab("2")}
+                              >
+                                Siguiente
+                              </NavLink>
+                            </NavItem>
                           </li>
                           <li>
                             <a
@@ -541,135 +828,322 @@ const AdviserList = () => {
                   </div>
                 </TabPane>
                 <TabPane tabId="2">
-                  <div className="mt-4 table-scroll">
-                    <Form className="row gy-4">
-                      <Col md="4">
+                  <div className="mt-4">
+                    <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
+                      <Col md="12">
+                        <FormGroup className="border-bottom pb-1">
+                          <h6>Información Académica y Universitaria</h6>
+                        </FormGroup>
+                      </Col>
+
+                      {/* <Col md="6">
                         <div className="custom-control custom-checkbox">
                           <input
-                            type="checkbox"
-                            name="menuItems"
-                            className="custom-control-input form-control"
                             id="certificado"
+                            type="checkbox"
+                            name="haveCertificate"
+                            value={formData?.haveCertificate}
+                            defaultChecked={false}
+                            className="custom-control-input form-control"
+                            placeholder="certificateA"
+                            {...register("certificateA")}
                           />
+
                           <label className="custom-control-label" htmlFor="certificado">
                             ¿Tiene Certificado?
                           </label>
                         </div>
-                      </Col>
-                      <Col md="6">
+                      </Col> */}
+
+                      {/* CX */}
+                      {/* ! Prueba */}
+                      {/* <Col md="6">
                         <div className="custom-control custom-checkbox">
                           <input
                             type="checkbox"
-                            name="menuItems"
-                            className="custom-control-input form-control"
-                            id="certificado"
+                            placeholder="haveCertificate"
+                            name="haveCertificate"
+                            {...register("haveCertificate", {})}
+                            defaultChecked={formData?.haveCertificate}
+                            defautlValue={formData?.haveCertificate}
                           />
-                          <label className="custom-control-label" htmlFor="certificado">
-                            ¿Tiene Titulo de Estudios?
+                        </div>
+
+                        <label className="custom-control-label" htmlFor="haveCertificate">
+                          ¿Tiene Certificado de estudios?
+                        </label>
+                      </Col> */}
+                      {/* Prueba */}
+
+                      <Col md="6">
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            id="hasCertificate"
+                            type="checkbox"
+                            name="haveCertificate"
+                            value={formData?.haveCertificate}
+                            defaultChecked={formData?.hasAnEducationalDegree}
+                            defautlValue={formData?.hasAnEducationalDegree}
+                            className="custom-control-input form-control"
+                            placeholder="certificateA"
+                            {...register("certificateA")}
+                          />
+                          <label className="custom-control-label" htmlFor="hasCertificate">
+                            ¿Tiene Certificado de estudios?
+                          </label>
+                        </div>
+                      </Col>
+
+                      <Col md="6">
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            id="hasAnEducationalDegree"
+                            type="checkbox"
+                            name="haveCertificate"
+                            value={formData?.haveCertificate}
+                            defaultChecked={formData?.hasAnEducationalDegree}
+                            defautlValue={formData?.hasAnEducationalDegree}
+                            className="custom-control-input form-control"
+                            placeholder="certificateA"
+                            {...register("certificateA")}
+                          />
+                          <label className="custom-control-label" htmlFor="hasAnEducationalDegree">
+                            ¿Tiene Certificado de estudios?
                           </label>
                         </div>
                       </Col>
 
                       <Col md="6">
                         <FormGroup>
-                          <label className="form-label">Indique la Carrera de Estudio</label>
+                          <label className="form-label">Indique la Carrera de Estudió</label>
                           <input
                             className="form-control"
                             type="text"
-                            name="description"
-                            placeholder="Ingresa carrera de estudio"
+                            name="courseOfStudy"
+                            defaultValue={formData?.courseOfStudy}
+                            placeholder="Nombre de la carrera"
+                            ref={register({ required: "Este campo es requerido" })}
                           />
+                          {errors.courseOfStudy && <span className="invalid">{errors.courseOfStudy.message}</span>}
                         </FormGroup>
                       </Col>
 
                       <Col md="6">
                         <FormGroup>
-                          <label className="form-label">Duracion en Semestres</label>
+                          <label className="form-label">Duración en semestres</label>
                           <input
                             className="form-control"
                             type="text"
-                            name="description"
-                            placeholder="Ingresa duracion en semestres"
+                            name="durationInSemesters"
+                            defaultValue={formData?.durationInSemesters}
+                            placeholder="Ingrese tiempo de duaración"
+                            ref={register({ required: "Este campo es requerido" })}
                           />
-                        </FormGroup>
-                      </Col>
-
-                      <Col md="6">
-                        <FormGroup>
-                          <label className="form-label">Contacto de Urgencia</label>
-                          <input
-                            className="form-control"
-                            type="text"
-                            name="description"
-                            placeholder="Ingresa contacto de urgencia"
-                          />
-                        </FormGroup>
-                      </Col>
-
-                      <Col md="6">
-                        <FormGroup>
-                          <label className="form-label">Clinica o hospital para Urgencias</label>
-                          <input
-                            className="form-control"
-                            type="text"
-                            name="description"
-                            placeholder="Ingresa clinica o hospital para urgencias"
-                          />
+                          {errors.durationInSemesters && (
+                            <span className="invalid">{errors.durationInSemesters.message}</span>
+                          )}
                         </FormGroup>
                       </Col>
 
                       <Col md="12">
-                        <h6>Subir Documentos</h6>
-                      </Col>
-
-                      <Col md="6">
-                        <FormGroup>
-                          <label className="form-label">Cedula Frontal</label>
-                          <input className="form-control" type="file" name="description" />
+                        <FormGroup className="border-bottom pb-1 pt-2">
+                          <h6>Información de Emergencias</h6>
                         </FormGroup>
                       </Col>
 
                       <Col md="6">
                         <FormGroup>
-                          <label className="form-label">Cedula Posterior</label>
-                          <input className="form-control" type="file" name="description" />
+                          <label className="form-label">Contacto de Emergencia</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="emergencyContact"
+                            defaultValue={formData.emergencyContact}
+                            placeholder="Ingrese contacto"
+                            ref={register({ required: "Este campo es requerido" })}
+                          />
+                          {errors.emergencyContact && (
+                            <span className="invalid">{errors.emergencyContact.message}</span>
+                          )}
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6">
+                        <FormGroup>
+                          <label className="form-label">Clínica o Centro de emergencias</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="clinicForEmergency"
+                            defaultValue={formData.clinicForEmergency}
+                            placeholder="Ingrese clínica u hospital"
+                            ref={register({ required: "Este campo es requerido" })}
+                          />
+                          {errors.clinicForEmergency && (
+                            <span className="invalid">{errors.clinicForEmergency.message}</span>
+                          )}
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="12">
+                        <FormGroup className="border-bottom pb-1 pt-2">
+                          <h6>Adjuntar documentos</h6>
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="12">
+                        <Col md="12">
+                          <FormGroup>
+                            <label className="form-label">Cédula (Parte Frontal)</label>
+                            <div className="file-input border rounded d-flex pt-3 align-items-center bg-light">
+                              <label className="file-input__label" htmlFor="file-input">
+                                <input
+                                  type="file"
+                                  className="bg-light border-0"
+                                  name="frontIdentificationDocumentFile"
+                                  defaultValue={formData?.frontIdentificationDocumentFile}
+                                  ref={register()}
+                                  accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.jpg, .jpeg, .png, application/vnd.ms-excel"
+                                />
+                              </label>
+                            </div>
+                          </FormGroup>
+                        </Col>
+
+                        <Col md="12" className="pt-2">
+                          <FormGroup>
+                            <label className="form-label">Cédula (Parte Posterior)</label>
+                            <div className="file-input border rounded d-flex pt-3 align-items-center bg-light">
+                              <label className="file-input__label" htmlFor="file-input">
+                                <input
+                                  type="file"
+                                  className="bg-light border-0"
+                                  name="backSideIdentificationDocumentFile"
+                                  defaultValue={formData?.backSideIdentificationDocumentFile}
+                                  ref={register()}
+                                  accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.jpg, .jpeg, .png, application/vnd.ms-excel"
+                                />
+                              </label>
+                            </div>
+                          </FormGroup>
+                        </Col>
+                      </Col>
+
+                      <Col md="6" className="mb-4">
+                        <FormGroup>
+                          <label className="form-label">Fecha de emisión (cédula)</label>
+                          {/* <DatePicker
+                            selected={identificationDocumentIssueDate}
+                            className="form-control"
+                            onChange={(date) => {
+                              setIdentificationDocumentIssueDate(date);
+                            }}
+                            dateFormat="dd/MM/yyyy"
+                            locale="es"
+                          /> */}
+                          <input
+                            className="form-control"
+                            type="date"
+                            name="accountOpeningDate"
+                            defaultValue={formData?.identificationDocumentIssueDate}
+                            ref={register()}
+                          />
                         </FormGroup>
                       </Col>
 
                       <Col md="6" className="mb-4">
                         <FormGroup>
-                          <label className="form-label">Fecha de emisión</label>
-                          <DatePicker
-                            selected={rutIssueDate}
+                          <label className="form-label">Fecha de expiracion (cédula)</label>
+                          {/* <DatePicker
+                            selected={identificationDocumentExpirationDate}
                             className="form-control"
                             onChange={(date) => {
-                              setRutIssueDate(date);
+                              setIdentificationDocumentExpirationDate(date);
                             }}
                             dateFormat="dd/MM/yyyy"
                             locale="es"
-                          />
-                        </FormGroup>
-                      </Col>
-
-                      <Col md="6" className="mb-4">
-                        <FormGroup>
-                          <label className="form-label">Fecha de expiracion</label>
-                          <DatePicker
-                            selected={rutExpirationDate}
+                          /> */}
+                          <input
                             className="form-control"
-                            onChange={(date) => {
-                              setRutExpirationDate(date);
-                            }}
-                            dateFormat="dd/MM/yyyy"
-                            locale="es"
+                            type="date"
+                            name="accountOpeningDate"
+                            defaultValue={formData?.identificationDocumentIssueDate}
+                            ref={register()}
                           />
                         </FormGroup>
                       </Col>
 
                       <Col md="12">
+                        <FormGroup className="border-bottom pb-1">
+                          <h6>Mis Certificados</h6>
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="12" className="pt-2">
                         <FormGroup>
                           <label className="form-label">Certificado CAMV</label>
-                          <input className="form-control" type="file" name="description" />
+                          <div className="file-input border rounded d-flex pt-3 align-items-center bg-light">
+                            <label className="file-input__label" htmlFor="file-input">
+                              <input
+                                type="file"
+                                className="bg-light border-0"
+                                name="CAMVCertificate"
+                                defaultValue={formData?.CAMVCertificate}
+                                ref={register()}
+                                accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.jpg, .jpeg, .png, application/vnd.ms-excel"
+                              />
+                            </label>
+                          </div>
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6" className="mb-4">
+                        <FormGroup>
+                          <label className="form-label">Fecha de Ingreso (CAMV)</label>
+                          <DatePicker
+                            selected={CAMVCertificateIssueDate}
+                            className="form-control"
+                            onChange={(date) => {
+                              setCAMVCertificateIssueDate(date);
+                            }}
+                            // dateFormat="dd/MM/yyyy"
+                            dateFormat="MM/dd/yyyy"
+                            locale="es"
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="6" className="mb-4">
+                        <FormGroup>
+                          <label className="form-label">Fecha de expiración (CAMV)</label>
+                          <DatePicker
+                            selected={CAMVCertificateExpirationDate}
+                            className="form-control"
+                            onChange={(date) => {
+                              setCAMVCertificateExpirationDate(date);
+                            }}
+                            // dateFormat="dd/MM/yyyy"
+                            dateFormat="MM/dd/yyyy"
+                            locale="es"
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      <Col md="12" className="pt-2">
+                        <FormGroup>
+                          <label className="form-label">Certificado de estudios</label>
+                          <div className="file-input border rounded d-flex pt-3 align-items-center bg-light">
+                            <label className="file-input__label" htmlFor="file-input">
+                              <input
+                                type="file"
+                                className="bg-light border-0"
+                                name="studyCertificate"
+                                defaultValue={formData?.studyCertificate}
+                                ref={register()}
+                                accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.jpg, .jpeg, .png, application/vnd.ms-excel"
+                              />
+                            </label>
+                          </div>
                         </FormGroup>
                       </Col>
 
@@ -677,18 +1151,35 @@ const AdviserList = () => {
                         <FormGroup>
                           <label className="form-label">Fecha de Ingreso</label>
                           <DatePicker
-                            selected={rutIssueDate}
+                            selected={studyCertificateIssueDate}
                             className="form-control"
                             onChange={(date) => {
-                              setRutIssueDate(date);
+                              setStudyCertificateIssueDate(date);
                             }}
-                            dateFormat="dd/MM/yyyy"
+                            // dateFormat="dd/MM/yyyy"
+                            dateFormat="MM/dd/yyyy"
                             locale="es"
                           />
                         </FormGroup>
                       </Col>
 
                       <Col md="6" className="mb-4">
+                        <FormGroup>
+                          <label className="form-label">Fecha de Expiración</label>
+                          <DatePicker
+                            selected={studyCertificateExpirationDate}
+                            className="form-control"
+                            onChange={(date) => {
+                              setStudyCertificateExpirationDate(date);
+                            }}
+                            // dateFormat="dd/MM/yyyy"
+                            dateFormat="MM/dd/yyyy"
+                            locale="es"
+                          />
+                        </FormGroup>
+                      </Col>
+
+                      {/* <Col md="6" className="mb-4">
                         <FormGroup>
                           <label className="form-label">Fecha de expiracion</label>
                           <DatePicker
@@ -701,44 +1192,7 @@ const AdviserList = () => {
                             locale="es"
                           />
                         </FormGroup>
-                      </Col>
-
-                      <Col md="12">
-                        <FormGroup>
-                          <label className="form-label">Cerficado de Estudios</label>
-                          <input className="form-control" type="file" name="description" />
-                        </FormGroup>
-                      </Col>
-
-                      <Col md="6" className="mb-4">
-                        <FormGroup>
-                          <label className="form-label">Fecha de Ingreso</label>
-                          <DatePicker
-                            selected={rutIssueDate}
-                            className="form-control"
-                            onChange={(date) => {
-                              setRutIssueDate(date);
-                            }}
-                            dateFormat="dd/MM/yyyy"
-                            locale="es"
-                          />
-                        </FormGroup>
-                      </Col>
-
-                      <Col md="6" className="mb-4">
-                        <FormGroup>
-                          <label className="form-label">Fecha de expiracion</label>
-                          <DatePicker
-                            selected={rutExpirationDate}
-                            className="form-control"
-                            onChange={(date) => {
-                              setRutExpirationDate(date);
-                            }}
-                            dateFormat="dd/MM/yyyy"
-                            locale="es"
-                          />
-                        </FormGroup>
-                      </Col>
+                      </Col> */}
 
                       <Col size="12">
                         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
@@ -782,7 +1236,7 @@ const AdviserList = () => {
             >
               <Icon name="cross-sm"></Icon>
             </a>
-            <div className="p-2">
+            <div className="p-2 table-records modal-scroll">
               <h5 className="title">Actualizar Asesor</h5>
               {errorMessage !== "" && (
                 <div className="my-3">
@@ -860,7 +1314,8 @@ const AdviserList = () => {
                         className="form-control"
                         defaultValue={editData?.birthDate}
                         onChange={(date) => setEditBirthDate(date)}
-                        dateFormat="dd/MM/yyyy"
+                        // dateFormat="dd/MM/yyyy"
+                        dateFormat="MM/dd/yyyy"
                         locale="es"
                       />
                     </FormGroup>

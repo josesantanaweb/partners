@@ -1,0 +1,40 @@
+$scrollBg: #ccc;
+$isScrollActive: #a8a8a8;
+$scrollHover: #b3b3b3;
+$scrollHoverTrack: #d4d4d4;
+$scrollTrack: #e1e1e1;
+
+.table-records {
+  width: auto;
+  overflow-y: scroll;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  margin-right: 0.45rem;
+  overflow-x: hidden;
+}
+.table-records {
+  &::-webkit-scrollbar {
+    width: 9px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $scrollBg;
+    border-radius: 4px;
+    &:hover {
+      background: $scrollHover;
+    }
+    &:active {
+      background-color: $isScrollActive;
+    }
+  }
+  &::-webkit-scrollbar-track {
+    background: $scrollTrack;
+    border-radius: 4px;
+    &:hover {
+      background: $scrollHoverTrack;
+    }
+    &:active {
+      background: $scrollHoverTrack;
+    }
+  }
+}

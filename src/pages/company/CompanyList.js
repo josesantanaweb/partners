@@ -308,7 +308,7 @@ const CompanyList = () => {
                 Lista de Socios Estratégicos
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} Empresa</p>
+                <p>Total {data.length} Socios Estratégicos</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -341,22 +341,22 @@ const CompanyList = () => {
           <div className="container-fluid overflow-auto scrollbar-fluid">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
-                <DataTableRow>
-                  <span className="sub-text">#</span>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">N. de S. Estrat.</span>
                 </DataTableRow>
-                <DataTableRow size="xs">
+                <DataTableRow className="text-center">
                   <span className="sub-text">Nombre</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">Email</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">RUT</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">Teléfono</span>
                 </DataTableRow>
-                <DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
@@ -364,23 +364,23 @@ const CompanyList = () => {
               {currentItems.length > 0
                 ? currentItems.map((item) => (
                     <DataTableItem key={item.id}>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.id}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.name}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.email}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.rut}</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow className="text-center">
                         <span>{item.businessPhone}</span>
                       </DataTableRow>
-                      <DataTableRow className="nk-tb-col-tools">
-                        <ul className="nk-tb-actions gx-1">
+                      <DataTableRow className="text-center">
+                        <ul className="nk-tb-actions gx-1 d-flex justify-content-center">
                           <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
                             <TooltipComponent
                               tag="a"
@@ -436,8 +436,8 @@ const CompanyList = () => {
             >
               <Icon name="cross-sm"></Icon>
             </a>
-            <div className="p-2">
-              <h5 className="title">Agregar Empresa</h5>
+            <div className="p-2 table-records modal-scroll">
+              <h5 className="title">Agregar Socio Estratégico</h5>
               {errorMessage !== "" && (
                 <div className="my-3">
                   <Alert color="danger" className="alert-icon">
@@ -446,7 +446,7 @@ const CompanyList = () => {
                   </Alert>
                 </div>
               )}
-              <div className="table-scroll">
+              <div>
                 <div className="mt-4">
                   <Form className="row gy-4" onSubmit={handleSubmit(onFormSubmit)}>
                     <Col md="6">
@@ -658,8 +658,8 @@ const CompanyList = () => {
             >
               <Icon name="cross-sm"></Icon>
             </a>
-            <div className="p-2">
-              <h5 className="title">Actualizar Empresa</h5>
+            <div className="p-2 table-records modal-scroll">
+              <h5 className="title">Actualizar Socio Estratégico</h5>
               {errorMessage !== "" && (
                 <div className="my-3">
                   <Alert color="danger" className="alert-icon">
@@ -668,7 +668,7 @@ const CompanyList = () => {
                   </Alert>
                 </div>
               )}
-              <div className="table-scroll">
+              <div>
                 <div className="mt-4">
                   <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                     <Col md="6">
@@ -842,7 +842,7 @@ const CompanyList = () => {
                       <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                         <li>
                           <Button color="primary" size="md" type="submit">
-                            Actualizar Empresa
+                            Actualizar Socio Estratégico
                           </Button>
                         </li>
                         <li>

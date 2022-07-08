@@ -163,6 +163,7 @@ const DealsList = () => {
   }, []);
 
   const [requiredDocument, setRequiredDocument] = useState([]);
+
   const [selectClient, setSelectClient] = useState({});
   const [needDocument, setNeedDocument] = useState({});
   const [libraryClient, setLibraryClient] = useState([]);
@@ -304,9 +305,9 @@ const DealsList = () => {
       });
     }
 
-    console.log('estado',statePost)
-    DealsServices.postDeals(statePost).then( ()=>  window.location.reload()).catch( err => console.log(err))
-  }
+    console.log("estado", statePost);
+    DealsServices.postDeals(statePost).then(() => window.location.reload());
+  };
 
 
   return (
@@ -320,7 +321,7 @@ const DealsList = () => {
                 Lista de Operaciones
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {currentItems.length} negocios</p>
+                <p>Total {currentItems.length} operaciones</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -380,8 +381,6 @@ const DealsList = () => {
                 <DataTableRow className="text-center">
                   <span className="sub-text">Origen de los Fondos</span>
                 </DataTableRow>
-          
-            
 
                 <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
@@ -425,8 +424,6 @@ const DealsList = () => {
                       <DataTableRow className="text-center">
                         <span>{item.originsOfTheFundsll }</span>
                       </DataTableRow>
-                    
-
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
                           <li className="nk-tb-action">
