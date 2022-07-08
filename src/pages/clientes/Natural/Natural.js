@@ -400,7 +400,7 @@ const Natural = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <div className="table-scroll">
+                  <div className="pr-2 table-records modal-scroll">
                     {editData && <EditMainInformation setModal={setModal} editData={editData} />}
                   </div>
                 </TabPane>

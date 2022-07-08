@@ -527,7 +527,7 @@ const ProductsList = () => {
             </a>
             <div className="p-2">
               <h5 className="title">Actualizar Plan</h5>
-              <div className="table-scroll">
+              <div className="pr-2 table-records modal-scroll">
                 <div className="mt-4">
                   <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                     <Col md="12">
