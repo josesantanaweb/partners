@@ -501,16 +501,11 @@ const DealsList = () => {
                           Guardar Operación
                 </Button>
               </div>
-           
-              { requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{color:'red'}}>Requerido: </span>: ""}
-              { requiredDocument.length != 0 && addActiveTab == 2 && requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
+              { requiredDocument.length  && addActiveTab == 2 ? <span style={{color:'red'}}>Requerido: </span>: ""}
+              { requiredDocument.length  && addActiveTab == 2 && requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
 
               { needDocument.documents?.length && addActiveTab == 4? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
               { needDocument.documents?.length > 0 && addActiveTab == 4 && needDocument.documents.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
-              {requiredDocument.length ? <span style={{ color: "red" }}>Requerido: </span> : ""}
-              {requiredDocument.map((act, i) => (
-                <span>{i + 1 + ")" + " " + act.name}. </span>
-              ))}
               <Nav tabs>
                 <NavItem>
                   <NavLink
