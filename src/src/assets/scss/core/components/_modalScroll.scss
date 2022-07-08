@@ -1,0 +1,38 @@
+$scrollBg: #ccc;
+$isScrollActive: #a8a8a8;
+$scrollHover: #b3b3b3;
+$scrollHoverTrack: #d4d4d4;
+$scrollTrack: #e1e1e1;
+
+.modal-scroll {
+  height: 80vh !important;
+  width: auto;
+  overflow-y: scroll;
+}
+
+.modal-scroll {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $scrollBg;
+    border-radius: 4px;
+    &:hover {
+      background: $scrollHover;
+    }
+    &:active {
+      background-color: $isScrollActive;
+    }
+  }
+  &::-webkit-scrollbar-track {
+    background: $scrollTrack;
+    border-radius: 4px;
+    &:hover {
+      background: $scrollHoverTrack;
+    }
+    &:active {
+      background: $scrollHoverTrack;
+    }
+  }
+}

@@ -235,7 +235,7 @@ const Legal = () => {
                         <span>{item?.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <div className="user-card">
+                        <div className="user-card d-flex align-items-center justify-content-center">
                           {item?.companyName && (
                             <UserAvatar theme="purple" text={findUpper(item?.companyName)}></UserAvatar>
                           )}

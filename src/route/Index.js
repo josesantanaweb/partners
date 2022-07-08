@@ -26,6 +26,8 @@ import CustomerId from "../pages/Library/CustomerId";
 import Documents from "../pages/documents/DocumentsList";
 import AfterSales from "../pages/afterSales/AfterSalesList";
 import ValidDeals from "../pages/validDeals/ValidDealsList";
+import Commissions from "../pages/commissions/CommissionsList";
+import AdvisorsLibrary from "../pages/advisorsLibrary/AdvisorsLibraryList";
 
 const Pages = () => {
   useLayoutEffect(() => {
@@ -152,6 +154,26 @@ const Pages = () => {
             <CompanyContextProvider>
               <Company />
             </CompanyContextProvider>
+          )}
+        ></Route>
+
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/commissions`}
+          render={() => (
+            <ProductsContextProvider>
+              <Commissions />
+            </ProductsContextProvider>
+          )}
+        ></Route>
+
+        <Route
+          exact
+          path={`${process.env.PUBLIC_URL}/advisors-library`}
+          render={() => (
+            <ProductsContextProvider>
+              <AdvisorsLibrary />
+            </ProductsContextProvider>
           )}
         ></Route>
 

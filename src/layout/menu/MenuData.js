@@ -35,6 +35,11 @@ const menu = [
     link: "/adviser",
   },
   {
+    icon: "book-fill",
+    text: "Libreria de Asesores",
+    link: "/advisors-library",
+  },
+  {
     icon: "swap-alt-fill",
     text: "Negocios",
     link: "/deals",
@@ -49,7 +54,6 @@ const menu = [
     text: "Documentos",
     link: "/documents",
   },
-
   {
     icon: "file-plus-fill",
     text: "Post Ventas",

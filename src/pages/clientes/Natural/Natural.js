@@ -257,7 +257,7 @@ const Natural = () => {
                         <span>{item.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <div className="user-card">
+                        <div className="user-card d-flex align-items-center justify-content-center">
                           {item?.names && <UserAvatar theme="purple" text={findUpper(item?.names)}></UserAvatar>}
                           <div className="user-info">
                             <span className="tb-lead">
@@ -347,7 +347,7 @@ const Natural = () => {
             >
               <Icon name="cross-sm"></Icon>
             </a>
-            <div className="p-2">
+            <div className="p-2 table-records modal-scroll">
               <h5 className="title">Agregar Cliente Natural</h5>
               <Nav tabs>
                 <NavItem>
@@ -363,7 +363,7 @@ const Natural = () => {
               </Nav>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="1">
-                  <div className="table-scroll">
+                  <div>
                     <AddMainInformation setModal={setModal} formData={formData} />
                   </div>
                 </TabPane>

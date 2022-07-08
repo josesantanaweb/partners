@@ -317,6 +317,36 @@ const DocumentsList = () => {
   const nextPageUrl = () => getPaginationPostDeals(itemPerPage, 2);
   const lastPageUrl = () => getPaginationPostDeals(itemPerPage, 3);
 
+  // Formting decimal numbers
+  function formatNumber(number, decimals, dec_point, thousands_point) {
+    if (number == null || !isFinite(number)) {
+      throw new TypeError("Número no válido");
+    }
+
+    if (!decimals) {
+      var len = number.toString().split(".").length;
+      decimals = len > 1 ? len : 0;
+    }
+
+    if (!dec_point) {
+      dec_point = ".";
+    }
+
+    if (!thousands_point) {
+      thousands_point = ",";
+    }
+
+    number = parseFloat(number).toFixed(decimals);
+
+    number = number.replace(".", dec_point);
+
+    var splitNum = number.split(dec_point);
+    splitNum[0] = splitNum[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands_point);
+    number = splitNum.join(dec_point);
+
+    return number;
+  }
+
   return (
     <React.Fragment>
       <Head title="Acciones Post Venta"></Head>
@@ -402,6 +432,7 @@ const DocumentsList = () => {
                       <DataTableRow className="text-center">
                         <span>
                           {item?.ammount} {item.currency?.isoCode}
+                          {formatNumber(item?.ammount, 0, ",", ".")} {item.currency?.isoCode}
                         </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
@@ -530,7 +561,7 @@ const DocumentsList = () => {
                         selected={dateOfEntry}
                         className="form-control"
                         onChange={(date) => setDateOfEntry(date)}
-                        dateFormat="MM/dd/yyyy"
+                        dateFormat="dd/MM/yyyy"
                         locale="es"
                       />
                     </FormGroup>
@@ -543,7 +574,7 @@ const DocumentsList = () => {
                         selected={estimatedDate}
                         className="form-control"
                         onChange={(date) => setEstimatedDate(date)}
-                        dateFormat="MM/dd/yyyy"
+                        dateFormat="dd/MM/yyyy"
                         locale="es"
                       />
                     </FormGroup>
@@ -556,7 +587,7 @@ const DocumentsList = () => {
                         selected={realDate}
                         className="form-control"
                         onChange={(date) => setRealDate(date)}
-                        dateFormat="MM/dd/yyyy"
+                        dateFormat="dd/MM/yyyy"
                         locale="es"
                       />
                     </FormGroup>

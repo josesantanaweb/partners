@@ -13,6 +13,7 @@ import {
   TooltipComponent,
   UserAvatar,
   Icon,
+  Button,
 } from "../../components/Component";
 import { findUpper } from "../../utils/Utils";
 import { useForm } from "react-hook-form";
@@ -268,28 +269,39 @@ const LibraryList = () => {
                 Clientes Naturales
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Últimos {currentItems.length} clientes naturales</p>
+                <p>Total {currentItems.length} clientes naturales</p>
               </BlockDes>
             </BlockHeadContent>
 
             <BlockHeadContent>
-              <ul className="nk-block-tools g-3">
-                <li>
-                  <div className="form-control-wrap">
-                    <div className="form-icon form-icon-right">
-                      <Icon name="search" />
-                    </div>
-                    <input
-                      type="text"
-                      value={search}
-                      onChange={handleChange}
-                      className="form-control"
-                      placeholder="Cliente, Rut, Email, Teléfono fijo o celular"
-                      style={{ minWidth: "25rem" }}
-                    />
-                  </div>
-                </li>
-              </ul>
+              <div className="toggle-wrap nk-block-tools-toggle">
+                <Button
+                  className={`btn-icon btn-trigger toggle-expand mr-n1 ${sm ? "active" : ""}`}
+                  onClick={() => updateSm(!sm)}
+                >
+                  <Icon name="menu-alt-r"></Icon>
+                </Button>
+                <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
+                  <ul className="nk-block-tools g-3">
+                    <li className="nk-block-tools-opt d-flex align-items-center">
+                      <span className="sub-text mr-3">Filtrar búsqueda:</span>
+                      <div className="form-control-wrap">
+                        <div className="form-icon form-icon-right">
+                          <Icon name="search" />
+                        </div>
+                        <input
+                          type="text"
+                          value={search}
+                          onChange={handleChange}
+                          className="form-control"
+                          placeholder="Cliente, Rut, Email, Teléfono fijo o celular"
+                          style={{ minWidth: "20rem" }}
+                        />
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
@@ -298,7 +310,7 @@ const LibraryList = () => {
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
-                  <span className="sub-text text-primary">#</span>
+                  <span className="sub-text">N. de Cliente</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Cliente</span>
@@ -384,27 +396,38 @@ const LibraryList = () => {
                 Clientes Legales/Empresa
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Últimos {customersLegal.length} clientes legales</p>
+                <p>Total {customersLegal.length} clientes legales</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
-              <ul className="nk-block-tools g-3">
-                <li>
-                  <div className="form-control-wrap">
-                    <div className="form-icon form-icon-right">
-                      <Icon name="search" />
-                    </div>
-                    <input
-                      type="text"
-                      value={searchLegal}
-                      onChange={handleChangeLegal}
-                      className="form-control"
-                      placeholder="Empresa, Categoria, Email o Teléfono"
-                      style={{ minWidth: "25rem" }}
-                    />
-                  </div>
-                </li>
-              </ul>
+              <div className="toggle-wrap nk-block-tools-toggle">
+                <Button
+                  className={`btn-icon btn-trigger toggle-expand mr-n1 ${sm ? "active" : ""}`}
+                  onClick={() => updateSm(!sm)}
+                >
+                  <Icon name="menu-alt-r"></Icon>
+                </Button>
+                <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
+                  <ul className="nk-block-tools g-3">
+                    <li className="nk-block-tools-opt d-flex align-items-center">
+                      <span className="sub-text mr-3">Filtrar búsqueda:</span>
+                      <div className="form-control-wrap">
+                        <div className="form-icon form-icon-right">
+                          <Icon name="search" />
+                        </div>
+                        <input
+                          type="text"
+                          value={searchLegal}
+                          onChange={handleChangeLegal}
+                          className="form-control"
+                          placeholder="Cliente, Rut, Email, Teléfono fijo o celular"
+                          style={{ minWidth: "20rem" }}
+                        />
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
@@ -413,7 +436,7 @@ const LibraryList = () => {
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
-                  <span className="sub-text text-primary">#</span>
+                  <span className="sub-text">N. de Cliente</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Cliente</span>
@@ -435,7 +458,7 @@ const LibraryList = () => {
                         <span>{item?.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
-                        <div className="user-card text-center d-flex align-items-center justify-content-center">
+                        <div className="user-card d-flex align-items-center justify-content-center">
                           {item?.companyName && (
                             <UserAvatar theme="purple" text={findUpper(item?.companyName)}></UserAvatar>
                           )}

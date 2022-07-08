@@ -129,23 +129,56 @@ const RolesList = () => {
   };
 
   // Function to change to delete property for an item
+  // const deleteUser = async (id) => {
+  //   Swal.fire({
+  //     title: "Atencion!",
+  //     text: "¿Esta Seguro que desea borrar el rol?",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#ffb344",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Aceptar",
+  //     cancelButtonText: "Cancelar",
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       RolesServices.deleteRole(id);
+  //       Swal.fire("Eliminado!", "Rol Eliminado Correctamente", "success");
+  //     }
+  //     window.location.reload();
+  //   });
+  // };
+
   const deleteUser = async (id) => {
-    Swal.fire({
-      title: "Atencion!",
-      text: "¿Esta Seguro que desea borrar el rol?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#ffb344",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Aceptar",
-      cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        RolesServices.deleteRole(id);
-        Swal.fire("Eliminado!", "Rol Eliminado Correctamente", "success");
-      }
-      window.location.reload();
-    });
+    try {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary m-1",
+          cancelButton: "btn btn-light m-1",
+        },
+        buttonsStyling: false,
+      });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estás seguro?",
+          text: "Se eliminará el registor seleccionado!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+        })
+        .then((result) => {
+          getRoles();
+          if (result.isConfirmed) {
+            RolesServices.deleteRole(id);
+            getRoles();
+            swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
+          }
+        });
+    } catch (error) {
+      throw new Error("Error deleting record!");
+    }
   };
 
   // Get current list, pagination
