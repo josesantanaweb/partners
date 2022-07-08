@@ -321,124 +321,28 @@ const AdviserList = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const {
-      // name,
-      // paternalLastName,
-      // sex,
-      // mobilePhone,
-      // landlinePhone,
-      // birthDate,
-      // observation,
-      // email,
-      // password,
-      // countryId,
-      // stateId,
-      // detailedAddress,
-      // haveCertificate,
-      // hasAnEducationalDegree,
-      // courseOfStudy,
-      // durationInSemesters,
-      // emergencyContact,
-      // clinicForEmergency,
-      // frontIdentificationDocumentFile,
-      // backSideIdentificationDocumentFile,
-      // identificationDocumentIssueDate,
-      // identificationDocumentExpirationDate,
-      // CAMVCertificate,
-      // CAMVCertificateIssueDate,
-      // CAMVCertificateExpirationDate,
-      // studyCertificate,
-      // studyCertificateIssueDate,
-      // studyCertificateExpirationDate,
-      // rut,
-      name,
-      paternalLastName,
-      sex,
-      mobilePhone,
-      landlinePhone,
-      observation,
-      email,
-      password,
-      detailedAddress,
-      haveCertificate,
-      hasAnEducationalDegree,
-      courseOfStudy,
-      durationInSemesters,
-      emergencyContact,
-      clinicForEmergency,
-      frontIdentificationDocumentFile,
-      backSideIdentificationDocumentFile,
-      CAMVCertificate,
-      studyCertificate,
-      rut,
-    } = submitData;
+    // ! 1
+    const { name, paternalLastName, mobilePhone, landlinePhone, observation } = submitData;
+
+    // ! 2
     let submittedData = {
       name: name,
       paternalLastName: paternalLastName,
-      sex: sex,
       mobilePhone: mobilePhone,
       landlinePhone: landlinePhone,
-      birthDate: birthDate,
       observation: observation,
-      email: email,
-      password: password,
-      countryId: countriesOptions?.value,
-      stateId: citiesOptions?.value,
-      detailedAddress: detailedAddress,
-      haveCertificate: false,
-      hasAnEducationalDegree: false,
-      courseOfStudy: courseOfStudy,
-      durationInSemesters: durationInSemesters,
-      emergencyContact: emergencyContact,
-      clinicForEmergency: clinicForEmergency,
-      frontIdentificationDocumentFile: frontIdentificationDocumentFile,
-      backSideIdentificationDocumentFile: backSideIdentificationDocumentFile,
-      identificationDocumentIssueDate: identificationDocumentIssueDate,
-      identificationDocumentExpirationDate: identificationDocumentExpirationDate,
-      CAMVCertificate: CAMVCertificate,
-      CAMVCertificateIssueDate: CAMVCertificateIssueDate,
-      CAMVCertificateExpirationDate: CAMVCertificateExpirationDate,
-      studyCertificate: studyCertificate,
-      studyCertificateIssueDate: studyCertificateIssueDate,
-      studyCertificateExpirationDate: studyCertificateExpirationDate,
-      rut: rut,
     };
 
     try {
       const formData = new FormData();
       let object = {};
 
+      // ! 3
       formData.append("name", name); //✅
       formData.append("paternalLastName", paternalLastName); //✅
-      formData.append("sex", sex); //✅
       formData.append("mobilePhone", mobilePhone); //✅
       formData.append("landlinePhone", landlinePhone); //✅
-      formData.append("birthDate", birthDate); //✅
       formData.append("observation", observation); //✅
-      formData.append("email", email); //✅
-      formData.append("password", password); //✅
-      formData.append("countryId", countriesOptions?.value); //✅
-      formData.append("stateId", citiesOptions?.value); //✅
-      formData.append("detailedAddress", detailedAddress); //✅
-      formData.append("haveCertificate", false); //✅
-      formData.append("hasAnEducationalDegree", false); //✅
-      formData.append("courseOfStudy", courseOfStudy); //✅
-      formData.append("durationInSemesters", durationInSemesters); //✅
-      formData.append("emergencyContact", emergencyContact); //✅
-      formData.append("clinicForEmergency", clinicForEmergency); //✅
-      formData.append("frontIdentificationDocumentFile", frontIdentificationDocumentFile[0]); //✅
-      formData.append("backSideIdentificationDocumentFile", backSideIdentificationDocumentFile[0]); //✅
-      formData.append("identificationDocumentIssueDate", identificationDocumentIssueDate); //✅
-      formData.append("identificationDocumentExpirationDate", identificationDocumentExpirationDate); //✅
-      formData.append("CAMVCertificate", CAMVCertificate[0]); //✅
-      formData.append("CAMVCertificateIssueDate", CAMVCertificateIssueDate); //✅
-      formData.append("CAMVCertificateExpirationDate", CAMVCertificateExpirationDate); //✅
-      formData.append("studyCertificate", studyCertificate[0]); //✅
-      formData.append("studyCertificateIssueDate", studyCertificateIssueDate); //✅
-      formData.append("studyCertificateExpirationDate", studyCertificateExpirationDate); //✅
-      formData.append("rut", rut); //✅
-
-      console.log(frontIdentificationDocumentFile[0]);
 
       formData.forEach((value, key) => (object[key] = value));
       var json = JSON.stringify(object);
@@ -450,6 +354,7 @@ const AdviserList = () => {
       getAdvisers();
       setModal({ edit: false }, { add: false });
       setErrorMessage("");
+      window.location.reload();
     } catch (error) {
       if (error.response.data.message === "you do not have the necessary permits") {
         setErrorMessage("No tienes permisos para editar");
@@ -486,6 +391,7 @@ const AdviserList = () => {
           getAdvisers();
           if (result.isConfirmed) {
             AdvisersServices.deleteAdviser(id);
+            getAdvisers();
             swalWithBootstrapButtons.fire("Eliminado!", "El registro ha sido elimindo exitosamente!.", "success");
           } else if (result.dismiss === Swal.DismissReason.cancel) {
             swalWithBootstrapButtons.fire("Acción cancelada", "El registro está seguro!", "error");
@@ -495,6 +401,9 @@ const AdviserList = () => {
       throw new Error("Error deleting record!");
     }
   };
+  useEffect(() => {
+    getAdvisers();
+  });
 
   // Get current list, pagination
   const indexOfLastItem = currentPage * itemPerPage;
@@ -591,7 +500,8 @@ const AdviserList = () => {
                         <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
                         <div className="user-info">
                           <span className="tb-lead">
-                            {item.name} {item.paternalLastName} <span className="dot dot-success d-md-none ml-1"></span>
+                            {item.name} {item.paternalLastName}
+                            <span className="dot dot-success d-md-none ml-1"></span>
                           </span>
                           <span>{item.email}</span>
                         </div>
@@ -1285,7 +1195,7 @@ const AdviserList = () => {
               {/* OnEditSubmit */}
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
-                  <Col md="6">
+                  {/* <Col md="6">
                     <FormGroup>
                       <label className="form-label">Rut</label>
                       <input
@@ -1294,11 +1204,9 @@ const AdviserList = () => {
                         name="rut"
                         defaultValue={editData?.rut}
                         placeholder="Ingresa rut"
-                        ref={register({ required: "Este campo es requerido" })}
                       />
-                      {errors.rut && <span className="invalid">{errors.rut.message}</span>}
                     </FormGroup>
-                  </Col>
+                  </Col> */}
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Nombre</label>
@@ -1329,7 +1237,7 @@ const AdviserList = () => {
                     </FormGroup>
                   </Col>
 
-                  <Col md="6">
+                  {/* <Col md="6">
                     <FormGroup>
                       <label className="form-label">Contraseña</label>
                       <input
@@ -1342,9 +1250,9 @@ const AdviserList = () => {
                       />
                       {errors.password && <span className="invalid">{errors.password.message}</span>}
                     </FormGroup>
-                  </Col>
+                  </Col> */}
 
-                  <Col md="6">
+                  {/* <Col md="6">
                     <FormGroup>
                       <label className="form-label">Correo electrónico</label>
                       <input
@@ -1355,9 +1263,9 @@ const AdviserList = () => {
                         placeholder="Ingresa email"
                         ref={register({ required: "Este campo es requerido" })}
                       />
-                      {errors.email && <span className="invalid">{errors.email.message}</span>}
+                      {errors.paternalLastName && <span className="invalid">{errors.paternalLastName.message}</span>}
                     </FormGroup>
-                  </Col>
+                  </Col> */}
 
                   <Col md="6">
                     <FormGroup>
@@ -1372,7 +1280,7 @@ const AdviserList = () => {
                       />
                     </FormGroup>
                   </Col>
-
+                  {/* 
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Teléfono 2</label>
@@ -1399,9 +1307,9 @@ const AdviserList = () => {
                         locale="es"
                       />
                     </FormGroup>
-                  </Col>
+                  </Col> */}
 
-                  <Col md="6">
+                  {/* <Col md="6">
                     <FormGroup>
                       <label className="form-label">Sexo</label>
                       <input
@@ -1414,7 +1322,7 @@ const AdviserList = () => {
                       />
                       {errors.sex && <span className="invalid">{errors.sex.message}</span>}
                     </FormGroup>
-                  </Col>
+                  </Col> */}
 
                   <Col md="12">
                     <FormGroup>
@@ -1431,7 +1339,7 @@ const AdviserList = () => {
                     </FormGroup>
                   </Col>
 
-                  <Col md="12">
+                  {/* <Col md="12">
                     <FormGroup className="border-bottom pb-1">
                       <h6>Documentos</h6>
                     </FormGroup>
@@ -1479,9 +1387,9 @@ const AdviserList = () => {
                         ¿Tiene Certificado de estudios?
                       </label>
                     </div>
-                  </Col>
+                  </Col> */}
 
-                  <Col md="6">
+                  {/* <Col md="6">
                     <FormGroup>
                       <label className="form-label">Indique la Carrera de Estudió</label>
                       <input
@@ -1517,9 +1425,9 @@ const AdviserList = () => {
                     <FormGroup className="border-bottom pb-1 pt-2">
                       <h6>Información de Emergencias</h6>
                     </FormGroup>
-                  </Col>
+                  </Col> */}
 
-                  <Col md="6">
+                  {/* <Col md="6">
                     <FormGroup>
                       <label className="form-label">Contacto de Emergencia</label>
                       <input
@@ -1549,9 +1457,9 @@ const AdviserList = () => {
                         <span className="invalid">{errors.clinicForEmergency.message}</span>
                       )}
                     </FormGroup>
-                  </Col>
+                  </Col> */}
 
-                  <Col md="12">
+                  {/* <Col md="12">
                     <FormGroup className="border-bottom pb-1 pt-2">
                       <h6>Adjuntar documentos</h6>
                     </FormGroup>
@@ -1591,9 +1499,9 @@ const AdviserList = () => {
                         </div>
                       </FormGroup>
                     </Col>
-                  </Col>
+                  </Col> */}
 
-                  <Col md="6" className="mb-4">
+                  {/* <Col md="6" className="mb-4">
                     <FormGroup>
                       <label className="form-label">Fecha de emisión (cédula)</label>
                       <DatePicker
@@ -1721,7 +1629,7 @@ const AdviserList = () => {
                         locale="es"
                       />
                     </FormGroup>
-                  </Col>
+                  </Col> */}
 
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
