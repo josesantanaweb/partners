@@ -890,7 +890,7 @@ const AdviserList = () => {
                             {...register("certificateA")}
                           />
                           <label className="custom-control-label" htmlFor="hasAnEducationalDegree">
-                            ¿Tiene Certificado de estudios?
+                            ¿Tiene Certificado CAMV?
                           </label>
                         </div>
                       </Col>

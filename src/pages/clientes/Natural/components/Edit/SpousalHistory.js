@@ -334,7 +334,7 @@ const SpousalHistory = ({ setAddActiveTab2, setGeneralStateForm, setModal, editD
         </FormGroup>
       </Col>
 
-      <Col md="3" className="mb-4">
+      {/* <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">País de nacimiento</label>
           <input
@@ -357,7 +357,7 @@ const SpousalHistory = ({ setAddActiveTab2, setGeneralStateForm, setModal, editD
             ref={register()}
           />
         </FormGroup>
-      </Col>
+      </Col> */}
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Nacionalidad</label>
