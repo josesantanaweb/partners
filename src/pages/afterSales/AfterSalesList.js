@@ -32,6 +32,7 @@ import Swal from "sweetalert2";
 const DocumentsList = () => {
   const { errors, register, handleSubmit } = useForm();
   const [postDeals, setPostDeals] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
   const [tablePostDeals, setTablePostDeals] = useState([]);
   const [search, setSearch] = useState("");
   const [sm, updateSm] = useState(false);
@@ -40,14 +41,11 @@ const DocumentsList = () => {
     edit: false,
     add: false,
   });
-
   const [dateOfEntry, setDateOfEntry] = useState(new Date());
   const [estimatedDate, setEstimatedDate] = useState(new Date());
   const [realDate, setRealDate] = useState(new Date());
-
-  const [actions, setActions] = useState([]);
-  const [actionsOptions, setActionsOptions] = useState(actions);
-
+  const [operations, setOperations] = useState([]);
+  const [operationsOptions, setOperationsOptions] = useState(operations);
   const [currencies, setCurrencies] = useState([]);
   const [currenciesOptions, setCurrenciesOptions] = useState(currencies);
 
@@ -61,7 +59,7 @@ const DocumentsList = () => {
     estimateDate: estimatedDate,
     realDate: realDate,
     actionsOptions: "",
-    ammount: Number(""),
+    ammount: "",
   });
 
   // function to reset the form
@@ -73,12 +71,12 @@ const DocumentsList = () => {
       estimateDate: "",
       realDate: "",
       actionsOptions: "",
-      ammount: Number(""),
+      ammount: "",
     });
   };
 
-  const [currentPage, setCurrentPage] = useState(1); //-> 1 o 2 o 3
-  const [itemPerPage] = useState(5); //->limit
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(5);
 
   // Get current list, pagination
   const indexOfLastItem = currentPage * itemPerPage;
@@ -93,6 +91,7 @@ const DocumentsList = () => {
     try {
       const postDeals = await AfterSalesServices.getPostDealOperations();
       const postDealData = await postDeals.data.map((data) => data);
+
       setPostDeals(postDealData);
       setTablePostDeals(postDealData);
     } catch (error) {
@@ -168,78 +167,6 @@ const DocumentsList = () => {
     setPostDeals(searchResult);
   };
 
-  // submit function to update a new item
-  const onEditSubmit = async (submitData) => {
-    const {
-      operationTypeId,
-      // dateOfEntry,
-      // estimateDate,
-      // realDate,
-      ammount,
-      currencyId,
-      file,
-      dealId,
-      aprobatedBy,
-      file2,
-    } = submitData;
-
-    let submittedData = {
-      operationTypeId: operationTypeId,
-      dateOfEntry: dateOfEntry,
-      estimateDate: estimatedDate,
-      realDate: realDate,
-      ammount: ammount,
-      currencyId: currencyId,
-      file: file[0].name,
-      dealId: dealId, //->customerId
-      aprobatedBy: aprobatedBy,
-      file2: file2[0].name,
-      actionsOptions: actionsOptions,
-    };
-
-    try {
-      // !
-
-      const formData = new FormData();
-      let object = {};
-
-      formData.append("operationTypeId", actionsOptions?.value);
-      formData.append("dateOfEntry", dateOfEntry);
-      formData.append("estimateDate", estimatedDate);
-      formData.append("realDate", realDate);
-      formData.append("ammount", ammount);
-      formData.append("currencyId", currenciesOptions?.value);
-      formData.append("file", file[0].name);
-      formData.append("dealId", editData?.id);
-      formData.append("aprobatedBy", aprobatedBy);
-      formData.append("file2", file2[0].name);
-
-      formData.forEach((value, key) => (object[key] = value));
-      var json = JSON.stringify(object);
-      JSON.stringify(Object.fromEntries(formData));
-
-      console.log(json);
-
-      // await AfterSalesServices.addPostDealOperations(formData);
-
-      setModal({ edit: false, add: false });
-      resetForm();
-      window.location.reload();
-
-      await AfterSalesServices.editPostDeal(editData.id, submittedData);
-      resetForm();
-      getPostDeals();
-      setModal({ edit: false }, { add: false });
-
-      // !
-
-      // await AfterSalesServices.editPostDeal(editData.id, submittedData);
-      // resetForm();
-      // getPostDeals();
-      // setModal({ edit: false }, { add: false });
-    } catch (error) {}
-  };
-
   // function to parse date
   const parseDate = (date) => {
     const dateParse = new Date(date);
@@ -248,74 +175,6 @@ const DocumentsList = () => {
     const year = dateParse.getFullYear();
     return `${day}/${month}/${year}`;
   };
-
-  // Edit Selects
-  // function to get valid deals post actions
-  const getDealsActions = async () => {
-    try {
-      const dealActions = await DealActionsServices.getDealAction();
-      const dealActionData = await dealActions.data.map((action) => ({
-        label: action?.name,
-        value: action?.id,
-      }));
-
-      setActions(dealActionData);
-    } catch (error) {}
-  };
-
-  useEffect(() => {
-    getDealsActions();
-  }, []);
-
-  const onOptionsActionsChange = (optionValue) => {
-    setActionsOptions(optionValue);
-  };
-
-  // function to get valid deals post actions
-  const getCurrencies = async () => {
-    try {
-      const currencies = await CurrenciesServices.getCurrency();
-      const currencyData = await currencies.data.map((currency) => ({
-        label: currency?.isoCode,
-        value: currency?.id,
-      }));
-
-      setCurrencies(currencyData);
-    } catch (error) {}
-  };
-
-  useEffect(() => {
-    getCurrencies();
-  }, []);
-
-  const onOptionsCurrenciesChange = (optionValue) => {
-    setCurrenciesOptions(optionValue);
-  };
-
-  useEffect(() => {
-    if (editData?.dateOfEntry) {
-      setDateOfEntry(new Date(editData?.dateOfEntry));
-    }
-    if (editData?.estimatedDate) {
-      setEstimatedDate(new Date(editData?.estimatedDate));
-    }
-    if (editData?.realDate) {
-      setRealDate(new Date(editData?.realDate));
-    }
-    if (editData?.actionsOptions) {
-      setActionsOptions(new Date(editData?.actionsOptions));
-    }
-  }, []);
-
-  const getPaginationPostDeals = async (limit, page) => {
-    const postDeals = await AfterSalesServices.getPostDealOperationsPags(limit, page);
-    const postDealsData = await postDeals.data.map((data) => data);
-    setPostDeals(postDealsData);
-  };
-
-  const firstPageUrl = () => getPaginationPostDeals(itemPerPage, 1);
-  const nextPageUrl = () => getPaginationPostDeals(itemPerPage, 2);
-  const lastPageUrl = () => getPaginationPostDeals(itemPerPage, 3);
 
   // Formting decimal numbers
   function formatNumber(number, decimals, dec_point, thousands_point) {
@@ -335,17 +194,115 @@ const DocumentsList = () => {
     if (!thousands_point) {
       thousands_point = ",";
     }
-
     number = parseFloat(number).toFixed(decimals);
-
     number = number.replace(".", dec_point);
-
     var splitNum = number.split(dec_point);
     splitNum[0] = splitNum[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands_point);
     number = splitNum.join(dec_point);
 
     return number;
   }
+  const [ammountInv, setAmmountIn] = useState(0);
+  const handleChangeAmmount = (ev) => setAmmountIn(Number(ev.target.value));
+  console.log(typeof ammountInv);
+
+  useEffect(() => {
+    if (editData?.dateOfEntry) {
+      setDateOfEntry(new Date(editData?.dateOfEntry));
+    }
+    if (editData?.estimatedDate) {
+      setEstimatedDate(new Date(editData?.estimatedDate));
+    }
+    if (editData?.realDate) {
+      setRealDate(new Date(editData?.realDate));
+    }
+    if (editData?.actionsOptions) {
+      setOperationsOptions(new Date(editData?.actionsOptions));
+    }
+    if (editData?.ammountInv) {
+      setOperationsOptions(new Date(editData?.ammountInv));
+    }
+  }, []);
+
+  const onEditSubmit = async (submitData) => {
+    try {
+      const formData = new FormData();
+      let object = {};
+
+      formData.append("ammount", ammountInv); //✅
+      formData.append("operationTypeId", operationsOptions?.value); //✅
+      formData.append("currencyId", currenciesOptions?.value); //✅
+      formData.append("dateOfEntry", dateOfEntry); //✅
+      formData.append("estimateDate", estimatedDate); //✅
+      formData.append("realDate", realDate); //✅
+
+      formData.forEach((value, key) => (object[key] = value));
+      var json = JSON.stringify(object);
+      JSON.stringify(Object.fromEntries(formData));
+
+      await AfterSalesServices.editPostDeal(editData.id, formData);
+      resetForm();
+      getPostDeals();
+      setModal({ edit: false }, { add: false });
+      setErrorMessage("");
+    } catch (error) {
+      if (error.response.data.message === "This advisor already exists") {
+        setErrorMessage("Asesor ya existe");
+      }
+    }
+  };
+
+  // Get Operation Type
+  const getOperationType = async () => {
+    try {
+      const operations = await DealActionsServices.getDealAction();
+      const operationsData = await operations.data.map((operation) => ({
+        label: operation?.name,
+        value: operation?.id,
+      }));
+      setOperations(operationsData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsOperationsChange = (optionValue) => {
+    setOperationsOptions(optionValue);
+  };
+
+  operations.find((item) => item.id == operationsOptions.value);
+
+  useEffect(() => {
+    getOperationType();
+    if (operationsOptions.value) {
+      return operations.find((item) => item.value == operationsOptions.value);
+    }
+  }, [operationsOptions.value]);
+
+  // Get Operation Type
+  const getCyrrencyType = async () => {
+    try {
+      const currencies = await CurrenciesServices.getCurrency();
+      const currenciesData = await currencies.data.map((operation) => ({
+        label: operation?.isoCode,
+        value: operation?.id,
+      }));
+      setCurrencies(currenciesData);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onOptionsCurrenciesChange = (optionValue) => {
+    setCurrenciesOptions(optionValue);
+  };
+
+  operations.find((item) => item.id == currenciesOptions.value);
+
+  useEffect(() => {
+    getCyrrencyType();
+    if (currenciesOptions.value) {
+      return currencies.find((item) => item.value == currenciesOptions.value);
+    }
+  }, [currenciesOptions.value]);
 
   return (
     <React.Fragment>
@@ -399,7 +356,7 @@ const DocumentsList = () => {
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Operación</span>
+                  <span className="sub-text">N. de Operación</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Operación Post Venta</span>
@@ -432,7 +389,6 @@ const DocumentsList = () => {
                       <DataTableRow className="text-center">
                         <span>
                           {item?.ammount} {item.currency?.isoCode}
-                          {formatNumber(item?.ammount, 0, ",", ".")} {item.currency?.isoCode}
                         </span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
@@ -474,47 +430,18 @@ const DocumentsList = () => {
             </div>
           </div>
           <PreviewAltCard>
-            <React.Fragment>
-              {/* {currentItems.length > 0 ? (
+            {currentItems.length > 0 ? (
               <PaginationComponent
                 itemPerPage={itemPerPage}
                 totalItems={postDeals.length}
                 paginate={paginate}
                 currentPage={currentPage}
-              /> */}
-              <ul className="pagination border p-1">
-                <li className="active page-item border">
-                  <a
-                    className="page-link border border-white btn btn-primary"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => firstPageUrl(itemPerPage, 1)}
-                  >
-                    1
-                  </a>
-                </li>
-                <li className="active page-item border">
-                  <a
-                    className="page-link border border-white btn btn-primary"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => nextPageUrl(itemPerPage, 2)}
-                  >
-                    2
-                  </a>
-                </li>
-                <li className="active page-item border">
-                  <a
-                    className="page-link border border-white btn btn-primary"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => lastPageUrl(itemPerPage, 3)}
-                  >
-                    3
-                  </a>
-                </li>
-              </ul>
-            </React.Fragment>
-            <div className="text-center">
-              <span className="text-silent">No se encontraron registros</span>
-            </div>
+              />
+            ) : (
+              <div className="text-center">
+                <span className="text-silent">No se encontraron registros</span>
+              </div>
+            )}
           </PreviewAltCard>
         </Block>
 
@@ -537,19 +464,14 @@ const DocumentsList = () => {
                   <Col md="12">
                     <FormGroup>
                       <label className="form-label">Tipo de Operación</label>
-                      <RSelect
-                        // value={editData?.actionsOptions}
-                        options={actions}
-                        onChange={onOptionsActionsChange}
-                        defautlValue={formData.actionsTypeId}
-                        // defautlValue={editData?.actionsTypeId}
 
-                        // value={editData?.operationTypeId}
-                        // options={actions}
-                        // onChange={onOptionsActionsChange}
-                        // defautlValue={formData.actionsTypeId}
-                        // name="operationTypeId"
+                      <RSelect
+                        value={operationsOptions}
+                        options={operations}
+                        onChange={onOptionsOperationsChange}
+                        defautlValue={formData?.operationTypeId}
                       />
+
                       {errors.operationTypeId && <span className="invalid">{errors.operationTypeId.message}</span>}
                     </FormGroup>
                   </Col>
@@ -599,16 +521,15 @@ const DocumentsList = () => {
                       <NumberFormat
                         className="form-control"
                         name="ammount"
-                        defaultValue={editData?.ammount}
+                        onChange={handleChangeAmmount}
                         placeholder="Ingrese monto"
                         allowNegative={false}
-                        decimalSeparator={","}
-                        decimalPrecision={2}
-                        thousandSeparator={"."}
+                        // decimalSeparator={","}
+                        // decimalPrecision={2}
+                        // thousandSeparator={"."}
                         ref={register()}
                       />
                       <small className="text-primary">Inversión actual: {editData?.ammount}</small>
-                      {/* <small className="text-primary">Inversión actual: {editData?.amountOfTheInvestment}</small>{" "} */}
                     </FormGroup>
                   </Col>
 
@@ -623,75 +544,6 @@ const DocumentsList = () => {
                       />
                     </FormGroup>
                   </Col>
-
-                  <Col md="12">
-                    <FormGroup className="border-bottom pb-2">
-                      <h6>Validación de Operación</h6>
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Aprobado por:</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="aprobatedBy"
-                        defaultValue={editData?.aprobatedBy}
-                        placeholder="Ingresa Nombre de asesor"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Subir archivo de respaldo (Administrador)</label>
-                      <div className="file-input border rounded d-flex pt-3 align-items-center bg-light">
-                        <label className="file-input__label" htmlFor="file-input">
-                          <input
-                            type="file"
-                            className="bg-light border-0"
-                            name="file"
-                            defaultValue={editData?.file}
-                            ref={register()}
-                            accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.jpg, .jpeg, .png, application/vnd.ms-excel"
-                          />
-                        </label>
-                      </div>
-                    </FormGroup>
-                  </Col>
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Subir correo de respaldo (Cliente)</label>
-                      <div className="file-input border rounded d-flex pt-3 align-items-center bg-light">
-                        <label className="file-input__label" htmlFor="file-input">
-                          <input
-                            type="file"
-                            className="bg-light border-0"
-                            name="file2"
-                            defaultValue={editData?.file2}
-                            ref={register()}
-                            accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.jpg, .jpeg, .png, application/vnd.ms-excel"
-                          />
-                        </label>
-                      </div>
-                    </FormGroup>
-                  </Col>
-
-                  {/* <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Descripción</label>
-                      <textarea
-                        className="form-control"
-                        type="textarea"
-                        name="description"
-                        defaultValue={editData?.description}
-                        placeholder="Ingresa nombre"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.description && <span className="invalid">{errors.description.message}</span>}
-                    </FormGroup>
-                  </Col> */}
 
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
