@@ -505,7 +505,7 @@ const CustomerFile = ({
           </div>
         </div>
       </Col> */}
-          <Col md="6" className="mb-4">
+      <Col md="6" className="mb-4">
         <label className="form-label">Socio Estratégico</label>
         <RSelect
           value={companiesOptions}
@@ -520,7 +520,18 @@ const CustomerFile = ({
         />
       </Col>
       <Col md="6" className="mb-4">
-    
+
+        <FormGroup>
+          <label className="form-label">Nº de Cuenta</label>
+          <input
+            type="number"
+            className="form-control disabled"
+            name="amount"
+            disabled
+            defaultValue={formData.amount}
+          />
+        </FormGroup>
+
       </Col>
       <Col md="8" className="mb-4">
 
@@ -538,18 +549,6 @@ const CustomerFile = ({
             defautlValue={formData.planId}
           />
         </FormGroup>
-      </Col>
-  
-      <Col md="8" className="mb-4">
-        <label className="form-label">Institución</label>
-        <RSelect
-          value={companiesOptions}
-          options={companies}
-          onChange={(e) => {
-            onOptionsCompaniesChange(e);
-          }}
-          defautlValue={formData.companyId}
-        />
       </Col>
       <Col md="4" className="mb-4">
         <FormGroup>
@@ -613,10 +612,12 @@ const CustomerFile = ({
       <Col md="5" className="mb-4">
         <FormGroup>
           <label className="form-label">Valor neto total USD</label>
-          <input
-            type="number"
+          <NumberFormat
+            name="ammount"
+            type="text"
+            defaultValue={formData.ammount}
+            placeholder="Ingrese monto"
             className="form-control"
-            name="amount"
             onChange={(e) =>
               setGeneralStateForm((prev) => {
                 return {
@@ -625,8 +626,10 @@ const CustomerFile = ({
                 };
               })
             }
-            ref={register({ required: "Este campo es obligatorio *" })}
-            defaultValue={formData.amount}
+            allowNegative={false}
+            decimalSeparator={","}
+            decimalPrecision={2}
+            thousandSeparator={"."}
           />
         </FormGroup>
       </Col>
