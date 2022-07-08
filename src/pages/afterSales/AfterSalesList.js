@@ -527,7 +527,6 @@ const DocumentsList = () => {
                         // decimalSeparator={","}
                         // decimalPrecision={2}
                         // thousandSeparator={"."}
-                        ref={register()}
                       />
                       <small className="text-primary">Inversión actual: {editData?.ammount}</small>
                     </FormGroup>
