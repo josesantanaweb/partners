@@ -485,6 +485,12 @@ const AdviserList = () => {
                 <span className="sub-text">Estado</span>
               </DataTableRow>
               <DataTableRow className="text-center">
+                <span className="sub-text">Observación</span>
+              </DataTableRow>
+              <DataTableRow className="text-center">
+                <span className="sub-text">Dirección</span>
+              </DataTableRow>
+              <DataTableRow className="text-center">
                 <span className="sub-text">Acción</span>
               </DataTableRow>
             </DataTableHead>
@@ -510,9 +516,19 @@ const AdviserList = () => {
                     <DataTableRow className="text-center">
                       <span>{item.mobilePhone || "9 99999999"}</span>
                     </DataTableRow>
+
+                    <DataTableRow className="text-center">
+                      <span>{item.observation}</span>
+                    </DataTableRow>
+
+                    <DataTableRow className="text-center">
+                      <span>{item.address?.detailedAddress}</span>
+                    </DataTableRow>
+
                     <DataTableRow className="text-center">
                       <span className={`tb-status text-success`}>{item.status.name}</span>
                     </DataTableRow>
+
                     <DataTableRow className="nk-tb-col-tools">
                       <ul className="nk-tb-actions gx-1">
                         <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
@@ -1339,17 +1355,60 @@ const AdviserList = () => {
                     </FormGroup>
                   </Col>
 
+                  <Col md="12">
+                    <FormGroup className="border-bottom pb-1">
+                      <h6>Información Académica y Universitaria</h6>
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Carrera estudiada o cursada</label>
+                      <input
+                        className="form-control"
+                        name="courseOfStudy"
+                        placeholder="Ingresa carrear"
+                        defaultValue={editData?.courseOfStudy}
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Contacto de emergencias</label>
+                      <input
+                        className="form-control"
+                        name="emergencyContact"
+                        placeholder="Ingresa contacto"
+                        defaultValue={editData?.emergencyContact}
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  {/* 
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Dirección</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="detailedAddress"
+                        defaultValue={editData?.detailedAddress}
+                        placeholder="Ingresa dirección detallada"
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col> */}
+
                   {/* <Col md="12">
                     <FormGroup className="border-bottom pb-1">
                       <h6>Documentos</h6>
                     </FormGroup>
                   </Col>
 
-                  <Col md="12">
-                    <FormGroup className="border-bottom pb-1">
-                      <h6>Información Académica y Universitaria</h6>
-                    </FormGroup>
-                  </Col>
+                  
 
                   <Col md="6">
                     <div className="custom-control custom-checkbox">
