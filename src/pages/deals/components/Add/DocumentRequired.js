@@ -17,7 +17,7 @@ import LibraryServices from "../../../../services/LibraryServices";
 import DocumentsServices from "../../../../services/DocumentsServices";
 import CustomersServices from "../../../../services/CustomersServices";
 
-const DocumentRequired = ({ libraryClient ,setModal, editData, selectClient, needDocument,requiredDocument}) => {
+const DocumentRequired = ({ libraryClient, setLibraryClient ,setModal, editData, selectClient, needDocument,requiredDocument}) => {
 
   //useEffect(()=> console.log('hasta cuando',needDocument) ,[])
 
@@ -26,6 +26,12 @@ const DocumentRequired = ({ libraryClient ,setModal, editData, selectClient, nee
   const [errorMessage, setErrorMessage] = useState("");
   useEffect(()=> console.log(libraryClient),[])
   
+  const libraryClientMostrar = libraryClient.map( elem => {
+    return {
+      ...elem,mostrar: true
+    }
+  })
+
   return(
     <>
       <Col md="12">
@@ -33,26 +39,40 @@ const DocumentRequired = ({ libraryClient ,setModal, editData, selectClient, nee
           <div className="nk-tb-list is-separate is-medium">
             <h6 className="text-center">Documentos Requeridos:</h6>
           <DataTableHead className="nk-tb-item scrollbar-fluid overflow-auto">
-         
           </DataTableHead>
           {
+          
             needDocument.documents
-            ? needDocument.documents.map(act => 
+            ? needDocument.documents.map(act => { 
+
+
+              return <DataTableItem key={act.id} className=" text-center border-bottom border bg-light">
               
-              <DataTableItem key={act.id} className=" text-center border-bottom border bg-light">
-               
-               <DataTableRow className=" text-center border-bottom border ">{act.name}</DataTableRow>
+              <DataTableRow className=" text-center border-bottom border ">{act.name}</DataTableRow>
                   {
-                    libraryClient?
-                    libraryClient.map( elem => {
+                    libraryClientMostrar?
+                    libraryClientMostrar.map( (elem, index) => {
                       if(elem.documentType.id == act.id){
                         return   <>
-                          <DataTableRow className=" text-center border-bottom border ">Created: {elem.createdAt?.split('T')?.[0]}</DataTableRow>
-                          <DataTableRow className=" text-center border-bottom border ">Exp: {elem.expirationDate?.split('T')?.[0]}</DataTableRow>
-                          <DataTableRow className="p-0"><Button color="primary" size="md"><a target="blank" className="text-white" href={elem.url} >Ver</a></Button></DataTableRow>
-                          <DataTableRow className="p-0 m-0"><a target="blank" className="text-white" href={elem.url} ><Button  color="primary" size="md">Vincular</Button></a></DataTableRow>
+                        {
+                          elem.mostrar
+                          ? <>
+                            <DataTableRow className=" text-center border-bottom border ">Created: {elem.createdAt?.split('T')?.[0]}</DataTableRow>
+                            <DataTableRow className=" text-center border-bottom border ">Exp: {elem.expirationDate?.split('T')?.[0]}</DataTableRow>
+                            <DataTableRow ><Button color="primary" size="md"><a target="blank" className="text-white" href={elem.url} >Ver</a></Button></DataTableRow>
+                            <DataTableRow  ><a target="blank" className="text-white" href={elem.url}><Button  color="primary" size="md"  onClick={()=>{ 
+                            setLibraryClient( prev => {
+                              let aux = [...prev]
+                              aux[index].mostrar =  false
+
+                              return aux
+                            })
+
+                            }} >Vincular</Button></a></DataTableRow>
+                            </>:<DataTableRow  ><a target="blank" className="text-white" href={elem.url} ><Button  color="primary" size="md">Check</Button></a></DataTableRow>
+                        }
+                          
                           </>
-                     
                       }
                       return <></>
                     }):<></>
@@ -66,7 +86,7 @@ const DocumentRequired = ({ libraryClient ,setModal, editData, selectClient, nee
      
 
               </DataTableItem>
-              
+              } 
               )
             :<>
             </>

@@ -569,7 +569,7 @@ const DealsList = () => {
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="4">
-                  <DocumentRequired  libraryClient={libraryClient} needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
+                  <DocumentRequired setLibraryClient={setLibraryClient} libraryClient={libraryClient} needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
                 </TabPane>
                 <TabPane tabId="4"></TabPane>
               </TabContent>
