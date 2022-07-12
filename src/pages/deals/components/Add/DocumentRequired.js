@@ -141,12 +141,12 @@ const DocumentRequired = ({ generalStateForm, setGeneralStateForm, libraryClient
         </div>
       </Col>
 
-      <ModalUploadDocument setGeneralStateForm={setGeneralStateForm} modalDocument={modalDocument} documentSelect={documentSelect} setModalDocument={setModalDocument} selectClient={selectClient} setNewNeedDocument={setNewNeedDocument} />
+      <ModalUploadDocument generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} modalDocument={modalDocument} documentSelect={documentSelect} setModalDocument={setModalDocument} selectClient={selectClient} setNewNeedDocument={setNewNeedDocument} />
     </>
   )
 }
 
-const ModalUploadDocument = ({setGeneralStateForm, modalDocument, setModalDocument, selectClient = {}, documentSelect, setNewNeedDocument }) => {
+const ModalUploadDocument = ({generalStateForm,setGeneralStateForm, modalDocument, setModalDocument, selectClient = {}, documentSelect, setNewNeedDocument }) => {
   // leallg document required
   const { register, handleSubmit } = useForm();
   const [documents, setDocuments] = useState([]);
@@ -220,7 +220,7 @@ const ModalUploadDocument = ({setGeneralStateForm, modalDocument, setModalDocume
 
 
 
-      setGeneralStateForm(prev => {
+      await setGeneralStateForm(prev => {
         return {
           ...prev,
           document: [...prev.documents,
@@ -230,9 +230,11 @@ const ModalUploadDocument = ({setGeneralStateForm, modalDocument, setModalDocume
           },]
         }
       })
-
+    console.log(generalStateForm)
 
     } catch (error) {
+      console.log(generalStateForm)
+
       throw error;
     }
   };
