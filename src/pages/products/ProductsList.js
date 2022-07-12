@@ -16,6 +16,7 @@ import {
   DataTableItem,
   TooltipComponent,
   PreviewAltCard,
+  RSelect,
 } from "../../components/Component";
 import Content from "../../layout/content/Content";
 import Head from "../../layout/head/Head";
@@ -24,6 +25,7 @@ import { ProductsContext } from "./ProductsContext";
 import ProductsServices from "../../services/ProductsServices";
 import DocumentsServices from "../../services/DocumentsServices";
 import SegmentsServices from "../../services/SegmentsServices";
+import CompaniesServices from "../../services/CompanyServices";
 import Swal from "sweetalert2";
 
 const ProductsList = () => {
@@ -35,6 +37,9 @@ const ProductsList = () => {
   const [customerLegal, setCustomerLegal] = useState();
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
+
+  const [companies, setCompanies] = useState([]);
+  const [companiesOptions, setCompaniesOptions] = useState(companies);
 
   useEffect(() => {
     getDocuments();
@@ -82,6 +87,36 @@ const ProductsList = () => {
     } catch (error) {}
   };
 
+  const getCompanies = async () => {
+    try {
+      const documents = await DocumentsServices.getDocuments();
+      const documentsData = await documents.data.map((company) => ({
+        label: company?.name,
+        value: company?.id,
+        description: document?.description,
+      }));
+      setCompanies(documentsData);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // function to find document type
+  const filterCompanyType = companies.find((item) => item.value == companiesOptions.value);
+
+  const onOptionsCompaniesChange = (optionValue) => {
+    setCompaniesOptions(optionValue);
+  };
+
+  useEffect(() => {
+    getCompanies();
+    if (companiesOptions.value) {
+      return companies.find((item) => item.value == companiesOptions?.value);
+    }
+  }, [companiesOptions.value]);
+
+  console.log(companiesOptions?.value);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -117,7 +152,8 @@ const ProductsList = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { name, description, observation, documentsId, customerNaturalField, customerLegalField } = submitData;
+    const { name, description, observation, comapanyId, documentsId, customerNaturalField, customerLegalField } =
+      submitData;
     const numberDocuments = documentsId.map((i) => Number(i));
     const numberSegmentsNatural = customerNaturalField.map((i) => Number(i));
     const numberSegmentsLegal = customerLegalField.map((i) => Number(i));
@@ -125,12 +161,15 @@ const ProductsList = () => {
       name: name,
       description: description,
       observation: observation,
+      companyId: companiesOptions?.value,
       documentsId: numberDocuments,
       customerSegmentsId: [...numberSegmentsNatural, ...numberSegmentsLegal],
     };
 
     try {
       await ProductsServices.addProduct(submittedData);
+
+      console.log(submittedData);
       resetForm();
       getProducts();
       setModal({ edit: false }, { add: false });
@@ -140,7 +179,8 @@ const ProductsList = () => {
 
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
-    const { name, description, observation, documentsId, customerNaturalField, customerLegalField } = submitData;
+    const { name, description, observation, comapanyId, documentsId, customerNaturalField, customerLegalField } =
+      submitData;
     const numberDocuments = documentsId.map((i) => Number(i));
     const numberSegmentsNatural = customerNaturalField.map((i) => Number(i));
     const numberSegmentsLegal = customerLegalField.map((i) => Number(i));
@@ -148,6 +188,7 @@ const ProductsList = () => {
       name: name,
       description: description,
       observation: observation,
+      companyId: companiesOptions?.value,
       documentsId: numberDocuments,
       customerSegmentsId: [...numberSegmentsNatural, ...numberSegmentsLegal],
     };
@@ -171,16 +212,6 @@ const ProductsList = () => {
       customerLegalField: data.customerSegmentsId.map((item) => String(item)),
     });
   };
-
-  // Function to change to delete property for an item
-  // const deletePlan = async (id) => {
-  //   try {
-  //     await ProductsServices.deleteProduct(id);
-  //     getProducts();
-  //   } catch (error) {
-  //     throw new Error("Error deleting record!");
-  //   }
-  // };
 
   const deleteProduct = (id) => {
     try {
@@ -397,7 +428,7 @@ const ProductsList = () => {
                     </Col>
                     <Col md="12">
                       <FormGroup>
-                        <label className="form-label">Observacion</label>
+                        <label className="form-label">Observación</label>
                         <textarea
                           className="form-control"
                           name="observation"
@@ -409,6 +440,18 @@ const ProductsList = () => {
                         />
                       </FormGroup>
                     </Col>
+                    <Col md="12">
+                      <FormGroup>
+                        <label className="form-label">Socio Estratégico/Empresa</label>
+                        <RSelect
+                          value={companiesOptions}
+                          options={companies}
+                          onChange={onOptionsCompaniesChange}
+                          defautlValue={formData?.companyId}
+                        />
+                      </FormGroup>
+                    </Col>
+
                     <Col md="12">
                       <div className="custom-tab">
                         <h6>Informacion Solicitada Para Cliente Natural</h6>
