@@ -146,7 +146,7 @@ const DocumentRequired = ({ generalStateForm, setGeneralStateForm, libraryClient
   )
 }
 
-const ModalUploadDocument = ({ modalDocument, setModalDocument, selectClient = {}, documentSelect, setNewNeedDocument }) => {
+const ModalUploadDocument = ({setGeneralStateForm, modalDocument, setModalDocument, selectClient = {}, documentSelect, setNewNeedDocument }) => {
   // leallg document required
   const { register, handleSubmit } = useForm();
   const [documents, setDocuments] = useState([]);
@@ -209,9 +209,9 @@ const ModalUploadDocument = ({ modalDocument, setModalDocument, selectClient = {
     try {
       const response = await LibraryServices.addCustomerLibDoc(formData, parseInt(selectClient?.id))
       console.log(response)
-      setModalDocument({ edit: false, add: false });
+      await setModalDocument({ edit: false, add: false });
       console.log(documentSelect)
-      setNewNeedDocument(prev => {
+      await setNewNeedDocument(prev => {
         let aux = [...prev]
         aux[documentSelect.index].mostrar = false
 
