@@ -89,7 +89,7 @@ const ProductsList = () => {
 
   const getCompanies = async () => {
     try {
-      const documents = await DocumentsServices.getDocuments();
+      const documents = await CompaniesServices.getCompany();
       const documentsData = await documents.data.map((company) => ({
         label: company?.name,
         value: company?.id,
@@ -114,8 +114,6 @@ const ProductsList = () => {
       return companies.find((item) => item.value == companiesOptions?.value);
     }
   }, [companiesOptions.value]);
-
-  console.log(companiesOptions?.value);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -169,7 +167,6 @@ const ProductsList = () => {
     try {
       await ProductsServices.addProduct(submittedData);
 
-      console.log(submittedData);
       resetForm();
       getProducts();
       setModal({ edit: false }, { add: false });
