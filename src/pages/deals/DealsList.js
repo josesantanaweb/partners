@@ -156,7 +156,7 @@ const DealsList = () => {
       const dealsData = await deals.data.map((data) => data);
       console.log(dealsData);
       setData(dealsData);
-    } catch (error) {}
+    } catch (error) { }
   };
   useEffect(() => {
     getDeals();
@@ -166,7 +166,7 @@ const DealsList = () => {
 
   const [selectClient, setSelectClient] = useState({});
   const [needDocument, setNeedDocument] = useState({
-    documents:[]
+    documents: []
   });
   const [libraryClient, setLibraryClient] = useState([]);
   const { errors, register, setValue, handleSubmit } = useForm();
@@ -184,7 +184,7 @@ const DealsList = () => {
       const dealsData = await deals.data.map((data) => data);
       console.log(dealsData);
       setData(dealsData);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const onSubmit = (data) => {
@@ -233,7 +233,7 @@ const DealsList = () => {
           ],
         },
         investorProfile: [...generalStateForm.investorProfile],
-        documents: [],
+        documents: [...generalStateForm.documents],
       };
 
     if (selectClient.type.id == 2) {
@@ -392,69 +392,69 @@ const DealsList = () => {
               {/*Head*/}
               {currentItems.length > 0
                 ? currentItems.map((item) => (
-                    <DataTableItem key={item.id}>
-                      <DataTableRow className="text-center">
-                        <span>{item.id}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.customer.names}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.customer.rut}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>
-                          {item?.createdByAdvisor
-                            ? item?.createdByAdvisor?.name + " " + item?.createdByAdvisor?.paternalLastName
-                            : item?.createdByUser?.name + " " + item?.createdByUser?.lastName}
-                        </span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.product.name}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.company.name}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.yearsOfThePlan}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.amountOfTheInvestment}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.currency.name}</span>
-                      </DataTableRow>
-                      <DataTableRow className="text-center">
-                        <span>{item.originsOfTheFunds }</span>
-                      </DataTableRow>
-                      <DataTableRow className="nk-tb-col-tools">
-                        <ul className="nk-tb-actions gx-1">
-                          <li className="nk-tb-action">
-                            {/* onClick={() => onEditClick(item.id, item)} */}
-                            <TooltipComponent
-                              tag="a"
-                              containerClassName="btn btn-trigger btn-icon"
-                              id={"edit" + 1}
-                              icon="edit-alt-fill"
-                              direction="top"
-                              text="Editar"
-                            />
-                          </li>
-                          <li className="nk-tb-action">
-                            {/* onClick={() => deleteDocument(item.id)} */}
-                            <TooltipComponent
-                              tag="a"
-                              containerClassName="btn btn-trigger btn-icon"
-                              id={"delete" + 1}
-                              icon="trash-fill"
-                              direction="top"
-                              text="Eliminar"
-                            />
-                          </li>
-                        </ul>
-                      </DataTableRow>
-                    </DataTableItem>
-                  ))
+                  <DataTableItem key={item.id}>
+                    <DataTableRow className="text-center">
+                      <span>{item.id}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.customer.names}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.customer.rut}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>
+                        {item?.createdByAdvisor
+                          ? item?.createdByAdvisor?.name + " " + item?.createdByAdvisor?.paternalLastName
+                          : item?.createdByUser?.name + " " + item?.createdByUser?.lastName}
+                      </span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.product.name}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.company.name}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.yearsOfThePlan}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.amountOfTheInvestment}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.currency.name}</span>
+                    </DataTableRow>
+                    <DataTableRow className="text-center">
+                      <span>{item.originsOfTheFunds}</span>
+                    </DataTableRow>
+                    <DataTableRow className="nk-tb-col-tools">
+                      <ul className="nk-tb-actions gx-1">
+                        <li className="nk-tb-action">
+                          {/* onClick={() => onEditClick(item.id, item)} */}
+                          <TooltipComponent
+                            tag="a"
+                            containerClassName="btn btn-trigger btn-icon"
+                            id={"edit" + 1}
+                            icon="edit-alt-fill"
+                            direction="top"
+                            text="Editar"
+                          />
+                        </li>
+                        <li className="nk-tb-action">
+                          {/* onClick={() => deleteDocument(item.id)} */}
+                          <TooltipComponent
+                            tag="a"
+                            containerClassName="btn btn-trigger btn-icon"
+                            id={"delete" + 1}
+                            icon="trash-fill"
+                            direction="top"
+                            text="Eliminar"
+                          />
+                        </li>
+                      </ul>
+                    </DataTableRow>
+                  </DataTableItem>
+                ))
                 : null}
             </div>
           </div>
@@ -481,103 +481,107 @@ const DealsList = () => {
           size="lg"
           style={{ maxWidth: "1192px" }}
         >
-        <form onSubmit={handleSubmit(onSubmit)}>
-        <ModalBody>
-            <a
-              href="#close"
-              onClick={(ev) => {
-                ev.preventDefault();
-                onFormCancel();
-                setRequiredDocument([]);
-                setNeedDocument({documents:[]});
-              }}
-              className="close"
-            >
-              <Icon name="cross-sm"></Icon>
-            </a>
-            <div className="p-2 table-record">
-              <div className="d-flex justify-content-between align-items-center">
-                <h5 className="title" >Crear Operación</h5>
-                <Button color="primary" type="submit" onClick={ e=> postDeals(e)}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <ModalBody>
+              <a
+                href="#close"
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  onFormCancel();
+                  setRequiredDocument([]);
+                  setNeedDocument({ documents: [] });
+                }}
+                className="close"
+              >
+                <Icon name="cross-sm"></Icon>
+              </a>
+              <div className="p-2 table-record">
+                <div className="d-flex justify-content-between align-items-center">
+                  <h5 className="title" >Crear Operación</h5>
+                  <Button color="primary" type="submit" onClick={e => postDeals(e)}>
                     <Icon name="plus" className="mr-1"></Icon>
-                          Guardar Operación
-                </Button>
-              </div>
-          
-              { requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{color:'red'}}>Requerido: </span>: ""}
-              { requiredDocument.length != 0 && addActiveTab == 2 && requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
+                    Guardar Operación
+                  </Button>
+                  <Button color="primary" type="submit" onClick={e => console.log(generalStateForm)}>
+                    <Icon name="plus" className="mr-1"></Icon>
+                    Guardar Operación2
+                  </Button>
+                </div>
 
-              { needDocument.documents?.length && addActiveTab == 4? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
-              { needDocument.documents?.length > 0 && addActiveTab == 4 && needDocument.documents.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
-          
-              <Nav tabs>
-                <NavItem>
-                  <NavLink
-                    tag="a"
-                    href="#tab"
-                    className={classnames({ active: addActiveTab === "1" })}
-                    onClick={() => setAddActiveTab("1")}
-                  >
-                    Negocio
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    tag="a"
-                    href="#tab"
-                    className={classnames({ active: addActiveTab === "2" })}
-                    onClick={() => setAddActiveTab("2")}
-                  >
-                    Ficha de Cliente
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    tag="a"
-                    href="#tab"
-                    className={classnames({ active: addActiveTab === "3" })}
-                    onClick={() => setAddActiveTab("3")}
-                  >
-                    Perfil de Inversionista
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    tag="a"
-                    href="#tab"
-                    className={classnames({ active: addActiveTab === "4" })}
-                    onClick={() => setAddActiveTab("4")}
-                  >
-                    Ajuntar Documentos
-                  </NavLink>
-                </NavItem>
-              </Nav>
-              <TabContent activeTab={addActiveTab}>
-                <TabPane tabId="1">
-                  <AddMainInformation  setAddActiveTab={setAddActiveTab} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setValue={setValue} registerState={register} handleSubmitGeneral={handleSubmit} setLibraryClient={setLibraryClient} setModal={setModal} setNeedDocument={setNeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
-                  {/* formData={formData} */}
-                </TabPane>
-              </TabContent>
-              <TabContent activeTab={addActiveTab}>
-                <TabPane tabId="2">
-                  <AddCustomerFile setAddActiveTab1={setAddActiveTab} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient}/>
-                  {/* formData={formData} */}
-                </TabPane>
-              </TabContent>
-              <TabContent activeTab={addActiveTab}>
-                <TabPane tabId="3">
-                  <InvestorProfile setAddActiveTab={setAddActiveTab} setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient}/>
-                </TabPane>
-              </TabContent>
-              <TabContent activeTab={addActiveTab}>
-                <TabPane tabId="4">
-                  <DocumentRequired setLibraryClient={setLibraryClient} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} libraryClient={libraryClient} needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
-                </TabPane>
-                <TabPane tabId="4"></TabPane>
-              </TabContent>
-            </div>
-          </ModalBody>
-        </form>
+                {requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{ color: 'red' }}>Requerido: </span> : ""}
+                {requiredDocument.length != 0 && addActiveTab == 2 && requiredDocument.map((act, i) => <span>{i + 1 + ")" + ' ' + act.name}. </span>)}
+
+                {needDocument.documents?.length && addActiveTab == 4 ? <span style={{ color: 'red' }}>Información del cliente requerida: </span> : ""}
+                {needDocument.documents?.length > 0 && addActiveTab == 4 && needDocument.documents.map((act, i) => <span>{i + 1 + ")" + ' ' + act.name}. </span>)}
+
+                <Nav tabs>
+                  <NavItem>
+                    <NavLink
+                      tag="a"
+                      href="#tab"
+                      className={classnames({ active: addActiveTab === "1" })}
+                      onClick={() => setAddActiveTab("1")}
+                    >
+                      Negocio
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      tag="a"
+                      href="#tab"
+                      className={classnames({ active: addActiveTab === "2" })}
+                      onClick={() => setAddActiveTab("2")}
+                    >
+                      Ficha de Cliente
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      tag="a"
+                      href="#tab"
+                      className={classnames({ active: addActiveTab === "3" })}
+                      onClick={() => setAddActiveTab("3")}
+                    >
+                      Perfil de Inversionista
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      tag="a"
+                      href="#tab"
+                      className={classnames({ active: addActiveTab === "4" })}
+                      onClick={() => setAddActiveTab("4")}
+                    >
+                      Ajuntar Documentos
+                    </NavLink>
+                  </NavItem>
+                </Nav>
+                <TabContent activeTab={addActiveTab}>
+                  <TabPane tabId="1">
+                    <AddMainInformation setAddActiveTab={setAddActiveTab} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setValue={setValue} registerState={register} handleSubmitGeneral={handleSubmit} setLibraryClient={setLibraryClient} setModal={setModal} setNeedDocument={setNeedDocument} setRequiredDocument={setRequiredDocument} setSelectClient={setSelectClient} />
+                    {/* formData={formData} */}
+                  </TabPane>
+                </TabContent>
+                <TabContent activeTab={addActiveTab}>
+                  <TabPane tabId="2">
+                    <AddCustomerFile setAddActiveTab1={setAddActiveTab} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient} />
+                    {/* formData={formData} */}
+                  </TabPane>
+                </TabContent>
+                <TabContent activeTab={addActiveTab}>
+                  <TabPane tabId="3">
+                    <InvestorProfile setAddActiveTab={setAddActiveTab} setGeneralStateForm={setGeneralStateForm} setModal={setModal} selectClient={selectClient} />
+                  </TabPane>
+                </TabContent>
+                <TabContent activeTab={addActiveTab}>
+                  <TabPane tabId="4">
+                    <DocumentRequired setLibraryClient={setLibraryClient} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} libraryClient={libraryClient} needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
+                  </TabPane>
+                  <TabPane tabId="4"></TabPane>
+                </TabContent>
+              </div>
+            </ModalBody>
+          </form>
         </Modal>
 
         <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">

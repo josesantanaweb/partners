@@ -16,6 +16,7 @@ import Head from "../../../../layout/head/Head";
 import LibraryServices from "../../../../services/LibraryServices";
 import DocumentsServices from "../../../../services/DocumentsServices";
 import CustomersServices from "../../../../services/CustomersServices";
+import { set } from "lodash";
 
 const DocumentRequired = ({ generalStateForm, setGeneralStateForm, libraryClient, setLibraryClient, setModal, editData, selectClient, needDocument, requiredDocument }) => {
 
@@ -46,8 +47,13 @@ const DocumentRequired = ({ generalStateForm, setGeneralStateForm, libraryClient
   }, [needDocument, libraryClient])
 
   const [documentSelect, setDocumentSelect] = useState({
-    index: "",
-    id: ""
+    index: 0,
+    id: 0,
+    elemt: {
+      description:'',
+      id: 0,
+      name: '0'
+    }
   })
 
   return (
@@ -96,10 +102,10 @@ const DocumentRequired = ({ generalStateForm, setGeneralStateForm, libraryClient
                                       setGeneralStateForm(prev => {
                                         return {
                                           ...prev,
-                                          document: [...prev.documents,
+                                          documents: [...prev.documents,
                                           {
                                             "documentTypeId": elem.documentType.id,
-                                            "customerLibraryId": elem.id
+                                            "customerLibraryId": parseInt(elem.id) 
                                           },]
                                         }
                                       })
@@ -122,7 +128,8 @@ const DocumentRequired = ({ generalStateForm, setGeneralStateForm, libraryClient
                           setModalDocument({ add: true });
                           setDocumentSelect({
                             index: i,
-                            id: act.id
+                            id: act.id,
+                            elemt: act
                           })
                         }}>
                           Subir
@@ -146,8 +153,10 @@ const DocumentRequired = ({ generalStateForm, setGeneralStateForm, libraryClient
   )
 }
 
-const ModalUploadDocument = ({generalStateForm,setGeneralStateForm, modalDocument, setModalDocument, selectClient = {}, documentSelect, setNewNeedDocument }) => {
+const ModalUploadDocument = ({ generalStateForm, setGeneralStateForm, modalDocument, setModalDocument, selectClient = {}, documentSelect, setNewNeedDocument }) => {
   // leallg document required
+
+  const [idActual, setIdActual] = useState(0)
   const { register, handleSubmit } = useForm();
   const [documents, setDocuments] = useState([]);
   const [documentsOptions, setDocumentsOptions] = useState(documents);
@@ -157,9 +166,8 @@ const ModalUploadDocument = ({generalStateForm,setGeneralStateForm, modalDocumen
   });
   useEffect(() => {
     getDocuments();
-
+    console.log(documentSelect)
   }, []);
-
   // Obtener lista de documentos requeridos
   const getDocuments = async () => {
     try {
@@ -169,6 +177,7 @@ const ModalUploadDocument = ({generalStateForm,setGeneralStateForm, modalDocumen
         value: document?.id,
         description: document?.description,
       }));
+ 
       setDocuments(documentsData);
     } catch (error) {
       throw error;
@@ -223,18 +232,16 @@ const ModalUploadDocument = ({generalStateForm,setGeneralStateForm, modalDocumen
       await setGeneralStateForm(prev => {
         return {
           ...prev,
-          document: [...prev.documents,
+          documents: [...prev.documents,
           {
             "documentTypeId": documentSelect.id,
-            "customerLibraryId": response.id
+            "customerLibraryId": parseInt(response.id) 
           },]
         }
       })
-    console.log(generalStateForm)
-
-    } catch (error) {
       console.log(generalStateForm)
 
+    } catch (error) {
       throw error;
     }
   };
@@ -273,20 +280,26 @@ const ModalUploadDocument = ({generalStateForm,setGeneralStateForm, modalDocumen
                   <RSelect
                     value={documentsOptions}
                     options={documents}
-
+                    placeholder={documentSelect?.elemt?.name}
                     onChange={(e) => {
-                      onOptionsDocumentsChange(e)
+                      let aux = {
+                        description:documentSelect.elemt.description,
+                        label: documentSelect.elemt.name,
+                        value: documentSelect.elemt.id
+                      }
+                      onOptionsDocumentsChange(aux)
+                      console.log("1", documentSelect)
+                      console.log("2", e)
                       setPostData(prev => {
                         return {
                           ...prev,
                           documentTypeId: e.value
                         }
                       })
-                      console.log(e)
-                      console.log(postData)
-                      console.log(selectClient)
+
                     }}
-                    defaultValue={postData.documentTypeId}
+                    defaultValue={documentSelect.elemt.id}
+  
                   />
                 </FormGroup>
               </Col>
@@ -307,7 +320,7 @@ const ModalUploadDocument = ({generalStateForm,setGeneralStateForm, modalDocumen
                         }
                       })
                     }}
-                    placeholder="Descripción documento"
+                    placeholder={documentsOptions.description}
                   />
                 </FormGroup>
               </Col>
