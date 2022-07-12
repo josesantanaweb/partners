@@ -165,7 +165,9 @@ const DealsList = () => {
   const [requiredDocument, setRequiredDocument] = useState([]);
 
   const [selectClient, setSelectClient] = useState({});
-  const [needDocument, setNeedDocument] = useState({});
+  const [needDocument, setNeedDocument] = useState({
+    documents:[]
+  });
   const [libraryClient, setLibraryClient] = useState([]);
   const { errors, register, setValue, handleSubmit } = useForm();
   //State general de formual incluye todos los tabs
@@ -487,7 +489,7 @@ const DealsList = () => {
                 ev.preventDefault();
                 onFormCancel();
                 setRequiredDocument([]);
-                setNeedDocument([]);
+                setNeedDocument({documents:[]});
               }}
               className="close"
             >

@@ -23,14 +23,34 @@ const DocumentRequired = ({ libraryClient, setLibraryClient ,setModal, editData,
 
 
   const [modalDocument, setModalDocument] = useState({add: false});
-  const [errorMessage, setErrorMessage] = useState("");
-  useEffect(()=> console.log(libraryClient),[])
+  const [newNeedDocuments,setNewNeedDocument] = useState([])
+  const [libraryClientMostrar, setLibraryClientMostrar] = useState( [])
   
-  const libraryClientMostrar = libraryClient.map( elem => {
+  const [errorMessage, setErrorMessage] = useState("");
+  useEffect(()=> {
+ 
+  setNewNeedDocument(needDocument.documents.map( elem => {
+    return {
+      ...elem,
+      mostrar: true
+    }
+  }))
+
+  console.log(newNeedDocuments)
+  setLibraryClientMostrar(libraryClient.map( elem => {
     return {
       ...elem,mostrar: true
     }
-  })
+  }) )
+
+  },[needDocument,libraryClient])
+  
+
+
+
+  
+
+  useEffect( ()=> console.log('pa mostrar',needDocument),[needDocument])
 
   return(
     <>
@@ -42,8 +62,8 @@ const DocumentRequired = ({ libraryClient, setLibraryClient ,setModal, editData,
           </DataTableHead>
           {
           
-            needDocument.documents
-            ? needDocument.documents.map(act => { 
+          newNeedDocuments
+            ? newNeedDocuments.map((act, i) => { 
 
 
               return <DataTableItem key={act.id} className=" text-center border-bottom border bg-light">
@@ -59,17 +79,25 @@ const DocumentRequired = ({ libraryClient, setLibraryClient ,setModal, editData,
                           ? <>
                             <DataTableRow className=" text-center border-bottom border ">Created: {elem.createdAt?.split('T')?.[0]}</DataTableRow>
                             <DataTableRow className=" text-center border-bottom border ">Exp: {elem.expirationDate?.split('T')?.[0]}</DataTableRow>
-                            <DataTableRow ><Button color="primary" size="md"><a target="blank" className="text-white" href={elem.url} >Ver</a></Button></DataTableRow>
-                            <DataTableRow  ><a target="blank" className="text-white" href={elem.url}><Button  color="primary" size="md"  onClick={()=>{ 
-                            setLibraryClient( prev => {
+                            <DataTableRow ><Button color="primary" size="md"><a target="blank" className="text-white " href={elem.url} >Ver</a></Button></DataTableRow>
+                            <DataTableRow  ><Button  color="primary" size="md"  onClick={()=>{ 
+                            setLibraryClientMostrar( prev => {
                               let aux = [...prev]
                               aux[index].mostrar =  false
 
                               return aux
                             })
 
-                            }} >Vincular</Button></a></DataTableRow>
-                            </>:<DataTableRow  ><a target="blank" className="text-white" href={elem.url} ><Button  color="primary" size="md">Check</Button></a></DataTableRow>
+                            setNewNeedDocument( prev => {
+                              let aux = [...prev]
+                              aux[i].mostrar =  false
+
+                              return aux
+                            })
+
+                            }} >Vincular</Button></DataTableRow>
+                            
+                            </>:<DataTableRow  ><a target="blank" className="text-white" href={elem.url} ><Button  color="success" size="md">Check</Button></a></DataTableRow>
                         }
                           
                           </>
@@ -77,10 +105,13 @@ const DocumentRequired = ({ libraryClient, setLibraryClient ,setModal, editData,
                       return <></>
                     }):<></>
                   }
-                  <DataTableRow className=" ">
-                  <Button color="primary" size="md"  onClick={() => setModalDocument({ add: true })}>
-                    Subir
-                  </Button>
+                  <DataTableRow className=" ">{
+                    act.mostrar?
+                      <Button color="primary" size="md"  onClick={() => setModalDocument({ add: true })}>
+                        Subir
+                      </Button> : ''
+                  }
+          
                   </DataTableRow>
            
      

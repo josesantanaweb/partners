@@ -345,8 +345,8 @@ const CustomerFile = ({
   const getDealsType = async (type = 1, planId = 1) => {
     const dataTlf = await DealsServices.getDealsTypeForms(type, planId.value);
 
-    setRequiredDocument(dataTlf.customerSegments); // segmentos requeridos
-    setNeedDocument(dataTlf); // documentos requeridos
+    await setRequiredDocument(dataTlf.customerSegments); // segmentos requeridos
+    await setNeedDocument(dataTlf); // documentos requeridos
   };
 
   return (
