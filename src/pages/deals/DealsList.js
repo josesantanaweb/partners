@@ -502,10 +502,6 @@ const DealsList = () => {
                     <Icon name="plus" className="mr-1"></Icon>
                     Guardar Operación
                   </Button>
-                  <Button color="primary" type="submit" onClick={e => console.log(generalStateForm)}>
-                    <Icon name="plus" className="mr-1"></Icon>
-                    Guardar Operación2
-                  </Button>
                 </div>
 
                 {requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{ color: 'red' }}>Requerido: </span> : ""}
