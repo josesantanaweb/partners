@@ -17,83 +17,149 @@ import LibraryServices from "../../../../services/LibraryServices";
 import DocumentsServices from "../../../../services/DocumentsServices";
 import CustomersServices from "../../../../services/CustomersServices";
 
-const DocumentRequired = ({ libraryClient ,setModal, editData, selectClient, needDocument,requiredDocument}) => {
+const DocumentRequired = ({ generalStateForm, setGeneralStateForm, libraryClient, setLibraryClient, setModal, editData, selectClient, needDocument, requiredDocument }) => {
 
-  //useEffect(()=> console.log('hasta cuando',needDocument) ,[])
+  useEffect(() => console.log('hasta cuando', libraryClient), [])
 
 
-  const [modalDocument, setModalDocument] = useState({add: false});
+  const [modalDocument, setModalDocument] = useState({ add: false });
+  const [newNeedDocuments, setNewNeedDocument] = useState([])
+  const [libraryClientMostrar, setLibraryClientMostrar] = useState([])
+
   const [errorMessage, setErrorMessage] = useState("");
-  useEffect(()=> console.log(libraryClient),[])
-  
-  return(
+  useEffect(() => {
+
+    setNewNeedDocument(needDocument.documents.map(elem => {
+      return {
+        ...elem,
+        mostrar: true
+      }
+    }))
+
+    console.log(newNeedDocuments)
+    setLibraryClientMostrar(libraryClient.map(elem => {
+      return {
+        ...elem, mostrar: true
+      }
+    }))
+
+  }, [needDocument, libraryClient])
+
+  const [documentSelect, setDocumentSelect] = useState({
+    index: "",
+    id: ""
+  })
+
+  return (
     <>
       <Col md="12">
         <div className="scrollbar-fluid overflow-auto mb-3 table-records">
           <div className="nk-tb-list is-separate is-medium">
             <h6 className="text-center">Documentos Requeridos:</h6>
-          <DataTableHead className="nk-tb-item scrollbar-fluid overflow-auto">
-         
-          </DataTableHead>
-          {
-            needDocument.documents
-            ? needDocument.documents.map(act => 
-              
-              <DataTableItem key={act.id} className=" text-center border-bottom border bg-light">
-               
-               <DataTableRow className=" text-center border-bottom border ">{act.name}</DataTableRow>
-                  {
-                    libraryClient?
-                    libraryClient.map( elem => {
-                      if(elem.documentType.id == act.id){
-                        return   <>
-                          <DataTableRow className=" text-center border-bottom border ">Created: {elem.createdAt?.split('T')?.[0]}</DataTableRow>
-                          <DataTableRow className=" text-center border-bottom border ">Exp: {elem.expirationDate?.split('T')?.[0]}</DataTableRow>
-                          <DataTableRow className="p-0"><Button color="primary" size="md"><a target="blank" className="text-white" href={elem.url} >Ver</a></Button></DataTableRow>
-                          <DataTableRow className="p-0 m-0"><a target="blank" className="text-white" href={elem.url} ><Button  color="primary" size="md">Vincular</Button></a></DataTableRow>
-                          </>
-                     
-                      }
-                      return <></>
-                    }):<></>
-                  }
-                  <DataTableRow className=" ">
-                  <Button color="primary" size="md"  onClick={() => setModalDocument({ add: true })}>
-                    Subir
-                  </Button>
-                  </DataTableRow>
-           
-     
+            <DataTableHead className="nk-tb-item scrollbar-fluid overflow-auto">
+            </DataTableHead>
+            {
 
-              </DataTableItem>
-              
-              )
-            :<>
-            </>
-          }      
+              newNeedDocuments
+                ? newNeedDocuments.map((act, i) => {
+
+
+                  return <DataTableItem key={act.id} className=" text-center border-bottom border bg-light">
+
+                    <DataTableRow className=" text-center border-bottom border ">{act.name}</DataTableRow>
+                    {
+                      libraryClientMostrar ?
+                        libraryClientMostrar.map((elem, index) => {
+                          if (elem.documentType.id == act.id) {
+                            return <>
+                              {
+                                elem.mostrar && act.mostrar
+                                  ? <>
+                                    <DataTableRow className=" text-center border-bottom border ">Created: {elem.createdAt?.split('T')?.[0]}</DataTableRow>
+                                    <DataTableRow className=" text-center border-bottom border ">Exp: {elem.expirationDate?.split('T')?.[0]}</DataTableRow>
+                                    <DataTableRow ><Button color="primary" size="md"><a target="blank" className="text-white " href={elem.url} >Ver</a></Button></DataTableRow>
+                                    <DataTableRow  ><Button color="primary" size="md" onClick={() => {
+                                      setLibraryClientMostrar(prev => {
+                                        let aux = [...prev]
+                                        aux[index].mostrar = false
+
+                                        return aux
+                                      })
+
+                                      setNewNeedDocument(prev => {
+                                        let aux = [...prev]
+                                        aux[i].mostrar = false
+
+                                        return aux
+                                      })
+
+                                      setGeneralStateForm(prev => {
+                                        return {
+                                          ...prev,
+                                          document: [...prev.documents,
+                                          {
+                                            "documentTypeId": elem.documentType.id,
+                                            "customerLibraryId": elem.id
+                                          },]
+                                        }
+                                      })
+
+                                      console.log(needDocument)
+
+                                    }} >Vincular</Button></DataTableRow>
+
+                                  </> : ""
+                              }
+
+                            </>
+                          }
+                          return <></>
+                        }) : <></>
+                    }
+                    <DataTableRow className=" ">{
+                      act.mostrar ?
+                        <Button color="primary" size="md" onClick={() => {
+                          setModalDocument({ add: true });
+                          setDocumentSelect({
+                            index: i,
+                            id: act.id
+                          })
+                        }}>
+                          Subir
+                        </Button>
+                        : <DataTableRow  ><Button color="success" size="md">Check</Button></DataTableRow>
+                    }
+
+                    </DataTableRow>
+                  </DataTableItem>
+                }
+                )
+                : <>
+                </>
+            }
           </div>
         </div>
       </Col>
-      
-      <ModalUploadDocument modalDocument={modalDocument}  setModalDocument={setModalDocument} selectClient={selectClient}/>
+
+      <ModalUploadDocument setGeneralStateForm={setGeneralStateForm} modalDocument={modalDocument} documentSelect={documentSelect} setModalDocument={setModalDocument} selectClient={selectClient} setNewNeedDocument={setNewNeedDocument} />
     </>
   )
 }
 
-const ModalUploadDocument = ({modalDocument, setModalDocument,selectClient = {},}) => {
+const ModalUploadDocument = ({ modalDocument, setModalDocument, selectClient = {}, documentSelect, setNewNeedDocument }) => {
   // leallg document required
   const { register, handleSubmit } = useForm();
   const [documents, setDocuments] = useState([]);
   const [documentsOptions, setDocumentsOptions] = useState(documents);
   const [postData, setPostData] = useState({});
   const [formData, setFormData] = useState({
-    file:""
+    file: ""
   });
-  useEffect( () => {
+  useEffect(() => {
     getDocuments();
 
-  },[]);
-  
+  }, []);
+
   // Obtener lista de documentos requeridos
   const getDocuments = async () => {
     try {
@@ -125,24 +191,47 @@ const ModalUploadDocument = ({modalDocument, setModalDocument,selectClient = {},
     };
 
     const formData = new FormData();
-      let object = {};
+    let object = {};
 
-      formData.append("file", aux);
-      formData.append("documentTypeId", documentTypeId);
-      formData.append("expirationDate", expirationDate);
-      formData.append("issueDate", issueDate);
-      formData.append("observation", observation);
+    formData.append("file", aux);
+    formData.append("documentTypeId", documentTypeId);
+    formData.append("expirationDate", expirationDate);
+    formData.append("issueDate", issueDate);
+    formData.append("observation", observation);
 
-      formData.forEach((value, key) => (object[key] = value));
-      var json = JSON.stringify(object);
-      JSON.stringify(Object.fromEntries(formData));
-      console.log(json);
-      console.log("FORM_DATA",formData)
+    formData.forEach((value, key) => (object[key] = value));
+    var json = JSON.stringify(object);
+    JSON.stringify(Object.fromEntries(formData));
+    console.log(json);
+    console.log("FORM_DATA", formData)
 
     console.log(submittedData)
     try {
-      await LibraryServices.addCustomerLibDoc(formData, parseInt(selectClient?.id) )
-        setModalDocument({ edit: false, add: false });
+      const response = await LibraryServices.addCustomerLibDoc(formData, parseInt(selectClient?.id))
+      console.log(response)
+      setModalDocument({ edit: false, add: false });
+      console.log(documentSelect)
+      setNewNeedDocument(prev => {
+        let aux = [...prev]
+        aux[documentSelect.index].mostrar = false
+
+        return aux
+      })
+
+
+
+      setGeneralStateForm(prev => {
+        return {
+          ...prev,
+          document: [...prev.documents,
+          {
+            "documentTypeId": documentSelect.id,
+            "customerLibraryId": response.id
+          },]
+        }
+      })
+
+
     } catch (error) {
       throw error;
     }
@@ -158,8 +247,8 @@ const ModalUploadDocument = ({modalDocument, setModalDocument,selectClient = {},
     resetForm();
   };
 
-  return(
-    <Modal isOpen={modalDocument.add}  className="modal-dialog-centered" size="lg">
+  return (
+    <Modal isOpen={modalDocument.add} className="modal-dialog-centered" size="lg">
       <ModalBody>
         <a
           href="#close"
@@ -182,10 +271,10 @@ const ModalUploadDocument = ({modalDocument, setModalDocument,selectClient = {},
                   <RSelect
                     value={documentsOptions}
                     options={documents}
-                    
-                    onChange={ (e) => {
+
+                    onChange={(e) => {
                       onOptionsDocumentsChange(e)
-                      setPostData( prev => {
+                      setPostData(prev => {
                         return {
                           ...prev,
                           documentTypeId: e.value
@@ -208,8 +297,8 @@ const ModalUploadDocument = ({modalDocument, setModalDocument,selectClient = {},
                     type="text"
                     name="description"
                     style={{ backgroundColor: "#e5e9f2", color: "black !important" }}
-                    onChange={ (e) => {
-                      setPostData( prev => {
+                    onChange={(e) => {
+                      setPostData(prev => {
                         return {
                           ...prev,
                           description: e.target.value
@@ -228,8 +317,8 @@ const ModalUploadDocument = ({modalDocument, setModalDocument,selectClient = {},
                     type="text"
                     className="form-control"
                     name="observation"
-                    onChange={ (e) => {
-                      setPostData( prev => {
+                    onChange={(e) => {
+                      setPostData(prev => {
                         return {
                           ...prev,
                           observation: e.target.value
@@ -237,7 +326,7 @@ const ModalUploadDocument = ({modalDocument, setModalDocument,selectClient = {},
                       })
                     }}
                     placeholder="Ingresa observación"
-        
+
                   />
                 </FormGroup>
               </Col>
@@ -250,10 +339,10 @@ const ModalUploadDocument = ({modalDocument, setModalDocument,selectClient = {},
                     type="date"
                     name="issueDate"
                     onChange={(e) => {
-                      setPostData( prev => {
+                      setPostData(prev => {
                         let aux = e.target.value
                         aux = aux.split('-')
-                        aux = aux[2]+'-'+aux[1]+'-'+aux[0]
+                        aux = aux[2] + '-' + aux[1] + '-' + aux[0]
                         return {
                           ...prev,
                           issueDate: aux
@@ -278,10 +367,10 @@ const ModalUploadDocument = ({modalDocument, setModalDocument,selectClient = {},
                     type="date"
                     name="expirationDate"
                     onChange={(e) => {
-                      setPostData( prev => {
+                      setPostData(prev => {
                         let aux = e.target.value
                         aux = aux.split('-')
-                        aux = aux[2]+'-'+aux[1]+'-'+aux[0]
+                        aux = aux[2] + '-' + aux[1] + '-' + aux[0]
                         return {
                           ...prev,
                           expirationDate: aux
@@ -289,7 +378,7 @@ const ModalUploadDocument = ({modalDocument, setModalDocument,selectClient = {},
                       })
                       console.log(postData)
                     }}
-      
+
                   />
                   {/* <DatePicker
                     selected={expirationDate}
@@ -309,7 +398,7 @@ const ModalUploadDocument = ({modalDocument, setModalDocument,selectClient = {},
                         name="file"
                         defaultValue={formData.file}
                         onChange={(e) => {
-                          setPostData( prev => {
+                          setPostData(prev => {
                             return {
                               ...prev,
                               file: e.target.value

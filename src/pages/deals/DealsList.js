@@ -165,7 +165,9 @@ const DealsList = () => {
   const [requiredDocument, setRequiredDocument] = useState([]);
 
   const [selectClient, setSelectClient] = useState({});
-  const [needDocument, setNeedDocument] = useState({});
+  const [needDocument, setNeedDocument] = useState({
+    documents:[]
+  });
   const [libraryClient, setLibraryClient] = useState([]);
   const { errors, register, setValue, handleSubmit } = useForm();
   //State general de formual incluye todos los tabs
@@ -272,7 +274,7 @@ const DealsList = () => {
           ],
         },
         investorProfile: [...generalStateForm.investorProfile],
-        documents: [],
+        documents: [...generalStateForm.documents],
       };
     }
 
@@ -351,6 +353,7 @@ const DealsList = () => {
           <div className="container-fluid overflow-auto scrollbar-fluid">
             <div className="nk-tb-list is-separate is-medium mb-3">
               <DataTableHead className="nk-tb-item">
+
                 <DataTableRow className="text-center">
                   <span className="sub-text">N. de Operación</span>
                 </DataTableRow>
@@ -474,7 +477,6 @@ const DealsList = () => {
         {/* Nuevo elemento Modal */}
         <Modal
           isOpen={modal.add}
-       
           className="modal-dialog-centered "
           size="lg"
           style={{ maxWidth: "1192px" }}
@@ -487,7 +489,7 @@ const DealsList = () => {
                 ev.preventDefault();
                 onFormCancel();
                 setRequiredDocument([]);
-                setNeedDocument([]);
+                setNeedDocument({documents:[]});
               }}
               className="close"
             >
@@ -501,13 +503,13 @@ const DealsList = () => {
                           Guardar Operación
                 </Button>
               </div>
-           
+          
               { requiredDocument.length != 0 && addActiveTab == 2 ? <span style={{color:'red'}}>Requerido: </span>: ""}
               { requiredDocument.length != 0 && addActiveTab == 2 && requiredDocument.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
 
               { needDocument.documents?.length && addActiveTab == 4? <span style={{color:'red'}}>Información del cliente requerida: </span>: ""}
               { needDocument.documents?.length > 0 && addActiveTab == 4 && needDocument.documents.map( (act, i) => <span>{i+1 + ")"  + ' '+ act.name}. </span>)}
-         
+          
               <Nav tabs>
                 <NavItem>
                   <NavLink
@@ -569,7 +571,7 @@ const DealsList = () => {
               </TabContent>
               <TabContent activeTab={addActiveTab}>
                 <TabPane tabId="4">
-                  <DocumentRequired  libraryClient={libraryClient} needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
+                  <DocumentRequired setLibraryClient={setLibraryClient} generalStateForm={generalStateForm} setGeneralStateForm={setGeneralStateForm} libraryClient={libraryClient} needDocument={needDocument} requiredDocument={requiredDocument} setModal={setModal} selectClient={selectClient} />
                 </TabPane>
                 <TabPane tabId="4"></TabPane>
               </TabContent>
