@@ -619,6 +619,17 @@ const ProductsList = () => {
                         />
                       </FormGroup>
                     </Col>
+                    <Col md="12">
+                      <FormGroup>
+                        <label className="form-label">Socio Estratégico/Empresa</label>
+                        <RSelect
+                          value={companiesOptions}
+                          options={companies}
+                          onChange={onOptionsCompaniesChange}
+                          defautlValue={editData?.companyId}
+                        />
+                      </FormGroup>
+                    </Col>
 
                     <Col md="12">
                       <div className="custom-tab">
