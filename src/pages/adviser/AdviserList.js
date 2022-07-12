@@ -52,6 +52,8 @@ const AdviserList = () => {
   const [CAMVCertificateExpirationDate, setCAMVCertificateExpirationDate] = useState(new Date());
   const [studyCertificateIssueDate, setStudyCertificateIssueDate] = useState(new Date());
   const [studyCertificateExpirationDate, setStudyCertificateExpirationDate] = useState(new Date());
+  const [valueChecked, setValueChecked] = useState(false);
+  const [valueEducationalDegree, setValueEducationalDegree] = useState(false);
 
   const [countries, setCountries] = useState([]);
   const [countriesOptions, setCountriesOptions] = useState(countries);
@@ -138,6 +140,9 @@ const AdviserList = () => {
     setCitiesOptions(citiesOptionsData);
   };
 
+  const handleClickCamv = () => setValueChecked(!valueChecked);
+  const handleClickEducationalDegree = () => setValueEducationalDegree(!valueEducationalDegree);
+
   const [formData, setFormData] = useState({
     name: "",
     paternalLastName: "",
@@ -150,9 +155,9 @@ const AdviserList = () => {
     password: "",
     countryId: "",
     stateId: "",
-    detailedAddress: "",
-    haveCertificate: true,
-    hasAnEducationalDegree: true,
+    address: "",
+    haveCertificate: false,
+    hasAnEducationalDegree: false,
     courseOfStudy: "",
     durationInSemesters: "",
     emergencyContact: "",
@@ -185,8 +190,8 @@ const AdviserList = () => {
       countryId: "",
       stateId: "",
       detailedAddress: "",
-      haveCertificate: true,
-      hasAnEducationalDegree: true,
+      haveCertificate: false,
+      hasAnEducationalDegree: false,
       courseOfStudy: "",
       durationInSemesters: "",
       emergencyContact: "",
@@ -282,8 +287,8 @@ const AdviserList = () => {
       formData.append("countryId", countriesOptions?.value); //✅
       formData.append("stateId", citiesOptions?.value); //✅
       formData.append("detailedAddress", detailedAddress); //✅
-      formData.append("haveCertificate", false); //✅
-      formData.append("hasAnEducationalDegree", false); //✅
+      formData.append("haveCertificate", valueChecked); //✅ CAMV
+      formData.append("hasAnEducationalDegree", valueEducationalDegree); //✅ CERTIFICADO DE ESTUDIOS
       formData.append("courseOfStudy", courseOfStudy); //✅
       formData.append("durationInSemesters", durationInSemesters); //✅
       formData.append("emergencyContact", emergencyContact); //✅
@@ -303,6 +308,7 @@ const AdviserList = () => {
       formData.forEach((value, key) => (object[key] = value));
       var json = JSON.stringify(object);
       JSON.stringify(Object.fromEntries(formData));
+
       console.log(json);
 
       await AdvisersServices.addAdviser(formData);
@@ -322,7 +328,31 @@ const AdviserList = () => {
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
     // ! 1
-    const { name, paternalLastName, mobilePhone, landlinePhone, observation } = submitData;
+    const {
+      name,
+      paternalLastName,
+      mobilePhone,
+      landlinePhone,
+      observation,
+      detailedAddress,
+      countryId,
+      stateId,
+      hasAnEducationalDegree,
+      haveCertificate,
+      durationInSemesters,
+      emergencyContact,
+      frontIdentificationDocumentFile,
+      backSideIdentificationDocumentFile,
+      identificationDocumentIssueDate,
+      identificationDocumentExpirationDate,
+      CAMVCertificate,
+      CAMVCertificateIssueDate,
+      CAMVCertificateExpirationDate,
+      studyCertificate,
+      studyCertificateIssueDate,
+      courseOfStudy,
+      clinicForEmergency,
+    } = submitData;
 
     // ! 2
     let submittedData = {
@@ -331,6 +361,24 @@ const AdviserList = () => {
       mobilePhone: mobilePhone,
       landlinePhone: landlinePhone,
       observation: observation,
+      detailedAddress: detailedAddress,
+      countryId: countryId,
+      stateId: stateId,
+      hasAnEducationalDegree: hasAnEducationalDegree,
+      haveCertificate: haveCertificate,
+      durationInSemesters: durationInSemesters,
+      emergencyContact: emergencyContact,
+      frontIdentificationDocumentFile,
+      backSideIdentificationDocumentFile,
+      identificationDocumentIssueDate,
+      identificationDocumentExpirationDate,
+      CAMVCertificate,
+      CAMVCertificateIssueDate,
+      CAMVCertificateExpirationDate,
+      studyCertificate,
+      studyCertificateIssueDate,
+      courseOfStudy: courseOfStudy,
+      clinicForEmergency,
     };
 
     try {
@@ -338,11 +386,28 @@ const AdviserList = () => {
       let object = {};
 
       // ! 3
+
       formData.append("name", name); //✅
       formData.append("paternalLastName", paternalLastName); //✅
       formData.append("mobilePhone", mobilePhone); //✅
       formData.append("landlinePhone", landlinePhone); //✅
       formData.append("observation", observation); //✅
+      // formData.append("countryId", countriesOptions?.value); //✅
+      // formData.append("stateId", citiesOptions?.value); //✅
+      formData.append("detailedAddress", detailedAddress); //✅
+      formData.append("courseOfStudy", courseOfStudy); //✅
+      formData.append("durationInSemesters", durationInSemesters); //✅
+      formData.append("emergencyContact", emergencyContact); //✅
+      formData.append("frontIdentificationDocumentFile", frontIdentificationDocumentFile[0]); //✅
+      formData.append("backSideIdentificationDocumentFile", backSideIdentificationDocumentFile[0]); //✅
+      formData.append("identificationDocumentIssueDate", editData?.identificationDocumentIssueDate); //✅
+      formData.append("identificationDocumentExpirationDate", editData?.identificationDocumentExpirationDate); //✅
+      formData.append("CAMVCertificate", CAMVCertificate[0]); //✅
+      formData.append("CAMVCertificateIssueDate", editData?.CAMVCertificateIssueDate); //✅
+      formData.append("CAMVCertificateExpirationDate", editData?.CAMVCertificateExpirationDate); //✅
+      formData.append("studyCertificate", studyCertificate[0]); //✅
+      formData.append("studyCertificateIssueDate", editData?.studyCertificateIssueDate); //✅
+      formData.append("clinicForEmergency", clinicForEmergency); //✅
 
       formData.forEach((value, key) => (object[key] = value));
       var json = JSON.stringify(object);
@@ -470,92 +535,96 @@ const AdviserList = () => {
         </BlockHead>
 
         <Block>
-          <div className="nk-tb-list is-separate is-medium mb-3">
-            <DataTableHead className="nk-tb-item">
-              <DataTableRow className="text-center">
-                <span className="sub-text">N. de Asesor</span>
-              </DataTableRow>
-              <DataTableRow className="text-center">
-                <span className="sub-text">Asesor</span>
-              </DataTableRow>
-              <DataTableRow className="text-center">
-                <span className="sub-text">Telefono</span>
-              </DataTableRow>
-              <DataTableRow className="text-center">
-                <span className="sub-text">Estado</span>
-              </DataTableRow>
-              <DataTableRow className="text-center">
-                <span className="sub-text">Observación</span>
-              </DataTableRow>
-              <DataTableRow className="text-center">
-                <span className="sub-text">Dirección</span>
-              </DataTableRow>
-              <DataTableRow className="text-center">
-                <span className="sub-text">Acción</span>
-              </DataTableRow>
-            </DataTableHead>
-            {/*Head*/}
-            {currentItems.length > 0
-              ? currentItems.map((item) => (
-                  <DataTableItem key={item.id}>
-                    <DataTableRow className="text-center">
-                      <span>{item.id}</span>
-                    </DataTableRow>
-                    <DataTableRow>
-                      <div className="user-card d-flex align-items-center justify-content-center">
-                        <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
-                        <div className="user-info">
-                          <span className="tb-lead">
-                            {item.name} {item.paternalLastName}
-                            <span className="dot dot-success d-md-none ml-1"></span>
-                          </span>
-                          <span>{item.email}</span>
-                        </div>
-                      </div>
-                    </DataTableRow>
-                    <DataTableRow className="text-center">
-                      <span>{item.mobilePhone || "9 99999999"}</span>
-                    </DataTableRow>
+          <div className="container-fluid overflow-auto scrollbar-fluid">
+            <div className="nk-tb-list is-separate is-medium mb-3">
+              <div className="nk-tb-list is-separate is-medium mb-3">
+                <DataTableHead className="nk-tb-item">
+                  <DataTableRow className="text-center">
+                    <span className="sub-text">N. de Asesor</span>
+                  </DataTableRow>
+                  <DataTableRow className="text-center">
+                    <span className="sub-text">Asesor</span>
+                  </DataTableRow>
+                  <DataTableRow className="text-center">
+                    <span className="sub-text">Teléfono</span>
+                  </DataTableRow>
+                  <DataTableRow className="text-center">
+                    <span className="sub-text">Carrera y Estudios</span>
+                  </DataTableRow>
+                  <DataTableRow className="text-center">
+                    <span className="sub-text">Dirección</span>
+                  </DataTableRow>
+                  <DataTableRow className="text-center">
+                    <span className="sub-text">Estado</span>
+                  </DataTableRow>
+                  <DataTableRow className="text-center">
+                    <span className="sub-text">Acción</span>
+                  </DataTableRow>
+                </DataTableHead>
+                {/*Head*/}
+                {currentItems.length > 0
+                  ? currentItems.map((item) => (
+                      <DataTableItem key={item.id}>
+                        <DataTableRow className="text-center">
+                          <span>{item.id}</span>
+                        </DataTableRow>
+                        <DataTableRow>
+                          <div className="user-card d-flex align-items-center justify-content-center">
+                            <UserAvatar theme="purple" text={findUpper(item.name)}></UserAvatar>
+                            <div className="user-info">
+                              <span className="tb-lead">
+                                {item.name} {item.paternalLastName}
+                                <span className="dot dot-success d-md-none ml-1"></span>
+                              </span>
+                              <span>{item.email}</span>
+                            </div>
+                          </div>
+                        </DataTableRow>
+                        <DataTableRow className="text-center">
+                          <span>{item.mobilePhone || "9 99999999"}</span>
+                        </DataTableRow>
 
-                    <DataTableRow className="text-center">
-                      <span>{item.observation}</span>
-                    </DataTableRow>
+                        <DataTableRow className="text-center">
+                          <span>{item.courseOfStudy}</span>
+                        </DataTableRow>
 
-                    <DataTableRow className="text-center">
-                      <span>{item.address?.detailedAddress}</span>
-                    </DataTableRow>
+                        <DataTableRow className="text-center">
+                          <span>{item.address?.detailedAddress}</span>
+                        </DataTableRow>
 
-                    <DataTableRow className="text-center">
-                      <span className={`tb-status text-success`}>{item.status.name}</span>
-                    </DataTableRow>
+                        <DataTableRow className="text-center">
+                          <span className={`tb-status text-success`}>{item.status.name}</span>
+                        </DataTableRow>
 
-                    <DataTableRow className="nk-tb-col-tools">
-                      <ul className="nk-tb-actions gx-1">
-                        <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
-                          <TooltipComponent
-                            tag="a"
-                            containerClassName="btn btn-trigger btn-icon"
-                            id={"edit" + 1}
-                            icon="edit-alt-fill"
-                            direction="top"
-                            text="Editar"
-                          />
-                        </li>
-                        <li className="nk-tb-action" onClick={() => deleteUser(item.id)}>
-                          <TooltipComponent
-                            tag="a"
-                            containerClassName="btn btn-trigger btn-icon"
-                            id={"delete" + 1}
-                            icon="trash-fill"
-                            direction="top"
-                            text="Eliminar"
-                          />
-                        </li>
-                      </ul>
-                    </DataTableRow>
-                  </DataTableItem>
-                ))
-              : null}
+                        <DataTableRow className="nk-tb-col-tools">
+                          <ul className="nk-tb-actions gx-1 d-flex justify-content-center">
+                            <li className="nk-tb-action" onClick={() => onEditClick(item.id, item)}>
+                              <TooltipComponent
+                                tag="a"
+                                containerClassName="btn btn-trigger btn-icon"
+                                id={"edit" + 1}
+                                icon="edit-alt-fill"
+                                direction="top"
+                                text="Editar"
+                              />
+                            </li>
+                            <li className="nk-tb-action" onClick={() => deleteUser(item.id)}>
+                              <TooltipComponent
+                                tag="a"
+                                containerClassName="btn btn-trigger btn-icon"
+                                id={"delete" + 1}
+                                icon="trash-fill"
+                                direction="top"
+                                text="Eliminar"
+                              />
+                            </li>
+                          </ul>
+                        </DataTableRow>
+                      </DataTableItem>
+                    ))
+                  : null}
+              </div>
+            </div>
           </div>
           <PreviewAltCard>
             {currentItems.length > 0 ? (
@@ -873,7 +942,7 @@ const AdviserList = () => {
                         </FormGroup>
                       </Col>
 
-                      <Col md="6">
+                      {/* <Col md="6">
                         <div className="custom-control custom-checkbox">
                           <input
                             id="hasCertificate"
@@ -890,25 +959,25 @@ const AdviserList = () => {
                             ¿Tiene Certificado de estudios?
                           </label>
                         </div>
+                      </Col> */}
+
+                      <Col md="6">
+                        <FormGroup className="d-flex flex-column align-items-center">
+                          <label className="form-label">¿Tiene Certificado o Titulo Universitario?</label>
+                          <input
+                            id="checkbox1"
+                            type="checkbox"
+                            value={valueEducationalDegree}
+                            onChange={handleClickEducationalDegree}
+                          />
+                        </FormGroup>
                       </Col>
 
                       <Col md="6">
-                        <div className="custom-control custom-checkbox">
-                          <input
-                            id="hasAnEducationalDegree"
-                            type="checkbox"
-                            name="haveCertificate"
-                            value={formData?.haveCertificate}
-                            defaultChecked={formData?.hasAnEducationalDegree}
-                            defautlValue={formData?.hasAnEducationalDegree}
-                            className="custom-control-input form-control"
-                            placeholder="certificateA"
-                            {...register("certificateA")}
-                          />
-                          <label className="custom-control-label" htmlFor="hasAnEducationalDegree">
-                            ¿Tiene Certificado CAMV?
-                          </label>
-                        </div>
+                        <FormGroup className="d-flex flex-column align-items-center">
+                          <label className="form-label">¿Tiene Certificado CAMV?</label>
+                          <input id="checkbox2" type="checkbox" value={valueChecked} onChange={handleClickCamv} />
+                        </FormGroup>
                       </Col>
 
                       <Col md="6">
@@ -1042,7 +1111,7 @@ const AdviserList = () => {
 
                       <Col md="6" className="mb-4">
                         <FormGroup>
-                          <label className="form-label">Fecha de expiracion (cédula)</label>
+                          <label className="form-label">Fecha de expiración (cédula)</label>
                           <DatePicker
                             selected={identificationDocumentExpirationDate}
                             className="form-control"
@@ -1211,19 +1280,12 @@ const AdviserList = () => {
               {/* OnEditSubmit */}
               <div className="mt-4">
                 <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
-                  {/* <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Rut</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="rut"
-                        defaultValue={editData?.rut}
-                        placeholder="Ingresa rut"
-                      />
+                  <Col md="12">
+                    <FormGroup className="border-bottom pb-1">
+                      <h6>Información básica</h6>
                     </FormGroup>
-                  </Col> */}
-                  <Col md="6">
+                  </Col>
+                  <Col md="12">
                     <FormGroup>
                       <label className="form-label">Nombre</label>
                       <input
@@ -1232,12 +1294,10 @@ const AdviserList = () => {
                         name="name"
                         defaultValue={editData?.name}
                         placeholder="Ingresa nombre"
-                        ref={register({ required: "Este campo es requerido" })}
+                        ref={register()}
                       />
-                      {errors.name && <span className="invalid">{errors.name.message}</span>}
                     </FormGroup>
                   </Col>
-
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Apellido</label>
@@ -1247,45 +1307,13 @@ const AdviserList = () => {
                         name="paternalLastName"
                         defaultValue={editData?.paternalLastName}
                         placeholder="Ingresa apellido"
-                        ref={register({ required: "Este campo es requerido" })}
+                        ref={register()}
                       />
-                      {errors.paternalLastName && <span className="invalid">{errors.paternalLastName.message}</span>}
                     </FormGroup>
                   </Col>
-
-                  {/* <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Contraseña</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="password"
-                        defaultValue={editData?.password}
-                        placeholder="Ingresa contraseña"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.password && <span className="invalid">{errors.password.message}</span>}
-                    </FormGroup>
-                  </Col> */}
-
-                  {/* <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Correo electrónico</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="email"
-                        defaultValue={editData?.email}
-                        placeholder="Ingresa email"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.paternalLastName && <span className="invalid">{errors.paternalLastName.message}</span>}
-                    </FormGroup>
-                  </Col> */}
-
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Teléfono</label>
+                      <label className="form-label">Teléfono/celular</label>
                       <input
                         className="form-control"
                         type="text"
@@ -1296,7 +1324,6 @@ const AdviserList = () => {
                       />
                     </FormGroup>
                   </Col>
-                  {/* 
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Teléfono 2</label>
@@ -1310,36 +1337,6 @@ const AdviserList = () => {
                       />
                     </FormGroup>
                   </Col>
-
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Fecha de nacimiento</label>
-                      <DatePicker
-                        selected={editBirthDate}
-                        className="form-control"
-                        defaultValue={editData?.birthDate}
-                        onChange={(date) => setEditBirthDate(date)}
-                        dateFormat="dd/MM/yyyy"
-                        locale="es"
-                      />
-                    </FormGroup>
-                  </Col> */}
-
-                  {/* <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Sexo</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="sex"
-                        defaultValue={editData?.sex}
-                        placeholder="Ingresa sexo"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.sex && <span className="invalid">{errors.sex.message}</span>}
-                    </FormGroup>
-                  </Col> */}
-
                   <Col md="12">
                     <FormGroup>
                       <label className="form-label">Observación</label>
@@ -1350,6 +1347,24 @@ const AdviserList = () => {
                         cols="30"
                         rows="6"
                         defaultValue={editData?.observation}
+                        ref={register()}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md="12">
+                    <FormGroup className="border-bottom pb-1">
+                      <h6>Información residencial</h6>
+                    </FormGroup>
+                  </Col>
+
+                  <Col md="12">
+                    <FormGroup>
+                      <label className="form-label">Dirección</label>
+                      <input
+                        className="form-control"
+                        name="detailedAddress"
+                        placeholder="Ingresa dirección"
+                        defaultValue={editData?.address?.detailedAddress}
                         ref={register()}
                       />
                     </FormGroup>
@@ -1367,99 +1382,10 @@ const AdviserList = () => {
                       <input
                         className="form-control"
                         name="courseOfStudy"
-                        placeholder="Ingresa carrear"
+                        placeholder="Ingresa carrera"
                         defaultValue={editData?.courseOfStudy}
                         ref={register()}
                       />
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Contacto de emergencias</label>
-                      <input
-                        className="form-control"
-                        name="emergencyContact"
-                        placeholder="Ingresa contacto"
-                        defaultValue={editData?.emergencyContact}
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col>
-
-                  {/* 
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Dirección</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="detailedAddress"
-                        defaultValue={editData?.detailedAddress}
-                        placeholder="Ingresa dirección detallada"
-                        ref={register()}
-                      />
-                    </FormGroup>
-                  </Col> */}
-
-                  {/* <Col md="12">
-                    <FormGroup className="border-bottom pb-1">
-                      <h6>Documentos</h6>
-                    </FormGroup>
-                  </Col>
-
-                  
-
-                  <Col md="6">
-                    <div className="custom-control custom-checkbox">
-                      <input
-                        id="hasCertificate"
-                        type="checkbox"
-                        name="haveCertificate"
-                        value={editData?.haveCertificate}
-                        defaultChecked={editData?.haveCertificate}
-                        defautlValue={editData?.haveCertificate}
-                        className="custom-control-input form-control"
-                        placeholder="certificateA"
-                        {...register("certificateA")}
-                      />
-                      <label className="custom-control-label" htmlFor="hasCertificate">
-                        ¿Tiene Certificado de estudios?
-                      </label>
-                    </div>
-                  </Col>
-
-                  <Col md="6">
-                    <div className="custom-control custom-checkbox">
-                      <input
-                        id="hasAnEducationalDegree"
-                        type="checkbox"
-                        name="haveCertificate"
-                        value={editData?.hasAnEducationalDegree}
-                        defaultChecked={editData?.hasAnEducationalDegree}
-                        defautlValue={editData?.hasAnEducationalDegree}
-                        className="custom-control-input form-control"
-                        placeholder="certificateA"
-                        {...register("certificateA")}
-                      />
-                      <label className="custom-control-label" htmlFor="hasAnEducationalDegree">
-                        ¿Tiene Certificado de estudios?
-                      </label>
-                    </div>
-                  </Col> */}
-
-                  {/* <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Indique la Carrera de Estudió</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="courseOfStudy"
-                        defaultValue={editData?.courseOfStudy}
-                        placeholder="Nombre de la carrera"
-                        ref={register({ required: "Este campo es requerido" })}
-                      />
-                      {errors.courseOfStudy && <span className="invalid">{errors.courseOfStudy.message}</span>}
                     </FormGroup>
                   </Col>
 
@@ -1472,11 +1398,8 @@ const AdviserList = () => {
                         name="durationInSemesters"
                         defaultValue={editData?.durationInSemesters}
                         placeholder="Ingrese tiempo de duaración"
-                        ref={register({ required: "Este campo es requerido" })}
+                        ref={register()}
                       />
-                      {errors.durationInSemesters && (
-                        <span className="invalid">{errors.durationInSemesters.message}</span>
-                      )}
                     </FormGroup>
                   </Col>
 
@@ -1484,9 +1407,8 @@ const AdviserList = () => {
                     <FormGroup className="border-bottom pb-1 pt-2">
                       <h6>Información de Emergencias</h6>
                     </FormGroup>
-                  </Col> */}
-
-                  {/* <Col md="6">
+                  </Col>
+                  <Col md="6">
                     <FormGroup>
                       <label className="form-label">Contacto de Emergencia</label>
                       <input
@@ -1495,9 +1417,8 @@ const AdviserList = () => {
                         name="emergencyContact"
                         defaultValue={editData?.emergencyContact}
                         placeholder="Ingrese contacto"
-                        ref={register({ required: "Este campo es requerido" })}
+                        ref={register()}
                       />
-                      {errors.emergencyContact && <span className="invalid">{errors.emergencyContact.message}</span>}
                     </FormGroup>
                   </Col>
 
@@ -1510,17 +1431,14 @@ const AdviserList = () => {
                         name="clinicForEmergency"
                         defaultValue={editData?.clinicForEmergency}
                         placeholder="Ingrese clínica u hospital"
-                        ref={register({ required: "Este campo es requerido" })}
+                        ref={register()}
                       />
-                      {errors.clinicForEmergency && (
-                        <span className="invalid">{errors.clinicForEmergency.message}</span>
-                      )}
                     </FormGroup>
-                  </Col> */}
+                  </Col>
 
-                  {/* <Col md="12">
+                  <Col md="12">
                     <FormGroup className="border-bottom pb-1 pt-2">
-                      <h6>Adjuntar documentos</h6>
+                      <h6>Actualizar Documentos</h6>
                     </FormGroup>
                   </Col>
 
@@ -1558,9 +1476,9 @@ const AdviserList = () => {
                         </div>
                       </FormGroup>
                     </Col>
-                  </Col> */}
+                  </Col>
 
-                  {/* <Col md="6" className="mb-4">
+                  <Col md="6" className="mb-4">
                     <FormGroup>
                       <label className="form-label">Fecha de emisión (cédula)</label>
                       <DatePicker
@@ -1577,7 +1495,7 @@ const AdviserList = () => {
 
                   <Col md="6" className="mb-4">
                     <FormGroup>
-                      <label className="form-label">Fecha de expiracion (cédula)</label>
+                      <label className="form-label">Fecha de expiración (cédula)</label>
                       <DatePicker
                         selected={identificationDocumentExpirationDate}
                         className="form-control"
@@ -1642,7 +1560,6 @@ const AdviserList = () => {
                       />
                     </FormGroup>
                   </Col>
-
                   <Col md="12" className="pt-2">
                     <FormGroup>
                       <label className="form-label">Certificado de estudios</label>
@@ -1674,21 +1591,6 @@ const AdviserList = () => {
                       />
                     </FormGroup>
                   </Col>
-
-                  <Col md="6" className="mb-4">
-                    <FormGroup>
-                      <label className="form-label">Fecha de Expiración</label>
-                      <DatePicker
-                        selected={studyCertificateExpirationDate}
-                        className="form-control"
-                        onChange={(date) => {
-                          setStudyCertificateExpirationDate(date);
-                        }}
-                        dateFormat="dd/MM/yyyy"
-                        locale="es"
-                      />
-                    </FormGroup>
-                  </Col> */}
 
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
