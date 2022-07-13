@@ -35,6 +35,8 @@ import DocumentsServices from "../../services/DocumentsServices";
 import DealsServices from "../../services/DealsServices";
 import InvestorProfile from "./components/Add/InvestorProfile";
 import { preventContextMenu } from "@fullcalendar/core";
+import NumberFormat from "react-number-format";
+
 
 const DealsList = () => {
   const [data, setData] = useState([]);
@@ -419,7 +421,17 @@ const DealsList = () => {
                       <span>{item.yearsOfThePlan}</span>
                     </DataTableRow>
                     <DataTableRow className="text-center">
-                      <span>{item.amountOfTheInvestment}</span>
+                      <NumberFormat
+                      value={ item.amountOfTheInvestment}
+                      displayType={'text'}
+                      thousandSeparator={'.'}
+                      allowNegative={false}
+                      decimalSeparator={","}
+                      decimalPrecision={2}
+                    
+                      renderText={(value, props) => <div {...props}>{value}</div>}
+                      />;
+               
                     </DataTableRow>
                     <DataTableRow className="text-center">
                       <span>{item.currency.name}</span>

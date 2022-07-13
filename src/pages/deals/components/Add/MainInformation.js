@@ -586,11 +586,17 @@ const CustomerFile = ({
             defaultValue={formData.ammount}
             placeholder="Ingrese monto"
             className="form-control"
-            onChange={(e)=> setGeneralStateForm( prev => {
-              return {
-                ...prev,amountOfTheInvestment:e.target.value
+            onValueChange={(e)=> 
+              
+              {
+                const { formattedValue, value } = e;
+                setGeneralStateForm( prev => {
+                  return {
+                    ...prev,amountOfTheInvestment:value
+                  }
+                })
               }
-            })}
+           }
             allowNegative={false}
             decimalSeparator={","}
             decimalPrecision={2}
@@ -618,13 +624,18 @@ const CustomerFile = ({
             defaultValue={formData.ammount}
             placeholder="Ingrese monto"
             className="form-control"
-            onChange={(e) =>
+            onValueChange={(e) =>{
+              const { formattedValue, value } = e;
+
               setGeneralStateForm((prev) => {
                 return {
                   ...prev,
-                  totalNetValueUSD: e.target.value,
+                  totalNetValueUSD: value
                 };
               })
+
+            }
+           
             }
             allowNegative={false}
             decimalSeparator={","}
