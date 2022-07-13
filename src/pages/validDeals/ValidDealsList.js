@@ -29,7 +29,7 @@ import CurrenciesServices from "../../services/CurrenciesServices";
 import AfterSalesServices from "../../services/AfterSalesServices";
 import NumberFormat from "react-number-format";
 
-const DocumentsList = () => {
+const ValidDealsList = () => {
   const [data, setData] = useState([]);
   const [editData, setEditData] = useState();
 
@@ -42,6 +42,8 @@ const DocumentsList = () => {
 
   const [currencies, setCurrencies] = useState([]);
   const [currenciesOptions, setCurrenciesOptions] = useState(currencies);
+
+  const [ammountInv, setAmmountIn] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(5);
@@ -134,7 +136,7 @@ const DocumentsList = () => {
     dateOfEntry: dateOfEntry,
     estimateDate: estimatedDate,
     realDate: realDate,
-    ammount: Number(""),
+    ammount: "",
     currencyId: "",
     file: "",
     dealId: "",
@@ -149,7 +151,7 @@ const DocumentsList = () => {
       dateOfEntry: "",
       estimateDate: "",
       realDate: "",
-      ammount: Number(""),
+      ammount: "",
       currencyId: "",
       file: "",
       dealId: "",
@@ -164,6 +166,12 @@ const DocumentsList = () => {
     resetForm();
   };
 
+  const handleChangeAmmount = (ev) => setAmmountIn(Number(ev.target.value));
+
+  function financial(x) {
+    return Number.parseFloat(x).toFixed(2);
+  }
+
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
     const { operationTypeId, ammount, currencyId, file, dealId, aprobatedBy, file2 } = submitData;
@@ -172,10 +180,10 @@ const DocumentsList = () => {
       dateOfEntry: dateOfEntry,
       estimateDate: estimatedDate,
       realDate: realDate,
-      ammount: Number(ammount),
+      ammount: ammount,
       currencyId: currencyId,
       file: file[0].name,
-      dealId: dealId, //->customerId
+      dealId: dealId,
       aprobatedBy: aprobatedBy,
       file2: file2[0].name,
     };
@@ -188,7 +196,7 @@ const DocumentsList = () => {
       formData.append("dateOfEntry", dateOfEntry);
       formData.append("estimateDate", estimatedDate);
       formData.append("realDate", realDate);
-      formData.append("ammount", editData?.amountOfTheInvestment);
+      formData.append("ammount", Number(ammountInv));
       formData.append("currencyId", currenciesOptions?.value);
       formData.append("file", file[0].name);
       formData.append("dealId", editData?.id);
@@ -624,7 +632,7 @@ const DocumentsList = () => {
                     </FormGroup>
                   </Col>
 
-                  <Col md="6">
+                  {/* <Col md="6">
                     <FormGroup>
                       <label className="form-label">Monto</label>{" "}
                       <NumberFormat
@@ -640,7 +648,24 @@ const DocumentsList = () => {
                       />
                       <small className="text-primary">Inversión actual: {editData?.amountOfTheInvestment}</small>{" "}
                     </FormGroup>
+                  </Col> */}
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Monto</label>
+                      <NumberFormat
+                        name="ammount"
+                        placeholder="Ingrese monto"
+                        className="form-control"
+                        onChange={handleChangeAmmount}
+                        allowNegative={false}
+                        // decimalSeparator={","}
+                        // decimalPrecision={2}
+                        // thousandSeparator={"."}
+                      />
+                      <small className="text-primary">Inversión actual: {editData?.amountOfTheInvestment}</small>{" "}
+                    </FormGroup>
                   </Col>
+
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Moneda</label>
@@ -735,4 +760,4 @@ const DocumentsList = () => {
   );
 };
 
-export default DocumentsList;
+export default ValidDealsList;

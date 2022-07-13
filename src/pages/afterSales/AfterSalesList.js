@@ -17,7 +17,7 @@ import {
   RSelect,
 } from "../../components/Component";
 
-import { useForm } from "react-hook-form";
+import { get, useForm } from "react-hook-form";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { FormGroup, Modal, ModalBody, Form, Col } from "reactstrap";
 import Content from "../../layout/content/Content";
@@ -30,6 +30,11 @@ import es from "date-fns/locale/es";
 import Swal from "sweetalert2";
 
 const DocumentsList = () => {
+  // GET[PAGINATION]
+  const [totalItems, setTotalItems] = useState([]);
+  const [itemsPerPage, setItemsPerPage] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+
   const { errors, register, handleSubmit } = useForm();
   const [postDeals, setPostDeals] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -75,8 +80,9 @@ const DocumentsList = () => {
     });
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(5);
+  // const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
+  // const [itemPerPage] = useState(5);
 
   // Get current list, pagination
   const indexOfLastItem = currentPage * itemPerPage;
@@ -91,7 +97,6 @@ const DocumentsList = () => {
     try {
       const postDeals = await AfterSalesServices.getPostDealOperations();
       const postDealData = await postDeals.data.map((data) => data);
-
       setPostDeals(postDealData);
       setTablePostDeals(postDealData);
     } catch (error) {
@@ -202,9 +207,8 @@ const DocumentsList = () => {
 
     return number;
   }
-  const [ammountInv, setAmmountIn] = useState(0);
-  const handleChangeAmmount = (ev) => setAmmountIn(Number(ev.target.value));
-  console.log(typeof ammountInv);
+  const [ammountInv, setAmmountIn] = useState("");
+  const handleChangeAmmount = (ev) => setAmmountIn(ev.target.value);
 
   useEffect(() => {
     if (editData?.dateOfEntry) {
@@ -304,6 +308,30 @@ const DocumentsList = () => {
     }
   }, [currenciesOptions.value]);
 
+  const getTotalItems = async () => {
+    try {
+      const items = await AfterSalesServices.getPostDealOperations();
+      const totalItems = await items?.meta?.totalItems;
+      setTotalItems(totalItems);
+    } catch (error) {
+      throw new Error("Not found total Items");
+    }
+  };
+  const getItemsPerPage = async () => {
+    try {
+      const items = await AfterSalesServices.getPostDealOperations();
+      const totalItems = await items?.meta?.limit;
+      setItemsPerPage(totalItems);
+    } catch (error) {
+      throw new Error("Not found total Items");
+    }
+  };
+
+  useEffect(() => {
+    getTotalItems();
+    getItemsPerPage();
+  });
+
   return (
     <React.Fragment>
       <Head title="Acciones Post Venta"></Head>
@@ -315,7 +343,7 @@ const DocumentsList = () => {
                 Operaciones Post Venta
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {currentItems?.length} acciones</p>
+                <p>Total {totalItems} acciones</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -362,7 +390,13 @@ const DocumentsList = () => {
                   <span className="sub-text">Operación Post Venta</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Inversión</span>
+                  <span className="sub-text">Plan</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Asesor/a</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Inversión Post Venta</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Fecha ingresada</span>
@@ -373,6 +407,7 @@ const DocumentsList = () => {
                 <DataTableRow className="text-center">
                   <span className="sub-text">Fecha final</span>
                 </DataTableRow>
+
                 <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
@@ -385,6 +420,12 @@ const DocumentsList = () => {
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item?.action?.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.deal?.plan?.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.aprobatedBy}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>
@@ -432,10 +473,11 @@ const DocumentsList = () => {
           <PreviewAltCard>
             {currentItems.length > 0 ? (
               <PaginationComponent
-                itemPerPage={itemPerPage}
-                totalItems={postDeals.length}
+                itemPerPage={itemsPerPage}
+                totalItems={totalItems}
                 paginate={paginate}
                 currentPage={currentPage}
+                // totalItems={postDeals.length}
               />
             ) : (
               <div className="text-center">
