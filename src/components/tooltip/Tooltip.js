@@ -13,7 +13,11 @@ const TooltipComponent = ({ iconClass, icon, id, direction, text, containerClass
       ) : (
         <Icon className={`${iconClass ? iconClass : ""}`} name={icon} id={id}></Icon>
       )}
-      <UncontrolledTooltip autohide={false} placement={direction} target={id}>
+      <UncontrolledTooltip autohide={false} style={
+        {
+          backgroundColor: "#526484"
+        }
+      } placement={direction} target={id}>
         {text}
       </UncontrolledTooltip>
     </React.Fragment>

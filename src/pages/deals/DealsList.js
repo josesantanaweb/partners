@@ -49,6 +49,33 @@ const DealsList = () => {
     document: false,
   });
 
+  const [modalNegocio, setModalNegocio] = useState({
+    edit: false,
+    add: false,
+    document: false,
+  })
+
+  const [modalFichaCliente, setModalFichaCliente] = useState({
+    edit: false,
+    add: false,
+    document: false,
+  })
+
+
+  const [modalPerfil, setModalPerfil] = useState({
+    edit: false,
+    add: false,
+    document: false,
+  })
+
+
+  const [modalDocumentos, setModalDocumentos] = useState({
+    edit: false,
+    add: false,
+    document: false,
+  })
+
+
   // const getDocuments = async () => {
   //   try {
   //     const documents = await DocumentsServices.getDocuments();
@@ -445,11 +472,40 @@ const DealsList = () => {
                           {/* onClick={() => onEditClick(item.id, item)} */}
                           <TooltipComponent
                             tag="a"
-                            containerClassName="btn btn-trigger btn-icon"
+                            containerClassName="btn btn btn-icon"
                             id={"edit" + 1}
                             icon="edit-alt-fill"
                             direction="top"
-                            text="Editar"
+                            text={
+                              <>
+                                <ul class="list-group " style={{
+                                  backgroundColor: "#526484"
+                                }}>
+                                  <li class="list-group-item " onClick={() => {setModalNegocio({ edit: true });console.log('holis')}}  style={{
+                                  backgroundColor: "#526484"
+                                }}>Negocio</li>
+                                  <li  style={{
+                                  backgroundColor: "#526484"
+                                }} class="list-group-item"
+                                onClick={() => {setModalFichaCliente({ edit: true });console.log('holis')}} 
+                                
+                                >Ficha del Cliente</li>
+                                  <li  style={{
+                                  backgroundColor: "#526484"
+                                }} class="list-group-item"
+                                onClick={() => {setModalPerfil({ edit: true });console.log('holis')}} 
+                                
+                                >Perfil del Inversionistas</li>
+                                  <li  style={{
+                                  backgroundColor: "#526484"
+                                }}class="list-group-item"
+                                
+                                onClick={() => {setModalDocumentos({ edit: true });console.log('holis')}} 
+                                >Documentos</li>
+                                  
+                                </ul>
+                              </>
+                            }
                           />
                         </li>
                         <li className="nk-tb-action">
@@ -724,10 +780,150 @@ const DealsList = () => {
             </div>
           </ModalBody>
         </Modal>
+        <ModalNegocio modal={modalNegocio} setModal={setModalNegocio}/>
+        <ModalFichaDelCliente modal={modalFichaCliente} setModal={setModalFichaCliente}/>
+        <ModalPerfilDelInversionista modal={modalPerfil} setModal={setModalPerfil}/>
+        <ModalDocumentosRequeridos modal={modalDocumentos} setModal={setModalDocumentos}/>
         {/* Nuevo elemento Modal */}
       </Content>
     </React.Fragment>
   );
 };
+
+const ModalNegocio = ({modal, setModal}) => {
+
+  const onFormCancel = () => {
+    setModal({ edit: false, add: false, document: false });
+    // resetForm();
+  };
+
+  return (
+  <Modal isOpen={modal.edit}  className="modal-dialog-centered" size="lg">
+    <ModalBody>
+      <a
+        href="#close"
+        onClick={(ev) => {
+          ev.preventDefault();
+          onFormCancel();
+        }}
+        className="close"
+      >
+        <Icon name="cross-sm"></Icon>
+      </a>
+      <div className="p-2 table-record">
+        <div className="d-flex justify-content-between align-items-center">
+          <h5 className="title" >Crear Operación 1</h5>
+          <Button color="primary" type="submit" >
+            <Icon name="plus" className="mr-1"></Icon>
+            Guardar Operación
+          </Button>
+        </div>
+      </div>  
+    </ModalBody>
+  </Modal>
+  )
+}
+
+const ModalFichaDelCliente = ({modal, setModal}) => {
+
+  const onFormCancel = () => {
+    setModal({ edit: false, add: false, document: false });
+    // resetForm();
+  };
+
+  return (
+  <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+    <ModalBody>
+      <a
+        href="#close"
+        onClick={(ev) => {
+          ev.preventDefault();
+          onFormCancel();
+        }}
+        className="close"
+      >
+        <Icon name="cross-sm"></Icon>
+      </a>
+      <div className="p-2 table-record">
+        <div className="d-flex justify-content-between align-items-center">
+          <h5 className="title" >Crear Operación 2</h5>
+          <Button color="primary" type="submit" >
+            <Icon name="plus" className="mr-1"></Icon>
+            Guardar Operación
+          </Button>
+        </div>
+      </div>  
+    </ModalBody>
+  </Modal>
+  )
+}
+
+const ModalPerfilDelInversionista = ({modal, setModal}) => {
+
+  const onFormCancel = () => {
+    setModal({ edit: false, add: false, document: false });
+    // resetForm();
+  };
+
+  return (
+  <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+    <ModalBody>
+      <a
+        href="#close"
+        onClick={(ev) => {
+          ev.preventDefault();
+          onFormCancel();
+        }}
+        className="close"
+      >
+        <Icon name="cross-sm"></Icon>
+      </a>
+      <div className="p-2 table-record">
+        <div className="d-flex justify-content-between align-items-center">
+          <h5 className="title" >Crear Operación 3</h5>
+          <Button color="primary" type="submit" >
+            <Icon name="plus" className="mr-1"></Icon>
+            Guardar Operación
+          </Button>
+        </div>
+      </div>  
+    </ModalBody>
+  </Modal>
+  )
+}
+
+const ModalDocumentosRequeridos= ({modal, setModal}) => {
+
+  const onFormCancel = () => {
+    setModal({ edit: false, add: false, document: false });
+    // resetForm();
+  };
+
+  return (
+  <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+    <ModalBody>
+      <a
+        href="#close"
+        onClick={(ev) => {
+          ev.preventDefault();
+          onFormCancel();
+        }}
+        className="close"
+      >
+        <Icon name="cross-sm"></Icon>
+      </a>
+      <div className="p-2 table-record">
+        <div className="d-flex justify-content-between align-items-center">
+          <h5 className="title" >Crear Operación 4</h5>
+          <Button color="primary" type="submit" >
+            <Icon name="plus" className="mr-1"></Icon>
+            Guardar Operación
+          </Button>
+        </div>
+      </div>  
+    </ModalBody>
+  </Modal>
+  )
+}
 
 export default DealsList;
