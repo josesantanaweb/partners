@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Block,
   BlockBetween,
@@ -27,6 +28,7 @@ import ValidDealsServices from "../../services/ValidDealsServices";
 import DealActionsServices from "../../services/DealActionsServices";
 import CurrenciesServices from "../../services/CurrenciesServices";
 import AfterSalesServices from "../../services/AfterSalesServices";
+import Pagination from "../../components/singlePagination/Pagination";
 import NumberFormat from "react-number-format";
 
 const ValidDealsList = () => {
@@ -45,8 +47,9 @@ const ValidDealsList = () => {
 
   const [ammountInv, setAmmountIn] = useState("");
 
+  const [totalItems, setTotalItems] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(5);
+  const [itemPerPage] = useState(10);
 
   const [sm, updateSm] = useState(false);
   const { register, handleSubmit } = useForm();
@@ -228,14 +231,6 @@ const ValidDealsList = () => {
     setEditData(data);
   };
 
-  // Get current list, pagination
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Change Page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
   // function to parse date
   const parseDate = (date) => {
     const dateParse = new Date(date);
@@ -263,17 +258,6 @@ const ValidDealsList = () => {
     });
     setData(res);
   };
-
-  // function to get documents
-  const getPaginationValidDeals = async (limit, page) => {
-    const deals = await ValidDealsServices.getPaginationValidDeals(limit, page);
-    const dealsData = await deals.data.map((data) => data);
-    setData(dealsData);
-  };
-
-  const firstPageUrl = () => getPaginationValidDeals(itemPerPage, 1);
-  const nextPageUrl = () => getPaginationValidDeals(itemPerPage, 2);
-  const lastPageUrl = () => getPaginationValidDeals(itemPerPage, 3);
 
   // Formting decimal numbers
   function formatNumber(number, decimals, dec_point, thousands_point) {
@@ -305,6 +289,34 @@ const ValidDealsList = () => {
     return number;
   }
 
+  // ! Pagination
+  // Change Page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // function to get documents pagination
+  const getPaginationValidDeals = async (limit, page) => {
+    const companiesPag = await ValidDealsServices.getPaginationValidDeals(limit, page);
+    const companiesData = await companiesPag.data.map((data) => data);
+    setData(companiesData);
+  };
+
+  // function to get count of items
+  const getTotalItems = async () => {
+    const data = await ValidDealsServices.getValidDeals();
+    const totalItems = await data.meta?.totalItems;
+    setTotalItems(totalItems);
+  };
+
+  useEffect(() => {
+    getTotalItems();
+  }, []);
+
+  useEffect(() => {
+    getPaginationValidDeals(itemPerPage, currentPage);
+  }, [itemPerPage, currentPage]);
+
+  const backToFirstPage = () => window.location.reload();
+
   return (
     <React.Fragment>
       <Head title="Products"></Head>
@@ -316,7 +328,7 @@ const ValidDealsList = () => {
                 Resumen de Operaciones
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} operaciones</p>
+                <p>Total {totalItems} operaciones</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -391,8 +403,8 @@ const ValidDealsList = () => {
                 </DataTableRow>
               </DataTableHead>
               {/*Head*/}
-              {currentItems.length > 0
-                ? currentItems.map((item) => (
+              {data.length > 0
+                ? data.map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow className="text-center">
                         <span>{item?.id}</span>
@@ -448,47 +460,26 @@ const ValidDealsList = () => {
             </div>
           </div>
           <PreviewAltCard>
-            {currentItems.length > 0 ? (
+            {data.length > 0 ? (
               <React.Fragment>
-                {/* <PaginationComponent
-                  itemPerPage={itemPerPage}
+                <Pagination
+                  data={data.length}
                   totalItems={data.length}
                   paginate={paginate}
                   currentPage={currentPage}
-                /> */}
-                <ul className="pagination border p-1">
-                  <li className="active page-item border">
-                    <a
-                      className="page-link border border-white btn btn-primary"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => firstPageUrl(itemPerPage, 1)}
-                    >
-                      1
-                    </a>
-                  </li>
-                  <li className="active page-item border">
-                    <a
-                      className="page-link border border-white btn btn-primary"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => nextPageUrl(itemPerPage, 2)}
-                    >
-                      2
-                    </a>
-                  </li>
-                  <li className="active page-item border">
-                    <a
-                      className="page-link border border-white btn btn-primary"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => lastPageUrl(itemPerPage, 3)}
-                    >
-                      3
-                    </a>
-                  </li>
-                </ul>
+                  setCurrentPage={setCurrentPage}
+                />
               </React.Fragment>
             ) : (
               <div className="text-center">
-                <span className="text-silent">Sin Registros</span>
+                <Link
+                  to="/products"
+                  className="text-silent d-flex align-items-center justify-content-center"
+                  onClick={backToFirstPage}
+                >
+                  <Icon name="chevrons-left" />
+                  Actualizar registros
+                </Link>
               </div>
             )}
           </PreviewAltCard>

@@ -27,10 +27,8 @@ const ValidDealsServices = {
     });
     return response.data;
   },
-
-  // pagination
-  getPaginationValidDeals: async (itemPerPage, currentPage) => {
-    const response = await api.get(`/deals?limit=${itemPerPage}&page=${currentPage}`, {
+  getPaginationValidDeals: async (limit, page) => {
+    const response = await api.get(`/deals?limit=${limit}&page=${page}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
