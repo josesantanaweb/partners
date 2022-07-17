@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Block,
   BlockBetween,
@@ -7,7 +8,6 @@ import {
   BlockHeadContent,
   BlockTitle,
   Icon,
-  PaginationComponent,
   Button,
   DataTableHead,
   DataTableRow,
@@ -17,7 +17,7 @@ import {
   RSelect,
 } from "../../components/Component";
 
-import { get, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { FormGroup, Modal, ModalBody, Form, Col } from "reactstrap";
 import Content from "../../layout/content/Content";
@@ -27,14 +27,10 @@ import DealActionsServices from "../../services/DealActionsServices";
 import CurrenciesServices from "../../services/CurrenciesServices";
 import NumberFormat from "react-number-format";
 import es from "date-fns/locale/es";
+import Pagination from "../../components/singlePagination/Pagination";
 import Swal from "sweetalert2";
 
 const DocumentsList = () => {
-  // GET[PAGINATION]
-  const [totalItems, setTotalItems] = useState([]);
-  const [itemsPerPage, setItemsPerPage] = useState();
-  const [currentPage, setCurrentPage] = useState(1);
-
   const { errors, register, handleSubmit } = useForm();
   const [postDeals, setPostDeals] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -42,10 +38,16 @@ const DocumentsList = () => {
   const [search, setSearch] = useState("");
   const [sm, updateSm] = useState(false);
   const [editData, setEditData] = useState();
+
+  const [totalItems, setTotalItems] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
+
   const [modal, setModal] = useState({
     edit: false,
     add: false,
   });
+
   const [dateOfEntry, setDateOfEntry] = useState(new Date());
   const [estimatedDate, setEstimatedDate] = useState(new Date());
   const [realDate, setRealDate] = useState(new Date());
@@ -79,18 +81,6 @@ const DocumentsList = () => {
       ammount: "",
     });
   };
-
-  // const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
-  // const [itemPerPage] = useState(5);
-
-  // Get current list, pagination
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = postDeals.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Change Page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   // function to get post deals
   const getPostDeals = async () => {
@@ -308,29 +298,33 @@ const DocumentsList = () => {
     }
   }, [currenciesOptions.value]);
 
-  const getTotalItems = async () => {
-    try {
-      const items = await AfterSalesServices.getPostDealOperations();
-      const totalItems = await items?.meta?.totalItems;
-      setTotalItems(totalItems);
-    } catch (error) {
-      throw new Error("Not found total Items");
-    }
+  // ! Pagination
+  // Change Page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // function to get documents pagination
+  const getPaginationAfterDeals = async (limit, page) => {
+    const afterDealsPag = await AfterSalesServices.getPaginationPostDeals(limit, page);
+    const afterDealsData = await afterDealsPag.data.map((data) => data);
+    setPostDeals(afterDealsData);
   };
-  const getItemsPerPage = async () => {
-    try {
-      const items = await AfterSalesServices.getPostDealOperations();
-      const totalItems = await items?.meta?.limit;
-      setItemsPerPage(totalItems);
-    } catch (error) {
-      throw new Error("Not found total Items");
-    }
+
+  // function to get count of items
+  const getTotalItems = async () => {
+    const data = await AfterSalesServices.getPostDealOperations();
+    const totalItems = await data.meta?.totalItems;
+    setTotalItems(totalItems);
   };
 
   useEffect(() => {
     getTotalItems();
-    getItemsPerPage();
-  });
+  }, []);
+
+  useEffect(() => {
+    getPaginationAfterDeals(itemPerPage, currentPage);
+  }, [itemPerPage, currentPage]);
+
+  const backToFirstPage = () => window.location.reload();
 
   return (
     <React.Fragment>
@@ -412,8 +406,8 @@ const DocumentsList = () => {
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
-              {currentItems.length > 0
-                ? currentItems.map((item, index) => (
+              {postDeals.length > 0
+                ? postDeals.map((item, index) => (
                     <DataTableItem key={index}>
                       <DataTableRow className="text-center">
                         <span>{item?.deal?.id}</span>
@@ -471,17 +465,26 @@ const DocumentsList = () => {
             </div>
           </div>
           <PreviewAltCard>
-            {currentItems.length > 0 ? (
-              <PaginationComponent
-                itemPerPage={itemsPerPage}
-                totalItems={totalItems}
-                paginate={paginate}
-                currentPage={currentPage}
-                // totalItems={postDeals.length}
-              />
+            {postDeals.length > 0 ? (
+              <React.Fragment>
+                <Pagination
+                  data={postDeals.length}
+                  totalItems={postDeals.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                />
+              </React.Fragment>
             ) : (
               <div className="text-center">
-                <span className="text-silent">No se encontraron registros</span>
+                <Link
+                  to="/products"
+                  className="text-silent d-flex align-items-center justify-content-center"
+                  onClick={backToFirstPage}
+                >
+                  <Icon name="chevrons-left" />
+                  Actualizar registros
+                </Link>
               </div>
             )}
           </PreviewAltCard>

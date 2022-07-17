@@ -27,9 +27,8 @@ const DealsPostServices = {
     return response.data;
   },
 
-  // pagination
-  getPostDealOperationsPags: async (itemPerPage, currentPage) => {
-    const response = await api.get(`/deal-post-operation?limit=${itemPerPage}&page=${currentPage}`, {
+  getPaginationPostDeals: async (limit, page) => {
+    const response = await api.get(`/deal-post-operation?limit=${limit}&page=${page}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
