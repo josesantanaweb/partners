@@ -33,6 +33,12 @@ const ProductsServices = {
     });
     return response.data;
   },
+  getPaginationProducts: async (limit, page) => {
+    const response = await api.get(`/deal-product?limit=${limit}&page=${page}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
 };
 
 export default ProductsServices;

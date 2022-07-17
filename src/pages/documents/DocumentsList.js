@@ -22,8 +22,7 @@ import { useForm } from "react-hook-form";
 import DocumentsServices from "../../services/DocumentsServices";
 import Swal from "sweetalert2";
 import { Link } from "react-router-dom";
-
-import SimplePagination from "../../components/singlePagination/Pagination";
+import Pagination from "../../components/singlePagination/Pagination";
 
 const DocumentsList = () => {
   const [data, setData] = useState([]);
@@ -278,7 +277,7 @@ const DocumentsList = () => {
           <PreviewAltCard>
             {data.length > 0 ? (
               <React.Fragment>
-                <SimplePagination
+                <Pagination
                   data={data.length}
                   totalItems={data.length}
                   paginate={paginate}
