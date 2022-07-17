@@ -10,7 +10,6 @@ import {
   Icon,
   Col,
   UserAvatar,
-  PaginationComponent,
   Button,
   DataTableHead,
   DataTableRow,
@@ -26,6 +25,8 @@ import { useForm } from "react-hook-form";
 import { UserContext } from "./UserContext";
 import UsersServices from "../../services/UsersServices";
 import RolesServices from "../../services/RolesServices";
+import { Link } from "react-router-dom";
+import Pagination from "../../components/singlePagination/Pagination";
 import Swal from "sweetalert2";
 
 const UserListDefaultPage = () => {
@@ -37,6 +38,10 @@ const UserListDefaultPage = () => {
   const [rolesOptions, setRolesOptions] = useState([]);
   const [roleDefaultEdit, setRoleDefaultEdit] = useState({});
   const [roleId, setRoleId] = useState(1);
+
+  const [totalItems, setTotalItems] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
 
   const [modal, setModal] = useState({
     edit: false,
@@ -79,8 +84,6 @@ const UserListDefaultPage = () => {
   const [formData, setFormData] = useState({
     name: "",
   });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
 
   const [sm, updateSm] = useState(false);
 
@@ -153,16 +156,6 @@ const UserListDefaultPage = () => {
   };
 
   // Function to change to delete property for an item
-  // const deleteUser = async (id) => {
-  //   try {
-  //     await UsersServices.deleteUser(id);
-  //     getUser();
-  //   } catch (error) {
-  //     throw new Error("Error deleting record!");
-  //   }
-  // };
-
-  // Function to change to delete property for an item
   const deleteUser = (id) => {
     try {
       const swalWithBootstrapButtons = Swal.mixin({
@@ -196,14 +189,6 @@ const UserListDefaultPage = () => {
     }
   };
 
-  // Get current list, pagination
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Change Page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
   const onFilter = (e) => {
     if (e.target.value.length > 1) {
       getUser(e.target.value);
@@ -211,6 +196,34 @@ const UserListDefaultPage = () => {
       getUser("");
     }
   };
+
+  // ! Pagination
+  // Change Page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // function to get documents pagination
+  const getPaginationUsers = async (limit, page) => {
+    const usersPag = await UsersServices.getPaginationUsers(limit, page);
+    const usersData = await usersPag.data.map((data) => data);
+    setData(usersData);
+  };
+
+  // function to get count of items
+  const getTotalItems = async () => {
+    const data = await UsersServices.getUser();
+    const totalItems = await data.meta?.totalItems;
+    setTotalItems(totalItems);
+  };
+
+  useEffect(() => {
+    getTotalItems();
+  }, []);
+
+  useEffect(() => {
+    getPaginationUsers(itemPerPage, currentPage);
+  }, [itemPerPage, currentPage]);
+
+  const backToFirstPage = () => window.location.reload();
 
   return (
     <React.Fragment>
@@ -223,7 +236,7 @@ const UserListDefaultPage = () => {
                 Lista de Usuarios
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} usuarios</p>
+                <p>Total {totalItems} usuarios</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -281,8 +294,8 @@ const UserListDefaultPage = () => {
                 </DataTableRow>
               </DataTableHead>
               {/*Head*/}
-              {currentItems.length > 0
-                ? currentItems.map((item) => (
+              {data.length > 0
+                ? data.map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow className="text-center">
                         <span>{item.id}</span>
@@ -334,16 +347,26 @@ const UserListDefaultPage = () => {
             </div>
           </div>
           <PreviewAltCard>
-            {currentItems.length > 0 ? (
-              <PaginationComponent
-                itemPerPage={itemPerPage}
-                totalItems={data.length}
-                paginate={paginate}
-                currentPage={currentPage}
-              />
+            {data.length > 0 ? (
+              <React.Fragment>
+                <Pagination
+                  data={data.length}
+                  totalItems={data.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                />
+              </React.Fragment>
             ) : (
               <div className="text-center">
-                <span className="text-silent">Sin Registros</span>
+                <Link
+                  to="/products"
+                  className="text-silent d-flex align-items-center justify-content-center"
+                  onClick={backToFirstPage}
+                >
+                  <Icon name="chevrons-left" />
+                  Actualizar registros
+                </Link>
               </div>
             )}
           </PreviewAltCard>
