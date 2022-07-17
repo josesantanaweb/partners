@@ -224,7 +224,7 @@ const RolesList = () => {
                 Lista de Roles
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} roles</p>
+                <p>Total {totalItems} roles</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>

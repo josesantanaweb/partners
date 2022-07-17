@@ -33,6 +33,12 @@ const AdvisersServices = {
     });
     return response.data;
   },
+  getPaginationAdvisers: async (limit, page) => {
+    const response = await api.get(`/advisors?limit=${limit}&page=${page}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
 };
 
 export default AdvisersServices;
