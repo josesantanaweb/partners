@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { FormGroup, Modal, ModalBody, Form, Alert } from "reactstrap";
 import {
   Block,
@@ -24,6 +25,7 @@ import { useForm } from "react-hook-form";
 import { CompanyContext } from "./CompanyContext";
 import CompanyServices from "../../services/CompanyServices";
 import CountriesServices from "../../services/CountriesServices";
+import Pagination from "../../components/singlePagination/Pagination";
 import Swal from "sweetalert2";
 
 const CompanyList = () => {
@@ -37,6 +39,10 @@ const CompanyList = () => {
   const [citiesOptions, setCitiesOptions] = useState([]);
   const [countryId, setCountryId] = useState();
   const [cityId, setCityId] = useState();
+
+  const [totalItems, setTotalItems] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
 
   const [modal, setModal] = useState({
     edit: false,
@@ -125,8 +131,6 @@ const CompanyList = () => {
       phone: "",
     },
   });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
 
   const [sm, updateSm] = useState(false);
 
@@ -281,14 +285,6 @@ const CompanyList = () => {
     }
   };
 
-  // Get current list, pagination
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Change Page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
   const onFilter = (e) => {
     if (e.target.value.length > 1) {
       getCompanies(e.target.value);
@@ -296,6 +292,34 @@ const CompanyList = () => {
       getCompanies("");
     }
   };
+
+  // ! Pagination
+  // Change Page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // function to get documents pagination
+  const getPaginationCompanies = async (limit, page) => {
+    const companiesPag = await CompanyServices.getPaginationCompanies(limit, page);
+    const companiesData = await companiesPag.data.map((data) => data);
+    setData(companiesData);
+  };
+
+  // function to get count of items
+  const getTotalItems = async () => {
+    const data = await CompanyServices.getCompany();
+    const totalItems = await data.meta?.totalItems;
+    setTotalItems(totalItems);
+  };
+
+  useEffect(() => {
+    getTotalItems();
+  }, []);
+
+  useEffect(() => {
+    getPaginationCompanies(itemPerPage, currentPage);
+  }, [itemPerPage, currentPage]);
+
+  const backToFirstPage = () => window.location.reload();
 
   return (
     <React.Fragment>
@@ -308,7 +332,7 @@ const CompanyList = () => {
                 Lista de Socios Estratégicos
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} Socios Estratégicos</p>
+                <p>Total {totalItems} Socios Estratégicos</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -361,8 +385,8 @@ const CompanyList = () => {
                 </DataTableRow>
               </DataTableHead>
               {/*Head*/}
-              {currentItems.length > 0
-                ? currentItems.map((item) => (
+              {data.length > 0
+                ? data.map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow className="text-center">
                         <span>{item.id}</span>
@@ -409,16 +433,26 @@ const CompanyList = () => {
             </div>
           </div>
           <PreviewAltCard>
-            {currentItems.length > 0 ? (
-              <PaginationComponent
-                itemPerPage={itemPerPage}
-                totalItems={data.length}
-                paginate={paginate}
-                currentPage={currentPage}
-              />
+            {data.length > 0 ? (
+              <React.Fragment>
+                <Pagination
+                  data={data.length}
+                  totalItems={data.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                />
+              </React.Fragment>
             ) : (
               <div className="text-center">
-                <span className="text-silent">Sin Registros</span>
+                <Link
+                  to="/products"
+                  className="text-silent d-flex align-items-center justify-content-center"
+                  onClick={backToFirstPage}
+                >
+                  <Icon name="chevrons-left" />
+                  Actualizar registros
+                </Link>
               </div>
             )}
           </PreviewAltCard>
