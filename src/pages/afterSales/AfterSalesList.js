@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Block,
   BlockBetween,
@@ -7,7 +8,6 @@ import {
   BlockHeadContent,
   BlockTitle,
   Icon,
-  PaginationComponent,
   Button,
   DataTableHead,
   DataTableRow,
@@ -27,6 +27,7 @@ import DealActionsServices from "../../services/DealActionsServices";
 import CurrenciesServices from "../../services/CurrenciesServices";
 import NumberFormat from "react-number-format";
 import es from "date-fns/locale/es";
+import Pagination from "../../components/singlePagination/Pagination";
 import Swal from "sweetalert2";
 
 const DocumentsList = () => {
@@ -37,10 +38,16 @@ const DocumentsList = () => {
   const [search, setSearch] = useState("");
   const [sm, updateSm] = useState(false);
   const [editData, setEditData] = useState();
+
+  const [totalItems, setTotalItems] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
+
   const [modal, setModal] = useState({
     edit: false,
     add: false,
   });
+
   const [dateOfEntry, setDateOfEntry] = useState(new Date());
   const [estimatedDate, setEstimatedDate] = useState(new Date());
   const [realDate, setRealDate] = useState(new Date());
@@ -75,23 +82,11 @@ const DocumentsList = () => {
     });
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(5);
-
-  // Get current list, pagination
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = postDeals.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Change Page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
   // function to get post deals
   const getPostDeals = async () => {
     try {
       const postDeals = await AfterSalesServices.getPostDealOperations();
       const postDealData = await postDeals.data.map((data) => data);
-
       setPostDeals(postDealData);
       setTablePostDeals(postDealData);
     } catch (error) {
@@ -202,9 +197,8 @@ const DocumentsList = () => {
 
     return number;
   }
-  const [ammountInv, setAmmountIn] = useState(0);
-  const handleChangeAmmount = (ev) => setAmmountIn(Number(ev.target.value));
-  console.log(typeof ammountInv);
+  const [ammountInv, setAmmountIn] = useState("");
+  const handleChangeAmmount = (ev) => setAmmountIn(ev.target.value);
 
   useEffect(() => {
     if (editData?.dateOfEntry) {
@@ -304,6 +298,34 @@ const DocumentsList = () => {
     }
   }, [currenciesOptions.value]);
 
+  // ! Pagination
+  // Change Page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // function to get documents pagination
+  const getPaginationAfterDeals = async (limit, page) => {
+    const afterDealsPag = await AfterSalesServices.getPaginationPostDeals(limit, page);
+    const afterDealsData = await afterDealsPag.data.map((data) => data);
+    setPostDeals(afterDealsData);
+  };
+
+  // function to get count of items
+  const getTotalItems = async () => {
+    const data = await AfterSalesServices.getPostDealOperations();
+    const totalItems = await data.meta?.totalItems;
+    setTotalItems(totalItems);
+  };
+
+  useEffect(() => {
+    getTotalItems();
+  }, []);
+
+  useEffect(() => {
+    getPaginationAfterDeals(itemPerPage, currentPage);
+  }, [itemPerPage, currentPage]);
+
+  const backToFirstPage = () => window.location.reload();
+
   return (
     <React.Fragment>
       <Head title="Acciones Post Venta"></Head>
@@ -315,7 +337,7 @@ const DocumentsList = () => {
                 Operaciones Post Venta
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {currentItems?.length} acciones</p>
+                <p>Total {totalItems} acciones</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -362,7 +384,13 @@ const DocumentsList = () => {
                   <span className="sub-text">Operación Post Venta</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
-                  <span className="sub-text">Inversión</span>
+                  <span className="sub-text">Plan</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Asesor/a</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
+                  <span className="sub-text">Inversión Post Venta</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
                   <span className="sub-text">Fecha ingresada</span>
@@ -373,18 +401,25 @@ const DocumentsList = () => {
                 <DataTableRow className="text-center">
                   <span className="sub-text">Fecha final</span>
                 </DataTableRow>
+
                 <DataTableRow className="text-center">
                   <span className="sub-text">Acción</span>
                 </DataTableRow>
               </DataTableHead>
-              {currentItems.length > 0
-                ? currentItems.map((item, index) => (
+              {postDeals.length > 0
+                ? postDeals.map((item, index) => (
                     <DataTableItem key={index}>
                       <DataTableRow className="text-center">
                         <span>{item?.deal?.id}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item?.action?.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.deal?.plan?.name}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.aprobatedBy}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>
@@ -430,16 +465,26 @@ const DocumentsList = () => {
             </div>
           </div>
           <PreviewAltCard>
-            {currentItems.length > 0 ? (
-              <PaginationComponent
-                itemPerPage={itemPerPage}
-                totalItems={postDeals.length}
-                paginate={paginate}
-                currentPage={currentPage}
-              />
+            {postDeals.length > 0 ? (
+              <React.Fragment>
+                <Pagination
+                  data={postDeals.length}
+                  totalItems={postDeals.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                />
+              </React.Fragment>
             ) : (
               <div className="text-center">
-                <span className="text-silent">No se encontraron registros</span>
+                <Link
+                  to="/products"
+                  className="text-silent d-flex align-items-center justify-content-center"
+                  onClick={backToFirstPage}
+                >
+                  <Icon name="chevrons-left" />
+                  Actualizar registros
+                </Link>
               </div>
             )}
           </PreviewAltCard>

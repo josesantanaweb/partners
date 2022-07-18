@@ -14,9 +14,14 @@ const LibraryServices = {
     });
     return response.data;
   },
-
   getCustomerDocument: async (customerId) => {
     const response = await api.get(`customer-library/${customerId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+  getPaginationCustomerDocument: async (customerId, limit, page) => {
+    const response = await api.get(`/customer-library/${customerId}?limit=${limit}&page=${page}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;

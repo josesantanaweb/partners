@@ -33,6 +33,12 @@ const RolesServices = {
     });
     return response.data;
   },
+  getPaginationRoles: async (limit, page) => {
+    const response = await api.get(`/session-rol?limit=${limit}&page=${page}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
 };
 
 export default RolesServices;

@@ -8,7 +8,6 @@ import {
   BlockTitle,
   Icon,
   Col,
-  PaginationComponent,
   Button,
   DataTableHead,
   DataTableRow,
@@ -22,12 +21,12 @@ import Head from "../../layout/head/Head";
 import { useForm } from "react-hook-form";
 import DocumentsServices from "../../services/DocumentsServices";
 import Swal from "sweetalert2";
+import { Link } from "react-router-dom";
+import Pagination from "../../components/singlePagination/Pagination";
 
 const DocumentsList = () => {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(5);
   const [sm, updateSm] = useState(false);
   const { errors, register, handleSubmit } = useForm();
   const [editData, setEditData] = useState();
@@ -35,6 +34,10 @@ const DocumentsList = () => {
     edit: false,
     add: false,
   });
+
+  const [totalItems, setTotalItems] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
 
   // function to get documents
   const getDocuments = async () => {
@@ -78,8 +81,6 @@ const DocumentsList = () => {
     try {
       await DocumentsServices.addDocument(submittedData);
       setData([submittedData, ...data]);
-      console.log(submittedData);
-
       resetForm();
       getDocuments();
       setModal({ edit: false }, { add: false });
@@ -89,12 +90,10 @@ const DocumentsList = () => {
   // submit function to update a new item
   const onEditSubmit = async (submitData) => {
     const { name, description } = submitData;
-
     let submittedData = {
       name: name,
       description: description,
     };
-
     try {
       await DocumentsServices.editDocument(editData.id, submittedData);
       resetForm();
@@ -109,7 +108,7 @@ const DocumentsList = () => {
     setEditData(data);
   };
 
-  // Function to change to delete property for an item
+  // function to change to delete property for an item
   const deleteDocument = (id) => {
     try {
       const swalWithBootstrapButtons = Swal.mixin({
@@ -143,15 +142,7 @@ const DocumentsList = () => {
     }
   };
 
-  // Get current list, pagination
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Change Page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // function to handle description doc length
+  // function to handle description document length
   const handleDescriptionLength = (description) => {
     if (description.length > 35) {
       return description.substring(0, 35) + "...";
@@ -159,16 +150,33 @@ const DocumentsList = () => {
     return description;
   };
 
-  // function to get documents
+  // ! Pagination
+  // Change Page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // function to get documents pagination
   const getPaginationDocuments = async (limit, page) => {
     const documentsPag = await DocumentsServices.getPaginationDocuments(limit, page);
     const documentsData = await documentsPag.data.map((data) => data);
     setData(documentsData);
   };
 
-  const firstPageUrl = () => getPaginationDocuments(itemPerPage, 1);
-  const nextPageUrl = () => getPaginationDocuments(itemPerPage, 2);
-  const lastPageUrl = () => getPaginationDocuments(itemPerPage, 3);
+  // function to get count of items
+  const getTotalItems = async () => {
+    const data = await DocumentsServices.getDocuments();
+    const totalItems = await data.meta?.totalItems;
+    setTotalItems(totalItems);
+  };
+
+  useEffect(() => {
+    getTotalItems();
+  }, []);
+
+  useEffect(() => {
+    getPaginationDocuments(itemPerPage, currentPage);
+  }, [itemPerPage, currentPage]);
+
+  const backToFirstPage = () => window.location.reload();
 
   return (
     <React.Fragment>
@@ -181,7 +189,7 @@ const DocumentsList = () => {
                 Lista de Documentos
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {currentItems.length} documentos</p>
+                <p>Total {totalItems} documentos</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -225,8 +233,8 @@ const DocumentsList = () => {
                 </DataTableRow>
               </DataTableHead>
               {/*Head*/}
-              {currentItems.length > 0
-                ? currentItems.map((item) => (
+              {data.length > 0
+                ? data.map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow className="text-center">
                         <span>{item.id}</span>
@@ -267,47 +275,26 @@ const DocumentsList = () => {
             </div>
           </div>
           <PreviewAltCard>
-            {currentItems.length > 0 ? (
+            {data.length > 0 ? (
               <React.Fragment>
-                {/* <PaginationComponent
-                  itemPerPage={itemPerPage}
-                  totalItems={currentItems.length}
+                <Pagination
+                  data={data.length}
+                  totalItems={data.length}
                   paginate={paginate}
                   currentPage={currentPage}
-                /> */}
-                <ul className="pagination border p-1">
-                  <li className="active page-item border">
-                    <a
-                      className="page-link border border-white btn btn-primary"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => firstPageUrl(itemPerPage, 1)}
-                    >
-                      1
-                    </a>
-                  </li>
-                  <li className="active page-item border">
-                    <a
-                      className="page-link border border-white btn btn-primary"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => nextPageUrl(itemPerPage, 2)}
-                    >
-                      2
-                    </a>
-                  </li>
-                  <li className="active page-item border">
-                    <a
-                      className="page-link border border-white btn btn-primary"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => lastPageUrl(itemPerPage, 3)}
-                    >
-                      3
-                    </a>
-                  </li>
-                </ul>
+                  setCurrentPage={setCurrentPage}
+                />
               </React.Fragment>
             ) : (
               <div className="text-center">
-                <span className="text-silent">Sin Registros</span>
+                <Link
+                  to="/documents"
+                  className="text-silent d-flex align-items-center justify-content-center"
+                  onClick={backToFirstPage}
+                >
+                  <Icon name="chevrons-left" />
+                  Actualizar registros
+                </Link>
               </div>
             )}
           </PreviewAltCard>
