@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import {
   Block,
   BlockBetween,
@@ -26,6 +25,8 @@ import Head from "../../layout/head/Head";
 import LibraryServices from "../../services/LibraryServices";
 import DocumentsServices from "../../services/DocumentsServices";
 import CustomersServices from "../../services/CustomersServices";
+import { Link } from "react-router-dom";
+import Pagination from "../../components/singlePagination/Pagination";
 
 const CustomerId = () => {
   const [data, setData] = useState([]);
@@ -41,12 +42,16 @@ const CustomerId = () => {
   const [sm, updateSm] = useState(false);
   const { register, handleSubmit } = useForm();
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [totalItems, setTotalItems] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
+
   const [modal, setModal] = useState({
     edit: false,
     add: false,
   });
+
   const [formData, setFormData] = useState({
     documentTypeId: "",
     // description: filterDocumentType?.description,
@@ -149,20 +154,19 @@ const CustomerId = () => {
 
   // Submit function to add a new item
   const onFormSubmit = async (submitData) => {
-    const { documentTypeId, description, observation, issueDate, expirationDate, file } = submitData;
+    const { observation, file } = submitData;
     let submittedData = {
       documentTypeId: documentsOptions?.value,
-      // description: documentsOptions?.value,
       observation: observation,
       issueDate: issuedDate,
       expirationDate: expiratedDate,
-      file: file[0],
+      file: file[0], // ?ERROR ON POST FORMAT! MÁX RECORDS 9?
     };
     try {
       const formData = new FormData();
       let object = {};
 
-      formData.append("file", file[0]);
+      formData.append("file", file[0]); // ?ERROR ON POST FORMAT! MÁX RECORDS 9?
       formData.append("documentTypeId", documentsOptions.value);
       formData.append("expirationDate", expiratedDate);
       formData.append("issueDate", issuedDate);
@@ -209,14 +213,6 @@ const CustomerId = () => {
     }
   }, [documentsOptions.value]);
 
-  // Get current list, pagination
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = documentsfiltred.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Change Page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
   // parse date
   const parseDate = (date) => {
     const dateParse = new Date(date);
@@ -232,6 +228,34 @@ const CustomerId = () => {
       setExpiratedDate(new Date(editData?.expiratedDate));
     }
   }, []);
+
+  // ! Pagination
+  // Change Page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // function to get documents pagination
+  const getPaginationCustomersLib = async (customerId, limit, page) => {
+    const customersLibPag = await LibraryServices.getPaginationCustomerDocument(customerId, limit, page);
+    const customersLibData = await customersLibPag.data.map((data) => data);
+    setData(customersLibData);
+  };
+
+  // function to get count of items
+  const getTotalItems = async () => {
+    const data = await LibraryServices.getCustomerDocument(customerId);
+    const totalItems = await data.meta?.totalItems;
+    setTotalItems(totalItems);
+  };
+
+  useEffect(() => {
+    getTotalItems();
+  }, []);
+
+  useEffect(() => {
+    getPaginationCustomersLib(customerId, itemPerPage, currentPage);
+  }, [customerId, itemPerPage, currentPage]);
+
+  const backToFirstPage = () => window.location.reload();
 
   return (
     <React.Fragment>
@@ -260,7 +284,7 @@ const CustomerId = () => {
                     <p>
                       Documentos de{" "}
                       <span className="text-primary bold">{customer?.names || customerLegal?.companyName}</span> (
-                      {documentsTable?.length} documentos)
+                      {totalItems} documentos)
                     </p>
                   </BlockDes>
                 </div>
@@ -330,8 +354,8 @@ const CustomerId = () => {
                 </DataTableRow>
               </DataTableHead>
 
-              {currentItems.length > 0
-                ? currentItems.map((item) => (
+              {data.length > 0
+                ? data.map((item) => (
                     <DataTableItem key={item.id} className="rounded-0 text-center">
                       <DataTableRow className="text-center ">
                         <div className="user-card d-flex align-items-center justify-content-center">
@@ -368,21 +392,31 @@ const CustomerId = () => {
                   ))
                 : null}
             </div>
-            <PreviewAltCard>
-              {currentItems.length > 0 ? (
-                <PaginationComponent
-                  itemPerPage={itemPerPage}
+          </div>
+          <PreviewAltCard>
+            {data.length > 0 ? (
+              <React.Fragment>
+                <Pagination
+                  data={data.length}
                   totalItems={data.length}
                   paginate={paginate}
                   currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
                 />
-              ) : (
-                <div className="text-center">
-                  <span className="text-silent">No se encontaron documentos</span>
-                </div>
-              )}
-            </PreviewAltCard>
-          </div>
+              </React.Fragment>
+            ) : (
+              <div className="text-center">
+                <Link
+                  to={`/customer-library/${customerId}`}
+                  className="text-silent d-flex align-items-center justify-content-center"
+                  onClick={backToFirstPage}
+                >
+                  <Icon name="chevrons-left" />
+                  Actualizar registros
+                </Link>
+              </div>
+            )}
+          </PreviewAltCard>
         </Block>
 
         <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
@@ -432,7 +466,7 @@ const CustomerId = () => {
                         style={{ backgroundColor: "#e5e9f2", color: "black !important" }}
                         defaultValue={filterDocumentType?.description}
                         placeholder="Descripción documento"
-                        ref={register({ required: "Este campo es requerido" })}
+                        ref={register()}
                         readOnly
                       />
                     </FormGroup>
@@ -447,6 +481,7 @@ const CustomerId = () => {
                         name="observation"
                         placeholder="Ingresa observación"
                         defaultValue={formData.observation}
+                        ref={register()}
                       />
                     </FormGroup>
                   </Col>
@@ -454,14 +489,6 @@ const CustomerId = () => {
                   <Col md="6" className="mb-4">
                     <FormGroup>
                       <label className="form-label">Fecha de emisión</label>
-                      {/* <input
-                        className="form-control"
-                        type="date"
-                        name="issueDate"
-                        defaultValue={formData.issueDate}
-                        ref={register()}
-                      /> */}
-                      {/* aca */}
                       <DatePicker
                         selected={issuedDate}
                         className="form-control"
@@ -475,7 +502,6 @@ const CustomerId = () => {
                   <Col md="6" className="mb-4">
                     <FormGroup>
                       <label className="form-label">Fecha de expiración</label>
-
                       <DatePicker
                         selected={expiratedDate}
                         className="form-control"
@@ -497,7 +523,6 @@ const CustomerId = () => {
                             name="file"
                             defaultValue={formData.file}
                             ref={register()}
-                            accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.jpg, .jpeg, .png, application/vnd.ms-excel"
                           />
                         </label>
                       </div>

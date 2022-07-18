@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState, useRef } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { FormGroup, Modal, ModalBody, Form, Alert, NavItem, NavLink, TabContent, TabPane, Nav } from "reactstrap";
 import {
   Block,
@@ -10,7 +10,6 @@ import {
   Icon,
   Col,
   UserAvatar,
-  PaginationComponent,
   Button,
   DataTableHead,
   DataTableRow,
@@ -30,6 +29,8 @@ import { useForm } from "react-hook-form";
 import { AdviserContext } from "./AdviserContext";
 import AdvisersServices from "../../services/AdvisersServices";
 import CountriesServices from "../../services/CountriesServices";
+import { Link } from "react-router-dom";
+import Pagination from "../../components/singlePagination/Pagination";
 import Swal from "sweetalert2";
 registerLocale("es", es);
 
@@ -39,8 +40,6 @@ const AdviserList = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [addActiveTab, setAddActiveTab] = useState("1");
   const [editData, setEditData] = useState();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
   const [sm, updateSm] = useState(false);
   const { errors, register, handleSubmit } = useForm();
 
@@ -59,6 +58,10 @@ const AdviserList = () => {
   const [countriesOptions, setCountriesOptions] = useState(countries);
   const [cities, setCities] = useState([]);
   const [citiesOptions, setCitiesOptions] = useState(cities);
+
+  const [totalItems, setTotalItems] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
 
   const [modal, setModal] = useState({
     edit: false,
@@ -470,14 +473,6 @@ const AdviserList = () => {
     getAdvisers();
   });
 
-  // Get current list, pagination
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Change Page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
   const onFilter = (e) => {
     if (e.target.value.length > 1) {
       getAdvisers(e.target.value);
@@ -485,6 +480,34 @@ const AdviserList = () => {
       getAdvisers("");
     }
   };
+
+  // ! Pagination
+  // Change Page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // function to get documents pagination
+  const getPaginationAdvisers = async (limit, page) => {
+    const advisersPag = await AdvisersServices.getPaginationAdvisers(limit, page);
+    const advisersData = await advisersPag.data.map((data) => data);
+    setData(advisersData);
+  };
+
+  // function to get count of items
+  const getTotalItems = async () => {
+    const data = await AdvisersServices.getAdviser();
+    const totalItems = await data.meta?.totalItems;
+    setTotalItems(totalItems);
+  };
+
+  useEffect(() => {
+    getTotalItems();
+  }, []);
+
+  useEffect(() => {
+    getPaginationAdvisers(itemPerPage, currentPage);
+  }, [itemPerPage, currentPage]);
+
+  const backToFirstPage = () => window.location.reload();
 
   return (
     <React.Fragment>
@@ -497,7 +520,7 @@ const AdviserList = () => {
                 Lista de Asesores
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} asesores</p>
+                <p>Total {totalItems} asesores</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -562,8 +585,8 @@ const AdviserList = () => {
                   </DataTableRow>
                 </DataTableHead>
                 {/*Head*/}
-                {currentItems.length > 0
-                  ? currentItems.map((item) => (
+                {data.length > 0
+                  ? data.map((item) => (
                       <DataTableItem key={item.id}>
                         <DataTableRow className="text-center">
                           <span>{item.id}</span>
@@ -627,16 +650,26 @@ const AdviserList = () => {
             </div>
           </div>
           <PreviewAltCard>
-            {currentItems.length > 0 ? (
-              <PaginationComponent
-                itemPerPage={itemPerPage}
-                totalItems={data.length}
-                paginate={paginate}
-                currentPage={currentPage}
-              />
+            {data.length > 0 ? (
+              <React.Fragment>
+                <Pagination
+                  data={data.length}
+                  totalItems={data.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                />
+              </React.Fragment>
             ) : (
               <div className="text-center">
-                <span className="text-silent">Sin Registros</span>
+                <Link
+                  to="/products"
+                  className="text-silent d-flex align-items-center justify-content-center"
+                  onClick={backToFirstPage}
+                >
+                  <Icon name="chevrons-left" />
+                  Actualizar registros
+                </Link>
               </div>
             )}
           </PreviewAltCard>

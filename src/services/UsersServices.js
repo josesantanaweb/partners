@@ -33,6 +33,12 @@ const UsersServices = {
     });
     return response.data;
   },
+  getPaginationUsers: async (limit, page) => {
+    const response = await api.get(`/users?limit=${limit}&page=${page}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
 };
 
 export default UsersServices;

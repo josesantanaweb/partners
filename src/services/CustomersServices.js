@@ -15,6 +15,30 @@ const CustomersServices = {
     });
     return response.data;
   },
+  getCustomersLegal: async () => {
+    const response = await api.get(`customers/legal`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+  getPaginationCustomerLegal: async (limit, page) => {
+    const response = await api.get(`/customers/legal?limit=${limit}&page=${page}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+  getCustomersNatural: async () => {
+    const response = await api.get(`customers/natural`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+  getPaginationCustomerNatural: async (limit, page) => {
+    const response = await api.get(`/customers/natural?limit=${limit}&page=${page}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
   addCustomerNatural: async (data) => {
     const response = await api.post("/customers/natural", data, {
       headers: { Authorization: `Bearer ${token}` },

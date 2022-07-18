@@ -33,6 +33,12 @@ const CompanyServices = {
     });
     return response.data;
   },
+  getPaginationCompanies: async (limit, page) => {
+    const response = await api.get(`/companies?limit=${limit}&page=${page}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
 };
 
 export default CompanyServices;

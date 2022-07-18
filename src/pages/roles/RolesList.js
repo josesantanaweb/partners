@@ -24,6 +24,8 @@ import { useForm } from "react-hook-form";
 import { RolesContext } from "./RolesContext";
 import RolesServices from "../../services/RolesServices";
 import MenuServices from "../../services/MenuServices";
+import { Link } from "react-router-dom";
+import Pagination from "../../components/singlePagination/Pagination";
 
 const RolesList = () => {
   const { contextData } = useContext(RolesContext);
@@ -31,6 +33,10 @@ const RolesList = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [editData, setEditData] = useState();
   const [menuItems, setMenuItems] = useState([]);
+
+  const [totalItems, setTotalItems] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
 
   const [modal, setModal] = useState({
     edit: false,
@@ -59,8 +65,6 @@ const RolesList = () => {
     name: "",
     description: "",
   });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
 
   const [sm, updateSm] = useState(false);
 
@@ -181,13 +185,33 @@ const RolesList = () => {
     }
   };
 
-  // Get current list, pagination
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
+  // ! Pagination
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // function to get documents pagination
+  const getPaginationRoles = async (limit, page) => {
+    const rolesPag = await RolesServices.getPaginationRoles(limit, page);
+    const rolesData = await rolesPag.data.map((data) => data);
+    setData(rolesData);
+  };
+
+  // function to get count of items
+  const getTotalItems = async () => {
+    const data = await RolesServices.getRoles();
+    const totalItems = await data.meta?.totalItems;
+    setTotalItems(totalItems);
+  };
+
+  useEffect(() => {
+    getTotalItems();
+  }, []);
+
+  useEffect(() => {
+    getPaginationRoles(itemPerPage, currentPage);
+  }, [itemPerPage, currentPage]);
+
+  const backToFirstPage = () => window.location.reload();
 
   return (
     <React.Fragment>
@@ -200,7 +224,7 @@ const RolesList = () => {
                 Lista de Roles
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} roles</p>
+                <p>Total {totalItems} roles</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -244,8 +268,8 @@ const RolesList = () => {
                 </DataTableRow>
               </DataTableHead>
               {/*Head*/}
-              {currentItems.length > 0
-                ? currentItems.map((item) => (
+              {data.length > 0
+                ? data.map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow className="text-center">
                         <span>{item.id}</span>
@@ -286,16 +310,26 @@ const RolesList = () => {
             </div>
           </div>
           <PreviewAltCard>
-            {currentItems.length > 0 ? (
-              <PaginationComponent
-                itemPerPage={itemPerPage}
-                totalItems={data.length}
-                paginate={paginate}
-                currentPage={currentPage}
-              />
+            {data.length > 0 ? (
+              <React.Fragment>
+                <Pagination
+                  data={data.length}
+                  totalItems={data.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                />
+              </React.Fragment>
             ) : (
               <div className="text-center">
-                <span className="text-silent">Sin Registros</span>
+                <Link
+                  to="/products"
+                  className="text-silent d-flex align-items-center justify-content-center"
+                  onClick={backToFirstPage}
+                >
+                  <Icon name="chevrons-left" />
+                  Actualizar registros
+                </Link>
               </div>
             )}
           </PreviewAltCard>

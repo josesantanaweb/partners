@@ -26,7 +26,6 @@ const DocumentsServices = {
     });
     return response.data;
   },
-
   getPaginationDocuments: async (limit, page) => {
     const response = await api.get(`/documents?limit=${limit}&page=${page}`, {
       headers: { Authorization: `Bearer ${token}` },

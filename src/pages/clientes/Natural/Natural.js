@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Modal, ModalBody, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import {
   Block,
@@ -31,6 +31,8 @@ import InvestmentExperience from "./components/Edit/InvestmentExperience";
 import SpousalHistory from "./components/Edit/SpousalHistory";
 import CustomersServices from "../../../services/CustomersServices";
 import Beneficiaries from "./components/Edit/Beneficiaries";
+import { Link } from "react-router-dom";
+import Pagination from "../../../components/singlePagination/Pagination";
 import Swal from "sweetalert2";
 
 const Natural = () => {
@@ -42,8 +44,11 @@ const Natural = () => {
   const [editData, setEditData] = useState();
   const [addActiveTab, setAddActiveTab] = useState("1");
   const [addActiveTabDocument, setAddActiveTabDocument] = useState("1");
+
+  const [totalItems, setTotalItems] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
+
   const [formData, setFormData] = useState({
     names: "",
     paternalLastName: "",
@@ -159,14 +164,6 @@ const Natural = () => {
     }
   };
 
-  // Get current list, pagination
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Change Page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
   const onFilter = (e) => {
     if (e.target.value.length > 1) {
       getCustomers(e.target.value);
@@ -174,6 +171,34 @@ const Natural = () => {
       getCustomers("");
     }
   };
+
+  // ! Pagination
+  // Change Page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // function to get documents pagination
+  const getPaginationCustomersNatural = async (limit, page) => {
+    const customersNaturalPag = await CustomersServices.getPaginationCustomerNatural(limit, page);
+    const customersNaturalData = await customersNaturalPag.data.map((data) => data);
+    setData(customersNaturalData);
+  };
+
+  // function to get count of items
+  const getTotalItems = async () => {
+    const data = await CustomersServices.getCustomersNatural();
+    const totalItems = await data.meta?.totalItems;
+    setTotalItems(totalItems);
+  };
+
+  useEffect(() => {
+    getTotalItems();
+  }, []);
+
+  useEffect(() => {
+    getPaginationCustomersNatural(itemPerPage, currentPage);
+  }, [itemPerPage, currentPage]);
+
+  const backToFirstPage = () => window.location.reload();
 
   return (
     <React.Fragment>
@@ -186,7 +211,7 @@ const Natural = () => {
                 Lista de Clientes Naturales
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {currentItems.length} clientes</p>
+                <p>Total {totalItems} clientes</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -250,8 +275,8 @@ const Natural = () => {
                 </DataTableRow>
               </DataTableHead>
 
-              {currentItems.length > 0
-                ? currentItems.map((item) => (
+              {data.length > 0
+                ? data.map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow className="text-center">
                         <span>{item.id}</span>
@@ -320,16 +345,26 @@ const Natural = () => {
             </div>
           </div>
           <PreviewAltCard>
-            {currentItems.length > 0 ? (
-              <PaginationComponent
-                itemPerPage={itemPerPage}
-                totalItems={data.length}
-                paginate={paginate}
-                currentPage={currentPage}
-              />
+            {data.length > 0 ? (
+              <React.Fragment>
+                <Pagination
+                  data={data.length}
+                  totalItems={data.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                />
+              </React.Fragment>
             ) : (
               <div className="text-center">
-                <span className="text-silent">Sin registros</span>
+                <Link
+                  to="/customer"
+                  className="text-silent d-flex align-items-center justify-content-center"
+                  onClick={backToFirstPage}
+                >
+                  <Icon name="chevrons-left" />
+                  Actualizar registros
+                </Link>
               </div>
             )}
           </PreviewAltCard>

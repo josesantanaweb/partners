@@ -27,6 +27,8 @@ import DocumentsServices from "../../services/DocumentsServices";
 import SegmentsServices from "../../services/SegmentsServices";
 import CompaniesServices from "../../services/CompanyServices";
 import Swal from "sweetalert2";
+import { Link } from "react-router-dom";
+import Pagination from "../../components/singlePagination/Pagination";
 
 const ProductsList = () => {
   const { contextData } = useContext(ProductsContext);
@@ -40,6 +42,10 @@ const ProductsList = () => {
 
   const [companies, setCompanies] = useState([]);
   const [companiesOptions, setCompaniesOptions] = useState(companies);
+
+  const [totalItems, setTotalItems] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemPerPage] = useState(10);
 
   useEffect(() => {
     getDocuments();
@@ -120,8 +126,6 @@ const ProductsList = () => {
     description: "",
     observation: "",
   });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage] = useState(10);
 
   const [sm, updateSm] = useState(false);
 
@@ -243,13 +247,33 @@ const ProductsList = () => {
     }
   };
 
-  // Get current list, pagination
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
+  // ! Pagination
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // function to get documents pagination
+  const getPaginationProducts = async (limit, page) => {
+    const productsPag = await ProductsServices.getPaginationProducts(limit, page);
+    const productsData = await productsPag.data.map((data) => data);
+    setData(productsData);
+  };
+
+  // function to get count of items
+  const getTotalItems = async () => {
+    const data = await ProductsServices.getProducts();
+    const totalItems = await data.meta?.totalItems;
+    setTotalItems(totalItems);
+  };
+
+  useEffect(() => {
+    getTotalItems();
+  }, []);
+
+  useEffect(() => {
+    getPaginationProducts(itemPerPage, currentPage);
+  }, [itemPerPage, currentPage]);
+
+  const backToFirstPage = () => window.location.reload();
 
   return (
     <React.Fragment>
@@ -262,7 +286,7 @@ const ProductsList = () => {
                 Lista de Planes
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>Total {data.length} planes</p>
+                <p>Total {totalItems} planes</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -306,8 +330,8 @@ const ProductsList = () => {
                 </DataTableRow>
               </DataTableHead>
               {/*Head*/}
-              {currentItems.length > 0
-                ? currentItems.map((item) => (
+              {data.length > 0
+                ? data.map((item) => (
                     <DataTableItem key={item.id}>
                       <DataTableRow className="text-center">
                         <span>{item.id}</span>
@@ -348,16 +372,26 @@ const ProductsList = () => {
             </div>
           </div>
           <PreviewAltCard>
-            {currentItems.length > 0 ? (
-              <PaginationComponent
-                itemPerPage={itemPerPage}
-                totalItems={data.length}
-                paginate={paginate}
-                currentPage={currentPage}
-              />
+            {data.length > 0 ? (
+              <React.Fragment>
+                <Pagination
+                  data={data.length}
+                  totalItems={data.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                />
+              </React.Fragment>
             ) : (
               <div className="text-center">
-                <span className="text-silent">Sin Registros</span>
+                <Link
+                  to="/products"
+                  className="text-silent d-flex align-items-center justify-content-center"
+                  onClick={backToFirstPage}
+                >
+                  <Icon name="chevrons-left" />
+                  Actualizar registros
+                </Link>
               </div>
             )}
           </PreviewAltCard>
