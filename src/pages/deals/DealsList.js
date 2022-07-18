@@ -40,6 +40,7 @@ import { preventContextMenu } from "@fullcalendar/core";
 import NumberFormat from "react-number-format";
 import imgGrafica from "../../assets/images/grafica1.png";
 import imgGrafica2 from "../../assets/images/grafica2.png";
+import { set } from "lodash";
 
 const DealsList = () => {
   const [data, setData] = useState([]);
@@ -476,15 +477,15 @@ const DealsList = () => {
                       <ul className="nk-tb-actions gx-1">
                         <li className="nk-tb-action">
                           {/* onClick={() => onEditClick(item.id, item)} */}
-                            <>
-                              <div class="dropdown">
-                              <button  class="btn btn-trigger dropdown-toggle btn-icon" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                          <>
+                            <div class="dropdown">
+                              <button class="btn btn-trigger dropdown-toggle btn-icon" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
                                 Edit
                               </button>
                               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" onClick={async() => { await setDataItemDeal(item); await setModalNegocio({ edit: true });  }} >Negocio</a>
+                                <a class="dropdown-item" onClick={async () => { await setDataItemDeal(item); await setModalNegocio({ edit: true }); }} >Negocio</a>
                                 <a class="dropdown-item" >Ficha del Cliente</a>
-                                <a class="dropdown-item" >Perfil del Inversionista</a>
+                                <a class="dropdown-item"   onClick={async() => { await setDataItemDeal(item);await setModalPerfil({ edit: true }); }} >Perfil del Inversionista</a>
                                 <a class="dropdown-item" >Documentos Requeridos</a>
                               </div>
                             </div>
@@ -501,7 +502,7 @@ const DealsList = () => {
 
                                   >Perfil del Inversionistas</Button> */
                             }
-                          
+
                           </>
                         </li>
                         <li className="nk-tb-action">
@@ -778,8 +779,8 @@ const DealsList = () => {
           </ModalBody>
         </Modal>
         <ModalNegocio modal={modalNegocio} setModal={setModalNegocio} data={dateItemDeal} />
-        <ModalFichaDelCliente modal={modalFichaCliente} setModal={setModalFichaCliente} />
-        <ModalPerfilDelInversionista modal={modalPerfil} setModal={setModalPerfil} />
+        <ModalFichaDelCliente modal={modalFichaCliente} setModal={setModalFichaCliente}  />
+        <ModalPerfilDelInversionista modal={modalPerfil} setModal={setModalPerfil} data={dateItemDeal}/>
         <ModalDocumentosRequeridos modal={modalDocumentos} setModal={setModalDocumentos} />
         {/* Nuevo elemento Modal */}
       </Content>
@@ -808,7 +809,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
     { label: "No", value: false },
   ];
 
-  
+
 
   const [advisorFeeOptions, setAdvisorFeeOptions] = useState();
   const [companies, setCompanies] = useState([]);
@@ -829,7 +830,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
 
   const onOptionsCompaniesChange = (optionValue) => {
     setCompaniesOptions(optionValue);
-    const aux = optionValue.plans.map ( act => {
+    const aux = optionValue.plans.map(act => {
       return {
         label: act.name,
         value: act.id
@@ -837,6 +838,12 @@ const ModalNegocio = ({ modal, setModal, data }) => {
     })
     setPlans(aux)
     setPlansOptions({})
+    setDataForm( prev => {
+      return {
+        ...prev,
+        planId:""
+      }
+    })
     console.log(optionValue)
     setDataForm((prev) => {
       return {
@@ -850,22 +857,22 @@ const ModalNegocio = ({ modal, setModal, data }) => {
     try {
       console.log(data)
       setDataForm({
-        customerId: parseInt( data.customer?.id),
-        companyId: parseInt( data.company?.id),
+        customerId: parseInt(data.customer?.id),
+        companyId: parseInt(data.company?.id),
         currencyId: data.currency?.id,
         paymentMethodId: data.paymentMethod?.id,
         planId: data.product?.id,
-        yearsOfThePlan: parseInt( data.yearsOfThePlan),
-        amountOfTheInvestment: parseInt( data.amountOfTheInvestment),
-        totalNetValueUSD: parseInt( data.totalNetValueUSD),
+        yearsOfThePlan: parseInt(data.yearsOfThePlan),
+        amountOfTheInvestment: parseInt(data.amountOfTheInvestment),
+        totalNetValueUSD: parseInt(data.totalNetValueUSD),
         originsOfTheFunds: data.originsOfTheFunds,
         advisorFee: data.advisorFee,
         percentage: data.percentage,
       })
-      
+
       const selectsData = await DealsServices.getDealSelects();
       console.log(selectsData)
-      const companiesData = await selectsData.companies.map((company) => ({ label: company.name, value: company.id , plans: company.plans}));
+      const companiesData = await selectsData.companies.map((company) => ({ label: company.name, value: company.id, plans: company.plans }));
       setCompanies(companiesData);
       console.log(companies)
       /////////////////////////////////////
@@ -874,7 +881,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
         value: currencyType.id,
       }));
       setCurrencies(currenciesData);
-      
+
       ////////////////////////////////////
       const paymentMethodsData = await selectsData.paymentMethods.map((paymentMethod) => ({
         label: paymentMethod.name,
@@ -886,7 +893,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
       throw error;
     }
 
-    
+
   };
 
   const onOptionsCurrenciesChange = (optionValue) => {
@@ -930,15 +937,15 @@ const ModalNegocio = ({ modal, setModal, data }) => {
     });
   };
 
-  const funcAux = async()=> {
+  const funcAux = async () => {
 
     await getCompanies()
     setCompaniesOptions({ label: data?.company?.name, value: data?.company?.id })
     setCurrenciesOptions({ label: data?.currency?.name, value: data?.currency?.id })
     setPaymentMethodsOptions({ label: data?.paymentMethod?.name, value: data?.paymentMethod?.id })
-    setAdvisorFeeOptions({ label: `${dataForm?.advisorFee?'Si':'No'}`, value: data?.advisorFee })
+    setAdvisorFeeOptions({ label: `${dataForm?.advisorFee ? 'Si' : 'No'}`, value: data?.advisorFee })
     setPlansOptions({ label: data.product.name, value: data.product.id })
-  } 
+  }
 
   const onFormSubmit = async () => {
     try {
@@ -976,8 +983,8 @@ const ModalNegocio = ({ modal, setModal, data }) => {
         <div className="p-2 table-record">
           <div className="d-flex justify-content-between align-items-center">
             <h5 className="title" >Actualizar Negocio</h5>
-            <Button color="primary" onClick={async() => {
-              onFormSubmit()
+            <Button color="primary" onClick={async () => {
+              console.log(dataForm)
             }} >
               <Icon name="plus" className="mr-1"></Icon>
               Guardar
@@ -985,7 +992,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
           </div>
         </div>
         <Form className="row mt-4" onSubmit={handleSubmit(onFormSubmit)}>
-    
+
 
           <Col md="6" className="mb-4">
             <label className="form-label">Socio Estratégico</label>
@@ -1008,7 +1015,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                 className="form-control disabled"
                 name="amount"
                 disabled
-            
+
               />
             </FormGroup>
 
@@ -1026,7 +1033,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                   onOptionsPlansChange(e)
                   console.log(e)
                 }}
-            
+
               />
             </FormGroup>
           </Col>
@@ -1036,11 +1043,11 @@ const ModalNegocio = ({ modal, setModal, data }) => {
               <input
                 type="number"
                 className="form-control"
-                onChange={ (e) => {
-                  setDataForm( prev => {
+                onChange={(e) => {
+                  setDataForm(prev => {
                     return {
                       ...prev,
-                      yearsOfThePlan: parseInt(  e.target.value)
+                      yearsOfThePlan: parseInt(e.target.value)
                     }
                   })
                 }}
@@ -1065,11 +1072,11 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                 defaultValue={dataForm.amountOfTheInvestment}
                 placeholder="Ingrese monto"
                 className="form-control"
-                onValueChange={(e)=> {
+                onValueChange={(e) => {
                   const { formattedValue, value } = e;
-                  setDataForm( prev => {
+                  setDataForm(prev => {
                     return {
-                      ...prev,amountOfTheInvestment: parseInt( value)
+                      ...prev, amountOfTheInvestment: parseInt(value)
                     }
                   })
                 }}
@@ -1087,7 +1094,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                 value={currenciesOptions}
                 options={currencies}
                 onChange={onOptionsCurrenciesChange}
-                defautlValue={dataForm.currencyId}
+
               />
             </FormGroup>
           </Col>
@@ -1100,11 +1107,11 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                 defaultValue={dataForm.totalNetValueUSD}
                 placeholder="Ingrese monto"
                 className="form-control"
-                onValueChange={(e)=> {
+                onValueChange={(e) => {
                   const { formattedValue, value } = e;
-                  setDataForm( prev => {
+                  setDataForm(prev => {
                     return {
-                      ...prev,totalNetValueUSD: parseInt( value)
+                      ...prev, totalNetValueUSD: parseInt(value)
                     }
                   })
                 }}
@@ -1122,7 +1129,6 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                 value={paymentMethodsOptions}
                 options={paymentsMethods}
                 onChange={onOptionsPaymentsMethodsChange}
-                defautlValue={dataForm.paymentMethodId}
               />
             </FormGroup>
           </Col>
@@ -1137,7 +1143,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                   setDataForm((prev) => {
                     return {
                       ...prev,
-                      originsOfTheFunds:e.target.value
+                      originsOfTheFunds: e.target.value
                     }
                   })
                 }}
@@ -1167,16 +1173,16 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                   type="number"
                   className="form-control"
                   name="advisorFeeComission"
-                  placeholder="Ej: 1 - 5 - 10"                                            
+                  placeholder="Ej: 1 - 5 - 10"
                   defaultValue={dataForm.percentage}
                   onChange={(e) => {
-                    setDataForm( (prev) => {
+                    setDataForm((prev) => {
                       return {
                         ...prev,
                         percentage: parseInt(e.target.value)
                       }
                     })
-                  }}  
+                  }}
                 />
               </div>
             </FormGroup>
@@ -1187,7 +1193,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
   )
 }
 
-const ModalFichaDelCliente = ({ modal, setModal }) => {
+const ModalFichaDelCliente = ({ modal, setModal}) => {
 
   const onFormCancel = () => {
     setModal({ edit: false, add: false, document: false });
@@ -1221,12 +1227,14 @@ const ModalFichaDelCliente = ({ modal, setModal }) => {
   )
 }
 
-const ModalPerfilDelInversionista = ({ modal, setModal }) => {
+const ModalPerfilDelInversionista = ({ modal, setModal, data }) => {
 
   const onFormCancel = () => {
     setModal({ edit: false, add: false, document: false });
     // resetForm();
   };
+
+
 
   return (
     <Modal style={{ maxWidth: "1192px" }} isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
@@ -1241,6 +1249,7 @@ const ModalPerfilDelInversionista = ({ modal, setModal }) => {
         >
           <Icon name="cross-sm"></Icon>
         </a>
+        <Button onClick={()=> console.log(data)}>Ver console</Button>
         <div className="p-2 table-record">
           <div className="d-flex justify-content-between align-items-center">
             <h5 className="title" >Actualizar Perfil Del Inversionista</h5>
