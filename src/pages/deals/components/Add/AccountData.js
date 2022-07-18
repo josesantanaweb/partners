@@ -1,13 +1,15 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { FormGroup, Form } from "reactstrap";
 import { useForm } from "react-hook-form";
 import { Col, Button } from "../../../../components/Component";
 import CustomersServices from "../../../../services/CustomersServices";
+import DatePicker from 'react-date-picker';
+import { set } from "lodash";
 
 const AccountData = ({setAddActiveTab2 ,generalStateForm,setGeneralStateForm, setModal, editData, selectClient}) => {
   // useForm
   const { register, handleSubmit } = useForm();
-
+  const [newDate, setNewdate] = useState(new Date())
   // Cerrar modal
   const onFormCancel = () => {
     setModal({ edit: false, add: false });
@@ -29,6 +31,17 @@ const AccountData = ({setAddActiveTab2 ,generalStateForm,setGeneralStateForm, se
       window.location.reload();
     } catch (error) {}
   };
+
+  
+  useEffect( () => {
+    console.log('hos')
+    if( generalStateForm?.currentAccountData?.accountOpeningDate != undefined) {
+      setNewdate(new Date(generalStateForm.currentAccountData?.accountOpeningDate)) 
+
+    }else {
+      setNewdate(new Date())
+    }
+  },[generalStateForm])
 
   return (
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
@@ -119,21 +132,20 @@ const AccountData = ({setAddActiveTab2 ,generalStateForm,setGeneralStateForm, se
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de apertura</label>
-          <input
-            className="form-control"
-            type="date"
-            name="accountOpeningDate"
+ 
+          <DatePicker 
+  
+            value={newDate}
             onChange={(e)=>setGeneralStateForm( prev => {
               return {
                 ...prev,currentAccountData:{
                   ...prev.currentAccountData,
-                  accountOpeningDate:e.target.value
+                  accountOpeningDate:e
                 }
               }
             })} 
-            defaultValue={editData?.currentAccountData?.accountOpeningDate}
             placeholder="Ingresa Fecha de apertura"
-            ref={register()}
+          
           />
         </FormGroup>
       </Col>
