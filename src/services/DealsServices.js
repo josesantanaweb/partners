@@ -60,6 +60,13 @@ const DealsServices = {
     return response.data
   },
 
+  updateDeal: async(deal, id) => {
+    const response = await api.patch(`/deals/${id}`, deal, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data
+  },
+
   getDealsPaginate: async(service)=> {
     const response = await axios.get(`${service}`, {
       headers: { Authorization: `Bearer ${token}` },

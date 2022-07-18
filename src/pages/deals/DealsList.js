@@ -17,6 +17,7 @@ import {
   PreviewAltCard,
   RSelect
 } from "../../components/Component";
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { FormGroup, Modal, ModalBody, Form, Alert, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import classnames from "classnames";
 import AddMainInformation from "./components/Add/MainInformation";
@@ -475,11 +476,21 @@ const DealsList = () => {
                       <ul className="nk-tb-actions gx-1">
                         <li className="nk-tb-action">
                           {/* onClick={() => onEditClick(item.id, item)} */}
-           
-                  
-                              <>
-                            
-                                  <Button class="list-group-item " onClick={async() => { await setDataItemDeal(item); await setModalNegocio({ edit: true });  }} style={{
+                            <>
+                              <div class="dropdown">
+                              <button  class="btn btn-trigger dropdown-toggle btn-icon" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                                Edit
+                              </button>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" onClick={async() => { await setDataItemDeal(item); await setModalNegocio({ edit: true });  }} >Negocio</a>
+                                <a class="dropdown-item" >Ficha del Cliente</a>
+                                <a class="dropdown-item" >Perfil del Inversionista</a>
+                                <a class="dropdown-item" >Documentos Requeridos</a>
+                              </div>
+                            </div>
+                            {
+                              /*
+                                      <Button class="list-group-item " onClick={async() => { await setDataItemDeal(item); await setModalNegocio({ edit: true });  }} style={{
                                     backgroundColor: "#526484"
                                   }}>Negocio</Button>
                              
@@ -488,12 +499,10 @@ const DealsList = () => {
                                   }} class="list-group-item"
                                     onClick={() => { setModalPerfil({ edit: true }); console.log('holis') }}
 
-                                  >Perfil del Inversionistas</Button>
-                         
-
-                             </>
-                            
-                   
+                                  >Perfil del Inversionistas</Button> */
+                            }
+                          
+                          </>
                         </li>
                         <li className="nk-tb-action">
                           {/* onClick={() => deleteDocument(item.id)} */}
@@ -566,6 +575,7 @@ const DealsList = () => {
                 {needDocument.documents?.length > 0 && addActiveTab == 4 && needDocument.documents.map((act, i) => <span>{i + 1 + ")" + ' ' + act.name}. </span>)}
 
                 <Nav tabs>
+
                   <NavItem>
                     <NavLink
                       tag="a"
@@ -793,8 +803,24 @@ const ModalNegocio = ({ modal, setModal, data }) => {
     percentage: data.percentage,
   });
 
+  const advisorFeeOptionsSelect = [
+    { label: "Si", value: true },
+    { label: "No", value: false },
+  ];
+
+  
+
+  const [advisorFeeOptions, setAdvisorFeeOptions] = useState();
   const [companies, setCompanies] = useState([]);
   const [companiesOptions, setCompaniesOptions] = useState(companies);
+  const [currencies, setCurrencies] = useState([]);
+  const [currenciesOptions, setCurrenciesOptions] = useState(currencies);
+  const [paymentsMethods, setPaymentsMethods] = useState([]);
+  const [paymentMethodsOptions, setPaymentMethodsOptions] = useState(paymentsMethods);
+  const [plans, setPlans] = useState();
+  const [plansOption, setPlansOptions] = useState(plans);
+
+  const { register, handleSubmit } = useForm();
 
   const onFormCancel = () => {
     setModal({ edit: false, add: false, document: false });
@@ -803,6 +829,15 @@ const ModalNegocio = ({ modal, setModal, data }) => {
 
   const onOptionsCompaniesChange = (optionValue) => {
     setCompaniesOptions(optionValue);
+    const aux = optionValue.plans.map ( act => {
+      return {
+        label: act.name,
+        value: act.id
+      }
+    })
+    setPlans(aux)
+    setPlansOptions({})
+    console.log(optionValue)
     setDataForm((prev) => {
       return {
         ...prev,
@@ -813,31 +848,113 @@ const ModalNegocio = ({ modal, setModal, data }) => {
 
   const getCompanies = async () => {
     try {
+      console.log(data)
       setDataForm({
-        customerId: data.customer?.id,
-        companyId: 1,
-        currencyId: 1,
-        paymentMethodId: 1,
-        planId: 15,
-        yearsOfThePlan: data.yearsOfThePlan,
-        amountOfTheInvestment: data.amountOfTheInvestment,
-        totalNetValueUSD: 1,
-        originsOfTheFunds: "dfsafdf",
-        advisorFee: true,
+        customerId: parseInt( data.customer?.id),
+        companyId: parseInt( data.company?.id),
+        currencyId: data.currency?.id,
+        paymentMethodId: data.paymentMethod?.id,
+        planId: data.product?.id,
+        yearsOfThePlan: parseInt( data.yearsOfThePlan),
+        amountOfTheInvestment: parseInt( data.amountOfTheInvestment),
+        totalNetValueUSD: parseInt( data.totalNetValueUSD),
+        originsOfTheFunds: data.originsOfTheFunds,
+        advisorFee: data.advisorFee,
         percentage: data.percentage,
       })
+      
       const selectsData = await DealsServices.getDealSelects();
-      const companiesData = await selectsData.companies.map((company) => ({ label: company.name, value: company.id }));
+      console.log(selectsData)
+      const companiesData = await selectsData.companies.map((company) => ({ label: company.name, value: company.id , plans: company.plans}));
       setCompanies(companiesData);
+      console.log(companies)
+      /////////////////////////////////////
+      const currenciesData = await selectsData.currencyTypes.map((currencyType) => ({
+        label: currencyType.name,
+        value: currencyType.id,
+      }));
+      setCurrencies(currenciesData);
+      
+      ////////////////////////////////////
+      const paymentMethodsData = await selectsData.paymentMethods.map((paymentMethod) => ({
+        label: paymentMethod.name,
+        value: paymentMethod.id,
+      }));
+      setPaymentsMethods(paymentMethodsData);
+
     } catch (error) {
       throw error;
     }
+
+    
+  };
+
+  const onOptionsCurrenciesChange = (optionValue) => {
+    setCurrenciesOptions(optionValue);
+    setDataForm((prev) => {
+      return {
+        ...prev,
+        currencyId: optionValue.value,
+      };
+    });
+  };
+
+  const onOptionsPaymentsMethodsChange = (optionValue) => {
+    setPaymentMethodsOptions(optionValue);
+    setDataForm((prev) => {
+      return {
+        ...prev,
+        paymentMethodId: optionValue.value,
+      };
+    });
+  };
+
+  const onOptionsAdvisorFeeChange = (optionValue) => {
+    setAdvisorFeeOptions(optionValue);
+    setDataForm((prev) => {
+      return {
+        ...prev,
+        advisorFee: optionValue.value,
+      };
+    });
+  };
+
+
+  const onOptionsPlansChange = (optionValue) => {
+    setPlansOptions(optionValue);
+    setDataForm((prev) => {
+      return {
+        ...prev,
+        planId: optionValue.value,
+      };
+    });
   };
 
   const funcAux = async()=> {
+
     await getCompanies()
     setCompaniesOptions({ label: data?.company?.name, value: data?.company?.id })
+    setCurrenciesOptions({ label: data?.currency?.name, value: data?.currency?.id })
+    setPaymentMethodsOptions({ label: data?.paymentMethod?.name, value: data?.paymentMethod?.id })
+    setAdvisorFeeOptions({ label: `${dataForm?.advisorFee?'Si':'No'}`, value: data?.advisorFee })
+    setPlansOptions({ label: data.product.name, value: data.product.id })
+  } 
+
+  const onFormSubmit = async () => {
+    try {
+      const response = await DealsServices.updateDeal(dataForm, data.id)
+      setModal({
+        edit: false,
+        add: false,
+        document: false,
+      })
+      window.location.reload()
+      console.log(response)
+    } catch (error) {
+      throw error
+    }
   }
+
   useEffect(() => {
     console.log("Update Date Negocio!", data)
     funcAux()
@@ -859,16 +976,16 @@ const ModalNegocio = ({ modal, setModal, data }) => {
         <div className="p-2 table-record">
           <div className="d-flex justify-content-between align-items-center">
             <h5 className="title" >Actualizar Negocio</h5>
-            <Button color="primary" onClick={() => {
-              console.log(data)
+            <Button color="primary" onClick={async() => {
+              onFormSubmit()
             }} >
               <Icon name="plus" className="mr-1"></Icon>
               Guardar
             </Button>
           </div>
         </div>
-        <Form className="row mt-4">
-
+        <Form className="row mt-4" onSubmit={handleSubmit(onFormSubmit)}>
+    
 
           <Col md="6" className="mb-4">
             <label className="form-label">Socio Estratégico</label>
@@ -891,10 +1008,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                 className="form-control disabled"
                 name="amount"
                 disabled
-                onClick={() => {
-                  console.log("hois")
-                  console.log(data)
-                }}
+            
               />
             </FormGroup>
 
@@ -906,6 +1020,13 @@ const ModalNegocio = ({ modal, setModal, data }) => {
             <label className="form-label">Plan</label>
             <FormGroup>
               <RSelect
+                options={plans}
+                value={plansOption}
+                onChange={(e) => {
+                  onOptionsPlansChange(e)
+                  console.log(e)
+                }}
+            
               />
             </FormGroup>
           </Col>
@@ -915,6 +1036,14 @@ const ModalNegocio = ({ modal, setModal, data }) => {
               <input
                 type="number"
                 className="form-control"
+                onChange={ (e) => {
+                  setDataForm( prev => {
+                    return {
+                      ...prev,
+                      yearsOfThePlan: parseInt(  e.target.value)
+                    }
+                  })
+                }}
                 name="period"
                 value={dataForm.yearsOfThePlan}
 
@@ -930,26 +1059,70 @@ const ModalNegocio = ({ modal, setModal, data }) => {
           <Col md="4" className="mb-4">
             <FormGroup>
               <label className="form-label">Monto de Inversión</label>
-
+              <NumberFormat
+                name="ammount"
+                type="text"
+                defaultValue={dataForm.amountOfTheInvestment}
+                placeholder="Ingrese monto"
+                className="form-control"
+                onValueChange={(e)=> {
+                  const { formattedValue, value } = e;
+                  setDataForm( prev => {
+                    return {
+                      ...prev,amountOfTheInvestment: parseInt( value)
+                    }
+                  })
+                }}
+                allowNegative={false}
+                decimalSeparator={","}
+                decimalPrecision={2}
+                thousandSeparator={"."}
+              />
             </FormGroup>
           </Col>
           <Col md="3" className="mb-4">
             <FormGroup>
               <label className="form-label">Moneda</label>
               <RSelect
+                value={currenciesOptions}
+                options={currencies}
+                onChange={onOptionsCurrenciesChange}
+                defautlValue={dataForm.currencyId}
               />
             </FormGroup>
           </Col>
           <Col md="5" className="mb-4">
             <FormGroup>
               <label className="form-label">Valor neto total USD</label>
-
+              <NumberFormat
+                name="total"
+                type="text"
+                defaultValue={dataForm.totalNetValueUSD}
+                placeholder="Ingrese monto"
+                className="form-control"
+                onValueChange={(e)=> {
+                  const { formattedValue, value } = e;
+                  setDataForm( prev => {
+                    return {
+                      ...prev,totalNetValueUSD: parseInt( value)
+                    }
+                  })
+                }}
+                allowNegative={false}
+                decimalSeparator={","}
+                decimalPrecision={2}
+                thousandSeparator={"."}
+              />
             </FormGroup>
           </Col>
           <Col md="4" className="mb-4">
             <FormGroup>
               <label className="form-label">Método de pago</label>
               <RSelect
+                value={paymentMethodsOptions}
+                options={paymentsMethods}
+                onChange={onOptionsPaymentsMethodsChange}
+                defautlValue={dataForm.paymentMethodId}
               />
             </FormGroup>
           </Col>
@@ -960,8 +1133,15 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                 type="text"
                 className="form-control"
                 name="paymentMethodId"
-
-
+                onChange={(e) => {
+                  setDataForm((prev) => {
+                    return {
+                      ...prev,
+                      originsOfTheFunds:e.target.value
+                    }
+                  })
+                }}
+                defaultValue={dataForm.originsOfTheFunds}
                 placeholder="Ej: Herencia, Patrimonio, etc"
               />
             </FormGroup>
@@ -975,8 +1155,8 @@ const ModalNegocio = ({ modal, setModal, data }) => {
           <Col md="6">
             <FormGroup>
               <label className="form-label">Advisor-Fee</label>
-              <RSelect
-              />
+              <RSelect value={advisorFeeOptions} options={advisorFeeOptionsSelect} onChange={onOptionsAdvisorFeeChange} />
+
             </FormGroup>
           </Col>
           <Col md="6">
@@ -987,8 +1167,16 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                   type="number"
                   className="form-control"
                   name="advisorFeeComission"
-                  placeholder="Ej: 1 - 5 - 10"
-                  value={dataForm.percentage}
+                  placeholder="Ej: 1 - 5 - 10"                                            
+                  defaultValue={dataForm.percentage}
+                  onChange={(e) => {
+                    setDataForm( (prev) => {
+                      return {
+                        ...prev,
+                        percentage: parseInt(e.target.value)
+                      }
+                    })
+                  }}  
                 />
               </div>
             </FormGroup>
