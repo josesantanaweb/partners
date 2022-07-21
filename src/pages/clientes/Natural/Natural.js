@@ -268,6 +268,9 @@ const Natural = () => {
                   <span className="sub-text">Profesión</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
+                  <span className="sub-text">Experiencia de Inversión</span>
+                </DataTableRow>
+                <DataTableRow className="text-center">
                   <span className="sub-text">Dirección</span>
                 </DataTableRow>
                 <DataTableRow className="text-center">
@@ -301,6 +304,9 @@ const Natural = () => {
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item?.profession}</span>
+                      </DataTableRow>
+                      <DataTableRow className="text-center">
+                        <span>{item?.investmentExperience?.options}</span>
                       </DataTableRow>
                       <DataTableRow className="text-center">
                         <span>{item?.address?.detailedAddress?.address}</span>
