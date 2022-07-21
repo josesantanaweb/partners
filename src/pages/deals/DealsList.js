@@ -79,6 +79,11 @@ const DealsList = () => {
     document: false,
   })
 
+  const [modalStatusDeal, setModalStatusDeal] = useState({
+    edit: false,
+    add: false,
+    document: false,
+  })
 
   // const getDocuments = async () => {
   //   try {
@@ -487,6 +492,7 @@ const DealsList = () => {
                                 <a class="dropdown-item" >Ficha del Cliente</a>
                                 <a class="dropdown-item" onClick={async () => { await setDataItemDeal(item); await setModalPerfil({ edit: true }); }} >Perfil del Inversionista</a>
                                 <a class="dropdown-item" >Documentos Requeridos</a>
+                                <a class="dropdown-item" onClick={async () => { await setDataItemDeal(item); await setModalStatusDeal({ edit: true }); }} >Status de la Operación</a>
                               </div>
                             </div>
                             {
@@ -782,6 +788,7 @@ const DealsList = () => {
         <ModalFichaDelCliente modal={modalFichaCliente} setModal={setModalFichaCliente} />
         <ModalPerfilDelInversionista modal={modalPerfil} setModal={setModalPerfil} data={dateItemDeal} />
         <ModalDocumentosRequeridos modal={modalDocumentos} setModal={setModalDocumentos} />
+        <ModalStatusDeals modal={modalStatusDeal} setModal={setModalStatusDeal} />
         {/* Nuevo elemento Modal */}
       </Content>
     </React.Fragment>
@@ -1716,5 +1723,45 @@ const ModalDocumentosRequeridos = ({ modal, setModal }) => {
     </Modal>
   )
 }
+
+// Status Modal Jose Contreras
+const ModalStatusDeals = ({ modal, setModal }) => {
+
+  const onFormCancel = () => {
+    setModal({ edit: false, add: false, document: false });
+    // resetForm();
+  };
+
+  return (
+    <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+      <ModalBody>
+        <a
+          href="#close"
+          onClick={(ev) => {
+            ev.preventDefault();
+            onFormCancel();
+          }}
+          className="close"
+        >
+          <Icon name="cross-sm"></Icon>
+        </a>
+        <div className="p-2 table-record">
+          <div className="d-flex justify-content-between align-items-center">
+            <h5 className="title" >Status De La Operación</h5>
+            <Button color="primary" type="submit" >
+              <Icon name="plus" className="mr-1"></Icon>
+              Guardar Status
+            </Button>
+          </div>
+        </div>
+        {///// /
+        }
+
+
+      </ModalBody>
+    </Modal>
+  )
+}
+
 
 export default DealsList;
