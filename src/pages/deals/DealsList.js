@@ -40,6 +40,7 @@ import { preventContextMenu } from "@fullcalendar/core";
 import NumberFormat from "react-number-format";
 import imgGrafica from "../../assets/images/grafica1.png";
 import imgGrafica2 from "../../assets/images/grafica2.png";
+import { set } from "lodash";
 
 const DealsList = () => {
   const [data, setData] = useState([]);
@@ -463,7 +464,7 @@ const DealsList = () => {
                         decimalPrecision={2}
 
                         renderText={(value, props) => <div {...props}>{value}</div>}
-                      />;
+                      />
 
                     </DataTableRow>
                     <DataTableRow className="text-center">
@@ -476,15 +477,15 @@ const DealsList = () => {
                       <ul className="nk-tb-actions gx-1">
                         <li className="nk-tb-action">
                           {/* onClick={() => onEditClick(item.id, item)} */}
-                            <>
-                              <div class="dropdown">
-                              <button  class="btn btn-trigger dropdown-toggle btn-icon" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                          <>
+                            <div class="dropdown">
+                              <button class="btn btn-trigger dropdown-toggle btn-icon" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
                                 Edit
                               </button>
                               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" onClick={async() => { await setDataItemDeal(item); await setModalNegocio({ edit: true });  }} >Negocio</a>
+                                <a class="dropdown-item" onClick={async () => { await setDataItemDeal(item); await setModalNegocio({ edit: true }); }} >Negocio</a>
                                 <a class="dropdown-item" >Ficha del Cliente</a>
-                                <a class="dropdown-item" >Perfil del Inversionista</a>
+                                <a class="dropdown-item" onClick={async () => { await setDataItemDeal(item); await setModalPerfil({ edit: true }); }} >Perfil del Inversionista</a>
                                 <a class="dropdown-item" >Documentos Requeridos</a>
                               </div>
                             </div>
@@ -501,7 +502,7 @@ const DealsList = () => {
 
                                   >Perfil del Inversionistas</Button> */
                             }
-                          
+
                           </>
                         </li>
                         <li className="nk-tb-action">
@@ -779,7 +780,7 @@ const DealsList = () => {
         </Modal>
         <ModalNegocio modal={modalNegocio} setModal={setModalNegocio} data={dateItemDeal} />
         <ModalFichaDelCliente modal={modalFichaCliente} setModal={setModalFichaCliente} />
-        <ModalPerfilDelInversionista modal={modalPerfil} setModal={setModalPerfil} />
+        <ModalPerfilDelInversionista modal={modalPerfil} setModal={setModalPerfil} data={dateItemDeal} />
         <ModalDocumentosRequeridos modal={modalDocumentos} setModal={setModalDocumentos} />
         {/* Nuevo elemento Modal */}
       </Content>
@@ -808,7 +809,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
     { label: "No", value: false },
   ];
 
-  
+
 
   const [advisorFeeOptions, setAdvisorFeeOptions] = useState();
   const [companies, setCompanies] = useState([]);
@@ -829,7 +830,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
 
   const onOptionsCompaniesChange = (optionValue) => {
     setCompaniesOptions(optionValue);
-    const aux = optionValue.plans.map ( act => {
+    const aux = optionValue.plans.map(act => {
       return {
         label: act.name,
         value: act.id
@@ -837,6 +838,12 @@ const ModalNegocio = ({ modal, setModal, data }) => {
     })
     setPlans(aux)
     setPlansOptions({})
+    setDataForm(prev => {
+      return {
+        ...prev,
+        planId: ""
+      }
+    })
     console.log(optionValue)
     setDataForm((prev) => {
       return {
@@ -850,22 +857,22 @@ const ModalNegocio = ({ modal, setModal, data }) => {
     try {
       console.log(data)
       setDataForm({
-        customerId: parseInt( data.customer?.id),
-        companyId: parseInt( data.company?.id),
+        customerId: parseInt(data.customer?.id),
+        companyId: parseInt(data.company?.id),
         currencyId: data.currency?.id,
         paymentMethodId: data.paymentMethod?.id,
         planId: data.product?.id,
-        yearsOfThePlan: parseInt( data.yearsOfThePlan),
-        amountOfTheInvestment: parseInt( data.amountOfTheInvestment),
-        totalNetValueUSD: parseInt( data.totalNetValueUSD),
+        yearsOfThePlan: parseInt(data.yearsOfThePlan),
+        amountOfTheInvestment: parseInt(data.amountOfTheInvestment),
+        totalNetValueUSD: parseInt(data.totalNetValueUSD),
         originsOfTheFunds: data.originsOfTheFunds,
         advisorFee: data.advisorFee,
         percentage: data.percentage,
       })
-      
+
       const selectsData = await DealsServices.getDealSelects();
       console.log(selectsData)
-      const companiesData = await selectsData.companies.map((company) => ({ label: company.name, value: company.id , plans: company.plans}));
+      const companiesData = await selectsData.companies.map((company) => ({ label: company.name, value: company.id, plans: company.plans }));
       setCompanies(companiesData);
       console.log(companies)
       /////////////////////////////////////
@@ -874,7 +881,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
         value: currencyType.id,
       }));
       setCurrencies(currenciesData);
-      
+
       ////////////////////////////////////
       const paymentMethodsData = await selectsData.paymentMethods.map((paymentMethod) => ({
         label: paymentMethod.name,
@@ -886,7 +893,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
       throw error;
     }
 
-    
+
   };
 
   const onOptionsCurrenciesChange = (optionValue) => {
@@ -930,15 +937,15 @@ const ModalNegocio = ({ modal, setModal, data }) => {
     });
   };
 
-  const funcAux = async()=> {
+  const funcAux = async () => {
 
     await getCompanies()
     setCompaniesOptions({ label: data?.company?.name, value: data?.company?.id })
     setCurrenciesOptions({ label: data?.currency?.name, value: data?.currency?.id })
     setPaymentMethodsOptions({ label: data?.paymentMethod?.name, value: data?.paymentMethod?.id })
-    setAdvisorFeeOptions({ label: `${dataForm?.advisorFee?'Si':'No'}`, value: data?.advisorFee })
+    setAdvisorFeeOptions({ label: `${dataForm?.advisorFee ? 'Si' : 'No'}`, value: data?.advisorFee })
     setPlansOptions({ label: data.product.name, value: data.product.id })
-  } 
+  }
 
   const onFormSubmit = async () => {
     try {
@@ -976,8 +983,8 @@ const ModalNegocio = ({ modal, setModal, data }) => {
         <div className="p-2 table-record">
           <div className="d-flex justify-content-between align-items-center">
             <h5 className="title" >Actualizar Negocio</h5>
-            <Button color="primary" onClick={async() => {
-              onFormSubmit()
+            <Button color="primary" onClick={async () => {
+              console.log(dataForm)
             }} >
               <Icon name="plus" className="mr-1"></Icon>
               Guardar
@@ -985,19 +992,23 @@ const ModalNegocio = ({ modal, setModal, data }) => {
           </div>
         </div>
         <Form className="row mt-4" onSubmit={handleSubmit(onFormSubmit)}>
-    
+
 
           <Col md="6" className="mb-4">
-            <label className="form-label">Socio Estratégico</label>
-            <RSelect
-              value={companiesOptions}
-              options={companies}
-              onChange={(e) => {
-                onOptionsCompaniesChange(e)
-                console.log(e)
-              }}
+            <fieldset disabled>
+              <label className="form-label">Socio Estratégico</label>
+              <RSelect
+                value={companiesOptions}
+                options={companies}
+                onChange={(e) => {
+                  onOptionsCompaniesChange(e)
+                  console.log(e)
+                }}
 
-            />
+
+              />
+            </fieldset>
+
           </Col>
           <Col md="6" className="mb-4">
 
@@ -1008,7 +1019,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                 className="form-control disabled"
                 name="amount"
                 disabled
-            
+
               />
             </FormGroup>
 
@@ -1017,18 +1028,22 @@ const ModalNegocio = ({ modal, setModal, data }) => {
 
           </Col>
           <Col md="6" className="mb-4">
-            <label className="form-label">Plan</label>
-            <FormGroup>
-              <RSelect
-                options={plans}
-                value={plansOption}
-                onChange={(e) => {
-                  onOptionsPlansChange(e)
-                  console.log(e)
-                }}
-            
-              />
-            </FormGroup>
+            <fieldset disabled>
+              <label className="form-label">Plan</label>
+              <FormGroup>
+                <RSelect
+                  readonly
+                  options={plans}
+                  value={plansOption}
+                  onChange={(e) => {
+                    onOptionsPlansChange(e)
+                    console.log(e)
+                  }}
+                  disabled
+                />
+              </FormGroup>
+            </fieldset>
+
           </Col>
           <Col md="4" className="mb-4">
             <FormGroup>
@@ -1036,11 +1051,11 @@ const ModalNegocio = ({ modal, setModal, data }) => {
               <input
                 type="number"
                 className="form-control"
-                onChange={ (e) => {
-                  setDataForm( prev => {
+                onChange={(e) => {
+                  setDataForm(prev => {
                     return {
                       ...prev,
-                      yearsOfThePlan: parseInt(  e.target.value)
+                      yearsOfThePlan: parseInt(e.target.value)
                     }
                   })
                 }}
@@ -1065,11 +1080,11 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                 defaultValue={dataForm.amountOfTheInvestment}
                 placeholder="Ingrese monto"
                 className="form-control"
-                onValueChange={(e)=> {
+                onValueChange={(e) => {
                   const { formattedValue, value } = e;
-                  setDataForm( prev => {
+                  setDataForm(prev => {
                     return {
-                      ...prev,amountOfTheInvestment: parseInt( value)
+                      ...prev, amountOfTheInvestment: parseInt(value)
                     }
                   })
                 }}
@@ -1087,7 +1102,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                 value={currenciesOptions}
                 options={currencies}
                 onChange={onOptionsCurrenciesChange}
-                defautlValue={dataForm.currencyId}
+
               />
             </FormGroup>
           </Col>
@@ -1100,11 +1115,11 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                 defaultValue={dataForm.totalNetValueUSD}
                 placeholder="Ingrese monto"
                 className="form-control"
-                onValueChange={(e)=> {
+                onValueChange={(e) => {
                   const { formattedValue, value } = e;
-                  setDataForm( prev => {
+                  setDataForm(prev => {
                     return {
-                      ...prev,totalNetValueUSD: parseInt( value)
+                      ...prev, totalNetValueUSD: parseInt(value)
                     }
                   })
                 }}
@@ -1122,7 +1137,6 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                 value={paymentMethodsOptions}
                 options={paymentsMethods}
                 onChange={onOptionsPaymentsMethodsChange}
-                defautlValue={dataForm.paymentMethodId}
               />
             </FormGroup>
           </Col>
@@ -1137,7 +1151,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                   setDataForm((prev) => {
                     return {
                       ...prev,
-                      originsOfTheFunds:e.target.value
+                      originsOfTheFunds: e.target.value
                     }
                   })
                 }}
@@ -1167,16 +1181,16 @@ const ModalNegocio = ({ modal, setModal, data }) => {
                   type="number"
                   className="form-control"
                   name="advisorFeeComission"
-                  placeholder="Ej: 1 - 5 - 10"                                            
+                  placeholder="Ej: 1 - 5 - 10"
                   defaultValue={dataForm.percentage}
                   onChange={(e) => {
-                    setDataForm( (prev) => {
+                    setDataForm((prev) => {
                       return {
                         ...prev,
                         percentage: parseInt(e.target.value)
                       }
                     })
-                  }}  
+                  }}
                 />
               </div>
             </FormGroup>
@@ -1221,12 +1235,57 @@ const ModalFichaDelCliente = ({ modal, setModal }) => {
   )
 }
 
-const ModalPerfilDelInversionista = ({ modal, setModal }) => {
+const ModalPerfilDelInversionista = ({ modal, setModal, data }) => {
 
+  const [investorProfile, setInvestorProfile] = useState([[
+    {
+        "answer": "0",
+        "number": 1
+    },
+    {
+        "answer": "0",
+        "number": 2
+    },
+    {
+        "answer": "0",
+        "number": 3
+    },
+    {
+        "answer": "0",
+        "number": 4
+    },
+    {
+        "answer": "0",
+        "number": 5
+    },
+    {
+        "answer": "0",
+        "number": 6
+    },
+    {
+        "answer": "0",
+        "number": 7
+    },
+    {
+        "answer": "0",
+        "number": 8
+    }
+]])
+  useEffect(() => {
+    obtenerArrInvestor()
+  }, [data])
   const onFormCancel = () => {
     setModal({ edit: false, add: false, document: false });
     // resetForm();
   };
+
+  const obtenerArrInvestor = () => {
+    if(data.investorProfile != undefined){
+      setInvestorProfile(data.investorProfile.data)
+    }
+  }
+
+
 
   return (
     <Modal style={{ maxWidth: "1192px" }} isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
@@ -1241,6 +1300,7 @@ const ModalPerfilDelInversionista = ({ modal, setModal }) => {
         >
           <Icon name="cross-sm"></Icon>
         </a>
+        <Button onClick={() => console.log(investorProfile)}>Ver console</Button>
         <div className="p-2 table-record">
           <div className="d-flex justify-content-between align-items-center">
             <h5 className="title" >Actualizar Perfil Del Inversionista</h5>
@@ -1263,38 +1323,36 @@ const ModalPerfilDelInversionista = ({ modal, setModal }) => {
             </label>
             <FormGroup
               onChange={(e) => {
-                setGeneralStateForm((prev) => {
-                  const aux = [...prev.investorProfile];
+                setInvestorProfile((prev) => {
+                  const aux = [...prev];
                   aux[0] = {
                     number: parseInt(1),
                     answer: e.target.value,
                   };
-                  return {
-                    ...prev,
-                    investorProfile: [...aux],
-                  };
+                  return aux
                 });
               }}
+
               className="d-flex flex-column justify-content-center"
             >
               <div class="form-check">
                 <label class="form-check-label" for="radio1"></label>
-                <input type="radio" class="form-check-input" id="radio1" name="question1" value={1} />
+                <input type="radio" class="form-check-input" id="radio1" name="question1" value={1} checked={1 == investorProfile?.[0]?.answer} />
                 Menos de 3 años
               </div>
               <div class="form-check">
                 <label class="form-check-label" for="radio2"></label>
-                <input type="radio" class="form-check-input" id="radio2" name="question1" value={2} />
+                <input type="radio" class="form-check-input" id="radio2" name="question1" value={2} checked={2 == investorProfile[0]?.answer} />
                 3-5 años
               </div>
               <div class="form-check">
-                <input type="radio" class="form-check-input" id="radio3" name="question1" value={3} />
+                <input type="radio" class="form-check-input" id="radio3" name="question1" value={3} checked={3 == investorProfile[0]?.answer} />
                 6-10 años
                 <label class="form-check-label"></label>
               </div>
               <div class="form-check">
                 <label class="form-check-label" for="radio2"></label>
-                <input type="radio" class="form-check-input" id="radio2" name="question1" value={4} />
+                <input type="radio" class="form-check-input" id="radio2" name="question1" value={4} checked={4 == investorProfile[0]?.answer} />
                 11 años o mas
               </div>
             </FormGroup>
@@ -1308,38 +1366,35 @@ const ModalPerfilDelInversionista = ({ modal, setModal }) => {
             <br />
             <FormGroup
               onChange={(e) => {
-                setGeneralStateForm((prev) => {
-                  const aux = [...prev.investorProfile];
+                setInvestorProfile((prev) => {
+                  const aux = [...prev];
                   aux[1] = {
                     number: parseInt(2),
                     answer: e.target.value,
                   };
-                  return {
-                    ...prev,
-                    investorProfile: [...aux],
-                  };
+                  return aux
                 });
               }}
               className="d-flex flex-column justify-content-center"
             >
               <div class="form-check">
                 <label class="form-check-label" for="radio1"></label>
-                <input type="radio" class="form-check-input" id="radio1" name="question2" value={1} />
+                <input type="radio" class="form-check-input" id="radio1" name="question2" value={1} checked={1 == investorProfile[1]?.answer} />
                 Ninguno - sin conocimiento ni experienci sobre inversiones
               </div>
               <div class="form-check">
                 <label class="form-check-label" for="radio2"></label>
-                <input type="radio" class="form-check-input" id="radio2" name="question2" value={2} />
+                <input type="radio" class="form-check-input" id="radio2" name="question2" value={2} checked={2 == investorProfile[1]?.answer} />
                 Minimo - mi conocimiento es muy limitado y no tengo experiencia
               </div>
               <div class="form-check">
-                <input type="radio" class="form-check-input" id="radio3" name="question2" value={3} />
+                <input type="radio" class="form-check-input" id="radio3" name="question2" value={3} checked={3 == investorProfile[1]?.answer} />
                 Bueno - Buen conocimiento y cierta experiencia en inverisones
                 <label class="form-check-label"></label>
               </div>
               <div class="form-check">
                 <label class="form-check-label" for="radio2"></label>
-                <input type="radio" class="form-check-input" id="radio2" name="question2" value={3} />
+                <input type="radio" class="form-check-input" id="radio2" name="question2" value={4} checked={4 == investorProfile[1]?.answer} />
                 Amplio - Fuerte conocimiento y experiencia activa en inversiones
               </div>
             </FormGroup>
@@ -1353,38 +1408,35 @@ const ModalPerfilDelInversionista = ({ modal, setModal }) => {
             <br />
             <FormGroup
               onChange={(e) => {
-                setGeneralStateForm((prev) => {
-                  const aux = [...prev.investorProfile];
+                setInvestorProfile((prev) => {
+                  const aux = [...prev];
                   aux[2] = {
                     number: parseInt(3),
                     answer: e.target.value,
                   };
-                  return {
-                    ...prev,
-                    investorProfile: [...aux],
-                  };
+                  return aux
                 });
               }}
               className="d-flex flex-column justify-content-center"
             >
               <div class="form-check">
                 <label class="form-check-label" for="radio1"></label>
-                <input type="radio" class="form-check-input" id="radio1" name="question3" value={1} />
+                <input type="radio" class="form-check-input" id="radio1" name="question3" value={1} checked={1 == investorProfile[2]?.answer} />
                 Mas de 75%
               </div>
               <div class="form-check">
                 <label class="form-check-label" for="radio2"></label>
-                <input type="radio" class="form-check-input" id="radio2" name="question3" value={2} />
+                <input type="radio" class="form-check-input" id="radio2" name="question3" value={2} checked={2 == investorProfile[2]?.answer} />
                 Entre 50% - 75%
               </div>
               <div class="form-check">
-                <input type="radio" class="form-check-input" id="radio3" name="question3" value={3} />
+                <input type="radio" class="form-check-input" id="radio3" name="question3" value={3} checked={3 == investorProfile[2]?.answer} />
                 Entre 25% - 50%
                 <label class="form-check-label"></label>
               </div>
               <div class="form-check">
                 <label class="form-check-label" for="radio2"></label>
-                <input type="radio" class="form-check-input" id="radio2" name="question3" value={4} />
+                <input type="radio" class="form-check-input" id="radio2" name="question3" value={4} checked={4 == investorProfile[2]?.answer} />
                 Menos de 25%
               </div>
             </FormGroup>
@@ -1397,34 +1449,31 @@ const ModalPerfilDelInversionista = ({ modal, setModal }) => {
             <br />
             <FormGroup
               onChange={(e) => {
-                setGeneralStateForm((prev) => {
-                  const aux = [...prev.investorProfile];
+                setInvestorProfile((prev) => {
+                  const aux = [...prev];
                   aux[3] = {
                     number: parseInt(4),
                     answer: e.target.value,
                   };
-                  return {
-                    ...prev,
-                    investorProfile: [...aux],
-                  };
+                  return aux
                 });
               }}
               className="d-flex flex-column justify-content-center"
             >
               <div class="form-check mb-2">
                 <label class="form-check-label" for="radio1"></label>
-                <input type="radio" class="form-check-input" id="radio1" name="optradio3" value={1} />
+                <input type="radio" class="form-check-input" id="radio1" name="optradio3" value={1} checked={1 == investorProfile[3]?.answer} />
                 Lo que mas me import es la seguridad de mi inversion inicial. Prefiero correr un riesgo muy pequeño o
                 evitar cualquier riesgo de sufrir perdidas. Me conformo con que mi inversiones renten al menos la
                 inflacion, ya que no quiero arriesgarme a perder dinero.
               </div>
               <div class="form-check mb-2">
                 <label class="form-check-label" for="radio2"></label>
-                <input type="radio" class="form-check-input" id="radio2" name="question4" value={2} />
+                <input type="radio" class="form-check-input" id="radio2" name="question4" value={2} checked={2 == investorProfile[3]?.answer} />
                 Puedo aceptar perdidas pequeñas a corto plazo, pero me import la seguridad de mi inversion
               </div>
               <div class="form-check mb-2">
-                <input type="radio" class="form-check-input" id="radio3" name="question4" />
+                <input type="radio" class="form-check-input" id="radio3" name="question4" value={3} checked={3 == investorProfile[3]?.answer} />
                 Busco equilibrio entre la seguridad de la inversion y el potencial crecimiento de la misma. Me gustaria
                 que mis inversiones rentaran mas que la inflacion a largo plazo, aun cuando existe algo de riesgo que
                 estas sufran alto y bajos en los precios a corto plazo.
@@ -1432,13 +1481,13 @@ const ModalPerfilDelInversionista = ({ modal, setModal }) => {
               </div>
               <div class="form-check mb-2">
                 <label class="form-check-label" for="radio2"></label>
-                <input type="radio" class="form-check-input" id="radio2" name="question4" value={3} />
+                <input type="radio" class="form-check-input" id="radio2" name="question4" value={4} checked={4 == investorProfile[3]?.answer} />
                 Busco el crecimiento de la inversion y estoy dispuesto a aceptar algunas perdidas para obtener un
                 crecimiento potencialmente mayor.
               </div>
               <div class="form-check mb-2">
                 <label class="form-check-label" for="radio2"></label>
-                <input type="radio" class="form-check-input" id="radio2" name="question4" value={4} />
+                <input type="radio" class="form-check-input" id="radio2" name="question4" value={5} checked={5 == investorProfile[3]?.answer} />
                 Estoy dispuesto a aceptar un riesgo significativo y pontenciales perdidas para lograr un mayor crecimiento
                 de inversion en el largo plazo. Me gustaria que mis inverisones superen ampliamente la inflacion a largo
                 plazo. aun corriendo un mayor riego de perdidas en el corto plazo.
@@ -1453,38 +1502,35 @@ const ModalPerfilDelInversionista = ({ modal, setModal }) => {
             <br />
             <FormGroup
               onChange={(e) => {
-                setGeneralStateForm((prev) => {
-                  const aux = [...prev.investorProfile];
+                setInvestorProfile((prev) => {
+                  const aux = [...prev];
                   aux[4] = {
                     number: parseInt(5),
                     answer: e.target.value,
                   };
-                  return {
-                    ...prev,
-                    investorProfile: [...aux],
-                  };
+                  return aux
                 });
               }}
               className="d-flex flex-column justify-content-center"
             >
               <div class="form-check">
                 <label class="form-check-label" for="radio1"></label>
-                <input type="radio" class="form-check-input" id="radio1" name="question5" value={1} />
+                <input type="radio" class="form-check-input" id="radio1" name="question5" value={1} checked={1 == investorProfile[4]?.answer} />
                 Generalmente entro en panico cuando el mercado cae.
               </div>
               <div class="form-check">
                 <label class="form-check-label" for="radio2"></label>
-                <input type="radio" class="form-check-input" id="radio2" name="question5" value={2} />
+                <input type="radio" class="form-check-input" id="radio2" name="question5" value={2} checked={2 == investorProfile[4]?.answer} />
                 Algunas veces sobre-reacciono ante las fluctuaciones del mercado.
               </div>
               <div class="form-check">
-                <input type="radio" class="form-check-input" id="radio3" name="question5" value={3} />
+                <input type="radio" class="form-check-input" id="radio3" name="question5" value={3} checked={3 == investorProfile[4]?.answer} />
                 Paciente pero preocupado; adopto una actitud de esperar a ver que pasa.
                 <label class="form-check-label"></label>
               </div>
               <div class="form-check">
                 <label class="form-check-label" for="radio2"></label>
-                <input type="radio" class="form-check-input" id="radio2" name="question5" value={4} />
+                <input type="radio" class="form-check-input" id="radio2" name="question5" value={4} checked={4 == investorProfile[4]?.answer} />
                 La volatilidad en el corto plazo No me afecta
               </div>
             </FormGroup>
@@ -1501,32 +1547,29 @@ const ModalPerfilDelInversionista = ({ modal, setModal }) => {
               <div className="d-flex justify-content-around">
                 <FormGroup
                   onChange={(e) => {
-                    setGeneralStateForm((prev) => {
-                      const aux = [...prev.investorProfile];
+                    setInvestorProfile((prev) => {
+                      const aux = [...prev];
                       aux[5] = {
                         number: parseInt(6),
                         answer: e.target.value,
                       };
-                      return {
-                        ...prev,
-                        investorProfile: [...aux],
-                      };
+                      return aux
                     });
                   }}
                   className="d-flex flex-column justify-content-center"
                 >
                   <div class="form-check">
                     <label class="form-check-label" for="radio1"></label>
-                    <input type="radio" class="form-check-input" id="radio1" name="question6" value={1} />
+                    <input type="radio" class="form-check-input" id="radio1" name="question6" value={1} checked={1 == investorProfile[5]?.answer} />
                     Portafolio 1
                   </div>
                   <div class="form-check">
                     <label class="form-check-label" for="radio2"></label>
-                    <input type="radio" class="form-check-input" id="radio2" name="question6" value={2} />
+                    <input type="radio" class="form-check-input" id="radio2" name="question6" value={2} checked={2 == investorProfile[5]?.answer} />
                     Portafolio 2
                   </div>
                   <div class="form-check">
-                    <input type="radio" class="form-check-input" id="radio3" name="question6" value={3} />
+                    <input type="radio" class="form-check-input" id="radio3" name="question6" value={3} checked={3 == investorProfile[5]?.answer} />
                     Portafolio 3<label class="form-check-label"></label>
                   </div>
                 </FormGroup>
@@ -1545,40 +1588,37 @@ const ModalPerfilDelInversionista = ({ modal, setModal }) => {
               <div className="d-flex justify-content-around">
                 <FormGroup
                   onChange={(e) => {
-                    setGeneralStateForm((prev) => {
-                      const aux = [...prev.investorProfile];
+                    setInvestorProfile((prev) => {
+                      const aux = [...prev];
                       aux[6] = {
                         number: parseInt(7),
                         answer: e.target.value,
                       };
-                      return {
-                        ...prev,
-                        investorProfile: [...aux],
-                      };
+                      return aux
                     });
                   }}
                   className="d-flex flex-column justify-content-center"
                 >
                   <div class="form-check">
                     <label class="form-check-label" for="radio1"></label>
-                    <input type="radio" class="form-check-input" id="radio1" name="question7" value={1} />
+                    <input type="radio" class="form-check-input" id="radio1" name="question7" value={1} checked={1 == investorProfile[6]?.answer} />
                     Portafolio A
                   </div>
                   <div class="form-check">
                     <label class="form-check-label" for="radio2"></label>
-                    <input type="radio" class="form-check-input" id="radio2" name="question7" value={2} />
+                    <input type="radio" class="form-check-input" id="radio2" name="question7" value={2} checked={2 == investorProfile[6]?.answer} />
                     Portafolio B
                   </div>
                   <div class="form-check">
-                    <input type="radio" class="form-check-input" id="radio3" name="question7" value={3} />
+                    <input type="radio" class="form-check-input" id="radio3" name="question7" value={3} checked={3 == investorProfile[6]?.answer} />
                     Portafolio C<label class="form-check-label"></label>
                   </div>
                   <div class="form-check">
-                    <input type="radio" class="form-check-input" id="radio3" name="question7" value={4} />
+                    <input type="radio" class="form-check-input" id="radio3" name="question7" value={4} checked={4 == investorProfile[6]?.answer} />
                     Portafolio D<label class="form-check-label"></label>
                   </div>
                   <div class="form-check">
-                    <input type="radio" class="form-check-input" id="radio3" name="question7" value={5} />
+                    <input type="radio" class="form-check-input" id="radio3" name="question7" value={5} checked={5 == investorProfile[6]?.answer} />
                     Portafolio E<label class="form-check-label"></label>
                   </div>
                 </FormGroup>
@@ -1594,44 +1634,41 @@ const ModalPerfilDelInversionista = ({ modal, setModal }) => {
             <br />
             <FormGroup
               onChange={(e) => {
-                setGeneralStateForm((prev) => {
-                  const aux = [...prev.investorProfile];
+                setInvestorProfile((prev) => {
+                  const aux = [...prev];
                   aux[7] = {
                     number: parseInt(8),
                     answer: e.target.value,
                   };
-                  return {
-                    ...prev,
-                    investorProfile: [...aux],
-                  };
+                  return aux
                 });
               }}
               className="d-flex flex-column justify-content-center"
             >
               <div class="form-check">
                 <label class="form-check-label" for="radio1"></label>
-                <input type="radio" class="form-check-input" id="radio1" name="question8" value={1} />
+                <input type="radio" class="form-check-input" id="radio1" name="question8" value={1} checked={1 == investorProfile[7]?.answer} />
                 Vender el 100% de los fondos.
               </div>
               <div class="form-check">
                 <label class="form-check-label" for="radio2"></label>
-                <input type="radio" class="form-check-input" id="radio2" name="question8" value={2} />
+                <input type="radio" class="form-check-input" id="radio2" name="question8" value={2} checked={2 == investorProfile[7]?.answer}/>
                 Vender parte de los fondos.
               </div>
               <div class="form-check">
-                <input type="radio" class="form-check-input" id="radio3" name="question8" />
+                <input type="radio" class="form-check-input" id="radio3" name="question8" value={3} checked={3 == investorProfile[7]?.answer}/>
                 Transferir parte a un fondo mas conservador.
                 <label class="form-check-label"></label>
               </div>
               <div class="form-check">
                 <label class="form-check-label" for="radio2"></label>
-                <input type="radio" class="form-check-input" id="radio2" name="question8" value={3} />
+                <input type="radio" class="form-check-input" id="radio2" name="question8" value={4} checked={4 == investorProfile[7]?.answer}/>
                 Analizaria las perspectivas del activo y compraria mas unidades del mismo fondo (siempre que los
                 fundamentos asi lo justifiquen).
               </div>
               <div class="form-check">
                 <label class="form-check-label" for="radio1"></label>
-                <input type="radio" class="form-check-input" id="radio1" name="question8" value={4} />
+                <input type="radio" class="form-check-input" id="radio1" name="question8" value={5} checked={5 == investorProfile[7]?.answer}/>
                 No haria nada.
               </div>
             </FormGroup>
