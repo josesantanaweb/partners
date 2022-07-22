@@ -234,7 +234,7 @@ const Beneficiaries = ({ setAddActiveTab1, setGeneralStateForm, setModal, editDa
         <span key={i} className="form-grid-beneficiaries">
           <div>
             <FormGroup>
-              <label className="form-label">Nombre</label>
+              <label className="form-label">Nombres</label>
               <input
                 className="form-control"
                 type="text"
@@ -259,7 +259,7 @@ const Beneficiaries = ({ setAddActiveTab1, setGeneralStateForm, setModal, editDa
           </div>
           <div>
             <FormGroup>
-              <label className="form-label">Apellido</label>
+              <label className="form-label">Apellidos</label>
               <input
                 className="form-control"
                 type="text"

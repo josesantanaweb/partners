@@ -213,7 +213,7 @@ export const DataTableItem = ({ generalStateForm,setGeneralStateForm,registerSta
 
       
       console.log(generalStateForm)
-      customer.names? handleClickedRegisterNames(customer.names):handleClickedRegisterNames(customer.companyName)
+      customer.names? handleClickedRegisterNames(customer.names, customer.paternalLastName):handleClickedRegisterNames(customer.companyName)
       handleClickedRegisterRut(customer.rut);
       useTypeClient(customer.type.id);
       setSelectClient(customer)
