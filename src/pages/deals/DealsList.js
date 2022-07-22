@@ -438,7 +438,7 @@ const DealsList = () => {
                       <span>{item.id}</span>
                     </DataTableRow>
                     <DataTableRow className="text-center">
-                      <span>{item.customer.names}</span>
+                      <span>{item.customer.names + ' ' + item.customer.paternalLastName}</span>
                     </DataTableRow>
                     <DataTableRow className="text-center">
                       <span>{item.customer.rut}</span>
@@ -489,9 +489,9 @@ const DealsList = () => {
                               </button>
                               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <a class="dropdown-item" onClick={async () => { await setDataItemDeal(item); await setModalNegocio({ edit: true }); }} >Negocio</a>
-                                <a class="dropdown-item" >Ficha del Cliente</a>
+                                <a class="dropdown-item" onClick={async () => { await setDataItemDeal(item); await setModalFichaCliente({ edit: true }); }}>Ficha del Cliente</a>
                                 <a class="dropdown-item" onClick={async () => { await setDataItemDeal(item); await setModalPerfil({ edit: true }); }} >Perfil del Inversionista</a>
-                                <a class="dropdown-item" >Documentos Requeridos</a>
+                                <a class="dropdown-item" onClick={async () => { await setDataItemDeal(item); await setModalDocumentos({ edit: true }); }}  >Documentos Requeridos</a>
                                 <a class="dropdown-item" onClick={async () => { await setDataItemDeal(item); await setModalStatusDeal({ edit: true }); }} >Status de la Operación</a>
                               </div>
                             </div>
@@ -500,7 +500,6 @@ const DealsList = () => {
                                       <Button class="list-group-item " onClick={async() => { await setDataItemDeal(item); await setModalNegocio({ edit: true });  }} style={{
                                     backgroundColor: "#526484"
                                   }}>Negocio</Button>
-                             
                                   <Button style={{
                                     backgroundColor: "#526484"
                                   }} class="list-group-item"
@@ -785,9 +784,9 @@ const DealsList = () => {
           </ModalBody>
         </Modal>
         <ModalNegocio modal={modalNegocio} setModal={setModalNegocio} data={dateItemDeal} />
-        <ModalFichaDelCliente modal={modalFichaCliente} setModal={setModalFichaCliente} />
+        <ModalFichaDelCliente modal={modalFichaCliente} setModal={setModalFichaCliente} data={dateItemDeal}/>
         <ModalPerfilDelInversionista modal={modalPerfil} setModal={setModalPerfil} data={dateItemDeal} />
-        <ModalDocumentosRequeridos modal={modalDocumentos} setModal={setModalDocumentos} />
+        <ModalDocumentosRequeridos modal={modalDocumentos} setModal={setModalDocumentos} data={dateItemDeal}/>
         <ModalStatusDeals modal={modalStatusDeal} setModal={setModalStatusDeal} />
         {/* Nuevo elemento Modal */}
       </Content>
@@ -1032,7 +1031,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
 
           </Col>
           <Col md="8" className="mb-4">
-
+          12345678	
           </Col>
           <Col md="6" className="mb-4">
             <fieldset disabled>
@@ -1172,6 +1171,7 @@ const ModalNegocio = ({ modal, setModal, data }) => {
             <FormGroup className="border-bottom pb-2">
               <h6>Servicios de Comisión</h6>
             </FormGroup>
+          {/* formData={formData} */}
           </Col>
           <Col md="6">
             <FormGroup>
@@ -1208,15 +1208,34 @@ const ModalNegocio = ({ modal, setModal, data }) => {
   )
 }
 
-const ModalFichaDelCliente = ({ modal, setModal }) => {
+const ModalFichaDelCliente = ({ modal, setModal, data  }) => {
 
+  
+
+  const [generalStateForm, setGeneralStateForm] = useState({
+    ...data.customerInfo
+  })
+
+  const [addActiveTab, setAddActiveTab] = useState("0");
   const onFormCancel = () => {
     setModal({ edit: false, add: false, document: false });
     // resetForm();
   };
 
+  let selectClient = {
+    type: {
+      id:1
+    }
+  }
+  
+
+  useEffect( () => {
+    console.log(generalStateForm)
+  },[data])
+
   return (
-    <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+    <Modal           style={{ maxWidth: "1192px" }}
+    isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
       <ModalBody>
         <a
           href="#close"
@@ -1225,18 +1244,276 @@ const ModalFichaDelCliente = ({ modal, setModal }) => {
             onFormCancel();
           }}
           className="close"
+          
         >
           <Icon name="cross-sm"></Icon>
         </a>
         <div className="p-2 table-record">
           <div className="d-flex justify-content-between align-items-center">
             <h5 className="title" >Crear Operación 2</h5>
-            <Button color="primary" type="submit" >
+            <Button color="primary" type="submit" onClick={ ()=> console.log(generalStateForm)} >
               <Icon name="plus" className="mr-1"></Icon>
               Guardar Operación
             </Button>
           </div>
         </div>
+        
+    <React.Fragment  className={selectClient?'':'d-none'}>
+      {
+        selectClient?.type?
+    
+        selectClient?.type?.id  == 1? <Nav tabs>
+        <NavItem >
+          <NavLink
+            tag="a"
+            href="#tab"
+            className={classnames({ active: addActiveTab === "1" })}
+            onClick={() => setAddActiveTab("1")}
+          >
+            Datos de la cuenta
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            tag="a"
+            href="#tab"
+            className={classnames({ active: addActiveTab === "2" })}
+            onClick={() => setAddActiveTab("2")}
+          >
+            Antecedentes laborales
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            tag="a"
+            href="#tab"
+            className={classnames({ active: addActiveTab === "3" })}
+            onClick={() => setAddActiveTab("3")}
+          >
+            Referencias Personales
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            tag="a"
+            href="#tab"
+            className={classnames({ active: addActiveTab === "4" })}
+            onClick={() => setAddActiveTab("4")}
+          >
+            Experiencia de Inversiones
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            tag="a"
+            href="#tab"
+            className={classnames({ active: addActiveTab === "5" })}
+            onClick={() => setAddActiveTab("5")}
+          >
+            Antecedentes del conyuge
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            tag="a"
+            href="#tab"
+            className={classnames({ active: addActiveTab === "6" })}
+            onClick={() => setAddActiveTab("6")}
+          >
+            Bendeficiarios
+          </NavLink>
+        </NavItem>
+      </Nav>
+    : <Nav tabs>
+        <NavItem>
+          <NavLink
+            tag="a"
+            href="#tab"
+            className={classnames({ active: addActiveTab === "7" })}
+            onClick={() => setAddActiveTab("7")}
+          >
+            Cuestionario de la empresa
+          </NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink
+          tag="a"
+          href="#tab"
+          className={classnames({ active: addActiveTab === "8" })}
+          onClick={() => setAddActiveTab("8")}
+        >
+          Perfil de Empresa
+        </NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink
+          tag="a"
+          href="#tab"
+          className={classnames({ active: addActiveTab === "9" })}
+          onClick={() => setAddActiveTab("9")}
+        >
+          Informacion Bancaria
+        </NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink
+          tag="a"
+          href="#tab"
+          className={classnames({ active: addActiveTab === "10" })}
+          onClick={() => setAddActiveTab("10")}
+        >
+          Socios
+        </NavLink>
+      </NavItem>
+    </Nav>
+    :<></>
+      }
+  
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="1" >
+        <div className="row mt-4"  >
+          
+  
+        <Col md="3" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Nombre del banco</label>
+          <input
+            className="form-control"
+            type="text"
+            name="bankName"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,currentAccountData:{
+                  ...prev.currentAccountData,
+                  bankName:e.target.value
+                }
+              }
+            })} 
+            //defaultValue={editData?.currentAccountData?.bankName}
+            placeholder="Ingresa Nombre del banco"
+     
+          />
+        </FormGroup>
+      </Col>
+      <Col md="3" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Tipo de cuenta</label>
+          <input
+            className="form-control"
+            type="text"
+            name="accountType"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,currentAccountData:{
+                  ...prev.currentAccountData,
+                  accountType:e.target.value
+                }
+              }
+            })} 
+            //defaultValue={editData?.currentAccountData?.accountType}
+            placeholder="Ingresa Tipo de cuenta"
+    
+          />
+        </FormGroup>
+      </Col>
+      <Col md="3" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Direccion</label>
+          <input
+            className="form-control"
+            type="text"
+            name="sucursalAddress"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,currentAccountData:{
+                  ...prev.currentAccountData,
+                  sucursalAddress:e.target.value
+                }
+              }
+            })} 
+            //defaultValue={editData?.currentAccountData?.sucursalAddress}
+            placeholder="Ingresa Direccion"
+ 
+          />
+        </FormGroup>
+      </Col>
+      <Col md="3" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Numero de cuenta</label>
+          <input
+            className="form-control"
+            type="text"
+            name="accountNumber"
+            onChange={(e)=>setGeneralStateForm( prev => {
+              return {
+                ...prev,currentAccountData:{
+                  ...prev.currentAccountData,
+                  accountNumber:e.target.value
+                }
+              }
+            })} 
+            //defaultValue={editData?.currentAccountData?.accountNumber}
+            placeholder="Ingresa Direccion"
+
+          />
+        </FormGroup>
+      </Col>
+      <Col md="3" className="mb-4">
+        <FormGroup>
+          <label className="form-label">Fecha de apertura</label>
+ 
+        </FormGroup>
+      </Col>
+      </div>
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="2">
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="3">
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="4">
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="5">
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="6">
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="7">
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="8">
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="9">
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+      <TabContent activeTab={addActiveTab}>
+        <TabPane tabId="10">
+          {/* formData={formData} */}
+        </TabPane>
+      </TabContent>
+    </React.Fragment>
+
       </ModalBody>
     </Modal>
   )
@@ -1350,7 +1627,7 @@ const ModalPerfilDelInversionista = ({ modal, setModal, data }) => {
               <div class="form-check">
                 <label class="form-check-label" for="radio2"></label>
                 <input type="radio" class="form-check-input" id="radio2" name="question1" value={2} checked={2 == investorProfile[0]?.answer} />
-                3-5 años
+                3-5 añoscom
               </div>
               <div class="form-check">
                 <input type="radio" class="form-check-input" id="radio3" name="question1" value={3} checked={3 == investorProfile[0]?.answer} />
@@ -1686,7 +1963,7 @@ const ModalPerfilDelInversionista = ({ modal, setModal, data }) => {
   )
 }
 
-const ModalDocumentosRequeridos = ({ modal, setModal }) => {
+const ModalDocumentosRequeridos = ({ modal, setModal, data }) => {
 
   const onFormCancel = () => {
     setModal({ edit: false, add: false, document: false });
@@ -1706,6 +1983,7 @@ const ModalDocumentosRequeridos = ({ modal, setModal }) => {
         >
           <Icon name="cross-sm"></Icon>
         </a>
+        <Button onClick={()=> console.log(data)} >Ver documentos</Button>
         <div className="p-2 table-record">
           <div className="d-flex justify-content-between align-items-center">
             <h5 className="title" >Crear Operación 4</h5>
@@ -1714,6 +1992,12 @@ const ModalDocumentosRequeridos = ({ modal, setModal }) => {
               Guardar Operación
             </Button>
           </div>
+          <DataTableRow>
+            holis
+          </DataTableRow>
+          <DataTableRow>
+            holis
+          </DataTableRow>
         </div>
         {///// /
         }

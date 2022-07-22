@@ -313,11 +313,11 @@ const CustomerFile = ({
   };
 
   // function to get customer names from input search
-  const handleClickedRegisterNames = (customerName) => {
+  const handleClickedRegisterNames = (customerName, customerLastName) => {
     dataCust.filter(
       (customer) =>
-        (customer.names === customerName && setSearch(customerName)) ||
-        (customerName === customer.companyName && setSearch(customerName))
+        (customer.names === customerName && setSearch(customerName + ' ' + customerLastName)) ||
+        (customerName === customer.companyName && setSearch(customerName ))
     );
   };
 
@@ -424,7 +424,7 @@ const CustomerFile = ({
                     setSelectClient={setSelectClient}
                   >
                     <DataTableRow className="text-center">
-                      <span>{customer.names ? customer.names : customer.companyName}</span>
+                      <span>{customer.names ? customer.names + ' ' + customer.paternalLastName : customer.companyName}</span>
                     </DataTableRow>
                     <DataTableRow className="text-center">
                       <span>{customer.rut ? customer.rut : ""}</span>
