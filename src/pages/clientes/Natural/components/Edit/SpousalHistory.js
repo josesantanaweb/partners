@@ -407,17 +407,13 @@ const SpousalHistory = ({ setAddActiveTab2, setGeneralStateForm, setModal, editD
       </Col>
       <Col size="12">
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
-          <li>
-            <Button color="primary" size="md" type="submit">
-              Guardar
-            </Button>
-          </li>
+    
 
-          {/* <li>
+          <li>
             <Button color="primary" size="md" type="button" onClick={() => setAddActiveTab2("6")}>
               Siguiente
             </Button>
-          </li> */}
+          </li> 
         </ul>
       </Col>
     </Form>

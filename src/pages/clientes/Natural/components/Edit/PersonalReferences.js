@@ -155,16 +155,12 @@ const PersonalReferences = ({ setAddActiveTab2, setGeneralStateForm, setModal, e
       </Col>
       <Col size="12">
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+        
           <li>
-            <Button color="primary" size="md" type="submit">
-              Guardar
-            </Button>
-          </li>
-          {/* <li>
             <Button color="primary" size="md" type="button" onClick={() => setAddActiveTab2("4")}>
               Siguiente
             </Button>
-          </li> */}
+          </li> 
         </ul>
       </Col>
     </Form>

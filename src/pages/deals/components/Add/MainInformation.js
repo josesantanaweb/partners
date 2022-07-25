@@ -170,13 +170,14 @@ const CustomerFile = ({
     try {
       const selectsData = await DealsServices.getDealSelects();
       const plansData = await selectsData.plans.map((plan) => ({ label: plan.name, value: plan.id }));
-      setPlans(plansData);
+      //setPlans(plansData);
     } catch (error) {
       throw error;
     }
   };
 
   const onOptionsPlansChange = async (optionValue) => {
+
     setPlansOptions(optionValue);
     setGeneralStateForm((prev) => {
       return {
@@ -186,21 +187,26 @@ const CustomerFile = ({
     });
   };
 
-  useEffect(() => {
-    getPlans();
-  }, []);
+ 
 
   // function to get company select
   const getCompanies = async () => {
     try {
       const selectsData = await DealsServices.getDealSelects();
-      const companiesData = await selectsData.companies.map((company) => ({ label: company.name, value: company.id }));
+      console.log('datazo',selectsData)
+      const companiesData = await selectsData.companies.map((company) => ({ label: company.name, value: company.id,plans: company.plans }));
       setCompanies(companiesData);
+
     } catch (error) {
       throw error;
     }
   };
   const onOptionsCompaniesChange = (optionValue) => {
+    setPlansOptions({})
+    setPlans([])
+    console.log(optionValue)
+    const plansData = optionValue.plans.map((plan) => ({ label: plan.name, value: plan.id,  }));
+    setPlans(plansData)
     setCompaniesOptions(optionValue);
     setGeneralStateForm((prev) => {
       return {
@@ -343,8 +349,9 @@ const CustomerFile = ({
 
   //Peticion en base al tipo de client y el plan escogido
   const getDealsType = async (type = 1, planId = 1) => {
+    console.log(type,'^^',planId)
     const dataTlf = await DealsServices.getDealsTypeForms(type, planId.value);
-
+    console.log(dataTlf)
     await setRequiredDocument(dataTlf.customerSegments); // segmentos requeridos
     await setNeedDocument(dataTlf); // documentos requeridos
   };
