@@ -337,7 +337,7 @@ const Beneficiaries = ({ setAddActiveTab1, setGeneralStateForm, setModal, editDa
           </div>
           <div>
             <FormGroup>
-              <label className="form-label">Porcentange</label>
+              <label className="form-label">Porcentaje</label>
               <input
                 className="form-control"
                 type="text"
@@ -355,7 +355,7 @@ const Beneficiaries = ({ setAddActiveTab1, setGeneralStateForm, setModal, editDa
                     };
                   })
                 }
-                placeholder="Ingresa Porcentange"
+                placeholder="Ingresa Porcentanje"
                 ref={register()}
               />
             </FormGroup>

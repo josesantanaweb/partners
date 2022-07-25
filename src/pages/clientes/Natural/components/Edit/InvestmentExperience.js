@@ -64,7 +64,7 @@ const InvestmentExperience = ({ setAddActiveTab2, setGeneralStateForm, setModal,
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
       <Col md="3" className="mb-4">
         <FormGroup>
-          <label className="form-label">Experiencia de Inversión</label>
+          <label className="form-label">Opciones</label>
           <RSelect
             value={investmentExperienceOptions}
             options={investmentExperienceOpt}
@@ -142,7 +142,7 @@ const InvestmentExperience = ({ setAddActiveTab2, setGeneralStateForm, setModal,
         </FormGroup>
       </Col>
 
-      <Col md="3" className="mb-4">
+      {/* <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Opciones</label>
           <input
@@ -165,7 +165,7 @@ const InvestmentExperience = ({ setAddActiveTab2, setGeneralStateForm, setModal,
             ref={register()}
           />
         </FormGroup>
-      </Col>
+      </Col> */}
 
       <Col md="3" className="mb-4">
         <FormGroup>

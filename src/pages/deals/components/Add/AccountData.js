@@ -1,15 +1,15 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { FormGroup, Form } from "reactstrap";
 import { useForm } from "react-hook-form";
 import { Col, Button } from "../../../../components/Component";
 import CustomersServices from "../../../../services/CustomersServices";
-import DatePicker from 'react-date-picker';
+// import DatePicker from 'react-date-picker';
 import { set } from "lodash";
 
-const AccountData = ({setAddActiveTab2 ,generalStateForm,setGeneralStateForm, setModal, editData, selectClient}) => {
+const AccountData = ({ setAddActiveTab2, generalStateForm, setGeneralStateForm, setModal, editData, selectClient }) => {
   // useForm
   const { register, handleSubmit } = useForm();
-  const [newDate, setNewdate] = useState(new Date())
+  const [newDate, setNewdate] = useState(new Date());
   // Cerrar modal
   const onFormCancel = () => {
     setModal({ edit: false, add: false });
@@ -32,16 +32,14 @@ const AccountData = ({setAddActiveTab2 ,generalStateForm,setGeneralStateForm, se
     } catch (error) {}
   };
 
-  
-  useEffect( () => {
-    console.log('hos')
-    if( generalStateForm?.currentAccountData?.accountOpeningDate != undefined) {
-      setNewdate(new Date(generalStateForm.currentAccountData?.accountOpeningDate)) 
-
-    }else {
-      setNewdate(new Date())
+  useEffect(() => {
+    console.log("hos");
+    if (generalStateForm?.currentAccountData?.accountOpeningDate != undefined) {
+      setNewdate(new Date(generalStateForm.currentAccountData?.accountOpeningDate));
+    } else {
+      setNewdate(new Date());
     }
-  },[generalStateForm])
+  }, [generalStateForm]);
 
   return (
     <Form onSubmit={handleSubmit(onFormSubmit)} className="row mt-4">
@@ -52,14 +50,17 @@ const AccountData = ({setAddActiveTab2 ,generalStateForm,setGeneralStateForm, se
             className="form-control"
             type="text"
             name="bankName"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,currentAccountData:{
-                  ...prev.currentAccountData,
-                  bankName:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  currentAccountData: {
+                    ...prev.currentAccountData,
+                    bankName: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={editData?.currentAccountData?.bankName}
             placeholder="Ingresa Nombre del banco"
             ref={register()}
@@ -73,14 +74,17 @@ const AccountData = ({setAddActiveTab2 ,generalStateForm,setGeneralStateForm, se
             className="form-control"
             type="text"
             name="accountType"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,currentAccountData:{
-                  ...prev.currentAccountData,
-                  accountType:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  currentAccountData: {
+                    ...prev.currentAccountData,
+                    accountType: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={editData?.currentAccountData?.accountType}
             placeholder="Ingresa Tipo de cuenta"
             ref={register()}
@@ -94,14 +98,17 @@ const AccountData = ({setAddActiveTab2 ,generalStateForm,setGeneralStateForm, se
             className="form-control"
             type="text"
             name="sucursalAddress"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,currentAccountData:{
-                  ...prev.currentAccountData,
-                  sucursalAddress:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  currentAccountData: {
+                    ...prev.currentAccountData,
+                    sucursalAddress: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={editData?.currentAccountData?.sucursalAddress}
             placeholder="Ingresa Direccion"
             ref={register()}
@@ -115,14 +122,17 @@ const AccountData = ({setAddActiveTab2 ,generalStateForm,setGeneralStateForm, se
             className="form-control"
             type="text"
             name="accountNumber"
-            onChange={(e)=>setGeneralStateForm( prev => {
-              return {
-                ...prev,currentAccountData:{
-                  ...prev.currentAccountData,
-                  accountNumber:e.target.value
-                }
-              }
-            })} 
+            onChange={(e) =>
+              setGeneralStateForm((prev) => {
+                return {
+                  ...prev,
+                  currentAccountData: {
+                    ...prev.currentAccountData,
+                    accountNumber: e.target.value,
+                  },
+                };
+              })
+            }
             defaultValue={editData?.currentAccountData?.accountNumber}
             placeholder="Ingresa Direccion"
             ref={register()}
@@ -132,8 +142,8 @@ const AccountData = ({setAddActiveTab2 ,generalStateForm,setGeneralStateForm, se
       <Col md="3" className="mb-4">
         <FormGroup>
           <label className="form-label">Fecha de apertura</label>
- 
-          <DatePicker 
+
+          {/* <DatePicker 
   
             value={newDate}
             onChange={(e)=>setGeneralStateForm( prev => {
@@ -146,13 +156,13 @@ const AccountData = ({setAddActiveTab2 ,generalStateForm,setGeneralStateForm, se
             })} 
             placeholder="Ingresa Fecha de apertura"
           
-          />
+          /> */}
         </FormGroup>
       </Col>
       <Col size="12">
         <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
           <li>
-            <Button color="primary" size="md" type="button" onClick={ ()=> setAddActiveTab2('2')}>
+            <Button color="primary" size="md" type="button" onClick={() => setAddActiveTab2("2")}>
               Siguiente
             </Button>
           </li>
